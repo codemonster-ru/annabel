@@ -33,10 +33,17 @@ class Application
             return new Response('Not Found', 404);
         }
 
-        $result = call_user_func($action, $request);
+        if (is_array($action) && is_string($action[0])) {
+            [$class, $method] = $action;
+            $instance = new $class();
+            $result = $instance->$method($request);
+        } else {
+            $result = call_user_func($action, $request);
+        }
 
         return $result instanceof Response
             ? $result
             : new Response((string) $result);
     }
+
 }

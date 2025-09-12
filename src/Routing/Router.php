@@ -13,11 +13,10 @@ class Router
 
     public function match(string $method, string $uri): ?callable
     {
-        foreach ($this->routes as $route) {
-            if ($route['method'] === $method && $route['uri'] === $uri) {
-                return $route['action'];
-            }
+        if (array_key_exists($method, $this->routes) && array_key_exists($uri, $this->routes[$method])) {
+            return $this->routes[$method][$uri];
         }
+
         return null;
     }
 }

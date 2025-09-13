@@ -27,7 +27,10 @@
     "autoload": {
         "psr-4": {
             "Annabel\\": "src/"
-        }
+        },
+        "files": [
+            "helpers/debug.php"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"

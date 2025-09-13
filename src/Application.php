@@ -15,14 +15,14 @@ class Application
         $this->router = new Router();
     }
 
-    public function get(string $uri, callable $action): void
+    public function get(string $path, callable|array $handler): void
     {
-        $this->router->add('GET', $uri, $action);
+        $this->router->add('GET', $path, $handler);
     }
 
-    public function post(string $uri, callable $action): void
+    public function post(string $path, callable|array $handler): void
     {
-        $this->router->add('POST', $uri, $action);
+        $this->router->add('POST', $path, $handler);
     }
 
     public function handle(Request $request): Response

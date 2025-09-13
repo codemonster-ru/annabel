@@ -6,17 +6,15 @@ class Router
 {
     protected array $routes = [];
 
-    public function add(string $method, string $uri, callable $action): void
+    public function add(string $method, string $path, callable|array $handler): void
     {
-        $this->routes[$method][$uri] = $action;
+        $this->routes[$method][$path] = $handler;
     }
 
-    public function match(string $method, string $uri): ?callable
+    public function match(string $method, string $uri): callable|array|null
     {
-        if (array_key_exists($method, $this->routes) && array_key_exists($uri, $this->routes[$method])) {
-            return $this->routes[$method][$uri];
-        }
+        $path = strtok($uri, '?');
 
-        return null;
+        return $this->routes[$method][$path] ?? null;
     }
 }

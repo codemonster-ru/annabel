@@ -1,11 +1,15 @@
 <?php
 
-use Annabel\Application;
+use Annabel\View\View;
 use Annabel\Http\Response;
 
 if (!function_exists('view')) {
-    function view(string $template, array $data = []): Response
+    function view(string $name, array $data = []): Response
     {
-        return Application::getInstance()->view($template, $data);
+        $basePath = base_path('resources/views');
+
+        $view = new View($basePath, $name, $data);
+
+        return new Response($view->render());
     }
 }

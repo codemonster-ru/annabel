@@ -9,6 +9,12 @@ if (!function_exists('dd')) {
             echo '</pre>';
         }
 
+        if (function_exists('ob_flush')) {
+            @ob_flush();
+        }
+
+        flush();
+
         die(1);
     }
 }

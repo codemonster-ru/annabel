@@ -27,7 +27,7 @@
             "Annabel\\": "src/"
         },
         "files": [
-            "helpers/debug.php"
+            "src/Helpers/debug.php"
         ]
     },
     "require-dev": {

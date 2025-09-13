@@ -26,6 +26,7 @@
             "Annabel\\": "src/"
         },
         "files": [
+            "src/helpers/app.php",
             "src/helpers/debug.php",
             "src/helpers/view.php",
             "src/helpers/basePath.php"

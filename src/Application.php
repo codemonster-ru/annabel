@@ -14,9 +14,9 @@ class Application
     protected View $view;
     protected string $basePath;
 
-    public function __construct(string $basePath)
+    public function __construct(?string $basePath = null)
     {
-        $this->basePath = rtrim($basePath, '/');
+        $this->basePath = $basePath ?? dirname(__DIR__);
         $this->router = new Router();
         $this->view = new View("$basePath/resources/views");
 

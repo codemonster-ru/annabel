@@ -54,6 +54,20 @@ class Application
         return new Response($content);
     }
 
+    public function vue(string $component, array $props = []): Response
+    {
+        $bridge = "$this->basePath/bootstrap/ssr-bridge.php";
+
+        if (!file_exists($bridge)) {
+            throw new \RuntimeException("SSR bridge not found at $bridge");
+        }
+
+        $renderer = include $bridge;
+        $html = $renderer($component, $props);
+
+        return new Response($html);
+    }
+
     public function handle(Request $request): Response
     {
         $action = $this->router->match($request->method(), $request->uri());

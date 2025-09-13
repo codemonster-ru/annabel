@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Annabel\Tests;
 
 use Annabel\Routing\Router;
 use PHPUnit\Framework\TestCase;

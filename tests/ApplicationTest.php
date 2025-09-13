@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Annabel\Tests;
 
 use Annabel\Application;
 use Annabel\Http\Request;

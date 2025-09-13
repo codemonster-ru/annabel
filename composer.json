@@ -27,7 +27,8 @@
         },
         "files": [
             "src/helpers/debug.php",
-            "src/helpers/view.php"
+            "src/helpers/view.php",
+            "src/helpers/basePath.php"
         ]
     },
     "require-dev": {

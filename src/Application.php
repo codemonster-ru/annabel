@@ -18,7 +18,7 @@ class Application
     {
         $this->basePath = $basePath ?? dirname(__DIR__);
         $this->router = new Router();
-        $this->view = new View("$basePath/resources/views");
+        $this->view = new View("$this->basePath/resources/views");
 
         self::$instance = $this;
     }
@@ -30,6 +30,11 @@ class Application
         }
 
         return self::$instance;
+    }
+
+    public function getBasePath(): string
+    {
+        return $this->basePath;
     }
 
     public function get(string $path, callable|array $handler): void
@@ -69,5 +74,4 @@ class Application
             ? $result
             : new Response((string) $result);
     }
-
 }

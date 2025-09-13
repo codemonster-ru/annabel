@@ -3,9 +3,7 @@
     "description": "PHP framework Annabel",
     "type": "library",
     "keywords": [
-        "php",
         "framework",
-        "mvc",
         "codemonster",
         "annabel"
     ],
@@ -39,6 +37,12 @@
         "psr-4": {
             "Annabel\\Tests\\": "tests/"
         }
+    },
+    "archive": {
+        "exclude": [
+            "/tests",
+            "/.github"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

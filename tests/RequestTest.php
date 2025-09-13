@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Annabel\Tests;
 
 use Annabel\Http\Request;
 use PHPUnit\Framework\TestCase;

@@ -4,26 +4,26 @@ namespace Annabel\View;
 
 class View
 {
-    protected string $path;
+    protected string $basePath;
 
-    public function __construct(string $path)
+    public function __construct(string $basePath)
     {
-        $this->path = rtrim($path, '/');
+        $this->basePath = rtrim($basePath, '/');
     }
 
     public function render(string $template, array $data = []): string
     {
-        $file = $this->path . '/' . str_replace('.', '/', $template) . '.php';
+        $path = "$this->basePath/$template.php";
 
-        if (!file_exists($file)) {
-            throw new \RuntimeException("View file not found: {$file}");
+        if (!file_exists($path)) {
+            throw new \RuntimeException("View [{$template}] not found in {$this->basePath}");
         }
 
         extract($data, EXTR_SKIP);
 
         ob_start();
 
-        require $file;
+        include $path;
 
         return ob_get_clean();
     }

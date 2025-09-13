@@ -6,6 +6,9 @@ use Annabel\Http\Request;
 use Annabel\Http\Response;
 use Annabel\Routing\Router;
 use Annabel\View\View;
+use Annabel\View\Engines\PhpEngine;
+use Annabel\View\Engines\SsrEngine;
+use Annabel\SSR\Bridge;
 
 class Application
 {
@@ -14,11 +17,17 @@ class Application
     protected View $view;
     protected string $basePath;
 
-    public function __construct(?string $basePath = null)
+    public function __construct(?string $basePath = null, bool $enableSsr = false)
     {
         $this->basePath = $basePath ?? dirname(__DIR__);
         $this->router = new Router();
-        $this->view = new View("$this->basePath/resources/views");
+
+        $phpEngine = new PhpEngine("$this->basePath/resources/views");
+        $ssrEngine = $enableSsr
+            ? new SsrEngine(new Bridge())
+            : null;
+
+        $this->view = new View($phpEngine, $ssrEngine);
 
         self::$instance = $this;
     }
@@ -56,16 +65,9 @@ class Application
 
     public function vue(string $component, array $props = []): Response
     {
-        $bridge = "$this->basePath/bootstrap/ssr-bridge.php";
+        $content = $this->view->render($component, $props, true);
 
-        if (!file_exists($bridge)) {
-            throw new \RuntimeException("SSR bridge not found at $bridge");
-        }
-
-        $renderer = include $bridge;
-        $html = $renderer($component, $props);
-
-        return new Response($html);
+        return new Response($content);
     }
 
     public function handle(Request $request): Response

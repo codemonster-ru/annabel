@@ -2,29 +2,26 @@
 
 namespace Annabel\View;
 
+use Annabel\View\Engines\PhpEngine;
+use Annabel\View\Engines\SsrEngine;
+
 class View
 {
-    protected string $basePath;
+    protected PhpEngine $phpEngine;
+    protected ?SsrEngine $ssrEngine = null;
 
-    public function __construct(string $basePath)
+    public function __construct(PhpEngine $phpEngine, ?SsrEngine $ssrEngine = null)
     {
-        $this->basePath = rtrim($basePath, '/');
+        $this->phpEngine = $phpEngine;
+        $this->ssrEngine = $ssrEngine;
     }
 
-    public function render(string $template, array $data = []): string
+    public function render(string $view, array $data = [], bool $useSsr = false): string
     {
-        $path = "$this->basePath/$template.php";
-
-        if (!file_exists($path)) {
-            throw new \RuntimeException("View [{$template}] not found in {$this->basePath}");
+        if ($useSsr && $this->ssrEngine) {
+            return $this->ssrEngine->render($view, $data);
         }
 
-        extract($data, EXTR_SKIP);
-
-        ob_start();
-
-        include $path;
-
-        return ob_get_clean();
+        return $this->phpEngine->render($view, $data);
     }
 }

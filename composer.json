@@ -1,9 +1,15 @@
 {
     "name": "codemonster-ru/annabel",
-    "description": "PHP framework Annabel",
+    "description": "Elegant and lightweight PHP framework for modern web applications",
     "type": "library",
     "keywords": [
+        "php",
         "framework",
+        "router",
+        "view",
+        "container",
+        "mvc",
+        "codemonster",
         "annabel"
     ],
     "homepage": "https://github.com/codemonster-ru/annabel",
@@ -11,33 +17,37 @@
     "authors": [
         {
             "name": "Kirill Kolesnikov",
-            "email": "admin@codemonster.ru",
+            "email": "admin@codemonster.net",
             "role": "Lead Developer"
         }
     ],
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit --colors=always --testdox"
     },
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.2",
+        "codemonster-ru/config": "^2.0",
+        "codemonster-ru/dumper": "^1.0",
+        "codemonster-ru/env": "^2.0",
+        "codemonster-ru/router": "^2.0",
+        "codemonster-ru/view": "^2.0",
+        "codemonster-ru/view-php": "^2.0",
+        "codemonster-ru/razor": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "suggest": {
+        "codemonster-ru/ssr-bridge": "Enable Vue/React/Svelte SSR rendering bridge"
     },
     "autoload": {
         "psr-4": {
-            "Annabel\\": "src/"
-        },
-        "files": [
-            "src/helpers/app.php",
-            "src/helpers/basePath.php",
-            "src/helpers/debug.php",
-            "src/helpers/view.php"
-        ]
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^10.0"
+            "Codemonster\\Annabel\\": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "Annabel\\Tests\\": "tests/"
+            "Tests\\": "tests/"
         }
     },
     "archive": {
@@ -46,6 +56,9 @@
             "/.github"
         ]
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
 }

@@ -1,38 +1,20 @@
 <?php
 
-namespace Annabel\Tests;
-
-use Annabel\Application;
-use Annabel\Http\Request;
+use Codemonster\Annabel\Application;
+use Codemonster\View\View;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-    public function testCanRegisterAndResolveRoute(): void
+    public function test_bootstrap_initializes_view()
     {
-        $app = new Application();
-        $app->get('/hello', fn() => 'Hi!');
+        $app = new Application(__DIR__ . '/..');
 
-        $request = new Request('GET', '/hello');
-        $response = $app->handle($request);
-
-        $this->assertEquals('Hi!', $this->getOutput($response));
+        $this->assertInstanceOf(View::class, $app->getView());
     }
 
-    public function testReturns404ForUnknownRoute(): void
+    public function test_singleton_is_accessible()
     {
-        $app = new Application();
-
-        $request = new Request('GET', '/unknown');
-        $response = $app->handle($request);
-
-        $this->assertEquals('Not Found', $this->getOutput($response));
-    }
-
-    private function getOutput($response): string
-    {
-        ob_start();
-        $response->send();
-        return ob_get_clean();
+        $this->assertInstanceOf(Application::class, Application::getInstance());
     }
 }

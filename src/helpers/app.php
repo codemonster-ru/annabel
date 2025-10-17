@@ -1,10 +1,20 @@
 <?php
 
-use Annabel\Application;
+use Codemonster\Annabel\Application;
 
 if (!function_exists('app')) {
-    function app(): Application
+    function app(?string $abstract = null, array $parameters = []): mixed
     {
-        return Application::getInstance();
+        if (!class_exists(Application::class) || !Application::getInstance()) {
+            throw new RuntimeException('Application is not initialized.');
+        }
+
+        $app = Application::getInstance();
+
+        if ($abstract === null) {
+            return $app;
+        }
+
+        return $app->getContainer()->make($abstract, ...$parameters);
     }
 }

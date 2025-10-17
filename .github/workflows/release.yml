@@ -1,0 +1,61 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - 'v*.*.*'
+    workflow_dispatch:
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  coverage: none
+                  tools: composer
+
+            - name: Install dependencies
+              run: composer install --no-progress --no-suggest --prefer-dist
+
+            - name: Run tests
+              run: vendor/bin/phpunit --testdox
+
+            - name: Extract changelog entry
+              run: |
+                  RAW_VERSION=${GITHUB_REF_NAME#v}
+
+                  if [[ "$RAW_VERSION" == *"-test" ]]; then
+                    VERSION=${RAW_VERSION%-test}
+                  else
+                    VERSION=$RAW_VERSION
+                  fi
+
+                  echo "Looking for version: $VERSION (from tag $RAW_VERSION)"
+
+                  awk "/^## \\[$VERSION\\]/ {flag=1; next} /^## \\[/ {flag=0} flag {print}" CHANGELOG.md > RELEASE_NOTES.md
+
+                  if [ ! -s RELEASE_NOTES.md ]; then
+                    echo "⚠️ No changelog entry found, using default message"
+                    echo "Release $RAW_VERSION" > RELEASE_NOTES.md
+                  fi
+
+                  echo "---- RELEASE NOTES ----"
+                  cat RELEASE_NOTES.md
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ github.ref_name }}
+                  name: Release ${{ github.ref_name }}
+                  body_path: RELEASE_NOTES.md
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,1 +1,8 @@
+.idea
+.vscode
+.phpunit.result.cache
 vendor
+phpunix.xml
+composer.lock
+composer.local.json
+composer.local.lock

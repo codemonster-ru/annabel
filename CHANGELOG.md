@@ -2,7 +2,13 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
----
+## [1.1.0] - 2025-10-18
+
+### ✨ Added
+
+-   Introduced abstract class `Codemonster\Annabel\Providers\ServiceProvider`
+-   Implements `ServiceProviderInterface` and defines base methods `register()` and `boot()`
+-   Provides protected `$app` property and `app()` helper for convenient access to the `Application` instance
 
 ## [1.0.0] - 2025-10-17
 
@@ -22,8 +28,6 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 -   CoreServiceProvider correctly injects Application into Kernel.
 -   ViewServiceProvider handles missing directories safely.
 -   Unified branch alias naming (`1.0.x-dev`) across ecosystem packages.
-
----
 
 ## [0.0.5] - 2025-09-12
 

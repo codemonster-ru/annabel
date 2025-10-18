@@ -1,0 +1,4 @@
+.git
+vendor
+composer.local.json
+composer.local.lock

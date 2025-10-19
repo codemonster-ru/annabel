@@ -2,6 +2,21 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+# Changelog
+
+## [1.1.1] – 2025-10-19
+
+### Fixed
+
+-   🧩 **Router helpers initialization** — The global `router()` and `route()` functions now correctly initialize the `Router` instance, even if it has not yet been registered in the container.
+-   Added a safe fallback to prevent the `RuntimeException: Router instance not available in the current application context` error.
+
+### Improved
+
+-   Added explicit nullable types (`?string`, `?callable|array`) for helper parameters.
+-   Improved typing of return values ​​(`Router|Route`), providing better support for IDEs and static analysis (Intelephense, PHPStan).
+-   Improved stability of early loading of components and helpers during application initialization.
+
 ## [1.1.0] - 2025-10-18
 
 ### ✨ Added

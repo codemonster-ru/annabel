@@ -1,35 +1,43 @@
 <?php
 
 use Codemonster\Router\Router;
+use Codemonster\Router\Route;
 
 if (!function_exists('router')) {
-    function router(): Router
+    function router(?string $path = null, callable|array|null $handler = null, string $method = 'GET'): Router|Route
     {
-        if (function_exists('app') && app()->has(Router::class)) {
-            return app(Router::class);
-        }
+        $app = function_exists('app') ? app() : null;
+        $router = null;
 
-        if (function_exists('app') && method_exists(app(), 'getKernel')) {
-            $kernel = app()->getKernel();
+        if ($app && $app->has(Router::class)) {
+            $router = $app->make(Router::class);
+        } elseif ($app && method_exists($app, 'getKernel')) {
+            $kernel = $app->getKernel();
 
             if (method_exists($kernel, 'getRouter')) {
                 $router = $kernel->getRouter();
-
-                if ($router instanceof Router) {
-                    return $router;
-                }
             }
         }
 
-        throw new RuntimeException(
-            'Router instance not available in the current application context.'
-        );
+        if (!$router instanceof Router) {
+            $router = new Router();
+
+            if ($app) {
+                $app->singleton(Router::class, fn() => $router);
+            }
+        }
+
+        if ($path !== null && $handler !== null) {
+            return $router->{$method}($path, $handler);
+        }
+
+        return $router;
     }
 }
 
 if (!function_exists('route')) {
-    function route(string $path, callable|array $handler, string $method = 'GET'): void
+    function route(string $path, callable|array $handler, string $method = 'GET'): \Codemonster\Router\Route
     {
-        router()->{$method}($path, $handler);
+        return router($path, $handler, $method);
     }
 }

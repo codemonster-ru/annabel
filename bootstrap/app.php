@@ -1,13 +1,14 @@
 <?php
 
 use Codemonster\Annabel\Application;
-use Codemonster\Xen\Modules\Core\ModuleServiceProvider as XenCoreProvider;
+use Codemonster\Xen\Modules\Core\ModuleServiceProvider;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$app = new Application(__DIR__ . '/../');
+$app = new Application(__DIR__ . '/..');
 
-(new XenCoreProvider($app))->register();
-(new XenCoreProvider($app))->boot();
+$core = new ModuleServiceProvider($app);
+$core->register();
+$core->boot();
 
 return $app;

@@ -2,23 +2,15 @@
 
 namespace Codemonster\Xen\Modules\Core;
 
-use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 
 class ModuleManager
 {
-    protected Application $app;
-
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
-
     public function bootAll(array $exclude = []): void
     {
         $modulesPath = base_path('app/Modules');
 
-        foreach (glob($modulesPath . '/*/ModuleServiceProvider.php') as $file) {
+        foreach (glob("$modulesPath/*/ModuleServiceProvider.php") as $file) {
             $class = $this->resolveNamespace($file);
 
             if (!$class || !class_exists($class)) {
@@ -31,10 +23,17 @@ class ModuleManager
                 continue;
             }
 
-            $provider = new $class($this->app);
+            $provider = new $class(app());
 
             if ($provider instanceof ServiceProviderInterface) {
                 $provider->register();
+
+                $moduleBase = dirname($file);
+                $routesPath = $moduleBase . '/routes/web.php';
+
+                if (file_exists($routesPath)) {
+                    require_once $routesPath;
+                }
 
                 if (is_callable([$provider, 'boot'])) {
                     $provider->boot();
@@ -55,5 +54,21 @@ class ModuleManager
         }
 
         return trim($nsMatch[1]) . '\\' . trim($classMatch[1]);
+    }
+
+    public function listAll(): array
+    {
+        $result = [];
+        $modulesPath = app()->getBasePath() . '/app/Modules';
+
+        foreach (glob("$modulesPath/*/ModuleServiceProvider.php") as $file) {
+            $class = $this->resolveNamespace($file);
+
+            if ($class) {
+                $result[basename(dirname($file))] = $class;
+            }
+        }
+
+        return $result;
     }
 }

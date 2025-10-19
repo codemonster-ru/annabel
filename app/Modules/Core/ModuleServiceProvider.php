@@ -3,18 +3,32 @@
 namespace Codemonster\Xen\Modules\Core;
 
 use Codemonster\Annabel\Providers\ServiceProvider;
-use Codemonster\Annabel\Application;
+use Codemonster\Router\Router;
 
 class ModuleServiceProvider extends ServiceProvider
 {
+    protected static bool $booted = false;
+
     public function register(): void
     {
-        $this->app->singleton(ModuleManager::class, fn() => new ModuleManager($this->app));
+        app()->singleton(ModuleManager::class, fn() => new ModuleManager(app()));
     }
 
     public function boot(): void
     {
-        $manager = $this->app->make(ModuleManager::class);
-        $manager->bootAll(exclude: ['Core']);
+        if (self::$booted) {
+            return;
+        }
+
+        self::$booted = true;
+
+        if (app()->has(Router::class)) {
+            router()->setControllerFactory(static function (string $class) {
+                return app()->make($class);
+            });
+        }
+
+        $manager = app()->make(ModuleManager::class);
+        $manager->bootAll();
     }
 }

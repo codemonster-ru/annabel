@@ -1,6 +1,6 @@
 <?php
 
-use Codemonster\Annabel\Http\Request;
+use Codemonster\Http\Request;
 use PHPUnit\Framework\TestCase;
 
 class RequestHelperTest extends TestCase

@@ -1,7 +1,7 @@
 <?php
 
 use Codemonster\View\View;
-use Codemonster\Annabel\Http\Response;
+use Codemonster\Http\Response;
 
 if (!function_exists('view')) {
     /**

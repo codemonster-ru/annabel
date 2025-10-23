@@ -1,6 +1,6 @@
 <?php
 
-use Codemonster\Annabel\Http\Request;
+use Codemonster\Http\Request;
 
 if (!function_exists('request')) {
     function request(?string $key = null, mixed $default = null): mixed

@@ -2,7 +2,17 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-# Changelog
+## [1.2.0] – 2025-10-23
+
+### Changed
+
+-   Refactored HTTP layer: `Request` and `Response` classes moved to standalone package [`codemonster-ru/http`](https://github.com/codemonster-ru/http).
+-   Updated imports in `Http\Kernel` and helper functions to use the new package.
+-   Improved modularity — Annabel now relies on external HTTP foundation instead of internal implementation.
+
+### Removed
+
+-   Deleted redundant `tests/Http/RequestTest.php` and `tests/Http/ResponseTest.php` (these are now covered by `codemonster-ru/http` tests).
 
 ## [1.1.1] – 2025-10-19
 

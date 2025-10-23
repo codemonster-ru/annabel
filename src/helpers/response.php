@@ -1,6 +1,6 @@
 <?php
 
-use Codemonster\Annabel\Http\Response;
+use Codemonster\Http\Response;
 
 if (!function_exists('response')) {
     function response(string $content = '', int $status = 200, array $headers = []): Response

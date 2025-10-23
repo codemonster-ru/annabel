@@ -3,8 +3,8 @@
 namespace Codemonster\Annabel;
 
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\Annabel\Http\Request;
-use Codemonster\Annabel\Http\Response;
+use Codemonster\Http\Request;
+use Codemonster\Http\Response;
 use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Annabel\Container;
 use Codemonster\View\View;

@@ -4,6 +4,8 @@ namespace Codemonster\Annabel\Http;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Router\Router;
+use Codemonster\Http\Request;
+use Codemonster\Http\Response;
 use Throwable;
 
 class Kernel

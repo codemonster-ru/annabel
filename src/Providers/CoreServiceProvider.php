@@ -5,7 +5,7 @@ namespace Codemonster\Annabel\Providers;
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Annabel\Http\Kernel;
-use Codemonster\Annabel\Http\Request;
+use Codemonster\Http\Request;
 use Codemonster\Config\Config;
 use Codemonster\Env\Env;
 use Codemonster\Router\Router;

@@ -1,10 +1,10 @@
 <?php
 
 use Codemonster\Annabel\Http\Kernel;
-use Codemonster\Annabel\Http\Request;
+use Codemonster\Http\Request;
 use Codemonster\Annabel\Application;
 use Codemonster\Router\Router;
-use Codemonster\Annabel\Http\Response;
+use Codemonster\Http\Response;
 use PHPUnit\Framework\TestCase;
 
 class KernelTest extends TestCase

@@ -31,6 +31,7 @@
         "codemonster-ru/env": "^2.0",
         "codemonster-ru/http": "^1.0",
         "codemonster-ru/router": "^2.0",
+        "codemonster-ru/session": "^1.0",
         "codemonster-ru/view": "^2.0",
         "codemonster-ru/view-php": "^2.0",
         "codemonster-ru/razor": "^1.0"

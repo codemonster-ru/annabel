@@ -2,6 +2,20 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.3.0] – 2025-10-24
+
+### Added
+
+-   **Session integration** — Annabel now uses the new package [`codemonster-ru/session`](https://github.com/codemonster-ru/session) as its session foundation.
+-   **`SessionServiceProvider`** — automatically starts and registers a session on application boot.
+-   **Global helper** `session()` — provides simple access to session data anywhere.
+-   **Session tests** — added SessionHelperTest to verify helper behavior and integration with the provider system.
+
+### Changed
+
+-   Updated `Application::registerProviders()` to include `SessionServiceProvider` in the default provider list.
+-   Improved bootstrap consistency: session is now available immediately after application start.
+
 ## [1.2.0] – 2025-10-23
 
 ### Changed

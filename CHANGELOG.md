@@ -2,6 +2,30 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.4.0] – 2025-10-28
+
+### Changed
+
+-   Global helper functions (`config`, `env`, `dump`, `request`, `response`, `router`, `session`, `view`)  
+    have been moved to a new shared package **`codemonster-ru/support`**.
+    Annabel now automatically uses helpers from that package.
+-   Simplified `Application` bootstrap — no manual helper registration required.
+-   Cleaned up `src/helpers/`:
+    now only `app.php` and `basePath.php` remain inside the framework core.
+-   Refactored `CoreServiceProvider`:
+    -   added container aliases (`'config'`, `'router'`, `'request'`) for compatibility with new helpers;
+    -   standardized container bindings to match Laravel-style resolution.
+-   Improved modular consistency with other Codemonster packages.
+
+### Added
+
+-   Automatic integration with `codemonster-ru/support` (v1.0+).
+-   Full support for standalone usage of helpers via container.
+
+### Removed
+
+-   Legacy fallback logic for global helpers inside Annabel core.
+
 ## [1.3.0] – 2025-10-24
 
 ### Added

@@ -39,18 +39,18 @@ router()->get('/', fn() => view('home', ['title' => 'Welcome to Annabel']));
 
 ## 🧩 Helpers
 
-| Function          | Description                          |
-| ----------------- | ------------------------------------ |
-| `app()`           | Access the application container     |
-| `base_path()`     | Resolve base project paths           |
-| `config()`        | Get or set configuration values      |
-| `dump()` / `dd()` | Debugging utilities                  |
-| `env()`           | Read environment variables           |
-| `request()`       | Get current HTTP request             |
-| `response()`      | Create HTTP response                 |
-| `router()`        | Access router instance               |
-| `session()`       | Read, write, or access session store |
-| `view()`          | Render or return view instance       |
+| Function                | Description                          |
+| ----------------------- | ------------------------------------ |
+| `app()`                 | Access the application container     |
+| `base_path()`           | Resolve base project paths           |
+| `config()`              | Get or set configuration values      |
+| `dump()` / `dd()`       | Debugging utilities                  |
+| `env()`                 | Read environment variables           |
+| `request()`             | Get current HTTP request             |
+| `response()`/ `json()`  | Create HTTP response                 |
+| `router()` / `route()`  | Access router instance               |
+| `session()`/ `render()` | Read, write, or access session store |
+| `view()`                | Render or return view instance       |
 
 ## 🧪 Testing
 

@@ -39,7 +39,11 @@ class CoreServiceProvider implements ServiceProviderInterface
             return new Config();
         });
 
+        $this->app->singleton('config', fn($c) => $c->make(Config::class));
+
         $this->app->singleton(Router::class, fn() => new Router());
+
+        $this->app->singleton('router', fn($c) => $c->make(Router::class));
 
         $this->app->singleton(Kernel::class, fn($c) => new Kernel(
             $this->app,
@@ -47,6 +51,8 @@ class CoreServiceProvider implements ServiceProviderInterface
         ));
 
         $this->app->bind(Request::class, fn() => Request::capture());
+
+        $this->app->bind('request', fn($c) => $c->make(Request::class));
     }
 
     public function boot(): void {}

@@ -45,6 +45,8 @@ class ViewServiceProvider implements ServiceProviderInterface
 
             return $view;
         });
+
+        $this->app->singleton('view', fn($c) => $c->make(View::class));
     }
 
     public function boot(): void {}

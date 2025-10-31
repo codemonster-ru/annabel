@@ -2,6 +2,16 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.5.0] – 2025-10-30
+
+### Added
+
+-   Added `'view'` alias in the service container — now both `app('view')` and `view()` helpers work correctly across all dependent packages.
+
+### Changed
+
+-   Improved internal `ViewServiceProvider` registration to ensure consistent access to the `View` instance from the container.
+
 ## [1.4.0] – 2025-10-28
 
 ### Changed

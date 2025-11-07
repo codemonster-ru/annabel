@@ -9,6 +9,9 @@ use Codemonster\Http\Request;
 use Codemonster\Config\Config;
 use Codemonster\Env\Env;
 use Codemonster\Router\Router;
+use Codemonster\Annabel\Contracts\ExceptionHandlerInterface;
+use Codemonster\Annabel\Exceptions\DefaultExceptionHandler;
+use Codemonster\Annabel\Exceptions\DebugExceptionHandler;
 
 class CoreServiceProvider implements ServiceProviderInterface
 {
@@ -21,6 +24,7 @@ class CoreServiceProvider implements ServiceProviderInterface
 
     public function register(): void
     {
+        $debug = env('APP_DEBUG', false);
         $basePath = $this->app->getBasePath();
 
         $this->app->singleton(Env::class, function () use ($basePath) {
@@ -53,6 +57,11 @@ class CoreServiceProvider implements ServiceProviderInterface
         $this->app->bind(Request::class, fn() => Request::capture());
 
         $this->app->bind('request', fn($c) => $c->make(Request::class));
+
+        $this->app->singleton(
+            ExceptionHandlerInterface::class,
+            $debug ? DebugExceptionHandler::class : DefaultExceptionHandler::class
+        );
     }
 
     public function boot(): void {}

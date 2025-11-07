@@ -2,21 +2,22 @@
 
 namespace Codemonster\Annabel;
 
+use Codemonster\Annabel\Bootstrap\Bootstrapper;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Annabel\Http\Kernel;
-use Codemonster\Annabel\Container;
 use Codemonster\View\View;
 
 class Application
 {
     protected static ?Application $instance = null;
-    protected Kernel $kernel;
-    protected ?View $view = null;
+
     protected string $basePath;
-    protected array $providers = [];
     protected Container $container;
+    protected ?Kernel $kernel = null;
+    protected ?View $view = null;
+    protected array $providers = [];
     protected bool $booted = false;
 
     public function __construct(?string $basePath = null, ?View $view = null, bool $autoBootstrap = true)
@@ -41,101 +42,14 @@ class Application
             return;
         }
 
-        $this->registerHelpers();
-        $this->registerProviders();
-        $this->initView($customView);
-        $this->initKernel();
+        (new Bootstrapper($this))->run($customView);
 
         $this->booted = true;
     }
 
-    protected function registerHelpers(): void
+    public function addProvider(ServiceProviderInterface $provider): void
     {
-        $helpersPath = __DIR__ . '/helpers/*.php';
-
-        foreach (glob($helpersPath) as $helper) {
-            require_once $helper;
-        }
-    }
-
-    protected function registerProviders(): void
-    {
-        $defaultProviders = [
-            \Codemonster\Annabel\Providers\CoreServiceProvider::class,
-            \Codemonster\Annabel\Providers\ViewServiceProvider::class,
-            \Codemonster\Annabel\Providers\SessionServiceProvider::class,
-        ];
-
-        $customProvidersPath = "{$this->basePath}/bootstrap/providers";
-        $userProviders = [];
-
-        if (is_dir($customProvidersPath)) {
-            foreach (glob($customProvidersPath . '/*.php') as $file) {
-                require_once $file;
-
-                $className = $this->resolveClassFromFile($file);
-
-                if ($className && class_exists($className)) {
-                    $userProviders[] = $className;
-                }
-            }
-        }
-
-        $providers = array_merge($defaultProviders, $userProviders);
-
-        foreach ($providers as $providerClass) {
-            if (!is_subclass_of($providerClass, ServiceProviderInterface::class)) {
-                throw new \RuntimeException(
-                    "Service provider [$providerClass] must implement " . ServiceProviderInterface::class
-                );
-            }
-
-            $provider = new $providerClass($this);
-
-            $provider->register();
-
-            if (is_callable([$provider, 'boot'])) {
-                $provider->boot();
-            }
-
-            $this->providers[] = $provider;
-        }
-    }
-
-    protected function initView(?View $customView = null): void
-    {
-        $this->view = $customView instanceof View
-            ? $customView
-            : $this->make(View::class);
-    }
-
-    protected function initKernel(): void
-    {
-        $this->kernel = $this->make(Kernel::class);
-    }
-
-    // =====================================================
-    // ==================  PROVIDERS =======================
-    // =====================================================
-
-    protected function resolveClassFromFile(string $file): ?string
-    {
-        $contents = file_get_contents($file);
-
-        if (!preg_match('/namespace\s+([^;]+);/i', $contents, $nsMatch)) {
-            return null;
-        }
-
-        if (!preg_match('/class\s+([a-zA-Z0-9_]+)/i', $contents, $classMatch)) {
-            return null;
-        }
-
-        return trim($nsMatch[1]) . '\\' . trim($classMatch[1]);
-    }
-
-    public function getProviders(): array
-    {
-        return $this->providers;
+        $this->providers[] = $provider;
     }
 
     // =====================================================
@@ -158,21 +72,40 @@ class Application
 
     public function getKernel(): Kernel
     {
+        if (!$this->kernel) {
+            throw new \RuntimeException('Kernel is not initialized.');
+        }
+
         return $this->kernel;
+    }
+
+    public function setKernel(Kernel $kernel): void
+    {
+        $this->kernel = $kernel;
     }
 
     public function getView(): View
     {
-        if ($this->view === null) {
-            throw new \RuntimeException('View has not been initialized yet.');
+        if (!$this->view) {
+            throw new \RuntimeException('View is not initialized.');
         }
 
         return $this->view;
     }
 
+    public function setView(View $view): void
+    {
+        $this->view = $view;
+    }
+
     public function getContainer(): Container
     {
         return $this->container;
+    }
+
+    public function getProviders(): array
+    {
+        return $this->providers;
     }
 
     // =====================================================
@@ -185,7 +118,7 @@ class Application
             $this->bootstrap();
         }
 
-        return $this->kernel->handle($request);
+        return $this->getKernel()->handle($request);
     }
 
     public function run(): void
@@ -201,17 +134,17 @@ class Application
 
     public function get(string $path, callable|array $handler): void
     {
-        $this->kernel->getRouter()->get($path, $handler);
+        $this->getKernel()->getRouter()->get($path, $handler);
     }
 
     public function post(string $path, callable|array $handler): void
     {
-        $this->kernel->getRouter()->post($path, $handler);
+        $this->getKernel()->getRouter()->post($path, $handler);
     }
 
     public function any(string $path, callable|array $handler): void
     {
-        $this->kernel->getRouter()->any($path, $handler);
+        $this->getKernel()->getRouter()->any($path, $handler);
     }
 
     // =====================================================

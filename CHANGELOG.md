@@ -2,6 +2,33 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.6.0] — 2025-11-08
+
+### Added
+
+-   Added `Bootstrap/Bootstrapper` — a separate class responsible for the initialization process (helpers, providers, kernel, views).
+-   Added the centralized contract `ExceptionHandlerInterface`.
+-   Added exception handlers:
+-   `DefaultExceptionHandler` — a minimal, safe handler (production).
+-   `DebugExceptionHandler` — a detailed handler with an HTML page and traceback (dev).
+-   Added the default error template `resources/views/errors/debug.php`, which uses `codemonster-ru/view`.
+
+### Changed
+
+-   `Application.php`: simplified and refactored — now delegates bootstrap to `Bootstrapper`. - `Http/Kernel.php`: Integrated with the exception system, now uses `ExceptionHandlerInterface`.
+-   `ViewServiceProvider`: Now registers two template paths:
+
+1. `resources/views` from the project;
+2. `resources/views` from the Annabel framework itself.
+
+-   Exceptions are now correctly handled and rendered via View.
+
+### Fixed
+
+-   Fixed the `View not found: errors.debug` error when rendering templates.
+-   Fixed a collision between the `Codemonster\Http\Response` and `Codemonster\Annabel\Http\Response` classes (Annabel now inherits the base Response).
+-   Eliminated potential fatal errors when a template or View is missing (the fallback is implemented in ExceptionHandler).
+
 ## [1.5.0] – 2025-10-30
 
 ### Added

@@ -3,6 +3,7 @@
 namespace Codemonster\Annabel\Http;
 
 use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Contracts\ExceptionHandlerInterface;
 use Codemonster\Router\Router;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
@@ -23,9 +24,7 @@ class Kernel
     public function handle(Request $request): Response
     {
         try {
-            $response = $this->runMiddleware($request, function (Request $req) {
-                return $this->dispatch($req);
-            });
+            $response = $this->runMiddleware($request, fn($req) => $this->dispatch($req));
 
             if (!$response instanceof Response) {
                 $response = new Response((string) $response);
@@ -33,11 +32,9 @@ class Kernel
 
             return $response;
         } catch (Throwable $e) {
-            return new Response(
-                "Internal Server Error: {$e->getMessage()}",
-                500,
-                ['Content-Type' => 'text/plain']
-            );
+            $handler = $this->app->make(ExceptionHandlerInterface::class);
+
+            return $handler->handle($e);
         }
     }
 

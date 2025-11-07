@@ -22,14 +22,24 @@ class ViewServiceProvider implements ServiceProviderInterface
     {
         $this->app->singleton(View::class, function (): View {
             $basePath = $this->app->getBasePath();
-            $viewDir = $basePath . '/resources/views';
+            $appViews = $basePath . '/resources/views';
+            $frameworkViews = __DIR__ . '/../../resources/views';
 
-            if (!is_dir($viewDir)) {
-                $viewDir = sys_get_temp_dir();
+            $paths = [];
+
+            if (is_dir($appViews)) {
+                $paths[] = $appViews;
             }
 
-            $locator = new DefaultLocator([$viewDir]);
+            if (is_dir($frameworkViews)) {
+                $paths[] = $frameworkViews;
+            }
 
+            if (empty($paths)) {
+                $paths[] = sys_get_temp_dir();
+            }
+
+            $locator = new DefaultLocator($paths);
             $phpEngine = new PhpEngine($locator, ['php', 'blade.php']);
             $engines = ['php' => $phpEngine];
 
@@ -41,9 +51,7 @@ class ViewServiceProvider implements ServiceProviderInterface
                 }
             }
 
-            $view = new View($engines, 'php');
-
-            return $view;
+            return new View($engines, 'php');
         });
 
         $this->app->singleton('view', fn($c) => $c->make(View::class));

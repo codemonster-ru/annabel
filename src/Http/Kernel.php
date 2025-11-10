@@ -3,7 +3,7 @@
 namespace Codemonster\Annabel\Http;
 
 use Codemonster\Annabel\Application;
-use Codemonster\Annabel\Contracts\ExceptionHandlerInterface;
+use Codemonster\Errors\Contracts\ExceptionHandlerInterface;
 use Codemonster\Router\Router;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
@@ -30,11 +30,42 @@ class Kernel
                 $response = new Response((string) $response);
             }
 
-            return $response;
+            if ($response->getStatusCode() < 400) {
+                return $response;
+            }
+
+            return $this->normalizeErrorResponse($response);
         } catch (Throwable $e) {
-            $handler = $this->app->make(ExceptionHandlerInterface::class);
+            return $this->handleException($e);
+        }
+    }
+
+    protected function normalizeErrorResponse(Response $response): Response
+    {
+        if ($response->getContent() !== null && trim((string)$response->getContent()) !== '') {
+            return $response;
+        }
+
+        return $this->handleHttpError($response->getStatusCode());
+    }
+
+    protected function handleException(Throwable $e): Response
+    {
+        $status = 500;
+
+        if (method_exists($e, 'getStatusCode')) {
+            /** @var object{getStatusCode: callable(): int} $e */
+            $status = $e->getStatusCode();
+        }
+
+        $message = $e->getMessage() ?: 'Internal Server Error';
+
+        try {
+            $handler = $this->app->make(\Codemonster\Errors\Contracts\ExceptionHandlerInterface::class);
 
             return $handler->handle($e);
+        } catch (Throwable $inner) {
+            return $this->handleHttpError($status, $message);
         }
     }
 
@@ -43,10 +74,45 @@ class Kernel
         $result = $this->router->dispatch($request->method(), $request->uri());
 
         if ($result === null) {
-            return new Response('Not Found', 404);
+            return $this->handleHttpError(404, 'Page not found');
         }
 
         return $result;
+    }
+
+    protected function handleHttpError(int $status, string $message = ''): Response
+    {
+        if ($status < 400) {
+            return new Response('', $status);
+        }
+
+        try {
+            $handler = $this->app->make(ExceptionHandlerInterface::class);
+
+            $e = new class($message ?: "HTTP {$status}", $status) extends \RuntimeException {
+                protected int $status;
+
+                public function __construct(string $message, int $status)
+                {
+                    $this->status = $status;
+
+                    parent::__construct($message, $status);
+                }
+
+                public function getStatusCode(): int
+                {
+                    return $this->status;
+                }
+            };
+
+            return $handler->handle($e);
+        } catch (Throwable $inner) {
+            return new Response(
+                sprintf("HTTP %d: %s", $status, $inner->getMessage()),
+                $status,
+                ['Content-Type' => 'text/plain']
+            );
+        }
     }
 
     public function addMiddleware(callable $middleware): void

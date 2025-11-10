@@ -23,7 +23,7 @@ class ViewServiceProvider implements ServiceProviderInterface
         $this->app->singleton(View::class, function (): View {
             $basePath = $this->app->getBasePath();
             $appViews = $basePath . '/resources/views';
-            $frameworkViews = __DIR__ . '/../../resources/views';
+            $frameworkViews = realpath(__DIR__ . '/../../resources/views');
 
             $paths = [];
 
@@ -31,7 +31,7 @@ class ViewServiceProvider implements ServiceProviderInterface
                 $paths[] = $appViews;
             }
 
-            if (is_dir($frameworkViews)) {
+            if ($frameworkViews && is_dir($frameworkViews)) {
                 $paths[] = $frameworkViews;
             }
 
@@ -47,7 +47,9 @@ class ViewServiceProvider implements ServiceProviderInterface
                 try {
                     $engines['razor'] = new RazorEngine($locator, ['razor.php']);
                 } catch (\Throwable $e) {
-                    trigger_error("Failed to initialize RazorEngine: {$e->getMessage()}", E_USER_WARNING);
+                    if (ini_get('display_errors')) {
+                        trigger_error("Failed to initialize RazorEngine: {$e->getMessage()}", E_USER_WARNING);
+                    }
                 }
             }
 

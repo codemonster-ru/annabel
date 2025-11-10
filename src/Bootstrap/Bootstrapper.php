@@ -6,6 +6,7 @@ use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\View\View;
 use Codemonster\Annabel\Http\Kernel;
+use Throwable;
 
 class Bootstrapper
 {
@@ -20,6 +21,7 @@ class Bootstrapper
     {
         $this->registerHelpers();
         $this->registerProviders();
+        $this->initErrorHandler();
         $this->initView($customView);
         $this->initKernel();
     }
@@ -100,5 +102,31 @@ class Bootstrapper
     protected function initKernel(): void
     {
         $this->app->setKernel($this->app->make(Kernel::class));
+    }
+
+    protected function initErrorHandler(): void
+    {
+        // Avoid installing a global exception handler in CLI/DBG modes
+        // to prevent PHPUnit from flagging tests as risky.
+        if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
+            return;
+        }
+
+        try {
+            $handler = $this->app->make(\Codemonster\Errors\Contracts\ExceptionHandlerInterface::class);
+
+            set_exception_handler(function (\Throwable $e) use ($handler) {
+                $response = $handler->handle($e);
+                echo (string) $response->getBody();
+            });
+        } catch (\Throwable $e) {
+            $message = "Fatal: " . $e->getMessage() . PHP_EOL;
+
+            if (defined('STDERR') && is_resource(\STDERR)) {
+                fwrite(\STDERR, $message);
+            } else {
+                error_log($message);
+            }
+        }
     }
 }

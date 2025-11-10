@@ -2,6 +2,28 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.7.0] - 2025-11-10
+
+### Added
+
+-   Integrated `codemonster-ru/errors` as the default error handling package.
+-   Global exception handler via `set_exception_handler` in `Bootstrap/Bootstrapper` to render all uncaught exceptions.
+-   Binding of `Codemonster\\Errors\\Contracts\\ExceptionHandlerInterface` to `SmartExceptionHandler` with view-based renderer.
+-   Composer dependency: `"codemonster-ru/errors": "^1.0"`.
+
+### Changed
+
+-   `src/Http/Kernel.php`: delegates exceptions and HTTP errors to the registered `ExceptionHandlerInterface` and normalizes empty 4xx/5xx bodies through the handler.
+-   `src/Providers/CoreServiceProvider.php`: registers the new error handler and passes a renderer that uses the framework `View`.
+-   Behavior respects `APP_DEBUG` to toggle detailed error pages.
+
+### Removed
+
+-   `src/Contracts/ExceptionHandlerInterface.php`
+-   `src/Exceptions/DefaultExceptionHandler.php`
+-   `src/Exceptions/DebugExceptionHandler.php`
+-   `resources/views/errors/debug.php`
+
 ## [1.6.0] — 2025-11-08
 
 ### Added

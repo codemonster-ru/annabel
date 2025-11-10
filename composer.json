@@ -28,7 +28,8 @@
         "php": ">=8.2",
         "codemonster-ru/support": "^1.0",
         "codemonster-ru/view-php": "^2.0",
-        "codemonster-ru/razor": "^1.0"
+        "codemonster-ru/razor": "^1.0",
+        "codemonster-ru/errors": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"

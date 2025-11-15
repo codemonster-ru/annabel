@@ -4,6 +4,7 @@ namespace Codemonster\Annabel\Http;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Errors\Contracts\ExceptionHandlerInterface;
+use Codemonster\Router\Route;
 use Codemonster\Router\Router;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
@@ -71,13 +72,13 @@ class Kernel
 
     protected function dispatch(Request $request): mixed
     {
-        $result = $this->router->dispatch($request->method(), $request->uri());
+        $route = $this->router->dispatch($request->method(), $request->uri());
 
-        if ($result === null) {
+        if (!$route) {
             return $this->handleHttpError(404, 'Page not found');
         }
 
-        return $result;
+        return $this->runRoute($route, $request);
     }
 
     protected function handleHttpError(int $status, string $message = ''): Response
@@ -134,5 +135,40 @@ class Kernel
     public function getRouter(): Router
     {
         return $this->router;
+    }
+
+    protected function runRoute(Route $route, Request $request): mixed
+    {
+        $handler = $route->handler;
+        $middlewareList = $route->getMiddleware();
+
+        $kernel = $this;
+
+        $core = function (Request $req) use ($handler, $kernel) {
+
+            if (is_array($handler)) {
+                [$class, $method] = $handler;
+
+                $controller = $kernel->app->make($class);
+
+                return $controller->$method($req);
+            }
+
+            return $handler($req);
+        };
+
+        $pipeline = array_reduce(
+            array_reverse($middlewareList),
+            function ($next, $middlewareClass) use ($kernel) {
+                return function (Request $req) use ($middlewareClass, $next, $kernel) {
+                    $middleware = $kernel->app->make($middlewareClass);
+
+                    return $middleware->handle($req, $next);
+                };
+            },
+            $core
+        );
+
+        return $pipeline($request);
     }
 }

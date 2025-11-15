@@ -2,6 +2,28 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.8.0] - 2025-11-16
+
+### Changed
+
+-   The HTTP Kernel has been redesigned to integrate with the updated Router architecture (match-only).
+-   The Kernel is now fully responsible for executing controllers, building the middleware pipeline, and generating Responses.
+-   The handler invocation logic has been moved from the Router and Dispatcher to the Kernel.
+-   Improved error handling: The Kernel now correctly passes exceptions to the ExceptionHandler, even if they occur within middleware or a controller.
+-   The structure of the `dispatch()` method has been optimized; it now works only with Routes and delegates execution to `runRoute()`.
+
+### Added
+
+-   The `runRoute()` method has been added—a single point of execution for controllers and middleware.
+-   Support for the Annabel DI container when creating controllers and middleware.
+-   Support for route-middleware at the Route object level.
+
+### Fixed
+
+-   Fixed an issue where Router would return the result of executing handler instead of Route, which would break the Kernel architecture.
+-   Fixed the middleware execution order (it now correctly wraps the controller, as in Laravel).
+-   Fixed bugs related to empty Response and rendering errors when there was no content.
+
 ## [1.7.0] - 2025-11-10
 
 ### Added

@@ -115,7 +115,12 @@ class Bootstrapper
 
             set_exception_handler(function (\Throwable $e) use ($handler) {
                 $response = $handler->handle($e);
-                echo (string) $response->getBody();
+
+                if ($response instanceof \Codemonster\Http\Response) {
+                    $response->send();
+                } else {
+                    echo (string)$response;
+                }
             });
         } catch (\Throwable $e) {
             $message = "Fatal: " . $e->getMessage() . PHP_EOL;

@@ -3,7 +3,6 @@
 namespace Codemonster\Xen\Modules\Core;
 
 use Codemonster\Annabel\Providers\ServiceProvider;
-use Codemonster\Router\Router;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -21,12 +20,6 @@ class ModuleServiceProvider extends ServiceProvider
         }
 
         self::$booted = true;
-
-        if (app()->has(Router::class)) {
-            router()->setControllerFactory(static function (string $class) {
-                return app()->make($class);
-            });
-        }
 
         $manager = app()->make(ModuleManager::class);
         $manager->bootAll();

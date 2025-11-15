@@ -9,11 +9,14 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
 {
     public function register(): void
     {
-        $this->app()->singleton('session', fn() => Session::store());
+        $store = Session::store();
+
+        $this->app()->singleton('session', fn() => $store);
     }
 
     public function boot(): void
     {
-        Session::start('file');
+        $store = $this->app()->make('session');
+        $store->start();
     }
 }

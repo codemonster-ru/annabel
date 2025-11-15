@@ -159,11 +159,15 @@ class Kernel
 
         $pipeline = array_reduce(
             array_reverse($middlewareList),
-            function ($next, $middlewareClass) use ($kernel) {
-                return function (Request $req) use ($middlewareClass, $next, $kernel) {
-                    $middleware = $kernel->app->make($middlewareClass);
+            function ($next, $middleware) use ($kernel) {
 
-                    return $middleware->handle($req, $next);
+                return function (Request $req) use ($middleware, $next, $kernel) {
+                    $class = $middleware[0];
+                    $role = $middleware[1] ?? null;
+
+                    $instance = $kernel->app->make($class);
+
+                    return $instance->handle($req, $next, $role);
                 };
             },
             $core

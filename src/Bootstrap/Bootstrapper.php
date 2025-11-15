@@ -19,11 +19,22 @@ class Bootstrapper
 
     public function run(?View $customView = null): void
     {
+        $this->loadEnv();
         $this->registerHelpers();
         $this->registerProviders();
         $this->initErrorHandler();
         $this->initView($customView);
         $this->initKernel();
+    }
+
+    protected function loadEnv(): void
+    {
+        $basePath = $this->app->getBasePath();
+        $envFile = $basePath . '/.env';
+
+        if (is_file($envFile)) {
+            \Codemonster\Env\Env::load($envFile);
+        }
     }
 
     protected function registerHelpers(): void

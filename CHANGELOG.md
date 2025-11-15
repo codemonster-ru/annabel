@@ -2,6 +2,30 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.10.0] - 2025-11-16
+
+### Added
+
+-   Support for parameterized route middleware in `Kernel::runRoute()`.  
+    Middleware can now receive additional arguments (e.g. role names).
+
+### Changed
+
+-   Middleware pipeline logic updated to match the new structure from
+    `codemonster-ru/router`, where middleware items are stored as arrays:
+    `[MiddlewareClass, argument]`.
+
+### Fixed
+
+-   Resolved "Argument #1 must be of type string, array given"
+    when executing middleware with parameters.
+-   Ensured consistent instantiation and execution of middleware classes.
+
+### Improvements
+
+-   Cleaner and more explicit middleware invocation.
+-   Better compatibility between Annabel and Xen framework modules.
+
 ## [1.9.1] - 2025-11-16
 
 ### Fixed

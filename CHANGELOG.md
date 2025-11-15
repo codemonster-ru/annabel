@@ -2,6 +2,24 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.9.0] - 2025-11-16
+
+### Added
+
+-   Added automatic loading of the .env file via the codemonster-ru/env package during the bootstrap phase.
+-   Support for application configuration via environment variables (APP_DEBUG, etc.).
+-   All Annabel services, as well as the codemonster-ru/errors, codemonster-ru/view, and codemonster-ru/xen packages, can now correctly use env().
+
+### Changed
+
+-   The Bootstrapper::run() method has been updated: loading of .env now occurs before ErrorHandler initialization, ensuring correct debug mode detection.
+-   Improved integration with codemonster-ru/errors: detailed debug pages are now automatically enabled when APP_DEBUG=true.
+
+### Fixed
+
+-   Fixed an issue where `APP_DEBUG=true` was ignored, and the generic error page was always displayed.
+-   Fixed cases where ExceptionHandler would not work correctly due to missing env variables.
+
 ## [1.8.1] - 2025-11-16
 
 ### Fixed

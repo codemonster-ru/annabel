@@ -2,6 +2,18 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.9.1] - 2025-11-16
+
+### Fixed
+
+-   Fixed incorrect behavior of the SessionServiceProvider, which caused multiple Store instances to be created, leading to session data loss.
+-   Fixed an issue where sessions were not persisted between requests (due to an update to the `codemonster-ru/session` package).
+-   `session()` now always returns a single Store, and `boot()` correctly starts the session via `$store->start()`.
+
+### Changed
+
+-   Session initialization logic in Annabel has been aligned with the new architecture of the `codemonster-ru/session` package.
+
 ## [1.9.0] - 2025-11-16
 
 ### Added

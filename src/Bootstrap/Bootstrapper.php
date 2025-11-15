@@ -106,8 +106,6 @@ class Bootstrapper
 
     protected function initErrorHandler(): void
     {
-        // Avoid installing a global exception handler in CLI/DBG modes
-        // to prevent PHPUnit from flagging tests as risky.
         if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
             return;
         }

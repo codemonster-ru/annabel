@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] – 2025-10-19
+
+### Changed
+
+-   Simplified `ModuleServiceProvider`: removed router controller factory binding, as this is now handled by Annabel core.
+
 ## [0.2.0] – 2025-10-19
 
 ### Added

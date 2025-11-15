@@ -2,6 +2,13 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.8.1] - 2025-11-16
+
+### Fixed
+
+-   Fixed an issue with exception handling in Bootstrapper: Errors are now output using `Response::send()` instead of a direct `echo` call, preventing errors like "Call to undefined method Response::getBody()" and correctly sending response headers and status.
+-   Fixed the behavior of the global exception handler—it is now fully compatible with the `codemonster-ru/errors` package and the new error handling architecture.
+
 ## [1.8.0] - 2025-11-16
 
 ### Changed

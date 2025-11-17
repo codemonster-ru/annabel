@@ -5,6 +5,7 @@
 ### Changed
 
 -   Simplified `ModuleServiceProvider`: removed router controller factory binding, as this is now handled by Annabel core.
+-   AuthMiddleware now receives an explicit access context `'admin'` when applied to the Admin route.
 
 ## [0.2.0] – 2025-10-19
 

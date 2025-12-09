@@ -50,6 +50,7 @@ class Bootstrapper
     {
         $defaultProviders = [
             \Codemonster\Annabel\Providers\CoreServiceProvider::class,
+            \Codemonster\Annabel\Providers\DatabaseServiceProvider::class,
             \Codemonster\Annabel\Providers\ViewServiceProvider::class,
             \Codemonster\Annabel\Providers\SessionServiceProvider::class,
         ];

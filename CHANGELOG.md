@@ -2,6 +2,46 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.11.0] – 2025-12-09
+
+### Added
+
+-   **First-class database integration** with the `codemonster-ru/database` package:
+
+    -   Added `DatabaseServiceProvider` with proper container bindings for:
+        -   `DatabaseManager`
+        -   automatic connection resolution
+        -   runtime grammar selection (MySQL, SQLite, extensible structure)
+    -   Added container binding for the Schema builder (`Schema`), enabling use of:
+        -   `schema()->create()`
+        -   `schema()->table()`
+        -   `schema()->drop()`
+    -   Automatic loading of DB configuration via `config('database')`.
+
+-   **Support for global helpers from codemonster-ru/support**, including:
+    -   `db()` — returns the current database connection
+    -   `schema()` — returns schema builder for the selected connection
+    -   `transaction()` — executes code inside a DB transaction
+
+### Changed
+
+-   `Bootstrapper` updated to load the new `DatabaseServiceProvider`
+    before view and session providers for correct dependency ordering.
+-   Standardized provider boot order for proper initialization of config,
+    database, view, session, and router layers.
+
+### Fixed
+
+-   Eliminated errors caused by instantiating schema grammars directly from Annabel.
+-   Corrected container resolution of database-related classes when running without Annabel (standalone mode).
+-   Improved stability of the application container when resolving database singletons.
+
+### Improvements
+
+-   Cleaner dependency injection for all DB components.
+-   Better separation between Annabel core and database layer (no hard dependency on MySqlGrammar inside the framework).
+-   Improved developer experience for Xen and other Annabel-based modules using database operations.
+
 ## [1.10.0] - 2025-11-16
 
 ### Added

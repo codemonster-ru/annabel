@@ -37,24 +37,75 @@ return $app;
 router()->get('/', fn() => view('home', ['title' => 'Welcome to Annabel']));
 ```
 
+## 🗄 Database Integration
+
+Annabel ships with first‑class integration for  
+[`codemonster-ru/database`](https://github.com/codemonster-ru/database).
+
+### 1. Create `config/database.php`
+
+```php
+return [
+    'default' => 'mysql',
+
+    'connections' => [
+        'mysql' => [
+            'driver'   => 'mysql',
+            'host'     => '127.0.0.1',
+            'port'     => 3306,
+            'database' => env('DB_NAME'),
+            'username' => env('DB_USER'),
+            'password' => env('DB_PASS'),
+            'charset'  => 'utf8mb4',
+        ],
+
+        'sqlite' => [
+            'driver'   => 'sqlite',
+            'database' => base_path('database/database.sqlite'),
+        ],
+    ],
+];
+```
+
+### 2. Usage
+
+```php
+// Query builder
+$users = db()->table('users')->where('active', 1)->get();
+
+// Schema builder
+schema()->create('posts', function ($table) {
+    $table->id();
+    $table->string('title');
+});
+
+// Transactions
+transaction(function () {
+    db()->table('logs')->insert(['type' => 'created']);
+});
+```
+
 ## 🧩 Helpers
 
-| Function                | Description                          |
-| ----------------------- | ------------------------------------ |
-| `app()`                 | Access the application container     |
-| `base_path()`           | Resolve base project paths           |
-| `config()`              | Get or set configuration values      |
-| `dump()` / `dd()`       | Debugging utilities                  |
-| `env()`                 | Read environment variables           |
-| `request()`             | Get current HTTP request             |
-| `response()`/ `json()`  | Create HTTP response                 |
-| `router()` / `route()`  | Access router instance               |
-| `session()`/ `render()` | Read, write, or access session store |
-| `view()`                | Render or return view instance       |
+| Function                | Description                        |
+| ----------------------- | ---------------------------------- |
+| `app()`                 | Access the application container   |
+| `base_path()`           | Resolve base project paths         |
+| `config()`              | Get or set configuration values    |
+| `env()`                 | Read environment variables         |
+| `dump()` / `dd()`       | Debugging utilities                |
+| `request()`             | Get current HTTP request           |
+| `response()` / `json()` | Create HTTP response               |
+| `router()` / `route()`  | Access router instance             |
+| `view()`                | Render or return view instance     |
+| `session()`             | Access session store               |
+| `db()`                  | Get the active database connection |
+| `schema()`              | Get the schema builder             |
+| `transaction()`         | Execute a DB transaction           |
+
+All helpers are autoloaded automatically.
 
 ## 🧪 Testing
-
-You can run tests with the command:
 
 ```bash
 composer test

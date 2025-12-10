@@ -2,11 +2,14 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [Unreleased]
+## [1.12.0]
 
 ### Added
 
 -   New `annabel` CLI entry point (`php vendor/bin/annabel`) with built-in help output inspired by Laravel's artisan, including colorized terminal formatting.
+-   Added initial CLI commands: `about`, `route:list`, `config:get`, `container:list`, and `serve`.
+-   When `codemonster-ru/database` is installed, Annabel CLI now auto-loads database commands (`make:migration`, `migrate`, `migrate:rollback`, `migrate:status`) via the package's CLI kernel.
+-   Database CLI integration is now lazy: migration repository/connection initialize only when commands run, so commands are visible even without an active DB connection.
 
 ## [1.11.0] – 2025-12-09
 

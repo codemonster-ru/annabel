@@ -7,13 +7,13 @@
 
 Elegant and lightweight PHP framework for modern web applications.
 
-## 📦 Installation
+## Installation
 
 ```bash
 composer require codemonster-ru/annabel
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```php
 // public/index.php
@@ -37,7 +37,17 @@ return $app;
 router()->get('/', fn() => view('home', ['title' => 'Welcome to Annabel']));
 ```
 
-## 🗄 Database Integration
+## CLI
+
+Annabel ships with a lightweight CLI similar to Laravel's `artisan`. For now it provides helpful usage information and a command list.
+
+```bash
+php vendor/bin/annabel
+php vendor/bin/annabel help
+php vendor/bin/annabel help list
+```
+
+## Database Integration
 
 Annabel ships with first‑class integration for  
 [`codemonster-ru/database`](https://github.com/codemonster-ru/database).
@@ -85,7 +95,7 @@ transaction(function () {
 });
 ```
 
-## 🧩 Helpers
+## Helpers
 
 | Function                | Description                        |
 | ----------------------- | ---------------------------------- |
@@ -105,16 +115,16 @@ transaction(function () {
 
 All helpers are autoloaded automatically.
 
-## 🧪 Testing
+## Testing
 
 ```bash
 composer test
 ```
 
-## 👨‍💻 Author
+## Author
 
 [**Kirill Kolesnikov**](https://github.com/KolesnikovKirill)
 
-## 📜 License
+## License
 
 [MIT](https://github.com/codemonster-ru/annabel/blob/main/LICENSE)

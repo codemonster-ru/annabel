@@ -21,6 +21,9 @@
             "role": "Lead Developer"
         }
     ],
+    "bin": [
+        "bin/annabel"
+    ],
     "scripts": {
         "test": "phpunit --colors=always --testdox"
     },

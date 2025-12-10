@@ -120,4 +120,24 @@ class Container
 
         return $callable(...$args);
     }
+
+    /**
+     * Expose registered bindings for diagnostic/CLI purposes.
+     *
+     * @return array<string, array{concrete: Closure|string, singleton: bool}>
+     */
+    public function getBindings(): array
+    {
+        return $this->bindings;
+    }
+
+    /**
+     * Expose instantiated singletons for diagnostic/CLI purposes.
+     *
+     * @return array<string, object>
+     */
+    public function getInstances(): array
+    {
+        return $this->instances;
+    }
 }

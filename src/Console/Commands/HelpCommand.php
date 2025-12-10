@@ -61,13 +61,22 @@ class HelpCommand extends Command
         $console->writeln('');
         $console->writeln($console->color('Available commands:', 'label'));
 
-        foreach ($console->getCommands() as $command) {
+        $commands = $console->getCommands();
+        $maxLength = 0;
+
+        foreach ($commands as $cmd) {
+            $maxLength = max($maxLength, strlen($cmd->getName()));
+        }
+
+        $maxLength = max($maxLength, 12);
+
+        foreach ($commands as $command) {
             $aliases = $console->getAliasesFor($command->getName());
             $aliasText = $aliases ? ' [' . implode(', ', $aliases) . ']' : '';
 
             $console->writeln(sprintf(
                 '  %s  %s%s',
-                $console->color(str_pad($command->getName(), 12), 'command'),
+                $console->color(str_pad($command->getName(), $maxLength), 'command'),
                 $command->getDescription(),
                 $aliasText ? ' ' . $console->color($aliasText, 'muted') : ''
             ));

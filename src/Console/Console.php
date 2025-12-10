@@ -2,7 +2,15 @@
 
 namespace Codemonster\Annabel\Console;
 
+use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Console\Commands\AboutCommand;
+use Codemonster\Annabel\Console\Commands\ConfigGetCommand;
+use Codemonster\Annabel\Console\Commands\ContainerListCommand;
 use Codemonster\Annabel\Console\Commands\HelpCommand;
+use Codemonster\Annabel\Console\Commands\RouteListCommand;
+use Codemonster\Annabel\Console\Commands\ServeCommand;
+use Codemonster\Annabel\Console\Commands\DatabaseCommand;
+use Codemonster\Database\CLI\DatabaseCLIKernel;
 
 class Console
 {
@@ -10,6 +18,8 @@ class Console
     protected array $aliases = [];
     protected string $defaultCommand = 'list';
     protected bool $colorsEnabled = true;
+    protected ?Application $app = null;
+    protected bool $databaseCommandsLoaded = false;
 
     /**
      * ANSI color codes for styling CLI output.
@@ -26,6 +36,11 @@ class Console
     {
         $this->colorsEnabled = $this->detectColorSupport();
         $this->register(new HelpCommand());
+        $this->register(new AboutCommand());
+        $this->register(new RouteListCommand());
+        $this->register(new ConfigGetCommand());
+        $this->register(new ContainerListCommand());
+        $this->register(new ServeCommand());
     }
 
     public function register(Command $command): void
@@ -33,6 +48,7 @@ class Console
         $name = $command->getName();
 
         $command->setConsole($this);
+
         $this->commands[$name] = $command;
 
         foreach ($command->getAliases() as $alias) {
@@ -48,6 +64,8 @@ class Console
             $commandName = 'help';
         }
 
+        $this->ensureDatabaseCommandsRegistered();
+
         $command = $this->find($commandName);
 
         if (!$command) {
@@ -61,8 +79,36 @@ class Console
         return $command->handle(array_slice($argv, 2));
     }
 
+    public function getApplication(): Application
+    {
+        if ($this->app) {
+            return $this->app;
+        }
+
+        try {
+            return $this->app = Application::getInstance();
+        } catch (\Throwable) {
+            // Continue to attempt to bootstrap manually.
+        }
+
+        $basePath = getcwd() ?: dirname(__DIR__, 2);
+        $bootstrapFile = $basePath . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'app.php';
+
+        if (is_file($bootstrapFile)) {
+            $app = require $bootstrapFile;
+
+            if ($app instanceof Application) {
+                return $this->app = $app;
+            }
+        }
+
+        return $this->app = new Application($basePath);
+    }
+
     public function find(string $name): ?Command
     {
+        $this->ensureDatabaseCommandsRegistered();
+
         if (isset($this->commands[$name])) {
             return $this->commands[$name];
         }
@@ -81,7 +127,10 @@ class Console
      */
     public function getCommands(): array
     {
+        $this->ensureDatabaseCommandsRegistered();
+
         $commands = $this->commands;
+
         ksort($commands);
 
         return $commands;
@@ -147,6 +196,31 @@ class Console
         }
 
         return stream_isatty(\STDOUT);
+    }
+
+    protected function ensureDatabaseCommandsRegistered(): void
+    {
+        if ($this->databaseCommandsLoaded) {
+            return;
+        }
+
+        $this->databaseCommandsLoaded = true;
+
+        if (!class_exists(DatabaseCLIKernel::class)) {
+            return;
+        }
+
+        try {
+            /** @var DatabaseCLIKernel $dbKernel */
+            $dbKernel = $this->getApplication()->make(DatabaseCLIKernel::class);
+            $registry = $dbKernel->getRegistry();
+
+            foreach ($registry->all() as $cmd) {
+                $this->register(new DatabaseCommand($cmd->signature(), $cmd->description()));
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore registration failures to keep CLI functional without DB config.
+        }
     }
 
     protected function showDefaultHelp(): void

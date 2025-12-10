@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+$autoloaders = [
+    __DIR__ . '/../vendor/autoload.php',        // Package root (development)
+    __DIR__ . '/../../../autoload.php',         // Composer vendor/bin symlink
+];
+
+$autoloadLoaded = false;
+
+foreach ($autoloaders as $autoload) {
+    if (file_exists($autoload)) {
+        require $autoload;
+        $autoloadLoaded = true;
+        break;
+    }
+}
+
+if (!$autoloadLoaded) {
+    fwrite(\STDERR, "Unable to locate Composer autoload file.\n");
+    exit(1);
+}
+
+$console = new \Codemonster\Annabel\Console\Console();
+
+exit($console->run($argv));

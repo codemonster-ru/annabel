@@ -2,6 +2,12 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+-   New `annabel` CLI entry point (`php vendor/bin/annabel`) with built-in help output inspired by Laravel's artisan, including colorized terminal formatting.
+
 ## [1.11.0] – 2025-12-09
 
 ### Added

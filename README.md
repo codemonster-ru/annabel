@@ -41,12 +41,12 @@ router()->get('/', fn() => view('home', ['title' => 'Welcome to Annabel']));
 
 Annabel ships with a lightweight CLI similar to Laravel's `artisan`. It already supports:
 
-- `about` — show version, base path, and loaded providers
-- `route:list` — list registered routes
-- `config:get key` — read a config value
-- `container:list` — show container bindings/instances
-- `serve` — run PHP built-in server (default 127.0.0.1:8000)
-- With `codemonster-ru/database` installed: `make:migration`, `migrate`, `migrate:rollback`, `migrate:status` (appear in `annabel list`; connection is checked when commands run)
+-   `about` - show version, base path, and loaded providers
+-   `route:list` - list registered routes
+-   `config:get key` - read a config value
+-   `container:list` - show container bindings/instances
+-   `serve` - run PHP built-in server (default 127.0.0.1:8000)
+-   With `codemonster-ru/database` installed: `make:migration`, `migrate`, `migrate:rollback`, `migrate:status`, `make:seed`, `seed` (appear in `annabel list`; connection is checked when commands run)
 
 ```bash
 php vendor/bin/annabel
@@ -56,7 +56,7 @@ php vendor/bin/annabel help list
 
 ## Database Integration
 
-Annabel ships with first‑class integration for  
+Annabel ships with first-class integration for  
 [`codemonster-ru/database`](https://github.com/codemonster-ru/database).
 
 ### 1. Create `config/database.php`

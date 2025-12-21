@@ -2,7 +2,19 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [1.12.0]
+## [1.13.0] - 2025-12-22
+
+### Added
+
+-   Added support for database CLI seed commands (`make:seed`, `seed`) when `codemonster-ru/database` is installed.
+-   Added support for database maintenance commands (`db:wipe`, `db:truncate`) in the Annabel CLI.
+-   Added console tests to verify registered commands and aliases.
+
+### Changed
+
+-   Updated README with the latest database CLI commands.
+
+## [1.12.0] - 2025-12-10
 
 ### Added
 

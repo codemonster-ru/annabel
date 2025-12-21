@@ -32,6 +32,67 @@ class ConsoleTest extends TestCase
         $this->assertStringContainsString('list', $output);
     }
 
+    public function test_registered_commands_include_database_commands(): void
+    {
+        $console = new Console();
+        $commandNames = array_keys($console->getCommands());
+        $expected = [
+            'list',
+            'about',
+            'route:list',
+            'config:get',
+            'container:list',
+            'serve',
+            'make:migration',
+            'migrate',
+            'migrate:rollback',
+            'migrate:status',
+            'make:seed',
+            'seed',
+            'db:wipe',
+            'db:truncate',
+        ];
+
+        foreach ($expected as $name) {
+            $this->assertContains($name, $commandNames, "Missing command [{$name}].");
+        }
+    }
+
+    public function test_registered_commands_match_expected_list(): void
+    {
+        $console = new Console();
+        $commandNames = array_keys($console->getCommands());
+        $expected = [
+            'list',
+            'about',
+            'route:list',
+            'config:get',
+            'container:list',
+            'serve',
+            'make:migration',
+            'migrate',
+            'migrate:rollback',
+            'migrate:status',
+            'make:seed',
+            'seed',
+            'db:wipe',
+            'db:truncate',
+        ];
+
+        sort($commandNames);
+        sort($expected);
+
+        $this->assertSame($expected, $commandNames);
+    }
+
+    public function test_command_aliases_are_registered(): void
+    {
+        $console = new Console();
+
+        $this->assertSame(['help'], $console->getAliasesFor('list'));
+        $this->assertSame([], $console->getAliasesFor('about'));
+    }
+
     private function captureOutput(callable $callback): string
     {
         ob_start();

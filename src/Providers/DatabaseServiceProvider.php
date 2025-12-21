@@ -9,8 +9,10 @@ use Codemonster\Annabel\Database\LazyMigrationRepository;
 use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Migrations\MigrationPathResolver;
+use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
 use Codemonster\Database\CLI\DatabaseCLIKernel;
+use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
 {
@@ -63,6 +65,27 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             return new LazyMigrationRepository($connection, $table);
         });
 
+        $this->app->singleton(SeedPathResolver::class, function () {
+            $resolver = new SeedPathResolver();
+            $paths = config('database.seeds.paths') ?? null;
+
+            if (is_string($paths)) {
+                $paths = [$paths];
+            }
+
+            if (is_array($paths)) {
+                foreach ($paths as $path) {
+                    $resolver->addPath($path);
+                }
+            }
+
+            if (empty($resolver->getPaths())) {
+                $resolver->addPath(base_path('database/seeds'));
+            }
+
+            return $resolver;
+        });
+
         $this->app->singleton(Migrator::class, function ($app) {
             $repository = $app->make(MigrationRepository::class);
             $connection = $app->make(ConnectionInterface::class);
@@ -74,8 +97,9 @@ class DatabaseServiceProvider implements ServiceProviderInterface
         $this->app->singleton(DatabaseCLIKernel::class, function ($app) {
             $connection = $app->make(ConnectionInterface::class);
             $paths = $app->make(MigrationPathResolver::class);
+            $seedPaths = $app->make(SeedPathResolver::class);
 
-            return new ConsoleDatabaseCLIKernel($connection, $paths);
+            return new ConsoleDatabaseCLIKernel($connection, $paths, $seedPaths);
         });
     }
 

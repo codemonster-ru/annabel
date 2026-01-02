@@ -5,7 +5,7 @@ use Codemonster\Annabel\Application;
 if (!function_exists('app')) {
     function app(?string $abstract = null, array $parameters = []): mixed
     {
-        if (!class_exists(Application::class) || !Application::getInstance()) {
+        if (!class_exists(Application::class) || !Application::isInitialized()) {
             throw new RuntimeException('Application is not initialized.');
         }
 
@@ -15,6 +15,6 @@ if (!function_exists('app')) {
             return $app;
         }
 
-        return $app->getContainer()->make($abstract, ...$parameters);
+        return $app->getContainer()->make($abstract, $parameters);
     }
 }

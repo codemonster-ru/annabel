@@ -32,6 +32,35 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Foo::class, $foo);
         $this->assertInstanceOf(Bar::class, $foo->bar);
     }
+
+    public function test_make_accepts_parameters_for_constructor()
+    {
+        $c = new Container();
+
+        $subject = $c->make(ParamSubject::class, ['name' => 'annabel']);
+
+        $this->assertSame('annabel', $subject->name);
+    }
+
+    public function test_make_passes_parameters_to_closure_binding()
+    {
+        $c = new Container();
+        $c->bind(ParamSubject::class, fn($container, array $params) => new ParamSubject($params['name']));
+
+        $subject = $c->make(ParamSubject::class, ['name' => 'annabel']);
+
+        $this->assertSame('annabel', $subject->name);
+    }
+
+    public function test_singleton_throws_when_parameters_change_after_resolution()
+    {
+        $c = new Container();
+        $c->singleton(ParamSubject::class, fn($container, array $params) => new ParamSubject($params['name']));
+        $c->make(ParamSubject::class, ['name' => 'first']);
+
+        $this->expectException(RuntimeException::class);
+        $c->make(ParamSubject::class, ['name' => 'second']);
+    }
 }
 
 class Foo
@@ -40,3 +69,9 @@ class Foo
 }
 
 class Bar {}
+
+
+class ParamSubject
+{
+    public function __construct(public string $name) {}
+}

@@ -95,15 +95,66 @@ class Bootstrapper
     {
         $contents = file_get_contents($file);
 
-        if (!preg_match('/namespace\s+([^;]+);/i', $contents, $nsMatch)) {
+        if ($contents === false) {
             return null;
         }
 
-        if (!preg_match('/class\s+([a-zA-Z0-9_]+)/i', $contents, $classMatch)) {
+        $tokens = token_get_all($contents);
+        $namespace = '';
+        $classes = [];
+
+        for ($i = 0, $count = count($tokens); $i < $count; $i++) {
+            $token = $tokens[$i];
+
+            if (!is_array($token)) {
+                continue;
+            }
+
+            if ($token[0] === T_NAMESPACE) {
+                $namespace = '';
+
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $part = $tokens[$j];
+
+                    if (is_array($part) && ($part[0] === T_STRING || $part[0] === T_NAME_QUALIFIED)) {
+                        $namespace .= $part[1];
+                    } elseif (is_array($part) && $part[0] === T_NS_SEPARATOR) {
+                        $namespace .= '\\';
+                    } elseif ($part === ';' || $part === '{') {
+                        break;
+                    }
+                }
+            }
+
+            if ($token[0] === T_CLASS) {
+                $prev = $tokens[$i - 1] ?? null;
+
+                if (is_array($prev) && $prev[0] === T_NEW) {
+                    continue;
+                }
+
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $part = $tokens[$j];
+
+                    if (is_array($part) && $part[0] === T_STRING) {
+                        $classes[] = $part[1];
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ($classes === []) {
             return null;
         }
 
-        return trim($nsMatch[1]) . '\\' . trim($classMatch[1]);
+        if (count($classes) > 1) {
+            throw new \RuntimeException("Multiple classes found in provider file [$file].");
+        }
+
+        $class = $classes[0];
+
+        return $namespace !== '' ? $namespace . '\\' . $class : $class;
     }
 
     protected function initView(?View $customView = null): void

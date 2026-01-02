@@ -25,13 +25,7 @@ class CoreServiceProvider implements ServiceProviderInterface
     {
         $basePath = $this->app->getBasePath();
 
-        $this->app->singleton(Env::class, function () use ($basePath) {
-            $envPath = "{$basePath}/.env";
-
-            if (file_exists($envPath)) {
-                Env::load($envPath);
-            }
-
+        $this->app->singleton(Env::class, function () {
             return new Env();
         });
 

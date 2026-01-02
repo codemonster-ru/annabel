@@ -22,6 +22,12 @@ class Application
 
     public function __construct(?string $basePath = null, ?View $view = null, bool $autoBootstrap = true)
     {
+        if (self::$instance !== null) {
+            throw new \RuntimeException(
+                'Application instance is already initialized. Call Application::resetInstance() to re-initialize.'
+            );
+        }
+
         $this->basePath = $basePath ?? dirname(__DIR__);
         $this->container = new Container();
 
@@ -63,6 +69,21 @@ class Application
         }
 
         return self::$instance;
+    }
+
+    public static function setInstance(Application $app): void
+    {
+        self::$instance = $app;
+    }
+
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
+    }
+
+    public static function isInitialized(): bool
+    {
+        return self::$instance !== null;
     }
 
     public function getBasePath(): string
@@ -134,16 +155,28 @@ class Application
 
     public function get(string $path, callable|array $handler): void
     {
+        if (!$this->booted) {
+            $this->bootstrap();
+        }
+
         $this->getKernel()->getRouter()->get($path, $handler);
     }
 
     public function post(string $path, callable|array $handler): void
     {
+        if (!$this->booted) {
+            $this->bootstrap();
+        }
+
         $this->getKernel()->getRouter()->post($path, $handler);
     }
 
     public function any(string $path, callable|array $handler): void
     {
+        if (!$this->booted) {
+            $this->bootstrap();
+        }
+
         $this->getKernel()->getRouter()->any($path, $handler);
     }
 
@@ -170,9 +203,9 @@ class Application
         $this->container->singleton($abstract, $concrete);
     }
 
-    public function make(string $abstract): mixed
+    public function make(string $abstract, array $parameters = []): mixed
     {
-        return $this->container->make($abstract);
+        return $this->container->make($abstract, $parameters);
     }
 
     public function has(string $abstract): bool

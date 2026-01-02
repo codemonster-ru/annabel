@@ -10,6 +10,8 @@ class CoreServiceProviderTest extends TestCase
 {
     public function test_core_services_are_bound()
     {
+        Application::resetInstance();
+
         $app = new Application(__DIR__ . '/../../');
         $c = $app->getContainer();
 

@@ -37,9 +37,15 @@ class Container
         return isset($this->instances[$abstract]) || isset($this->bindings[$abstract]);
     }
 
-    public function make(string $abstract): mixed
+    public function make(string $abstract, array $parameters = []): mixed
     {
         if (isset($this->instances[$abstract])) {
+            if ($parameters !== []) {
+                throw new \RuntimeException(
+                    "Singleton [$abstract] is already resolved; parameters are ignored."
+                );
+            }
+
             return $this->instances[$abstract];
         }
 
@@ -47,9 +53,15 @@ class Container
             $binding = $this->bindings[$abstract];
             $concrete = $binding['concrete'];
 
-            $object = $concrete instanceof Closure
-                ? $concrete($this)
-                : $this->build($concrete);
+            if ($concrete instanceof Closure) {
+                $reflection = new ReflectionFunction($concrete);
+                $paramCount = $reflection->getNumberOfParameters();
+                $object = $paramCount >= 2
+                    ? $concrete($this, $parameters)
+                    : $concrete($this);
+            } else {
+                $object = $this->build($concrete, $parameters);
+            }
 
             if ($binding['singleton']) {
                 $this->instances[$abstract] = $object;
@@ -58,10 +70,10 @@ class Container
             return $object;
         }
 
-        return $this->build($abstract);
+        return $this->build($abstract, $parameters);
     }
 
-    public function build(string $class): object
+    public function build(string $class, array $parameters = []): object
     {
         try {
             $reflector = new ReflectionClass($class);
@@ -79,6 +91,14 @@ class Container
             $dependencies = [];
 
             foreach ($constructor->getParameters() as $param) {
+                $name = $param->getName();
+
+                if (array_key_exists($name, $parameters)) {
+                    $dependencies[] = $parameters[$name];
+
+                    continue;
+                }
+
                 $type = $param->getType();
 
                 if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {

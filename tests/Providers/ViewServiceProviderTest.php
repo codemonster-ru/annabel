@@ -8,6 +8,8 @@ class ViewServiceProviderTest extends TestCase
 {
     public function test_view_service_is_registered()
     {
+        Application::resetInstance();
+
         $app = new Application(__DIR__ . '/../../');
 
         $this->assertTrue($app->getContainer()->has(View::class));

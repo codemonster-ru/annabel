@@ -2,6 +2,24 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.14.0] - 2026-01-03
+
+### Added
+
+-   Added guard against reinitializing the Application singleton and tests for it.
+-   Added parameter support for `Application::make()` and helper tests for parameterized resolution.
+-   Added middleware validation for missing controller methods and tests for role vs group middleware.
+-   Added validation for multiple classes in custom provider files.
+
+### Changed
+
+-   Container now supports parameterized resolution for closures and throws when reusing singletons with new parameters.
+-   Middleware normalization handles role-based entries without misclassifying them as groups.
+-   Provider class resolution now uses token parsing instead of regex.
+-   Removed duplicate `.env` loading from CoreServiceProvider.
+-   Updated README with container parameter usage and Application singleton notes.
+-   Updated `codemonster-ru` dependencies: support ^1.4, errors ^1.2, view-php ^2.1, razor ^1.1.
+
 ## [1.13.0] - 2025-12-22
 
 ### Added

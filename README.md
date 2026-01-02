@@ -122,6 +122,24 @@ transaction(function () {
 
 All helpers are autoloaded automatically.
 
+## Container parameters
+
+You can pass named constructor parameters when resolving classes or closure bindings:
+
+```php
+$user = app(User::class, ['name' => 'Annabel']);
+
+app()->bind(User::class, fn($container, array $params) => new User($params['name']));
+$user = app(User::class, ['name' => 'Annabel']);
+
+// Same for Application::make()
+$user = $app->make(User::class, ['name' => 'Annabel']);
+```
+
+Note: for singleton bindings, passing parameters after the instance is resolved throws an exception.
+
+Note: `Application::serve()` will throw if an instance already exists; call `Application::resetInstance()` first.
+
 ## Testing
 
 ```bash

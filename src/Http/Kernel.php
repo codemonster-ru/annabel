@@ -140,7 +140,7 @@ class Kernel
     protected function runRoute(Route $route, Request $request): mixed
     {
         $handler = $route->handler;
-        $middlewareList = $route->getMiddleware();
+        $middlewareList = $this->normalizeMiddlewareList($route->getMiddleware());
 
         $kernel = $this;
 
@@ -150,6 +150,13 @@ class Kernel
                 [$class, $method] = $handler;
 
                 $controller = $kernel->app->make($class);
+
+                if (!is_callable([$controller, $method])) {
+                    return $kernel->handleHttpError(
+                        500,
+                        sprintf('Handler [%s@%s] not found', $class, $method)
+                    );
+                }
 
                 return $controller->$method($req);
             }
@@ -162,8 +169,12 @@ class Kernel
             function ($next, $middleware) use ($kernel) {
 
                 return function (Request $req) use ($middleware, $next, $kernel) {
-                    $class = $middleware[0];
+                    $class = $middleware[0] ?? null;
                     $role = $middleware[1] ?? null;
+
+                    if (!is_string($class)) {
+                        return $next($req);
+                    }
 
                     $instance = $kernel->app->make($class);
 
@@ -174,5 +185,80 @@ class Kernel
         );
 
         return $pipeline($request);
+    }
+
+    protected function normalizeMiddlewareList(array $middlewareList): array
+    {
+        $normalized = [];
+
+        foreach ($middlewareList as $middleware) {
+            if (is_string($middleware)) {
+                $normalized[] = [$middleware, null];
+
+                continue;
+            }
+
+            if (!is_array($middleware) || $middleware === []) {
+                $this->warnInvalidMiddleware($middleware);
+
+                continue;
+            }
+
+            if (count($middleware) == 1 && is_array($middleware[0])) {
+                $middleware = $middleware[0];
+            }
+
+            if ($this->isMiddlewareGroup($middleware)) {
+                foreach ($middleware as $item) {
+                    if (is_string($item)) {
+                        $normalized[] = [$item, null];
+                    } elseif (is_array($item) && isset($item[0])) {
+                        $normalized[] = [$item[0], $item[1] ?? null];
+                    }
+                }
+
+                continue;
+            }
+
+            $normalized[] = [$middleware[0], $middleware[1] ?? null];
+        }
+
+        return $normalized;
+    }
+
+    protected function isMiddlewareGroup(array $middleware): bool
+    {
+        $count = count($middleware);
+
+        if ($count < 2) {
+            return false;
+        }
+
+        foreach ($middleware as $item) {
+            if (!is_string($item)) {
+                return false;
+            }
+        }
+
+        if ($count > 2) {
+            return true;
+        }
+
+        $first = $middleware[0];
+        $second = $middleware[1];
+
+        return class_exists($first) && class_exists($second);
+    }
+
+    protected function warnInvalidMiddleware(mixed $middleware): void
+    {
+        if (!ini_get('display_errors')) {
+            return;
+        }
+
+        $type = gettype($middleware);
+        $detail = $type === 'array' ? json_encode($middleware) : (string) $middleware;
+
+        trigger_error("Invalid middleware definition: {$detail}", E_USER_WARNING);
     }
 }

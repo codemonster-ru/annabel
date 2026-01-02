@@ -2,6 +2,12 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.14.1] - 2026-01-03
+
+### Changed
+
+-   Explicitly pass the vendor error view path to SmartExceptionHandler.
+
 ## [1.14.0] - 2026-01-03
 
 ### Added

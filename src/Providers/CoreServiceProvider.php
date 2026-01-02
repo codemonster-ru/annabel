@@ -51,11 +51,20 @@ class CoreServiceProvider implements ServiceProviderInterface
         $this->app->bind('request', fn($c) => $c->make(Request::class));
 
         $this->app->singleton(ExceptionHandlerInterface::class, function ($app) {
-            $debug = env('APP_DEBUG', false);
+            $debug = env('APP_DEBUG', false, true);
 
             $renderer = function (string $template, array $data) {
                 $view = $this->app->getView();
-                $html = $view->render(str_replace('.', '/', $template), $data);
+
+                try {
+                    $html = $view->render(str_replace('.', '/', $template), $data);
+                } catch (\RuntimeException $e) {
+                    if (strpos($e->getMessage(), 'View not found:') === 0) {
+                        return null;
+                    }
+
+                    throw $e;
+                }
 
                 return $html;
             };

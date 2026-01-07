@@ -7,34 +7,61 @@
 **Xen** is a modern modular CMS based on the [Annabel](https://github.com/codemonster-ru/annabel) framework,
 designed for clean architecture, simple code, and extensibility through independent modules.
 
-## 📦 Installation
+## Installation
 
 ```bash
 composer require codemonster-ru/xen
 ```
 
-## ✨ Features
+## Features
 
--   📦 **Modular structure**
-    Each CMS component is a separate module (`Pages`, `Users`, `Admin`, etc.).
+-   **Modular structure**: Each CMS component is a separate module (`Pages`, `Users`, `Admin`, etc.).
+-   **Automatic module loading**: `ModuleManager` finds and boots `ModuleServiceProvider` in `app/Modules`.
+-   **Minimal bootstrap**: `bootstrap/app.php` only creates the `Application` instance.
+-   **Templates within modules**: Each module can have its own templates (`Views/`) and call `view('pages::home')`.
+-   **Annabel compatibility**: Uses core features (service providers, container, view engine, router, etc.).
 
--   ⚙️ **Automatic module loading**
-    `ModuleManager` finds and activates all `ModuleServiceProvider` in `app/Modules`.
+## Database Migrations
 
--   🧘 **Minimal bootstrap**
-    `bootstrap/app.php` only contains the creation of the `Application` instance.
+Global (project) migrations live in `database/migrations`.
+Module migrations live beside their code under `app/Modules/<Module>/database/migrations`.
 
--   🎨 **Templates within modules**
-    Each module can have its own templates (`Views/`)
-    and access them via `view('pages::home')`.
+`bootstrap/migrationPaths.php` collects migration paths, with `database/migrations` used as the default location.
 
--   🔌 **Annabel Compatibility**
-    Uses all core features: service providers, container, view engine, Router, etc.
+Run everything through the bundled wrapper:
 
-## 👨‍💻 Author
+```bash
+php bin/database migrate
+php bin/database migrate:rollback
+php bin/database make:migration CreatePostsTable
+php bin/database make:migration CreatePostsTable --module=Pages
+```
+
+The CLI reads the same `config/database.php` as the application, so the migrations table, database connections,
+and module paths stay synchronized between HTTP and console work.
+
+## Database Seeders
+
+Global (project) seeders live in `database/seeds`.
+Module seeders live beside their code under `app/Modules/<Module>/database/seeds`.
+
+```bash
+php bin/database seed
+php bin/database make:seed RolesSeeder
+php bin/database make:seed RolesSeeder --module=Auth
+```
+
+Auth module routes:
+
+- `GET /login`, `POST /login` (guest only, CSRF protected)
+- `GET /register`, `POST /register` (guest only, CSRF protected)
+- `GET /profile` (auth only)
+- `POST /logout` (auth only, CSRF protected)
+
+## Author
 
 [**Kirill Kolesnikov**](https://github.com/KolesnikovKirill)
 
-## 📜 License
+## License
 
 [MIT](https://github.com/codemonster-ru/xen/blob/main/LICENSE)

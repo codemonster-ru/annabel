@@ -20,7 +20,7 @@
 
 <body>
     <h1>🧘 Welcome to <?= htmlspecialchars($title ?? 'Xen CMS') ?></h1>
-    <p>View loaded from: <code>app/Modules/Pages/Views/home.php</code></p>
+    <p>View loaded from: <code>app/Modules/Pages/views/home.php</code></p>
 </body>
 
 </html>

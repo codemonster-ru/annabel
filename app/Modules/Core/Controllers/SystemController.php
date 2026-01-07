@@ -6,7 +6,7 @@ class SystemController
 {
     public function info(): string
     {
-        view()->addNamespace('core', __DIR__ . '/../Views');
+        view()->addNamespace('core', __DIR__ . '/../views');
 
         return view('core::system-info', [
             'site'     => config('xen.site_name', 'Xen CMS'),

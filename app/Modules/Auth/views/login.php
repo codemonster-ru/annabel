@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login</title>
+    <title>Login</title>
     <style>
         body {
             font-family: sans-serif;
@@ -35,10 +35,29 @@
 </head>
 
 <body>
-    <form method="POST" action="/admin/login">
-        <h2>🔐 Xen Admin Login</h2>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+    <?php
+    $token = session()->get('_csrf_token');
+
+    if (!is_string($token) || $token === '') {
+        $token = bin2hex(random_bytes(32));
+        session()->put('_csrf_token', $token);
+    }
+    ?>
+
+    <form method="post" action="/login">
+        <input type="hidden" name="_token" value="<?= htmlspecialchars($token) ?>">
+        <h2>Login to Xen</h2>
+
+        <?php if (!empty($error)): ?>
+            <p style="color: red"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" autocomplete="email" required><br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" autocomplete="current-password" required><br><br>
+
         <button type="submit">Login</button>
     </form>
 </body>

@@ -1,4 +1,5 @@
 .git
+.env
 vendor
 composer.local.json
 composer.local.lock

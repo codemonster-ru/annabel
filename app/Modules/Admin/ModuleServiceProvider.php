@@ -8,6 +8,6 @@ class ModuleServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        view()->addNamespace('admin', __DIR__ . '/Views');
+        view()->addNamespace('admin', __DIR__ . '/views');
     }
 }

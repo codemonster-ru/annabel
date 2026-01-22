@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0] – 2026-01-22
+
+### Changed
+
+-   ModuleManager now discovers modules by directory and supports modules without a `ModuleServiceProvider` by auto-wiring view namespaces and routes.
+-   Module listing now reports modules without providers as `(auto)`.
+
+### Removed
+
+-   Removed Admin, Auth, and Pages `ModuleServiceProvider` classes in favor of auto module wiring.
+
 ## [0.3.0] – 2026-01-07
 
 ### Added

@@ -10,27 +10,32 @@ class ModuleManager
     {
         $modulesPath = base_path('app/Modules');
 
-        foreach (glob("$modulesPath/*/ModuleServiceProvider.php") as $file) {
-            $class = $this->resolveNamespace($file);
-
-            if (!$class || !class_exists($class)) {
-                continue;
-            }
-
-            $moduleName = basename(dirname($file));
-
+        foreach (glob("$modulesPath/*", GLOB_ONLYDIR) as $moduleDir) {
+            $moduleName = basename($moduleDir);
+            
             if (in_array($moduleName, $exclude, true)) {
                 continue;
             }
 
-            $provider = new $class(app());
+            $providerFile = $moduleDir . '/ModuleServiceProvider.php';
+            $provider = null;
 
-            if ($provider instanceof ServiceProviderInterface) {
-                $provider->register();
+            if (file_exists($providerFile)) {
+                $class = $this->resolveNamespace($providerFile);
 
-                $moduleBase = dirname($file);
-                $routesPath = $moduleBase . '/routes/web.php';
+                if ($class && class_exists($class)) {
+                    $instance = new $class(app());
 
+                    if ($instance instanceof ServiceProviderInterface) {
+                        $provider = $instance;
+                        $provider->register();
+                    }
+                }
+            }
+
+            $routesPath = $moduleDir . '/routes/web.php';
+
+            if ($provider) {
                 if (file_exists($routesPath)) {
                     require_once $routesPath;
                 }
@@ -38,6 +43,18 @@ class ModuleManager
                 if (is_callable([$provider, 'boot'])) {
                     $provider->boot();
                 }
+
+                continue;
+            }
+
+            $viewsPath = $moduleDir . '/views';
+
+            if (is_dir($viewsPath)) {
+                view()->addNamespace(strtolower($moduleName), $viewsPath);
+            }
+
+            if (file_exists($routesPath)) {
+                require_once $routesPath;
             }
         }
     }
@@ -61,12 +78,16 @@ class ModuleManager
         $result = [];
         $modulesPath = app()->getBasePath() . '/app/Modules';
 
-        foreach (glob("$modulesPath/*/ModuleServiceProvider.php") as $file) {
-            $class = $this->resolveNamespace($file);
+        foreach (glob("$modulesPath/*", GLOB_ONLYDIR) as $moduleDir) {
+            $moduleName = basename($moduleDir);
+            $providerFile = $moduleDir . '/ModuleServiceProvider.php';
+            $class = null;
 
-            if ($class) {
-                $result[basename(dirname($file))] = $class;
+            if (file_exists($providerFile)) {
+                $class = $this->resolveNamespace($providerFile);
             }
+
+            $result[$moduleName] = $class ?: '(auto)';
         }
 
         return $result;

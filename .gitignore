@@ -1,8 +1,46 @@
-.idea
-.vscode
-.phpunit.result.cache
-vendor
-phpunix.xml
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Environment
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Docker
+compose.override.yaml
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Composer
+vendor/
+**/vendor/
 composer.lock
 composer.local.json
 composer.local.lock
+composer.dev.lock
+**/composer.lock
+**/composer.local.json
+**/composer.local.lock
+**/composer.dev.lock
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
+**/.phpunit.result.cache
+**/.phpunit.cache/
+phpunix.xml
+
+# Build / runtime output
+build/
+dist/
+coverage/
+storage/
+var/
+**/build/
+**/dist/
+**/coverage/
+**/storage/
+**/var/

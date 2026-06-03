@@ -1,155 +1,113 @@
 # Annabel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/annabel.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel)
-[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/annabel.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel)
-[![License](https://img.shields.io/packagist/l/codemonster-ru/annabel.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel)
-[![Tests](https://github.com/codemonster-ru/annabel/actions/workflows/tests.yml/badge.svg)](https://github.com/codemonster-ru/annabel/actions/workflows/tests.yml)
+Annabel is the official monorepo for the Codemonster PHP framework ecosystem.
 
-Elegant and lightweight PHP framework for modern web applications.
+## Structure
 
-## Installation
+```text
+packages/
+  framework/   codemonster-ru/annabel
+  support/     codemonster-ru/support
+  http/        codemonster-ru/http
+  router/      codemonster-ru/router
+  view/        codemonster-ru/view
+  view-php/    codemonster-ru/view-php
+  view-ssr/    codemonster-ru/view-ssr
+  razor/       codemonster-ru/razor
+  config/      codemonster-ru/config
+  env/         codemonster-ru/env
+  database/    codemonster-ru/database
+  session/     codemonster-ru/session
+  errors/      codemonster-ru/errors
+  security/    codemonster-ru/security
+  dumper/      codemonster-ru/dumper
+  ssr-bridge/  codemonster-ru/ssr-bridge
+
+skeleton/
+  annabel-skeleton/
+```
+
+The framework package `codemonster-ru/annabel` lives in `packages/framework`.
+
+## Development
+
+The root `composer.json` declares path repositories for `packages/*`. Package
+manifests are kept inside their package directories so they can still be
+published as independent Composer packages.
+
+## Package Splits
+
+Package repositories are updated from this monorepo by the `Split Packages`
+workflow. The workflow requires a `MONOREPO_SPLIT_TOKEN` secret with write
+access to the target repositories.
+
+All package releases use package-scoped tags in the monorepo:
 
 ```bash
-composer require codemonster-ru/annabel
+git tag framework/v1.15.0
+git push origin framework/v1.15.0
 ```
-
-## Quick Start
-
-```php
-// public/index.php
-require __DIR__ . '/../vendor/autoload.php';
-
-$app = require __DIR__ . '/../bootstrap/app.php';
-$app->run();
-
-// bootstrap/app.php
-use Codemonster\Annabel\Application;
-
-$baseDir = __DIR__ . '/..';
-
-$app = new Application($baseDir);
-
-require "$baseDir/routes/web.php";
-
-return $app;
-
-// routes/web.php
-router()->get('/', fn() => view('home', ['title' => 'Welcome to Annabel']));
-```
-
-## CLI
-
-Annabel ships with a lightweight CLI similar to Laravel's `artisan`. It already supports:
-
--   `about` - show version, base path, and loaded providers
--   `route:list` - list registered routes
--   `config:get key` - read a config value
--   `container:list` - show container bindings/instances
--   `serve` - run PHP built-in server (default 127.0.0.1:8000)
--   With `codemonster-ru/database` installed: `make:migration`, `migrate`, `migrate:rollback`, `migrate:status`, `make:seed`, `seed` (appear in `annabel list`; connection is checked when commands run)
 
 ```bash
-php vendor/bin/annabel
-php vendor/bin/annabel help
-php vendor/bin/annabel help list
+git tag support/v1.5.0
+git push origin support/v1.5.0
 ```
 
-## Database Integration
+The split workflow pushes the package contents and a normal Composer tag, such
+as `v1.5.0`, to the target package repository. The framework package target is
+`codemonster-ru/annabel-framework`; the public `codemonster-ru/annabel`
+repository remains the monorepo.
 
-Annabel ships with first-class integration for  
-[`codemonster-ru/database`](https://github.com/codemonster-ru/database).
+Split repositories are publishing mirrors and should be treated as read-only.
+Make code changes in this monorepo only. Public Packagist packages should point
+to the split repositories, including `codemonster-ru/annabel`, which should use
+the `codemonster-ru/annabel-framework` split repository as its source.
 
-### 1. Create `config/database.php`
+To update `main` branches in split repositories without releasing a version,
+run the `Split Packages` workflow manually from GitHub Actions.
 
-```php
-return [
-    'default' => 'mysql',
+## Docker
 
-    'connections' => [
-        'mysql' => [
-            'driver'   => 'mysql',
-            'host'     => '127.0.0.1',
-            'port'     => 3306,
-            'database' => env('DB_NAME'),
-            'username' => env('DB_USER'),
-            'password' => env('DB_PASS'),
-            'charset'  => 'utf8mb4',
-        ],
-
-        'sqlite' => [
-            'driver'   => 'sqlite',
-            'database' => base_path('database/database.sqlite'),
-        ],
-    ],
-];
-```
-
-### 2. Usage
-
-```php
-// Query builder
-$users = db()->table('users')->where('active', 1)->get();
-
-// Schema builder
-schema()->create('posts', function ($table) {
-    $table->id();
-    $table->string('title');
-});
-
-// Transactions
-transaction(function () {
-    db()->table('logs')->insert(['type' => 'created']);
-});
-```
-
-## Helpers
-
-| Function                | Description                        |
-| ----------------------- | ---------------------------------- |
-| `app()`                 | Access the application container   |
-| `base_path()`           | Resolve base project paths         |
-| `config()`              | Get or set configuration values    |
-| `env()`                 | Read environment variables         |
-| `dump()` / `dd()`       | Debugging utilities                |
-| `request()`             | Get current HTTP request           |
-| `response()` / `json()` | Create HTTP response               |
-| `router()` / `route()`  | Access router instance             |
-| `view()`                | Render or return view instance     |
-| `session()`             | Access session store               |
-| `db()`                  | Get the active database connection |
-| `schema()`              | Get the schema builder             |
-| `transaction()`         | Execute a DB transaction           |
-
-All helpers are autoloaded automatically.
-
-## Container parameters
-
-You can pass named constructor parameters when resolving classes or closure bindings:
-
-```php
-$user = app(User::class, ['name' => 'Annabel']);
-
-app()->bind(User::class, fn($container, array $params) => new User($params['name']));
-$user = app(User::class, ['name' => 'Annabel']);
-
-// Same for Application::make()
-$user = $app->make(User::class, ['name' => 'Annabel']);
-```
-
-Note: for singleton bindings, passing parameters after the instance is resolved throws an exception.
-
-Note: `Application::serve()` will throw if an instance already exists; call `Application::resetInstance()` first.
-
-## Testing
+Build the PHP development image:
 
 ```bash
-composer test
+docker compose build php
 ```
 
-## Author
+Start the demo application and database:
 
-[**Kirill Kolesnikov**](https://github.com/KolesnikovKirill)
+```bash
+docker compose up -d web phpmyadmin
+```
 
-## License
+The web service installs the skeleton with `skeleton/annabel-skeleton/composer.dev.json`,
+which points Composer at the local packages in this monorepo.
 
-[MIT](https://github.com/codemonster-ru/annabel/blob/main/LICENSE)
+Open the skeleton application:
+
+```text
+http://localhost:8000
+```
+
+Open phpMyAdmin for the MySQL database:
+
+```text
+http://localhost:8080
+```
+
+Default database credentials:
+
+```text
+server: db
+database: annabel
+username: annabel
+password: annabel
+```
+
+Install and test a package from inside the container:
+
+```bash
+docker compose run --rm php composer --working-dir=packages/framework config repositories.monorepo '{"type":"path","url":"../*","canonical":false,"options":{"symlink":true}}'
+docker compose run --rm php composer --working-dir=packages/framework update --prefer-dist
+docker compose run --rm php composer --working-dir=packages/framework test
+```

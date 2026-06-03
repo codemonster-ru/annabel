@@ -1,0 +1,82 @@
+#!/usr/bin/env php
+<?php
+
+// ---------------------------------------------------------------------
+//  IDE helper: do NOT execute (wrapped in if(false))
+// ---------------------------------------------------------------------
+if (false) {
+    function config(array|string $key = null, mixed $default = null): mixed
+    {
+        return null;
+    }
+}
+
+// ---------------------------------------------------------------------
+//  Bootstrap
+// ---------------------------------------------------------------------
+
+// Load the autoloader from the project where the package is installed
+require __DIR__ . '/../vendor/autoload.php';
+
+use Codemonster\Database\DatabaseManager;
+use Codemonster\Database\CLI\DatabaseCLIKernel;
+
+// ---------------------------------------------------------------------
+//  Configuration loader
+// ---------------------------------------------------------------------
+
+/**
+ * If the project uses config(),
+ * use config('database')
+ */
+if (function_exists('config') && config('database')) {
+    $databaseConfig = config('database');
+}
+
+/**
+ * Otherwise, we try to read database.php from ./config/
+ */
+elseif (is_file(getcwd() . '/config/database.php')) {
+    $databaseConfig = require getcwd() . '/config/database.php';
+}
+
+/**
+ * Otherwise — fallback: minimal mysql configuration
+ * (So that the CLI works without a framework)
+ */
+else {
+    $databaseConfig = [
+        'default' => 'mysql',
+        'connections' => [
+            'mysql' => [
+                'host'     => '127.0.0.1',
+                'port'     => 3306,
+                'database' => 'test',
+                'username' => 'root',
+                'password' => '',
+                'charset'  => 'utf8mb4',
+            ],
+        ],
+    ];
+}
+
+// ---------------------------------------------------------------------
+//  Create database connection
+// ---------------------------------------------------------------------
+
+try {
+    $manager = new DatabaseManager($databaseConfig);
+    $connection = $manager->connection();
+} catch (\Throwable $e) {
+    fwrite(STDERR, "Database connection failed: " . $e->getMessage() . "\n");
+    exit(1);
+}
+
+// ---------------------------------------------------------------------
+//  Run CLI Kernel
+// ---------------------------------------------------------------------
+
+$kernel = new DatabaseCLIKernel($connection);
+
+// Launch
+exit($kernel->handle($_SERVER['argv']));

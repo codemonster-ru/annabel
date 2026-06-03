@@ -1,0 +1,42 @@
+<?php
+
+namespace Predis;
+
+class Client
+{
+    /**
+     * @param array<string, mixed> $options
+     */
+    public function __construct(string $parameters = '', array $options = [])
+    {
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get(string $key)
+    {
+    }
+
+    /**
+     * @return string
+     */
+    public function set(string $key, string $value)
+    {
+    }
+
+    /**
+     * @return string
+     */
+    public function setex(string $key, int $seconds, string $value)
+    {
+    }
+
+    /**
+     * @param array<int, string> $keys
+     * @return int
+     */
+    public function del(array $keys)
+    {
+    }
+}

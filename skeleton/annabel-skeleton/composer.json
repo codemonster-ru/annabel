@@ -1,0 +1,35 @@
+{
+    "name": "codemonster-ru/annabel-skeleton",
+    "description": "Starter project for Annabel framework",
+    "type": "project",
+    "license": "MIT",
+    "keywords": [
+        "annabel",
+        "framework",
+        "php",
+        "starter",
+        "skeleton",
+        "codemonster"
+    ],
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/annabel": "^1.14",
+        "codemonster-ru/security": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "start": "@php -S localhost:8000 -t public"
+    }
+}

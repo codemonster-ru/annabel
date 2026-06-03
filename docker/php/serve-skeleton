@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -eu
+
+APP_DIR="/workspace/skeleton/annabel-skeleton"
+
+if [ ! -f "$APP_DIR/vendor/autoload.php" ]; then
+    COMPOSER=composer.dev.json composer --working-dir="$APP_DIR" update --prefer-dist --no-progress --no-interaction
+fi
+
+exec php -S 0.0.0.0:8000 -t "$APP_DIR/public"

@@ -1,0 +1,51 @@
+{
+    "name": "codemonster-ru/env",
+    "description": "Lightweight .env loader for PHP projects",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/env",
+    "readme": "README.md",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Env\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "suggest": {
+        "ext-mbstring": "Required for non-UTF-8 .env encodings."
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "env",
+        "dotenv",
+        "environment",
+        "configuration",
+        "settings",
+        "loader"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/env/issues",
+        "source": "https://github.com/codemonster-ru/env"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.x-dev"
+        }
+    }
+}

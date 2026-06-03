@@ -38,12 +38,22 @@ class User extends Model
 
     public function roleNames(): array
     {
-        $roles = $this->roles;
+        $roles = db()
+            ->table('role_user')
+            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('user_id', $this->id)
+            ->select('roles.*')
+            ->get();
+
         $names = [];
 
         foreach ($roles as $role) {
-            if (is_string($role->name ?? null) && $role->name !== '') {
-                $names[] = $role->name;
+            $name = is_array($role)
+                ? ($role['name'] ?? null)
+                : ($role->name ?? null);
+
+            if (is_string($name) && $name !== '') {
+                $names[] = $name;
             }
         }
 
@@ -59,8 +69,8 @@ class User extends Model
         return db()
             ->table('role_user')
             ->join('roles', 'role_user.role_id', '=', 'roles.id')
-            ->where('role_user.user_id', $this->id)
-            ->where('roles.name', $name)
+            ->where('user_id', $this->id)
+            ->where('name', $name)
             ->exists();
     }
 

@@ -1,0 +1,58 @@
+{
+    "name": "codemonster-ru/view-ssr",
+    "description": "SSR engine for codemonster-ru/view (delegates to an codemonster-ru/ssr-bridge)",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/view-ssr",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.ru",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\View\\Engines\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/view": "^2.0",
+        "codemonster-ru/ssr-bridge": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "view",
+        "ssr",
+        "server-side-rendering",
+        "engine",
+        "renderer",
+        "codemonster-ru"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/view-ssr/issues",
+        "source": "https://github.com/codemonster-ru/view-ssr"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "archive": {
+        "exclude": [
+            "/tests",
+            "/.github",
+            "/.idea",
+            "/.vscode",
+            "/.phpunit.cache",
+            "/phpunit.xml*"
+        ]
+    }
+}

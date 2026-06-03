@@ -1,0 +1,67 @@
+{
+    "name": "codemonster-ru/security",
+    "description": "Security components for Annabel ecosystem: CSRF protection and rate limiting.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/security",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/http": "^2.0",
+        "codemonster-ru/session": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
+        "codemonster-ru/support": "^1.0"
+    },
+    "suggest": {
+        "codemonster-ru/annabel": "Registers SecurityServiceProvider to enable middleware integration",
+        "codemonster-ru/database": "Database storage for throttling (MySQL)",
+        "ext-redis": "Redis storage for throttling (optional)",
+        "predis/predis": "Redis storage for throttling (optional)"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Security\\": "src/"
+        },
+        "files": [
+            "src/helpers/csrf.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Security\\Tests\\": "tests/"
+        },
+        "files": [
+            "tests/bootstrap.php"
+        ]
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "security",
+        "csrf",
+        "rate-limiting",
+        "throttle",
+        "annabel",
+        "codemonster"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/security/issues",
+        "source": "https://github.com/codemonster-ru/security"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "codemonster-ru/http",
+    "description": "Lightweight object-oriented HTTP foundation for PHP.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/http",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Http\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "http",
+        "request",
+        "response",
+        "json",
+        "redirect",
+        "framework"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/http/issues",
+        "source": "https://github.com/codemonster-ru/http"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.x-dev"
+        }
+    }
+}

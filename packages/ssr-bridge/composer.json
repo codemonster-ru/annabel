@@ -1,0 +1,50 @@
+{
+    "name": "codemonster-ru/ssr-bridge",
+    "description": "A universal PHP bridge for interacting with Node.js SSR services (locally or via HTTP).",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/ssr-bridge",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.ru",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Ssr\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "bridge",
+        "ssr",
+        "server-side-rendering",
+        "nodejs",
+        "integration",
+        "vue",
+        "vue-ssr",
+        "react",
+        "react-ssr",
+        "svelte",
+        "svelte-ssr",
+        "solid",
+        "solid-ssr",
+        "laravel",
+        "symfony",
+        "framework-integration",
+        "frontend-integration",
+        "annabel"
+    ]
+}

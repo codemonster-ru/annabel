@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="6"
+    resolveFromConfigFile="true"
+    findUnusedBaselineEntry="true"
+>
+    <stubs>
+        <file name="stubs/PredisClient.stub" />
+        <file name="stubs/RedisCluster.stub" />
+        <file name="stubs/RedisSentinel.stub" />
+    </stubs>
+    <projectFiles>
+        <directory name="src" />
+        <directory name="tests" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+    <issueHandlers>
+        <MissingOverrideAttribute errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <PossiblyUnusedReturnValue errorLevel="suppress" />
+        <PossiblyUnusedParam errorLevel="suppress" />
+        <UnusedClass errorLevel="suppress" />
+        <UnusedMethodCall errorLevel="suppress" />
+        <UnusedFunctionCall errorLevel="suppress" />
+        <MethodSignatureMismatch errorLevel="suppress" />
+        <DuplicateClass>
+            <errorLevel type="suppress">
+                <file name="tests/CacheSessionHandlerTest.php" />
+            </errorLevel>
+        </DuplicateClass>
+        <UndefinedThisPropertyFetch>
+            <errorLevel type="suppress">
+                <file name="tests/RedisClusterSessionHandlerTest.php" />
+                <file name="tests/RedisSentinelSessionHandlerTest.php" />
+            </errorLevel>
+        </UndefinedThisPropertyFetch>
+        <UndefinedVariable>
+            <errorLevel type="suppress">
+                <file name="tests/RedisSentinelSessionHandlerTest.php" />
+            </errorLevel>
+        </UndefinedVariable>
+    </issueHandlers>
+</psalm>

@@ -1,0 +1,15 @@
+<?php
+
+class RedisSentinel
+{
+    public function __construct(string $host = '127.0.0.1', int $port = 26379, float $timeout = 0.0)
+    {
+    }
+
+    /**
+     * @return array<int, string|int>|false
+     */
+    public function getMasterAddrByName(string $service)
+    {
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "name": "codemonster-ru/session",
+    "description": "Lightweight session management library for PHP with pluggable handlers",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/session",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Session\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Session\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "psr/simple-cache": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
+        "phpstan/phpstan": "^1.11",
+        "vimeo/psalm": "^6.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox",
+        "analyse": "phpstan analyse",
+        "psalm": "psalm --no-cache",
+        "stress": "php scripts/stress.php"
+    },
+    "keywords": [
+        "php",
+        "session",
+        "handler",
+        "framework",
+        "codemonster"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/session/issues",
+        "source": "https://github.com/codemonster-ru/session"
+    },
+    "suggest": {
+        "ext-redis": "Required for RedisSessionHandler",
+        "ext-sodium": "Required for session payload encryption",
+        "predis/predis": "Required for PredisSessionHandler"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.x-dev"
+        }
+    }
+}

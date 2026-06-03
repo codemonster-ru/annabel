@@ -1,0 +1,45 @@
+<?php
+
+class RedisCluster
+{
+    /**
+     * @param array<int, string> $seeds
+     */
+    public function __construct(
+        ?string $name = null,
+        array $seeds = [],
+        float $timeout = 0.0,
+        float $read_timeout = 0.0,
+        bool $persistent = false,
+        ?string $auth = null
+    ) {
+    }
+
+    /**
+     * @return string|null
+     */
+    public function get(string $key)
+    {
+    }
+
+    /**
+     * @return RedisCluster|string|bool
+     */
+    public function set(string $key, mixed $value, mixed $options = null)
+    {
+    }
+
+    /**
+     * @return bool
+     */
+    public function setex(string $key, int $seconds, string $value)
+    {
+    }
+
+    /**
+     * @return int
+     */
+    public function del(string $key)
+    {
+    }
+}

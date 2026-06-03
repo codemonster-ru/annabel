@@ -1,0 +1,54 @@
+{
+    "name": "codemonster-ru/razor",
+    "description": "Template engine for PHP",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/razor",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.ru",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Razor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Razor\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/view": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "template",
+        "templating",
+        "view",
+        "engine",
+        "razor",
+        "codemonster",
+        "annabel"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/razor/issues",
+        "source": "https://github.com/codemonster-ru/razor"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "name": "codemonster-ru/support",
+    "description": "Global helper functions and meta package for codemonster-ru/annabel.",
+    "type": "library",
+    "license": "MIT",
+    "readme": "README.md",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/http": "^2.0",
+        "codemonster-ru/view": "^2.0",
+        "codemonster-ru/config": "^2.0",
+        "codemonster-ru/env": "^2.0",
+        "codemonster-ru/router": "^2.0",
+        "codemonster-ru/session": "^2.0",
+        "codemonster-ru/dumper": "^1.0",
+        "codemonster-ru/database": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
+        "codemonster-ru/view-php": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Support\\": "src/"
+        },
+        "files": [
+            "src/helpers/config.php",
+            "src/helpers/db.php",
+            "src/helpers/env.php",
+            "src/helpers/view.php",
+            "src/helpers/router.php",
+            "src/helpers/request.php",
+            "src/helpers/response.php",
+            "src/helpers/session.php",
+            "src/helpers/dump.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "files": [
+            "tests/bootstrap.php"
+        ]
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "homepage": "https://github.com/codemonster-ru/support",
+    "keywords": [
+        "annabel",
+        "php",
+        "helpers",
+        "support",
+        "codemonster",
+        "framework",
+        "meta-package",
+        "utilities"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/support/issues",
+        "source": "https://github.com/codemonster-ru/support"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    }
+}

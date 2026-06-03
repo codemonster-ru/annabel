@@ -1,0 +1,51 @@
+{
+    "name": "codemonster-ru/router",
+    "description": "Lightweight router for PHP applications",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/router",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.ru",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Router\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Router\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "router",
+        "routing",
+        "http",
+        "framework",
+        "lightweight"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/router/issues",
+        "source": "https://github.com/codemonster-ru/router"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.x-dev"
+        }
+    }
+}

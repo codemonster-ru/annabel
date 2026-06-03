@@ -1,0 +1,48 @@
+{
+    "name": "codemonster-ru/dumper",
+    "description": "Simple and elegant PHP variable dumper for CLI and web environments",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/codemonster-ru/dumper",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.ru",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Dumper\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "dump",
+        "dumper",
+        "debug",
+        "dd",
+        "var-dump",
+        "cli",
+        "html"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/dumper/issues",
+        "source": "https://github.com/codemonster-ru/dumper"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
+}

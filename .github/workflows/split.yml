@@ -1,0 +1,171 @@
+name: Split Packages
+
+on:
+    push:
+        tags:
+            - 'framework/v*.*.*'
+            - 'support/v*.*.*'
+            - 'http/v*.*.*'
+            - 'router/v*.*.*'
+            - 'view/v*.*.*'
+            - 'view-php/v*.*.*'
+            - 'view-ssr/v*.*.*'
+            - 'razor/v*.*.*'
+            - 'config/v*.*.*'
+            - 'env/v*.*.*'
+            - 'database/v*.*.*'
+            - 'session/v*.*.*'
+            - 'errors/v*.*.*'
+            - 'security/v*.*.*'
+            - 'dumper/v*.*.*'
+            - 'ssr-bridge/v*.*.*'
+    workflow_dispatch:
+
+jobs:
+    split:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        strategy:
+            fail-fast: false
+            matrix:
+                package:
+                    - id: framework
+                      path: packages/framework
+                      repository: codemonster-ru/annabel-framework
+                    - id: support
+                      path: packages/support
+                      repository: codemonster-ru/support
+                    - id: http
+                      path: packages/http
+                      repository: codemonster-ru/http
+                    - id: router
+                      path: packages/router
+                      repository: codemonster-ru/router
+                    - id: view
+                      path: packages/view
+                      repository: codemonster-ru/view
+                    - id: view-php
+                      path: packages/view-php
+                      repository: codemonster-ru/view-php
+                    - id: view-ssr
+                      path: packages/view-ssr
+                      repository: codemonster-ru/view-ssr
+                    - id: razor
+                      path: packages/razor
+                      repository: codemonster-ru/razor
+                    - id: config
+                      path: packages/config
+                      repository: codemonster-ru/config-php
+                    - id: env
+                      path: packages/env
+                      repository: codemonster-ru/env
+                    - id: database
+                      path: packages/database
+                      repository: codemonster-ru/database
+                    - id: session
+                      path: packages/session
+                      repository: codemonster-ru/session
+                    - id: errors
+                      path: packages/errors
+                      repository: codemonster-ru/errors
+                    - id: security
+                      path: packages/security
+                      repository: codemonster-ru/security
+                    - id: dumper
+                      path: packages/dumper
+                      repository: codemonster-ru/dumper
+                    - id: ssr-bridge
+                      path: packages/ssr-bridge
+                      repository: codemonster-ru/ssr-bridge
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Validate split token
+              run: |
+                  if [ -z "${MONOREPO_SPLIT_TOKEN}" ]; then
+                    echo "MONOREPO_SPLIT_TOKEN secret is required to push split repositories."
+                    exit 1
+                  fi
+              env:
+                  MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Parse package tag
+              id: tag
+              if: github.ref_type == 'tag'
+              run: |
+                  PACKAGE_ID="${GITHUB_REF_NAME%%/*}"
+                  VERSION_TAG="${GITHUB_REF_NAME#*/}"
+
+                  echo "package_id=${PACKAGE_ID}" >> "$GITHUB_OUTPUT"
+                  echo "version_tag=${VERSION_TAG}" >> "$GITHUB_OUTPUT"
+
+            - name: Split package
+              id: split
+              if: github.ref_type != 'tag' || matrix.package.id == steps.tag.outputs.package_id
+              run: |
+                  SPLIT_SHA=$(git subtree split --prefix="${PACKAGE_PATH}" "${GITHUB_SHA}")
+                  echo "sha=${SPLIT_SHA}" >> "$GITHUB_OUTPUT"
+              env:
+                  PACKAGE_PATH: ${{ matrix.package.path }}
+
+            - name: Push main branch
+              if: github.ref_type == 'branch'
+              run: |
+                  REMOTE_URL="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+                  git push "$REMOTE_URL" "${SPLIT_SHA}:refs/heads/main" --force
+              env:
+                  MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+                  SPLIT_SHA: ${{ steps.split.outputs.sha }}
+                  TARGET_REPOSITORY: ${{ matrix.package.repository }}
+
+            - name: Push package tag
+              id: push_tag
+              if: github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id
+              run: |
+                  REMOTE_URL="https://x-access-token:${MONOREPO_SPLIT_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+                  git tag -f "$VERSION_TAG" "$SPLIT_SHA"
+                  git push "$REMOTE_URL" "refs/tags/${VERSION_TAG}:refs/tags/${VERSION_TAG}"
+                  echo "version_tag=${VERSION_TAG}" >> "$GITHUB_OUTPUT"
+              env:
+                  MONOREPO_SPLIT_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+                  SPLIT_SHA: ${{ steps.split.outputs.sha }}
+                  TARGET_REPOSITORY: ${{ matrix.package.repository }}
+                  VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
+
+            - name: Extract release notes
+              if: github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id
+              run: |
+                  VERSION="${VERSION_TAG#v}"
+                  CHANGELOG="${PACKAGE_PATH}/CHANGELOG.md"
+
+                  if [ -f "$CHANGELOG" ]; then
+                    awk "/^## \\[$VERSION\\]/ {flag=1; next} /^## \\[/ {flag=0} flag {print}" "$CHANGELOG" > RELEASE_NOTES.md
+                  fi
+
+                  if [ ! -s RELEASE_NOTES.md ]; then
+                    echo "Release ${GITHUB_REF_NAME}" > RELEASE_NOTES.md
+                  fi
+              env:
+                  PACKAGE_PATH: ${{ matrix.package.path }}
+                  VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
+
+            - name: Create GitHub Release
+              if: github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ github.ref_name }}
+                  name: ${{ github.ref_name }}
+                  body_path: RELEASE_NOTES.md
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

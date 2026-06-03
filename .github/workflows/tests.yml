@@ -6,6 +6,23 @@ on:
     pull_request:
 
 jobs:
+    validate:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  coverage: none
+                  tools: composer:v2
+
+            - name: Validate root composer.json
+              run: composer validate --strict
+
     tests:
         runs-on: ubuntu-latest
 
@@ -13,6 +30,23 @@ jobs:
             fail-fast: false
             matrix:
                 php: [8.2, 8.3, 8.4]
+                package:
+                    - packages/framework
+                    - packages/support
+                    - packages/http
+                    - packages/router
+                    - packages/view
+                    - packages/view-php
+                    - packages/view-ssr
+                    - packages/razor
+                    - packages/config
+                    - packages/env
+                    - packages/database
+                    - packages/session
+                    - packages/errors
+                    - packages/security
+                    - packages/dumper
+                    - packages/ssr-bridge
 
         steps:
             - name: Checkout code
@@ -26,10 +60,20 @@ jobs:
                   tools: composer:v2
 
             - name: Validate composer.json
-              run: composer validate --strict
+              working-directory: ${{ matrix.package }}
+              run: composer validate --strict --no-check-lock
+
+            - name: Configure monorepo path repository
+              working-directory: ${{ matrix.package }}
+              run: composer config repositories.monorepo '{"type":"path","url":"../*","canonical":false,"options":{"symlink":true}}'
 
             - name: Install dependencies
+              working-directory: ${{ matrix.package }}
               run: composer update --prefer-dist --no-progress --no-interaction
 
             - name: Run tests
-              run: composer test
+              working-directory: ${{ matrix.package }}
+              run: |
+                  if [ -f phpunit.xml.dist ]; then
+                    composer test
+                  fi

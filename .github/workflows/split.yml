@@ -19,6 +19,7 @@ on:
             - 'security/v*.*.*'
             - 'dumper/v*.*.*'
             - 'ssr-bridge/v*.*.*'
+            - 'skeleton/v*.*.*'
     workflow_dispatch:
 
 jobs:
@@ -79,6 +80,9 @@ jobs:
                     - id: ssr-bridge
                       path: packages/ssr-bridge
                       repository: codemonster-ru/ssr-bridge
+                    - id: skeleton
+                      path: skeleton/annabel-skeleton
+                      repository: codemonster-ru/annabel-skeleton
 
         steps:
             - name: Checkout

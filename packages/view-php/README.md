@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the Annabel monorepo:
+> https://github.com/codemonster-ru/annabel
+>
+> Issues and pull requests should be opened there.
+
 # codemonster-ru/view-php
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/view-php.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/view-php)

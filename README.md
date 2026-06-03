@@ -24,10 +24,11 @@ packages/
   ssr-bridge/  codemonster-ru/ssr-bridge
 
 skeleton/
-  annabel-skeleton/
+  annabel-skeleton/ codemonster-ru/annabel-skeleton
 ```
 
 The framework package `codemonster-ru/annabel` lives in `packages/framework`.
+The application skeleton lives in `skeleton/annabel-skeleton`.
 
 ## Development
 
@@ -56,7 +57,8 @@ git push origin support/v1.5.0
 The split workflow pushes the package contents and a normal Composer tag, such
 as `v1.5.0`, to the target package repository. The framework package target is
 `codemonster-ru/annabel-framework`; the public `codemonster-ru/annabel`
-repository remains the monorepo.
+repository remains the monorepo. The skeleton target is
+`codemonster-ru/annabel-skeleton`.
 
 Split repositories are publishing mirrors and should be treated as read-only.
 Make code changes in this monorepo only. Public Packagist packages should point

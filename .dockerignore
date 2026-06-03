@@ -1,0 +1,9 @@
+.git
+vendor
+node_modules
+dist
+build
+coverage
+storage
+var
+.DS_Store

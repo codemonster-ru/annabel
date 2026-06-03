@@ -1,5 +1,24 @@
 .git
+
+# Environment
 .env
-vendor
+.env.local
+!.env.example
+
+# Dependencies
+vendor/
+
+# Local Composer overrides
 composer.local.json
 composer.local.lock
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs and runtime cache
+*.log
+storage/
+var/

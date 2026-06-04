@@ -1,0 +1,48 @@
+{
+  "name": "Xen CMS",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/app",
+  "runServices": [
+    "app",
+    "db",
+    "phpmyadmin"
+  ],
+  "shutdownAction": "none",
+  "overrideCommand": true,
+  "forwardPorts": [
+    8000,
+    8081
+  ],
+  "postCreateCommand": "composer install && if [ -f package.json ]; then npm install; fi",
+  "postStartCommand": "if [ ! -f /tmp/xen-server.pid ] || ! kill -0 $(cat /tmp/xen-server.pid) 2>/dev/null; then nohup php -S 0.0.0.0:8000 -t public >/tmp/xen-server.log 2>&1 & echo $! >/tmp/xen-server.pid; fi",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "openai.chatgpt",
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql",
+        "mhutchie.git-graph",
+        "DavidAnson.vscode-markdownlint"
+      ],
+      "settings": {
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.environment.phpVersion": "8.3",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        },
+        "[vue]": {
+          "editor.defaultFormatter": "Vue.volar"
+        }
+      }
+    }
+  }
+}

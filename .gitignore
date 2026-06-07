@@ -39,6 +39,7 @@ dist/
 coverage/
 storage/
 var/
+**/bootstrap/cache/packages.php
 **/build/
 **/dist/
 **/coverage/

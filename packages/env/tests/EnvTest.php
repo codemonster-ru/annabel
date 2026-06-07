@@ -190,7 +190,7 @@ class EnvTest extends TestCase
 
         try {
             $this->expectExceptionMessage('Unresolved variable reference(s) [UNDEFINED_VAR] in value for BAD_VALUE.');
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path, null, null, true);
         } finally {
@@ -231,7 +231,7 @@ class EnvTest extends TestCase
 
     public function testEnvStrictResolveThrowsOnUnresolvedDollarSyntax(): void
     {
-        $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+        $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
         Env::loadString("BAD=\$MISSING\n", null, true);
     }
@@ -368,7 +368,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "BROKEN='oops\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path);
         } finally {
@@ -383,7 +383,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "BROKEN=\"line1\nline2");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path);
         } finally {
@@ -398,7 +398,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "BROKEN=\"ok\" trailing\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path);
         } finally {
@@ -413,7 +413,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "BROKEN=\"C:\\path\"\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path);
         } finally {
@@ -428,7 +428,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "BAD NAME=oops\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path);
         } finally {
@@ -534,7 +534,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "TOO_BIG=1\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path, null, 5);
         } finally {
@@ -549,7 +549,7 @@ class EnvTest extends TestCase
         file_put_contents($path, "OK=1\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::load($path, null, -1);
         } finally {
@@ -618,7 +618,7 @@ class EnvTest extends TestCase
     public function testEnvParseStrictThrowsOnDuplicate(): void
     {
         $this->expectException(
-            \Codemonster\Env\Exception\InvalidFileException::class
+            \Codemonster\Env\Exceptions\InvalidFileException::class
         );
 
         Env::parse("DUP=one\nDUP=two\n", null, true);
@@ -655,7 +655,7 @@ class EnvTest extends TestCase
     public function testEnvParseToArrayStrictThrowsOnDuplicate(): void
     {
         $this->expectException(
-            \Codemonster\Env\Exception\InvalidFileException::class
+            \Codemonster\Env\Exceptions\InvalidFileException::class
         );
 
         Env::parseToArray("DUP=one\nDUP=two\n", null, true);
@@ -675,7 +675,7 @@ class EnvTest extends TestCase
 
     public function testEnvLoadStringEnforcesMaxBytes(): void
     {
-        $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+        $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
         Env::loadString("TOO_LONG\n", null, false, 5);
     }
@@ -687,7 +687,7 @@ class EnvTest extends TestCase
 
     public function testEnvLoadStringRejectsNegativeMaxBytes(): void
     {
-        $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+        $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
         Env::loadString("OK\n", null, false, -1);
     }
@@ -731,7 +731,7 @@ class EnvTest extends TestCase
         file_put_contents($existing, "MULTI_FILE_KEY=ok\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidPathException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidPathException::class);
 
             Env::loadFiles([$existing, $missing], null, null, false, false);
         } finally {
@@ -805,7 +805,7 @@ class EnvTest extends TestCase
             Env::setDefaultParser($parser);
 
 
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
             Env::loadString($badName);
         } finally {
             Env::setDefaultParser(null);
@@ -873,7 +873,7 @@ class EnvTest extends TestCase
             putenv('GLOB_FLAG_ONE');
             putenv('GLOB_FLAG_TWO');
 
-            $this->expectException(\Codemonster\Env\Exception\InvalidPathException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidPathException::class);
 
             Env::loadFiles([$pattern], null, null, false, false, 0);
         } finally {
@@ -895,7 +895,7 @@ class EnvTest extends TestCase
         file_put_contents($file2, "OK=1\n");
 
         try {
-            $this->expectException(\Codemonster\Env\Exception\InvalidFileException::class);
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
 
             Env::loadFiles([$dir . DIRECTORY_SEPARATOR . 'env*'], null, null, true, false);
         } finally {
@@ -931,7 +931,7 @@ class EnvTest extends TestCase
         $pattern = $dir . DIRECTORY_SEPARATOR . 'env_no_match_' . uniqid('', true) . '*';
 
         $this->expectException(
-            \Codemonster\Env\Exception\InvalidPathException::class
+            \Codemonster\Env\Exceptions\InvalidPathException::class
         );
 
         Env::loadFiles([$pattern], null, null, false, false);

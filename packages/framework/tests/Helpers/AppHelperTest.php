@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Helpers;
+
 use Codemonster\Annabel\Application;
 use PHPUnit\Framework\TestCase;
 

@@ -5,7 +5,7 @@ namespace Codemonster\Annabel\Providers;
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\Annabel\Database\ConsoleDatabaseCLIKernel;
+use Codemonster\Annabel\Database\LazyDatabaseConsoleKernel;
 use Codemonster\Annabel\Database\LazyConnection;
 use Codemonster\Annabel\Database\LazyMigrationRepository;
 use Codemonster\Database\DatabaseManager;
@@ -13,7 +13,7 @@ use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
-use Codemonster\Database\CLI\DatabaseCLIKernel;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
@@ -109,12 +109,12 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             return new Migrator($repository, $connection, $paths);
         });
 
-        $this->app->singleton(DatabaseCLIKernel::class, function (Container $app) {
+        $this->app->singleton(DatabaseConsoleKernel::class, function (Container $app) {
             $connection = $app->make(ConnectionInterface::class);
             $paths = $app->make(MigrationPathResolver::class);
             $seedPaths = $app->make(SeedPathResolver::class);
 
-            return new ConsoleDatabaseCLIKernel($connection, $paths, $seedPaths);
+            return new LazyDatabaseConsoleKernel($connection, $paths, $seedPaths);
         });
     }
 

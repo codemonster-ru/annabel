@@ -1,34 +1,28 @@
 <?php
 
-namespace Codemonster\Database\CLI;
+namespace Codemonster\Annabel\Database;
 
+use Codemonster\Database\Console\CommandRegistry;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
+use Codemonster\Database\Console\Commands\MakeMigrationCommand;
+use Codemonster\Database\Console\Commands\MigrateCommand;
+use Codemonster\Database\Console\Commands\RollbackCommand;
+use Codemonster\Database\Console\Commands\StatusCommand;
+use Codemonster\Database\Console\Commands\MakeSeedCommand;
+use Codemonster\Database\Console\Commands\SeedCommand;
+use Codemonster\Database\Console\Commands\TruncateCommand;
+use Codemonster\Database\Console\Commands\WipeCommand;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Migrations\MigrationPathResolver;
-use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
 use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Seeders\SeederRunner;
-use Codemonster\Database\CLI\Commands\MigrateCommand;
-use Codemonster\Database\CLI\Commands\RollbackCommand;
-use Codemonster\Database\CLI\Commands\StatusCommand;
-use Codemonster\Database\CLI\Commands\MakeMigrationCommand;
-use Codemonster\Database\CLI\Commands\SeedCommand;
-use Codemonster\Database\CLI\Commands\MakeSeedCommand;
-use Codemonster\Database\CLI\Commands\WipeCommand;
-use Codemonster\Database\CLI\Commands\TruncateCommand;
 
-class DatabaseCLIKernel
+/**
+ * Custom kernel that avoids touching the database until a command executes.
+ */
+class LazyDatabaseConsoleKernel extends DatabaseConsoleKernel
 {
-    protected CommandRegistry $commands;
-
-    protected MigrationPathResolver $paths;
-
-    protected Migrator $migrator;
-
-    protected SeedPathResolver $seedPaths;
-
-    protected SeederRunner $seeder;
-
     public function __construct(
         ConnectionInterface $connection,
         ?MigrationPathResolver $paths = null,
@@ -46,7 +40,7 @@ class DatabaseCLIKernel
             $this->seedPaths->addPath(getcwd() . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'seeds');
         }
 
-        $repository = new MigrationRepository($connection);
+        $repository = new LazyMigrationRepository($connection);
 
         $this->migrator = new Migrator($repository, $connection, $this->paths);
         $this->seeder = new SeederRunner($connection, $this->seedPaths);
@@ -65,12 +59,6 @@ class DatabaseCLIKernel
         $this->commands->register(new MakeSeedCommand($this->seedPaths));
         $this->commands->register(new WipeCommand($this->migrator->getConnection()));
         $this->commands->register(new TruncateCommand($this->migrator->getConnection()));
-    }
-
-    /** @param list<string> $argv */
-    public function handle(array $argv): int
-    {
-        return $this->commands->dispatch($argv);
     }
 
     public function getRegistry(): CommandRegistry

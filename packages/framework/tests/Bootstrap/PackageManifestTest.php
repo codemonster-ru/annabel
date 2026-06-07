@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Bootstrap;
+
 use Codemonster\Annabel\Bootstrap\PackageManifest;
 use PHPUnit\Framework\TestCase;
 
@@ -88,7 +90,7 @@ class PackageManifestTest extends TestCase
             'vendor/example' => $packagePath,
         ]);
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('extra.annabel.providers');
 
         $manifest->providers(useCache: false);

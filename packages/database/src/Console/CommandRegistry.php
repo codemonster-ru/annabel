@@ -1,6 +1,6 @@
 <?php
 
-namespace Codemonster\Database\CLI;
+namespace Codemonster\Database\Console;
 
 class CommandRegistry
 {

@@ -1,5 +1,8 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Providers;
+
+
 use Codemonster\Annabel\Application;
 use Codemonster\Config\Config;
 use Codemonster\Env\Env;

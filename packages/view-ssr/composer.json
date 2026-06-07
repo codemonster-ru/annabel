@@ -3,6 +3,16 @@
     "description": "SSR engine for codemonster-ru/view (delegates to an codemonster-ru/ssr-bridge)",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/view-ssr",
     "authors": [
         {
@@ -56,5 +66,10 @@
             "/.phpunit.cache",
             "/phpunit.xml*"
         ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
+        }
     }
 }

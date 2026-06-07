@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Helpers;
+namespace Codemonster\Support\Tests\Helpers;
 
 use PHPUnit\Framework\TestCase;
 use Codemonster\Session\Session;

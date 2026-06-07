@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Fakes;
+namespace Codemonster\Support\Tests\Fakes;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Exceptions\QueryException;

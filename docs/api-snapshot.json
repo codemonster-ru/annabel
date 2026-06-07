@@ -1949,9 +1949,70 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\CommandInterface": {
+        "Codemonster\\Database\\Connection": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/CommandInterface.php",
+            "file": "src/Connection.php",
+            "kind": "class",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [
+                "ConnectionInterface"
+            ],
+            "constants": [],
+            "properties": {
+                "$config": "protected",
+                "$params": "public",
+                "$pdo": "protected",
+                "$query": "public",
+                "$value": "public"
+            },
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "array$param",
+                    "return": ""
+                },
+                "connectMySql": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "array$param",
+                    "return": "void"
+                },
+                "connectSqlite": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "array$param",
+                    "return": "void"
+                },
+                "select": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,array$param=[]",
+                    "return": "array"
+                },
+                "selectOne": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,array$param=[]",
+                    "return": "?array"
+                }
+            }
+        },
+        "Codemonster\\Database\\Console\\CommandInterface": {
+            "package": "codemonster-ru/database",
+            "file": "src/Console/CommandInterface.php",
             "kind": "interface",
             "abstract": false,
             "final": false,
@@ -1988,9 +2049,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\CommandRegistry": {
+        "Codemonster\\Database\\Console\\CommandRegistry": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/CommandRegistry.php",
+            "file": "src/Console/CommandRegistry.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2046,9 +2107,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\MakeMigrationCommand": {
+        "Codemonster\\Database\\Console\\Commands\\MakeMigrationCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/MakeMigrationCommand.php",
+            "file": "src/Console/Commands/MakeMigrationCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2101,9 +2162,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\MakeSeedCommand": {
+        "Codemonster\\Database\\Console\\Commands\\MakeSeedCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/MakeSeedCommand.php",
+            "file": "src/Console/Commands/MakeSeedCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2156,9 +2217,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\MigrateCommand": {
+        "Codemonster\\Database\\Console\\Commands\\MigrateCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/MigrateCommand.php",
+            "file": "src/Console/Commands/MigrateCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2206,9 +2267,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\RollbackCommand": {
+        "Codemonster\\Database\\Console\\Commands\\RollbackCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/RollbackCommand.php",
+            "file": "src/Console/Commands/RollbackCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2256,9 +2317,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\SeedCommand": {
+        "Codemonster\\Database\\Console\\Commands\\SeedCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/SeedCommand.php",
+            "file": "src/Console/Commands/SeedCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2306,9 +2367,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\StatusCommand": {
+        "Codemonster\\Database\\Console\\Commands\\StatusCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/StatusCommand.php",
+            "file": "src/Console/Commands/StatusCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2356,9 +2417,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\TruncateCommand": {
+        "Codemonster\\Database\\Console\\Commands\\TruncateCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/TruncateCommand.php",
+            "file": "src/Console/Commands/TruncateCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2475,9 +2536,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\Commands\\WipeCommand": {
+        "Codemonster\\Database\\Console\\Commands\\WipeCommand": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/Commands/WipeCommand.php",
+            "file": "src/Console/Commands/WipeCommand.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2593,9 +2654,9 @@
                 }
             }
         },
-        "Codemonster\\Database\\CLI\\DatabaseCLIKernel": {
+        "Codemonster\\Database\\Console\\DatabaseConsoleKernel": {
             "package": "codemonster-ru/database",
-            "file": "src/CLI/DatabaseCLIKernel.php",
+            "file": "src/Console/DatabaseConsoleKernel.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -2675,67 +2736,6 @@
                     "abstract": false,
                     "parameters": "",
                     "return": "void"
-                }
-            }
-        },
-        "Codemonster\\Database\\Connection": {
-            "package": "codemonster-ru/database",
-            "file": "src/Connection.php",
-            "kind": "class",
-            "abstract": false,
-            "final": false,
-            "extends": [],
-            "implements": [
-                "ConnectionInterface"
-            ],
-            "constants": [],
-            "properties": {
-                "$config": "protected",
-                "$params": "public",
-                "$pdo": "protected",
-                "$query": "public",
-                "$value": "public"
-            },
-            "methods": {
-                "__construct": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "array$param",
-                    "return": ""
-                },
-                "connectMySql": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "array$param",
-                    "return": "void"
-                },
-                "connectSqlite": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "array$param",
-                    "return": "void"
-                },
-                "select": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "string$param,array$param=[]",
-                    "return": "array"
-                },
-                "selectOne": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "string$param,array$param=[]",
-                    "return": "?array"
                 }
             }
         },
@@ -5757,6 +5757,99 @@
                 }
             }
         },
+        "Codemonster\\Database\\Schema\\Grammars\\MySqlGrammar": {
+            "package": "codemonster-ru/database",
+            "file": "src/Schema/Grammars/MySqlGrammar.php",
+            "kind": "class",
+            "abstract": false,
+            "final": false,
+            "extends": [
+                "Grammar"
+            ],
+            "implements": [],
+            "constants": [],
+            "properties": {
+                "$blueprint": "protected",
+                "$column": "protected",
+                "$fk": "public",
+                "$table": "public",
+                "$value": "protected"
+            },
+            "methods": {
+                "compileAlter": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "Blueprint$param",
+                    "return": "array"
+                },
+                "compileColumn": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "ColumnDefinition$param",
+                    "return": "string"
+                },
+                "compileCreate": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "Blueprint$param",
+                    "return": "array"
+                },
+                "compileDrop": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "array"
+                },
+                "compileDropIfExists": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "array"
+                },
+                "compileInlineForeign": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "Blueprint$param,ForeignKeyDefinition$param",
+                    "return": "string"
+                },
+                "compileRenameTable": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "Blueprint$param",
+                    "return": "array"
+                },
+                "compileType": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "ColumnDefinition$param",
+                    "return": "string"
+                },
+                "quoteDefault": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "mixed$param",
+                    "return": "string"
+                }
+            }
+        },
         "Codemonster\\Database\\Schema\\Grammars\\SQLiteGrammar": {
             "package": "codemonster-ru/database",
             "file": "src/Schema/Grammars/SQLiteGrammar.php",
@@ -5841,99 +5934,6 @@
                     "return": "array"
                 },
                 "mapType": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "ColumnDefinition$param",
-                    "return": "string"
-                },
-                "quoteDefault": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "mixed$param",
-                    "return": "string"
-                }
-            }
-        },
-        "Codemonster\\Database\\Schema\\MySqlGrammar": {
-            "package": "codemonster-ru/database",
-            "file": "src/Schema/MySqlGrammar.php",
-            "kind": "class",
-            "abstract": false,
-            "final": false,
-            "extends": [
-                "Grammar"
-            ],
-            "implements": [],
-            "constants": [],
-            "properties": {
-                "$blueprint": "protected",
-                "$column": "protected",
-                "$fk": "public",
-                "$table": "public",
-                "$value": "protected"
-            },
-            "methods": {
-                "compileAlter": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "Blueprint$param",
-                    "return": "array"
-                },
-                "compileColumn": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "ColumnDefinition$param",
-                    "return": "string"
-                },
-                "compileCreate": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "Blueprint$param",
-                    "return": "array"
-                },
-                "compileDrop": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "string$param",
-                    "return": "array"
-                },
-                "compileDropIfExists": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "string$param",
-                    "return": "array"
-                },
-                "compileInlineForeign": {
-                    "visibility": "protected",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "Blueprint$param,ForeignKeyDefinition$param",
-                    "return": "string"
-                },
-                "compileRenameTable": {
-                    "visibility": "public",
-                    "static": false,
-                    "final": false,
-                    "abstract": false,
-                    "parameters": "Blueprint$param",
-                    "return": "array"
-                },
-                "compileType": {
                     "visibility": "protected",
                     "static": false,
                     "final": false,
@@ -6517,9 +6517,9 @@
                 }
             }
         },
-        "Codemonster\\Env\\Exception\\InvalidEncodingException": {
+        "Codemonster\\Env\\Exceptions\\InvalidEncodingException": {
             "package": "codemonster-ru/env",
-            "file": "src/Exception/InvalidEncodingException.php",
+            "file": "src/Exceptions/InvalidEncodingException.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -6531,9 +6531,9 @@
             "properties": [],
             "methods": []
         },
-        "Codemonster\\Env\\Exception\\InvalidFileException": {
+        "Codemonster\\Env\\Exceptions\\InvalidFileException": {
             "package": "codemonster-ru/env",
-            "file": "src/Exception/InvalidFileException.php",
+            "file": "src/Exceptions/InvalidFileException.php",
             "kind": "class",
             "abstract": false,
             "final": false,
@@ -6545,9 +6545,9 @@
             "properties": [],
             "methods": []
         },
-        "Codemonster\\Env\\Exception\\InvalidPathException": {
+        "Codemonster\\Env\\Exceptions\\InvalidPathException": {
             "package": "codemonster-ru/env",
-            "file": "src/Exception/InvalidPathException.php",
+            "file": "src/Exceptions/InvalidPathException.php",
             "kind": "class",
             "abstract": false,
             "final": false,

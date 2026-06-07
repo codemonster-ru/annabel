@@ -12,7 +12,7 @@ use Codemonster\Annabel\Console\Commands\RouteListCommand;
 use Codemonster\Annabel\Console\Commands\ServeCommand;
 use Codemonster\Annabel\Console\Commands\VendorPublishCommand;
 use Codemonster\Annabel\Console\Commands\DatabaseCommand;
-use Codemonster\Database\CLI\DatabaseCLIKernel;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 
 class Console
 {
@@ -246,13 +246,13 @@ class Console
 
         $this->databaseCommandsLoaded = true;
 
-        if (!class_exists(DatabaseCLIKernel::class)) {
+        if (!class_exists(DatabaseConsoleKernel::class)) {
             return;
         }
 
         try {
-            /** @var DatabaseCLIKernel $dbKernel */
-            $dbKernel = $this->getApplication()->make(DatabaseCLIKernel::class);
+            /** @var DatabaseConsoleKernel $dbKernel */
+            $dbKernel = $this->getApplication()->make(DatabaseConsoleKernel::class);
             $registry = $dbKernel->getRegistry();
 
             foreach ($registry->all() as $cmd) {

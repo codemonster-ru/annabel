@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Codemonster\Support\Tests;
 
 class SupportFakeContainer
 {

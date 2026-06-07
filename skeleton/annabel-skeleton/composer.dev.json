@@ -21,7 +21,7 @@
         "codemonster-ru/dumper": "dev-main as 1.0.99",
         "codemonster-ru/env": "dev-main as 2.3.99",
         "codemonster-ru/errors": "dev-main as 1.2.99",
-        "codemonster-ru/http": "dev-main as 2.0.99",
+        "codemonster-ru/http": "dev-main as 2.1.99",
         "codemonster-ru/razor": "dev-main as 1.1.99",
         "codemonster-ru/router": "dev-main as 2.5.99",
         "codemonster-ru/security": "dev-main as 1.1.99",

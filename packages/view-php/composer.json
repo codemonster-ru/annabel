@@ -3,6 +3,16 @@
     "description": "PHP template engine for codemonster-ru/view",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/view-php",
     "authors": [
         {
@@ -57,7 +67,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "2.x-dev"
+            "dev-main": "2.1.x-dev"
         }
     }
 }

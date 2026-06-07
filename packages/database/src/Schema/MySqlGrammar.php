@@ -2,6 +2,9 @@
 
 namespace Codemonster\Database\Schema;
 
+/**
+ * @phpstan-import-type IndexDefinition from Blueprint
+ */
 class MySqlGrammar extends Grammar
 {
     /**
@@ -246,7 +249,8 @@ class MySqlGrammar extends Grammar
             $value === null => 'NULL',
             is_bool($value) => $value ? '1' : '0',
             is_string($value) => "'" . addslashes($value) . "'",
-            default => (string)$value,
+            is_int($value), is_float($value) => (string) $value,
+            default => throw new \InvalidArgumentException('Unsupported column default value.'),
         };
     }
 
@@ -366,6 +370,7 @@ class MySqlGrammar extends Grammar
     /**
      * Inline indexes inside CREATE TABLE
      */
+    /** @param IndexDefinition $index */
     protected function compileInlineIndex(Blueprint $blueprint, array $index): string
     {
         $columns = implode('`, `', $index['columns']);
@@ -375,12 +380,14 @@ class MySqlGrammar extends Grammar
             'index'   => sprintf('INDEX `%s` (`%s`)', $name, $columns),
             'unique'  => sprintf('UNIQUE `%s` (`%s`)', $name, $columns),
             'primary' => sprintf('PRIMARY KEY (`%s`)', $columns),
+            default => throw new \InvalidArgumentException('Unsupported index type.'),
         };
     }
 
     /**
      * ALTER TABLE ... ADD INDEX / UNIQUE / PRIMARY
      */
+    /** @param IndexDefinition $index */
     protected function compileAlterIndex(Blueprint $blueprint, array $index): string
     {
         $columns = implode('`, `', $index['columns']);
@@ -404,12 +411,14 @@ class MySqlGrammar extends Grammar
                 $blueprint->table,
                 $columns
             ),
+            default => throw new \InvalidArgumentException('Unsupported index type.'),
         };
     }
 
     /**
      * Create automatic index names
      */
+    /** @param IndexDefinition $index */
     protected function createIndexName(Blueprint $blueprint, array $index): string
     {
         $cols = implode('_', $index['columns']);

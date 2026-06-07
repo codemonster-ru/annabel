@@ -4,7 +4,12 @@ namespace Codemonster\Database\Query;
 
 class WhereGroup
 {
-    /** @var array<int, array{type: string, boolean: string, condition?: WhereCondition, group?: WhereGroup}> */
+    /**
+     * @var list<
+     *     array{type: 'condition', boolean: string, condition: WhereCondition}
+     *     |array{type: 'group', boolean: string, group: WhereGroup}
+     * >
+     */
     public array $items = [];
 
     public function addCondition(WhereCondition $cond): void

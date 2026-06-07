@@ -2,24 +2,48 @@
 
 namespace Codemonster\Http;
 
-class Request
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+
+/** @phpstan-consistent-constructor */
+class Request implements ServerRequestInterface
 {
+    /** @var list<string> */
     protected static array $trustedProxies = [];
+    protected string $protocolVersion = '1.1';
     protected string $method;
     protected string $uri;
+    /** @var array<string|int, mixed> */
     protected array $query = [];
+    /** @var array<string|int, mixed> */
     protected array $body = [];
+    /** @var array<string|int, mixed> */
     protected array $files = [];
+    /** @var array<string, string|string[]> */
     protected array $headers = [];
     protected string $rawBody = '';
+    /** @var array<string, mixed> */
     protected array $server = [];
+    /** @var array<string, string|string[]> */
     protected array $normalizedHeaders = [];
+    /** @var array<string, mixed> */
+    protected array $attributes = [];
+    /** @var array<string, mixed> */
+    protected array $cookies = [];
+    /** @var array<string|int, mixed>|object|null */
+    protected array|object|null $parsedBody = null;
+    protected ?StreamInterface $stream = null;
+    protected ?UriInterface $psrUri = null;
+    protected ?string $requestTarget = null;
 
+    /** @param list<string> $proxies */
     public static function setTrustedProxies(array $proxies): void
     {
         self::$trustedProxies = $proxies;
     }
 
+    /** @return list<string> */
     public static function getTrustedProxies(): array
     {
         return self::$trustedProxies;
@@ -115,6 +139,10 @@ class Request
         return (($ipByte & $maskByte) === ($subnetByte & $maskByte));
     }
 
+    /**
+     * @param array<string|int, mixed> $files
+     * @return array<string|int, mixed>
+     */
     private static function normalizeFiles(array $files): array
     {
         $normalized = [];
@@ -146,10 +174,10 @@ class Request
             foreach ($name as $key => $value) {
                 $result[$key] = self::normalizeFileEntry(
                     $value,
-                    $type[$key] ?? null,
-                    $tmpName[$key] ?? null,
-                    $error[$key] ?? null,
-                    $size[$key] ?? null
+                    is_array($type) ? ($type[$key] ?? null) : null,
+                    is_array($tmpName) ? ($tmpName[$key] ?? null) : null,
+                    is_array($error) ? ($error[$key] ?? null) : null,
+                    is_array($size) ? ($size[$key] ?? null) : null
                 );
             }
 
@@ -165,6 +193,10 @@ class Request
         ];
     }
 
+    /**
+     * @param array<string, string|string[]> $headers
+     * @return array<string, string|string[]>
+     */
     private static function normalizeHeaders(array $headers): array
     {
         $normalized = [];
@@ -178,6 +210,35 @@ class Request
         return $normalized;
     }
 
+    /** @return string|list<string> */
+    private static function normalizeHeaderValue(mixed $value): string|array
+    {
+        if (is_array($value)) {
+            $normalized = [];
+            foreach ($value as $item) {
+                if (!is_string($item) && !is_int($item) && !is_float($item)) {
+                    throw new \InvalidArgumentException('Header values must be strings or numbers.');
+                }
+                $normalized[] = (string) $item;
+            }
+
+            return $normalized;
+        }
+
+        if (!is_string($value) && !is_int($value) && !is_float($value)) {
+            throw new \InvalidArgumentException('Header value must be a string or number.');
+        }
+
+        return (string) $value;
+    }
+
+    /**
+     * @param array<string|int, mixed> $query
+     * @param array<string|int, mixed> $body
+     * @param array<string, string|string[]> $headers
+     * @param array<string, mixed> $server
+     * @param array<string|int, mixed> $files
+     */
     public function __construct(
         string $method,
         string $uri,
@@ -189,9 +250,12 @@ class Request
         array $files = []
     ) {
         $this->method = strtoupper($method);
-        $this->uri = parse_url($uri, PHP_URL_PATH) ?? '/';
+        $path = parse_url($uri, PHP_URL_PATH);
+        $this->uri = is_string($path) ? $path : '/';
+        $this->psrUri = new Uri($uri);
         $this->query = $query;
         $this->body = $body;
+        $this->parsedBody = $body;
         $this->files = self::normalizeFiles($files);
         $this->headers = $headers;
         $this->rawBody = $rawBody;
@@ -200,15 +264,16 @@ class Request
 
         if (empty($this->body) && $this->rawBody !== '') {
             $contentType = $this->normalizedHeaders['content-type'] ?? '';
+            $contentType = is_array($contentType) ? implode(', ', $contentType) : $contentType;
 
             if (stripos($contentType, 'application/x-www-form-urlencoded') !== false) {
                 parse_str($this->rawBody, $parsedBody);
 
-                if (is_array($parsedBody)) {
-                    $this->body = $parsedBody;
-                }
+                $this->body = $parsedBody;
             }
         }
+
+        $this->parsedBody = $this->body;
     }
 
     public static function capture(): static
@@ -216,18 +281,18 @@ class Request
         $headers = [];
 
         foreach ($_SERVER as $key => $value) {
-            if (str_starts_with($key, 'HTTP_')) {
+            if (is_string($key) && is_string($value) && str_starts_with($key, 'HTTP_')) {
                 $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
 
                 $headers[$name] = $value;
             }
         }
 
-        if (!isset($headers['Content-Type']) && isset($_SERVER['CONTENT_TYPE'])) {
+        if (!isset($headers['Content-Type']) && is_string($_SERVER['CONTENT_TYPE'] ?? null)) {
             $headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
         }
 
-        if (!isset($headers['Content-Length']) && isset($_SERVER['CONTENT_LENGTH'])) {
+        if (!isset($headers['Content-Length']) && is_string($_SERVER['CONTENT_LENGTH'] ?? null)) {
             $headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
         }
 
@@ -237,7 +302,7 @@ class Request
                 ?? $_SERVER['AUTHORIZATION']
                 ?? null;
 
-            if ($auth !== null) {
+            if (is_string($auth)) {
                 $headers['Authorization'] = $auth;
             }
         }
@@ -264,12 +329,10 @@ class Request
         ) {
             parse_str($rawBody, $parsedBody);
 
-            if (is_array($parsedBody)) {
-                $body = $parsedBody;
-            }
+            $body = $parsedBody;
         }
 
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $method = is_string($_SERVER['REQUEST_METHOD'] ?? null) ? $_SERVER['REQUEST_METHOD'] : 'GET';
 
         if (strtoupper($method) === 'POST') {
             $override = $body['_method'] ?? null;
@@ -286,15 +349,23 @@ class Request
             }
         }
 
+        $requestUri = is_string($_SERVER['REQUEST_URI'] ?? null) ? $_SERVER['REQUEST_URI'] : '/';
+        $server = [];
+        foreach ($_SERVER as $key => $value) {
+            if (is_string($key)) {
+                $server[$key] = $value;
+            }
+        }
+
         return new static(
             $method,
-            $_SERVER['REQUEST_URI'] ?? '/',
-            $_GET ?? [],
+            $requestUri,
+            $_GET,
             $body,
             $headers,
             $rawBody,
-            $_SERVER,
-            $_FILES ?? []
+            $server,
+            $_FILES
         );
     }
 
@@ -303,9 +374,72 @@ class Request
         return $this->method;
     }
 
+    public function getRequestTarget(): string
+    {
+        if ($this->requestTarget !== null) {
+            return $this->requestTarget;
+        }
+
+        $target = $this->uri ?: '/';
+        $query = $this->psrUri?->getQuery() ?? '';
+
+        return $query === '' ? $target : $target . '?' . $query;
+    }
+
+    public function withRequestTarget(string $requestTarget): static
+    {
+        if (preg_match('/\s/', $requestTarget) === 1) {
+            throw new \InvalidArgumentException('Request target must not contain whitespace.');
+        }
+
+        $clone = clone $this;
+        $clone->requestTarget = $requestTarget;
+
+        return $clone;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method();
+    }
+
+    public function withMethod(string $method): static
+    {
+        $clone = clone $this;
+        $clone->method = strtoupper($method);
+
+        return $clone;
+    }
+
     public function uri(): string
     {
         return $this->uri;
+    }
+
+    public function getUri(): UriInterface
+    {
+        return $this->psrUri ?? new Uri($this->uri);
+    }
+
+    public function withUri(UriInterface $uri, bool $preserveHost = false): static
+    {
+        $clone = clone $this;
+        $clone->psrUri = $uri;
+        $clone->uri = $uri->getPath() ?: '/';
+
+        if (!$preserveHost || !$clone->hasHeader('Host')) {
+            $host = $uri->getHost();
+
+            if ($host !== '') {
+                if ($uri->getPort() !== null) {
+                    $host .= ':' . $uri->getPort();
+                }
+
+                $clone = $clone->withHeader('Host', $host);
+            }
+        }
+
+        return $clone;
     }
 
     public function query(?string $key = null, mixed $default = null): mixed
@@ -367,8 +501,85 @@ class Request
     public function withHeader(string $name, mixed $value): static
     {
         $clone = clone $this;
-        $clone->headers[$name] = $value;
+        $clone->headers[$name] = self::normalizeHeaderValue($value);
         $clone->normalizedHeaders = self::normalizeHeaders($clone->headers);
+
+        return $clone;
+    }
+
+    public function getProtocolVersion(): string
+    {
+        return $this->protocolVersion;
+    }
+
+    public function withProtocolVersion(string $version): static
+    {
+        $clone = clone $this;
+        $clone->protocolVersion = $version;
+
+        return $clone;
+    }
+
+    public function getHeaders(): array
+    {
+        $headers = [];
+
+        foreach ($this->headers as $name => $value) {
+            $headers[$name] = is_array($value)
+                ? array_values($value)
+                : [$value];
+        }
+
+        return $headers;
+    }
+
+    public function hasHeader(string $name): bool
+    {
+        return array_key_exists(strtolower($name), $this->normalizedHeaders);
+    }
+
+    public function getHeader(string $name): array
+    {
+        $value = $this->header($name);
+
+        if ($value === null) {
+            return [];
+        }
+
+        $normalized = self::normalizeHeaderValue($value);
+
+        return is_array($normalized) ? $normalized : [$normalized];
+    }
+
+    public function getHeaderLine(string $name): string
+    {
+        return implode(', ', $this->getHeader($name));
+    }
+
+    public function withAddedHeader(string $name, mixed $value): static
+    {
+        $clone = clone $this;
+        $existing = $clone->getHeader($name);
+        $normalized = self::normalizeHeaderValue($value);
+        $added = is_array($normalized) ? $normalized : [$normalized];
+
+        return $clone->withHeader($name, array_merge($existing, $added));
+    }
+
+    public function getBody(): StreamInterface
+    {
+        if (!$this->stream) {
+            $this->stream = new Stream($this->rawBody);
+        }
+
+        return $this->stream;
+    }
+
+    public function withBody(StreamInterface $body): static
+    {
+        $clone = clone $this;
+        $clone->stream = $body;
+        $clone->rawBody = (string) $body;
 
         return $clone;
     }
@@ -388,6 +599,7 @@ class Request
         return $clone;
     }
 
+    /** @param array<string|int, mixed> $query */
     public function withQuery(array $query): static
     {
         $clone = clone $this;
@@ -396,19 +608,114 @@ class Request
         return $clone;
     }
 
+    /** @param array<string|int, mixed> $body */
     public function withInput(array $body): static
     {
         $clone = clone $this;
         $clone->body = $body;
+        $clone->parsedBody = $body;
 
         return $clone;
     }
 
+    /** @return array<string, string|string[]> */
     public function headers(): array
     {
         return $this->headers;
     }
 
+    /** @return array<string, mixed> */
+    public function getServerParams(): array
+    {
+        return $this->server;
+    }
+
+    /** @return array<string, mixed> */
+    public function getCookieParams(): array
+    {
+        return $this->cookies;
+    }
+
+    /** @param array<string, mixed> $cookies */
+    public function withCookieParams(array $cookies): static
+    {
+        $clone = clone $this;
+        $clone->cookies = $cookies;
+
+        return $clone;
+    }
+
+    /** @return array<string|int, mixed> */
+    public function getQueryParams(): array
+    {
+        return $this->query;
+    }
+
+    /** @param array<string|int, mixed> $query */
+    public function withQueryParams(array $query): static
+    {
+        return $this->withQuery($query);
+    }
+
+    /** @return array<string|int, mixed> */
+    public function getUploadedFiles(): array
+    {
+        return $this->files;
+    }
+
+    /** @param array<string|int, mixed> $uploadedFiles */
+    public function withUploadedFiles(array $uploadedFiles): static
+    {
+        $clone = clone $this;
+        $clone->files = $uploadedFiles;
+
+        return $clone;
+    }
+
+    /** @return array<string|int, mixed>|object|null */
+    public function getParsedBody(): mixed
+    {
+        return $this->parsedBody;
+    }
+
+    /** @param array<string|int, mixed>|object|null $data */
+    public function withParsedBody(mixed $data): static
+    {
+        $clone = clone $this;
+        $clone->parsedBody = $data;
+        $clone->body = is_array($data) ? $data : [];
+
+        return $clone;
+    }
+
+    /** @return array<string, mixed> */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    public function getAttribute(string $name, mixed $default = null): mixed
+    {
+        return $this->attributes[$name] ?? $default;
+    }
+
+    public function withAttribute(string $name, mixed $value): static
+    {
+        $clone = clone $this;
+        $clone->attributes[$name] = $value;
+
+        return $clone;
+    }
+
+    public function withoutAttribute(string $name): static
+    {
+        $clone = clone $this;
+        unset($clone->attributes[$name]);
+
+        return $clone;
+    }
+
+    /** @return array<string, mixed> */
     public function server(): array
     {
         return $this->server;
@@ -428,7 +735,7 @@ class Request
     {
         $accept = $this->header('Accept', '');
 
-        return str_contains($accept, 'application/json');
+        return is_string($accept) && str_contains($accept, 'application/json');
     }
 
     public function isSecure(): bool
@@ -439,39 +746,41 @@ class Request
 
         $remoteAddr = $this->server['REMOTE_ADDR'] ?? null;
 
-        if (!self::isTrustedProxy($remoteAddr)) {
+        if (!self::isTrustedProxy(is_string($remoteAddr) ? $remoteAddr : null)) {
             return false;
         }
 
         $forwardedProto = $this->server['HTTP_X_FORWARDED_PROTO'] ?? '';
 
-        return strtolower($forwardedProto) === 'https';
+        return is_string($forwardedProto) && strtolower($forwardedProto) === 'https';
     }
 
     public function ip(): string
     {
         $remoteAddr = $this->server['REMOTE_ADDR'] ?? null;
 
-        if (!self::isTrustedProxy($remoteAddr)) {
-            return (string) ($remoteAddr ?? '0.0.0.0');
+        if (!self::isTrustedProxy(is_string($remoteAddr) ? $remoteAddr : null)) {
+            return is_string($remoteAddr) && $remoteAddr !== '' ? $remoteAddr : '0.0.0.0';
         }
 
         $candidates = [];
 
-        if (!empty($this->server['HTTP_X_FORWARDED_FOR'])) {
-            $parts = explode(',', $this->server['HTTP_X_FORWARDED_FOR']);
+        $forwardedFor = $this->server['HTTP_X_FORWARDED_FOR'] ?? null;
+        if (is_string($forwardedFor) && $forwardedFor !== '') {
+            $parts = explode(',', $forwardedFor);
 
             foreach ($parts as $part) {
                 $candidates[] = trim($part);
             }
         }
 
-        if (!empty($this->server['HTTP_CLIENT_IP'])) {
-            $candidates[] = $this->server['HTTP_CLIENT_IP'];
+        $clientIp = $this->server['HTTP_CLIENT_IP'] ?? null;
+        if (is_string($clientIp) && $clientIp !== '') {
+            $candidates[] = $clientIp;
         }
 
-        if (!empty($this->server['REMOTE_ADDR'])) {
-            $candidates[] = $this->server['REMOTE_ADDR'];
+        if (is_string($remoteAddr) && $remoteAddr !== '') {
+            $candidates[] = $remoteAddr;
         }
 
         foreach ($candidates as $candidate) {
@@ -485,7 +794,9 @@ class Request
 
     public function userAgent(): string
     {
-        return $this->server['HTTP_USER_AGENT'] ?? '';
+        $userAgent = $this->server['HTTP_USER_AGENT'] ?? null;
+
+        return is_string($userAgent) ? $userAgent : '';
     }
 
     public function scheme(): string
@@ -495,7 +806,9 @@ class Request
 
     public function host(): string
     {
-        return $this->server['HTTP_HOST'] ?? 'localhost';
+        $host = $this->server['HTTP_HOST'] ?? null;
+
+        return is_string($host) && $host !== '' ? $host : 'localhost';
     }
 
     public function fullUrl(): string
@@ -512,11 +825,16 @@ class Request
         return $this->fullUrl() . '?' . http_build_query($this->query);
     }
 
+    /** @return array<string|int, mixed> */
     public function all(): array
     {
         return array_replace_recursive($this->query, $this->body, $this->files);
     }
 
+    /**
+     * @param list<string> $keys
+     * @return array<string|int, mixed>
+     */
     public function only(array $keys): array
     {
         $data = $this->all();
@@ -541,6 +859,10 @@ class Request
         return $result;
     }
 
+    /**
+     * @param list<string> $keys
+     * @return array<string|int, mixed>
+     */
     public function except(array $keys): array
     {
         $data = $this->all();
@@ -558,6 +880,7 @@ class Request
         return $data;
     }
 
+    /** @param array<string|int, mixed> $data */
     private function getByDot(array $data, string $path): mixed
     {
         $parts = explode('.', $path);
@@ -573,6 +896,7 @@ class Request
         return $data;
     }
 
+    /** @param array<string|int, mixed> $data */
     private function setByDot(array &$data, string $path, mixed $value): void
     {
         $parts = explode('.', $path);
@@ -589,6 +913,7 @@ class Request
         $cursor = $value;
     }
 
+    /** @param array<string|int, mixed> $data */
     private function unsetByDot(array &$data, string $path): void
     {
         $parts = explode('.', $path);

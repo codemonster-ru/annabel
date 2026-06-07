@@ -1,0 +1,8 @@
+<?php
+
+namespace Predis;
+
+class Client
+{
+    public function eval(string $script, int $numberOfKeys, mixed ...$arguments): mixed {}
+}

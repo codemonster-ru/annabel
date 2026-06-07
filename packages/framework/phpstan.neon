@@ -1,0 +1,10 @@
+parameters:
+    level: max
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - src
+    tmpDir: ../../var/phpstan/framework
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: src/Http/ValidatesRequests.php

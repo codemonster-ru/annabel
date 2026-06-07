@@ -25,6 +25,20 @@ class JoinTest extends TestCase
         );
     }
 
+    public function test_callable_function_name_is_treated_as_join_column()
+    {
+        $qb = new QueryBuilder($this->fakeConnection(), 'users');
+
+        $sql = $qb
+            ->join('metadata', 'key', '=', 'metadata.user_key')
+            ->toSql();
+
+        $this->assertStringContainsString(
+            'INNER JOIN `metadata` ON `key` = `metadata`.`user_key`',
+            $sql
+        );
+    }
+
     public function test_join_with_where_conditions()
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');

@@ -14,18 +14,21 @@
     ],
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/http": "^2.0",
+        "codemonster-ru/http": "^2.1@dev",
         "codemonster-ru/view": "^2.0",
         "codemonster-ru/config": "^2.0",
         "codemonster-ru/env": "^2.0",
         "codemonster-ru/router": "^2.0",
         "codemonster-ru/session": "^2.0",
         "codemonster-ru/dumper": "^1.0",
-        "codemonster-ru/database": "^2.0"
+        "codemonster-ru/database": "^2.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/simple-cache": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
-        "codemonster-ru/view-php": "^2.0"
+        "codemonster-ru/view-php": "^2.0",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
     "autoload": {
         "psr-4": {
@@ -40,6 +43,10 @@
             "src/helpers/request.php",
             "src/helpers/response.php",
             "src/helpers/session.php",
+            "src/helpers/validation.php",
+            "src/helpers/cache.php",
+            "src/helpers/events.php",
+            "src/helpers/deprecation.php",
             "src/helpers/dump.php"
         ]
     },
@@ -52,6 +59,7 @@
         ]
     },
     "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
     "minimum-stability": "stable",

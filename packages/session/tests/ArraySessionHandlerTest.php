@@ -4,7 +4,7 @@ use Codemonster\Session\Handlers\ArraySessionHandler;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 
-class ArraySessionHandlerTest extends TestCase
+final class ArraySessionHandlerTest extends TestCase
 {
     public function testReadWriteAndDestroy(): void
     {

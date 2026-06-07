@@ -1,9 +1,16 @@
 <?php
 
+use Codemonster\Annabel\Application;
+
 if (!function_exists('base_path')) {
     function base_path(string $path = ''): string
     {
-        $base = app()->getBasePath();
+        $app = app();
+        if (!$app instanceof Application) {
+            throw new RuntimeException('Application is not initialized.');
+        }
+
+        $base = $app->getBasePath();
 
         if ($path === '') {
             return $base;

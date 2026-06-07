@@ -65,6 +65,7 @@ class Env
         );
     }
 
+    /** @param iterable<mixed> $paths */
     public static function loadFiles(
         iterable $paths,
         ?string $encoding = null,
@@ -83,6 +84,7 @@ class Env
         );
     }
 
+    /** @param iterable<mixed> $paths */
     public static function safeLoadFiles(
         iterable $paths,
         ?string $encoding = null,
@@ -135,6 +137,7 @@ class Env
         return $value === false ? $default : self::castValue($value);
     }
 
+    /** @return list<array{string, string|null, list<int>}> */
     public static function parse(
         string $content,
         ?string $encoding = null,
@@ -159,6 +162,7 @@ class Env
         return $entries;
     }
 
+    /** @return array<string, string|null> */
     public static function parseToArray(
         string $content,
         ?string $encoding = null,

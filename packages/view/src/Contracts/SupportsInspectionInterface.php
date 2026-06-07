@@ -9,5 +9,7 @@ use Codemonster\View\Locator\LocatorInterface;
 interface SupportsInspectionInterface
 {
     public function getLocator(): LocatorInterface;
+
+    /** @return list<string> */
     public function getExtensions(): array;
 }

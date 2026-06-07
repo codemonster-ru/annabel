@@ -1,6 +1,7 @@
 <?php
 
 use Codemonster\Http\Request;
+use Psr\Http\Message\ServerRequestInterface;
 use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
@@ -9,7 +10,9 @@ class RequestTest extends TestCase
     {
         $request = new Request('POST', '/api/test', ['page' => '1'], ['name' => 'Vasya'], ['Accept' => 'application/json']);
 
+        $this->assertInstanceOf(ServerRequestInterface::class, $request);
         $this->assertSame('POST', $request->method());
+        $this->assertSame('POST', $request->getMethod());
         $this->assertSame('/api/test', $request->uri());
         $this->assertSame('1', $request->query('page'));
         $this->assertSame('Vasya', $request->input('name'));
@@ -181,6 +184,23 @@ class RequestTest extends TestCase
         $this->assertSame(2, $withQuery->query('page'));
         $this->assertSame('Vasya', $request->input('name'));
         $this->assertSame('Petya', $withInput->input('name'));
+    }
+
+    public function testPsrServerRequestMethods(): void
+    {
+        $request = new Request('POST', 'https://example.com/api?foo=bar', ['foo' => 'bar'], ['name' => 'Vasya'], ['Accept' => 'application/json'], 'raw');
+
+        $withAttribute = $request->withAttribute('user_id', 10);
+        $withHeader = $request->withAddedHeader('Accept', 'text/html');
+
+        $this->assertSame('/api?foo=bar', $request->getRequestTarget());
+        $this->assertSame('https', $request->getUri()->getScheme());
+        $this->assertSame('example.com', $request->getUri()->getHost());
+        $this->assertSame(['foo' => 'bar'], $request->getQueryParams());
+        $this->assertSame(['name' => 'Vasya'], $request->getParsedBody());
+        $this->assertSame('raw', (string) $request->getBody());
+        $this->assertSame(10, $withAttribute->getAttribute('user_id'));
+        $this->assertSame(['application/json', 'text/html'], $withHeader->getHeader('Accept'));
     }
 
     public function testOnlyAndExcept(): void

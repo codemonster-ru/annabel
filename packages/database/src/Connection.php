@@ -15,14 +15,16 @@ use Throwable;
 
 class Connection implements ConnectionInterface
 {
-    /**
-     * @var \PDO|\stdClass|object
-     */
+    /** @var PDO */
     protected $pdo;
 
+    /** @param array<string, mixed> $config */
     public function __construct(array $config)
     {
         $driver = $config['driver'] ?? 'mysql';
+        if (!is_string($driver)) {
+            throw new InvalidArgumentException('Database driver must be a string.');
+        }
 
         match ($driver) {
             'mysql'  => $this->connectMySql($config),
@@ -31,6 +33,7 @@ class Connection implements ConnectionInterface
         };
     }
 
+    /** @param array<string, mixed> $config */
     protected function connectMySql(array $config): void
     {
         $defaults = [
@@ -50,23 +53,39 @@ class Connection implements ConnectionInterface
             }
         }
 
+        $host = self::stringConfig($config, 'host');
+        $port = $config['port'];
+        $database = self::stringConfig($config, 'database');
+        $charset = self::stringConfig($config, 'charset');
+        $username = $config['username'];
+        $password = $config['password'];
+
+        if ((!is_string($port) && !is_int($port))
+            || ($username !== null && !is_string($username))
+            || ($password !== null && !is_string($password))) {
+            throw new InvalidArgumentException('Invalid MySQL connection config.');
+        }
+
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-            $config['host'],
-            $config['port'],
-            $config['database'],
-            $config['charset']
+            $host,
+            $port,
+            $database,
+            $charset
         );
 
         $options = $config['options'] ?? [];
+        if (!is_array($options)) {
+            throw new InvalidArgumentException('PDO options must be an array.');
+        }
         $options[PDO::ATTR_ERRMODE] ??= PDO::ERRMODE_EXCEPTION;
         $options[PDO::ATTR_DEFAULT_FETCH_MODE] ??= PDO::FETCH_ASSOC;
 
         try {
             $this->pdo = new PDO(
                 $dsn,
-                $config['username'],
-                $config['password'],
+                $username,
+                $password,
                 $options
             );
         } catch (PDOException $e) {
@@ -74,13 +93,14 @@ class Connection implements ConnectionInterface
         }
     }
 
+    /** @param array<string, mixed> $config */
     protected function connectSqlite(array $config): void
     {
         if (!isset($config['database'])) {
             throw new InvalidArgumentException('SQLite config must contain "database".');
         }
 
-        $dsn = 'sqlite:' . $config['database'];
+        $dsn = 'sqlite:' . self::stringConfig($config, 'database');
 
         try {
             $this->pdo = new PDO($dsn);
@@ -91,38 +111,89 @@ class Connection implements ConnectionInterface
         }
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     * @return list<array<string, mixed>>
+     */
     public function select(string $query, array $params = []): array
     {
-        return $this->run($query, $params)->fetchAll();
+        $rows = $this->run($query, $params)->fetchAll();
+
+        $result = [];
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $result[] = self::normalizeRow($row);
+            }
+        }
+
+        return $result;
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     * @return array<string, mixed>|null
+     */
     public function selectOne(string $query, array $params = []): ?array
     {
         $result = $this->run($query, $params)->fetch();
 
-        return $result !== false ? $result : null;
+        return is_array($result) ? self::normalizeRow($result) : null;
     }
 
+    /** @param array<string, mixed> $config */
+    private static function stringConfig(array $config, string $key): string
+    {
+        $value = $config[$key] ?? null;
+        if (!is_string($value)) {
+            throw new InvalidArgumentException("Database config [{$key}] must be a string.");
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<mixed, mixed> $row
+     * @return array<string, mixed>
+     */
+    private static function normalizeRow(array $row): array
+    {
+        $normalized = [];
+        foreach ($row as $key => $value) {
+            if (is_string($key)) {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /** @param array<int|string, mixed> $params */
     public function insert(string $query, array $params = []): bool
     {
         return $this->statement($query, $params);
     }
 
+    /** @param array<int|string, mixed> $params */
     public function update(string $query, array $params = []): int
     {
         return $this->run($query, $params)->rowCount();
     }
 
+    /** @param array<int|string, mixed> $params */
     public function delete(string $query, array $params = []): int
     {
         return $this->run($query, $params)->rowCount();
     }
 
+    /** @param array<int|string, mixed> $params */
     public function statement(string $query, array $params = []): bool
     {
-        return $this->run($query, $params) !== false;
+        $this->run($query, $params);
+
+        return true;
     }
 
+    /** @param array<int|string, mixed> $params */
     protected function run(string $query, array $params = []): PDOStatement
     {
         try {

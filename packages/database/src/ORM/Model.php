@@ -12,6 +12,7 @@ use Codemonster\Database\Relations\Relation;
 
 /**
  * @method bool runSoftDelete()
+ * @phpstan-consistent-constructor
  */
 abstract class Model implements \JsonSerializable
 {
@@ -24,23 +25,31 @@ abstract class Model implements \JsonSerializable
     protected string $createdAtColumn = 'created_at';
     protected string $updatedAtColumn = 'updated_at';
 
+    /** @var list<string> */
     protected array $fillable = [];
+    /** @var list<string> */
     protected array $guarded = ['*'];
+    /** @var list<string> */
     protected array $hidden = [];
+    /** @var array<string, string> */
     protected array $casts = [];
 
+    /** @var array<string, mixed> */
     protected array $attributes = [];
+    /** @var array<string, mixed> */
     protected array $original   = [];
+    /** @var array<string, mixed> */
     protected array $relations  = [];
 
     protected bool $exists = false;
     protected bool $wasRecentlyCreated = false;
 
     /**
-     * @var callable|null fn(string $modelClass): ConnectionInterface
+     * @var (callable(class-string<Model>): ConnectionInterface)|null
      */
     protected static $connectionResolver;
 
+    /** @param array<string, mixed> $attributes */
     public function __construct(array $attributes = [], bool $exists = false)
     {
         $this->exists = $exists;
@@ -87,7 +96,7 @@ abstract class Model implements \JsonSerializable
         return static::query()->get();
     }
 
-    public static function find($id): ?static
+    public static function find(mixed $id): ?static
     {
         $instance = new static();
 
@@ -96,6 +105,7 @@ abstract class Model implements \JsonSerializable
             ->first();
     }
 
+    /** @param array<string, mixed> $attributes */
     public static function create(array $attributes): static
     {
         $model = new static();
@@ -108,6 +118,7 @@ abstract class Model implements \JsonSerializable
     /**
      * Hydration of an array of strings into a collection of models.
      *
+     * @param list<array<string, mixed>> $rows
      * @return ModelCollection<static>
      */
     public static function hydrate(array $rows): ModelCollection
@@ -176,7 +187,6 @@ abstract class Model implements \JsonSerializable
 
         // support for soft deletes (via trait)
         if (method_exists($this, 'runSoftDelete')) {
-            /** @var callable $m */
             return $this->runSoftDelete();
         }
 
@@ -196,6 +206,7 @@ abstract class Model implements \JsonSerializable
     //  Attributes / Castes
     // ---------------------------------------------------------------------
 
+    /** @param array<string, mixed> $attributes */
     public function fill(array $attributes): static
     {
         foreach ($attributes as $key => $value) {
@@ -222,6 +233,7 @@ abstract class Model implements \JsonSerializable
         return in_array($key, $this->guarded, true);
     }
 
+    /** @return array<string, mixed> */
     public function getAttributes(): array
     {
         $attributes = $this->attributes;
@@ -241,7 +253,7 @@ abstract class Model implements \JsonSerializable
         return $attributes;
     }
 
-    public function getAttribute(string $key)
+    public function getAttribute(string $key): mixed
     {
         if (array_key_exists($key, $this->attributes)) {
             return $this->castAttribute($key, $this->attributes[$key]);
@@ -258,12 +270,12 @@ abstract class Model implements \JsonSerializable
         return null;
     }
 
-    public function setAttribute(string $key, $value): void
+    public function setAttribute(string $key, mixed $value): void
     {
         $this->attributes[$key] = $value;
     }
 
-    protected function castAttribute(string $key, $value)
+    protected function castAttribute(string $key, mixed $value): mixed
     {
         if ($value === null) {
             return null;
@@ -278,15 +290,15 @@ abstract class Model implements \JsonSerializable
         switch ($cast) {
             case 'int':
             case 'integer':
-                return (int) $value;
+                return self::integerCast($value);
 
             case 'real':
             case 'float':
             case 'double':
-                return (float) $value;
+                return self::floatCast($value);
 
             case 'string':
-                return (string) $value;
+                return self::stringCast($value);
 
             case 'bool':
             case 'boolean':
@@ -299,16 +311,50 @@ abstract class Model implements \JsonSerializable
                 return is_string($value) ? json_decode($value, true) : $value;
 
             case 'datetime':
-                return new \DateTimeImmutable((string) $value);
+                return new \DateTimeImmutable(self::stringCast($value));
 
             case 'date':
-                return (new \DateTimeImmutable((string) $value))->setTime(0, 0);
+                return (new \DateTimeImmutable(self::stringCast($value)))->setTime(0, 0);
 
             default:
                 return $value;
         }
     }
 
+    private static function integerCast(mixed $value): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+        if (is_float($value) || (is_string($value) && is_numeric($value))) {
+            return (int) $value;
+        }
+
+        throw new \UnexpectedValueException('Model attribute cannot be cast to integer.');
+    }
+
+    private static function floatCast(mixed $value): float
+    {
+        if (is_int($value) || is_float($value) || (is_string($value) && is_numeric($value))) {
+            return (float) $value;
+        }
+
+        throw new \UnexpectedValueException('Model attribute cannot be cast to float.');
+    }
+
+    private static function stringCast(mixed $value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+        if (is_int($value) || is_float($value) || is_bool($value)) {
+            return (string) $value;
+        }
+
+        throw new \UnexpectedValueException('Model attribute cannot be cast to string.');
+    }
+
+    /** @return array<string, mixed> */
     protected function getDirtyForPersistence(): array
     {
         $dirty = [];
@@ -355,9 +401,9 @@ abstract class Model implements \JsonSerializable
     //  Relations
     // ---------------------------------------------------------------------
 
-    protected function getRelationshipFromMethod(string $method)
+    protected function getRelationshipFromMethod(string $method): mixed
     {
-        /** @var Relation $relation */
+        /** @var Relation<Model, Model> $relation */
         $relation = $this->$method();
 
         if (!$relation instanceof Relation) {
@@ -376,11 +422,11 @@ abstract class Model implements \JsonSerializable
     /**
      * @template TRelated of Model
      * @param class-string<TRelated> $related
-     * @return HasOne<TRelated, static>
+     * @return HasOne<TRelated, $this>
      */
     public function hasOne(string $related, ?string $foreignKey = null, ?string $localKey = null): HasOne
     {
-        /** @var Model $instance */
+        /** @var TRelated $instance */
         $instance = new $related();
 
         $foreignKey = $foreignKey ?? $this->getForeignKey();
@@ -398,11 +444,11 @@ abstract class Model implements \JsonSerializable
     /**
      * @template TRelated of Model
      * @param class-string<TRelated> $related
-     * @return HasMany<TRelated, static>
+     * @return HasMany<TRelated, $this>
      */
     public function hasMany(string $related, ?string $foreignKey = null, ?string $localKey = null): HasMany
     {
-        /** @var Model $instance */
+        /** @var TRelated $instance */
         $instance = new $related();
 
         $foreignKey = $foreignKey ?? $this->getForeignKey();
@@ -420,11 +466,11 @@ abstract class Model implements \JsonSerializable
     /**
      * @template TRelated of Model
      * @param class-string<TRelated> $related
-     * @return BelongsTo<TRelated, static>
+     * @return BelongsTo<TRelated, $this>
      */
     public function belongsTo(string $related, ?string $foreignKey = null, ?string $ownerKey = null): BelongsTo
     {
-        /** @var Model $instance */
+        /** @var TRelated $instance */
         $instance = new $related();
 
         // foreignKey on the CURRENT model, ownerKey on the linked one
@@ -443,7 +489,7 @@ abstract class Model implements \JsonSerializable
     /**
      * @template TRelated of Model
      * @param class-string<TRelated> $related
-     * @return BelongsToMany<TRelated, static>
+     * @return BelongsToMany<TRelated, $this>
      */
     public function belongsToMany(
         string $related,
@@ -453,7 +499,7 @@ abstract class Model implements \JsonSerializable
         ?string $parentKey = null,
         ?string $relatedKey = null
     ): BelongsToMany {
-        /** @var Model $instance */
+        /** @var TRelated $instance */
         $instance = new $related();
 
         $pivotTable     = $pivotTable     ?? $this->joiningTable($instance);
@@ -475,9 +521,10 @@ abstract class Model implements \JsonSerializable
         );
     }
 
-    public function load($relations): static
+    /** @param string|list<string> $relations */
+    public function load(string|array $relations): static
     {
-        $relations = is_array($relations) ? $relations : func_get_args();
+        $relations = is_array($relations) ? $relations : [$relations];
 
         foreach ($relations as $name) {
             $this->getRelationshipFromMethod($name);
@@ -497,12 +544,12 @@ abstract class Model implements \JsonSerializable
         }
 
         $name = (new \ReflectionClass($this))->getShortName();
-        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? $name);
 
         return $this->table = $snake . 's';
     }
 
-    public function getKey()
+    public function getKey(): mixed
     {
         return $this->getAttribute($this->getKeyName());
     }
@@ -515,7 +562,7 @@ abstract class Model implements \JsonSerializable
     public function getForeignKey(): string
     {
         $name = (new \ReflectionClass($this))->getShortName();
-        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $name) ?? $name);
 
         return $snake . '_id';
     }
@@ -527,9 +574,11 @@ abstract class Model implements \JsonSerializable
 
     public function joiningTable(Model $related): string
     {
+        $parentName = (new \ReflectionClass($this))->getShortName();
+        $relatedName = (new \ReflectionClass($related))->getShortName();
         $segments = [
-            strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', (new \ReflectionClass($this))->getShortName())),
-            strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', (new \ReflectionClass($related))->getShortName())),
+            strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $parentName) ?? $parentName),
+            strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $relatedName) ?? $relatedName),
         ];
 
         sort($segments);
@@ -541,21 +590,23 @@ abstract class Model implements \JsonSerializable
     //  Magic/serialization
     // ---------------------------------------------------------------------
 
-    public function __get(string $key)
+    public function __get(string $key): mixed
     {
         return $this->getAttribute($key);
     }
 
-    public function __set(string $key, $value): void
+    public function __set(string $key, mixed $value): void
     {
         $this->setAttribute($key, $value);
     }
 
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
         return $this->getAttributes();
     }
 
+    /** @return array<string, mixed> */
     public function jsonSerialize(): array
     {
         return $this->toArray();

@@ -32,7 +32,7 @@ class RateLimiter implements AttemptRateLimiterInterface
             return false;
         }
 
-        return (int) ($record['attempts'] ?? 0) >= $maxAttempts;
+        return $record['attempts'] >= $maxAttempts;
     }
 
     public function hit(string $key, int $decaySeconds): int
@@ -40,7 +40,7 @@ class RateLimiter implements AttemptRateLimiterInterface
         if ($this->storage instanceof AtomicThrottleStorageInterface) {
             $record = $this->storage->increment($key, $decaySeconds, ($this->now)());
 
-            return (int) ($record['attempts'] ?? 0);
+            return $record['attempts'];
         }
 
         $record = $this->record($key);
@@ -53,7 +53,7 @@ class RateLimiter implements AttemptRateLimiterInterface
             ];
         }
 
-        $record['attempts'] = (int) ($record['attempts'] ?? 0) + 1;
+        $record['attempts']++;
 
         $this->storage->put($key, $record);
 
@@ -71,8 +71,8 @@ class RateLimiter implements AttemptRateLimiterInterface
             $now = ($this->now)();
             $record = $this->storage->increment($key, $decaySeconds, $now);
 
-            $attempts = (int) ($record['attempts'] ?? 0);
-            $expiresAt = (int) ($record['expires_at'] ?? 0);
+            $attempts = $record['attempts'];
+            $expiresAt = $record['expires_at'];
 
             return [
                 'attempts' => $attempts,
@@ -110,7 +110,7 @@ class RateLimiter implements AttemptRateLimiterInterface
         }
 
         $now = ($this->now)();
-        $expiresAt = (int) ($record['expires_at'] ?? 0);
+        $expiresAt = $record['expires_at'];
 
         return max(0, $expiresAt - $now);
     }
@@ -120,16 +120,16 @@ class RateLimiter implements AttemptRateLimiterInterface
         $this->storage->forget($key);
     }
 
+    /** @return array{attempts: int, expires_at: int}|null */
     protected function record(string $key): ?array
     {
-        $value = $this->storage->get($key);
-
-        return is_array($value) ? $value : null;
+        return $this->storage->get($key);
     }
 
+    /** @param array{attempts: int, expires_at: int} $record */
     protected function isExpired(array $record): bool
     {
-        $expiresAt = (int) ($record['expires_at'] ?? 0);
+        $expiresAt = $record['expires_at'];
         $now = ($this->now)();
 
         return $expiresAt !== 0 && $now >= $expiresAt;

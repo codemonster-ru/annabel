@@ -7,12 +7,25 @@ class ColumnDefinition
     public string $type;
     public string $name;
 
+    /** @var array{length?: int, precision?: int, scale?: int} */
     public array $options = [];
+    /**
+     * @var array{
+     *     nullable?: bool,
+     *     default?: mixed,
+     *     unique?: bool,
+     *     primary?: bool,
+     *     autoIncrement?: bool,
+     *     unsigned?: bool,
+     *     comment?: string
+     * }
+     */
     public array $modifiers = [];
 
     /** Changing existing column */
     public bool $change = false;
 
+    /** @param array{length?: int, precision?: int, scale?: int} $options */
     public function __construct(string $type, string $name, array $options = [])
     {
         $this->type = $type;

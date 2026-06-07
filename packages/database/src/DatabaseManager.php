@@ -17,6 +17,7 @@ class DatabaseManager
      */
     protected array $config;
 
+    /** @param array<string, mixed> $config */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -27,7 +28,8 @@ class DatabaseManager
         $name ??= $this->getDefaultConnectionName();
 
         if (!isset($this->connections[$name])) {
-            $connectionConfig = $this->config['connections'][$name] ?? null;
+            $connections = $this->config['connections'] ?? null;
+            $connectionConfig = is_array($connections) ? ($connections[$name] ?? null) : null;
 
             if (!is_array($connectionConfig)) {
                 throw new InvalidArgumentException(
@@ -35,6 +37,13 @@ class DatabaseManager
                 );
             }
 
+            foreach ($connectionConfig as $key => $_) {
+                if (!is_string($key)) {
+                    throw new InvalidArgumentException('Database connection config keys must be strings.');
+                }
+            }
+
+            /** @var array<string, mixed> $connectionConfig */
             $this->connections[$name] = new Connection($connectionConfig);
         }
 
@@ -47,7 +56,12 @@ class DatabaseManager
             throw new InvalidArgumentException('Database default connection name is not configured.');
         }
 
-        return $this->config['default'];
+        $name = $this->config['default'];
+        if (!is_string($name) || $name === '') {
+            throw new InvalidArgumentException('Database default connection name must be a non-empty string.');
+        }
+
+        return $name;
     }
 
     public function setDefaultConnectionName(string $name): void
@@ -62,7 +76,8 @@ class DatabaseManager
      * $db->table('users')->get();
      * $db->select('SELECT 1');
      */
-    public function __call(string $method, array $arguments)
+    /** @param list<mixed> $arguments */
+    public function __call(string $method, array $arguments): mixed
     {
         return $this->connection()->{$method}(...$arguments);
     }

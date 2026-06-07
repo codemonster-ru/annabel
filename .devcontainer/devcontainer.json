@@ -1,0 +1,33 @@
+{
+    "name": "Annabel",
+    "dockerComposeFile": "../compose.yaml",
+    "service": "php",
+    "workspaceFolder": "/workspace",
+    "runServices": [
+        "php",
+        "web",
+        "nginx",
+        "db",
+        "phpmyadmin"
+    ],
+    "shutdownAction": "stopCompose",
+    "forwardPorts": [
+        8002,
+        8080
+    ],
+    "portsAttributes": {
+        "8002": {
+            "label": "Annabel nginx"
+        },
+        "8080": {
+            "label": "phpMyAdmin"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "openai.chatgpt"
+            ]
+        }
+    }
+}

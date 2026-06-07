@@ -11,16 +11,28 @@ use Codemonster\Database\Contracts\QueryBuilderInterface;
  */
 interface ConnectionInterface
 {
+    /**
+     * @param array<int|string, mixed> $params
+     * @return list<array<string, mixed>>
+     */
     public function select(string $query, array $params = []): array;
 
+    /**
+     * @param array<int|string, mixed> $params
+     * @return array<string, mixed>|null
+     */
     public function selectOne(string $query, array $params = []): ?array;
 
+    /** @param array<int|string, mixed> $params */
     public function insert(string $query, array $params = []): bool;
 
+    /** @param array<int|string, mixed> $params */
     public function update(string $query, array $params = []): int;
 
+    /** @param array<int|string, mixed> $params */
     public function delete(string $query, array $params = []): int;
 
+    /** @param array<int|string, mixed> $params */
     public function statement(string $query, array $params = []): bool;
 
     /**

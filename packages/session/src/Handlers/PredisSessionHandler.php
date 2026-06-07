@@ -5,6 +5,7 @@ namespace Codemonster\Session\Handlers;
 use Predis\Client;
 use SessionHandlerInterface;
 
+/** @api */
 class PredisSessionHandler implements SessionHandlerInterface
 {
     protected Client $client;
@@ -55,9 +56,7 @@ class PredisSessionHandler implements SessionHandlerInterface
             $result = $this->retry(function () use ($key, $data) {
                 return $this->client->setex($key, $this->ttl, $data);
             });
-        }
-
-        if ($this->ttl <= 0) {
+        } else {
             $result = $this->retry(function () use ($key, $data) {
                 return $this->client->set($key, $data);
             });

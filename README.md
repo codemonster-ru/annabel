@@ -36,6 +36,17 @@ The root `composer.json` declares path repositories for `packages/*`. Package
 manifests are kept inside their package directories so they can still be
 published as independent Composer packages.
 
+Architecture and release rules:
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Release policy](docs/RELEASE.md)
+
+Run the full release gate before tagging or splitting packages:
+
+```bash
+composer quality
+```
+
 ## Package Splits
 
 Package repositories are updated from this monorepo by the `Split Packages`

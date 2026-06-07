@@ -31,21 +31,25 @@ class EnvParser
 
     private function __construct() {}
 
+    /** @return list<array{string, string|null, list<int>}> */
     public static function parseContent(string $content): array
     {
         return self::parseContentWithOptions($content, false);
     }
 
+    /** @return list<array{string, string|null, list<int>}> */
     public static function parseString(string $content, ?string $encoding = null): array
     {
         return self::parseContent(self::normalizeEncoding($content, $encoding, false));
     }
 
+    /** @return list<array{string, string|null, list<int>}> */
     public static function parseStringRaw(string $content, ?string $encoding = null): array
     {
         return self::parseString($content, $encoding);
     }
 
+    /** @return list<array{string, string|null, list<int>}> */
     public static function parseStringRawWithOptions(
         string $content,
         ?string $encoding = null,
@@ -89,6 +93,7 @@ class EnvParser
         return self::stripUtf8Bom($converted);
     }
 
+    /** @param list<int> $vars */
     public static function expandVariables(string $value, array $vars): string
     {
         [$resolved] = self::expandVariablesWithReport($value, $vars);
@@ -96,6 +101,10 @@ class EnvParser
         return $resolved;
     }
 
+    /**
+     * @param list<int> $vars
+     * @return array{string, list<string>}
+     */
     public static function expandVariablesWithReport(string $value, array $vars): array
     {
         if ($vars === []) {
@@ -119,6 +128,10 @@ class EnvParser
     }
 
 
+    /**
+     * @param list<string> $lines
+     * @return list<string>
+     */
     private static function collapseMultiline(array $lines): array
     {
         $output = [];
@@ -210,6 +223,7 @@ class EnvParser
         return $line === '' || (isset($line[0]) && $line[0] === '#');
     }
 
+    /** @return array{string, string|null, list<int>} */
     private static function parseEntry(string $raw, bool $asciiNames): array
     {
         [$namePart, $valuePart] = self::splitLine($raw);
@@ -224,6 +238,7 @@ class EnvParser
         return [$name, $value, $vars];
     }
 
+    /** @return array{string, string} */
     private static function splitLine(string $line): array
     {
         $pos = strpos($line, '=');
@@ -287,6 +302,7 @@ class EnvParser
         return preg_match('~(*UTF8)\A[\p{Ll}\p{Lu}\p{M}\p{N}_.]+\z~u', $name) === 1;
     }
 
+    /** @return list<array{string, string|null, list<int>}> */
     private static function parseContentWithOptions(string $content, bool $asciiNames): array
     {
         $lines = preg_split("/(\r\n|\n|\r)/", $content);
@@ -304,6 +320,7 @@ class EnvParser
         return $entries;
     }
 
+    /** @return array{string, list<int>} */
     private static function parseValue(string $value): array
     {
         if (trim($value) === '') {
@@ -331,8 +348,10 @@ class EnvParser
         return [$output, $vars];
     }
 
+    /** @return list<string> */
     private static function tokenize(string $input): array
     {
+        /** @var string|null $regex */
         static $regex;
 
         if ($regex === null) {
@@ -357,6 +376,7 @@ class EnvParser
         return $tokens;
     }
 
+    /** @return array{string, bool, int} */
     private static function advanceState(int $state, string $token, string $value): array
     {
         switch ($state) {
@@ -448,6 +468,7 @@ class EnvParser
         return sprintf('Encountered %s at [%s].', $cause, strtok($subject, "\n"));
     }
 
+    /** @return array{string, string|null} */
     private static function resolveVariableWithReport(string $value): array
     {
         if (preg_match('/\A\${([a-zA-Z0-9_.]+)}/', $value, $matches) === 1) {
@@ -476,11 +497,11 @@ class EnvParser
     private static function readRaw(string $key): ?string
     {
         if (array_key_exists($key, $_ENV)) {
-            return $_ENV[$key];
+            return is_string($_ENV[$key]) ? $_ENV[$key] : null;
         }
 
         if (array_key_exists($key, $_SERVER)) {
-            return $_SERVER[$key];
+            return is_string($_SERVER[$key]) ? $_SERVER[$key] : null;
         }
 
         $value = getenv($key);

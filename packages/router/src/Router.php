@@ -42,6 +42,7 @@ class Router
     public function dispatch(string $method, string $uri): ?Route
     {
         $uri = parse_url($uri, PHP_URL_PATH);
+        $uri = is_string($uri) ? $uri : '/';
         $uri = rtrim($uri, '/');
         $uri = $uri === '' ? '/' : $uri;
 
@@ -55,6 +56,7 @@ class Router
         return $route;
     }
 
+    /** @param list<list<string|array<mixed>>> $parentMiddleware */
     public function group(string $prefix, callable $callback, array $parentMiddleware = []): RouteGroup
     {
         $group = new RouteGroup($prefix, $callback, $this, $parentMiddleware);

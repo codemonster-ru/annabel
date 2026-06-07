@@ -1,6 +1,8 @@
 <?php
 
 use Codemonster\Annabel\Container;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
@@ -10,6 +12,35 @@ class ContainerTest extends TestCase
         $c = new Container();
         $c->bind('foo', fn() => 'bar');
         $this->assertSame('bar', $c->make('foo'));
+    }
+
+    public function test_container_implements_psr_container_interface()
+    {
+        $this->assertInstanceOf(ContainerInterface::class, new Container());
+    }
+
+    public function test_get_resolves_entries_through_psr_interface()
+    {
+        $c = new Container();
+        $c->bind('foo', fn() => 'bar');
+
+        $this->assertSame('bar', $c->get('foo'));
+    }
+
+    public function test_has_returns_true_for_autowirable_classes()
+    {
+        $c = new Container();
+
+        $this->assertTrue($c->has(Foo::class));
+    }
+
+    public function test_get_throws_psr_not_found_exception_for_unknown_entries()
+    {
+        $c = new Container();
+
+        $this->expectException(NotFoundExceptionInterface::class);
+
+        $c->get('missing-service');
     }
 
     public function test_singleton_returns_same_instance()

@@ -54,7 +54,7 @@ class RouteListCommand extends Command
         ));
 
         foreach ($routes as $route) {
-            $methods = implode('|', $route->methods);
+            $methods = implode('|', array_values(array_filter($route->methods, 'is_string')));
             $handler = $this->describeHandler($route->handler);
             $middleware = $this->describeMiddleware($route->getMiddleware());
 
@@ -95,7 +95,7 @@ class RouteListCommand extends Command
         if (is_array($handler) && count($handler) === 2) {
             [$class, $method] = $handler;
 
-            return is_string($class) ? $class . '@' . $method : 'callable';
+            return is_string($class) && is_string($method) ? $class . '@' . $method : 'callable';
         }
 
         if ($handler instanceof \Closure) {
@@ -106,9 +106,12 @@ class RouteListCommand extends Command
             return get_class($handler);
         }
 
-        return (string)$handler;
+        return is_scalar($handler) ? (string) $handler : 'callable';
     }
 
+    /**
+     * @param array<mixed> $middleware
+     */
     protected function describeMiddleware(array $middleware): string
     {
         if (empty($middleware)) {
@@ -121,9 +124,11 @@ class RouteListCommand extends Command
             if (is_array($entry)) {
                 $class = $entry[0] ?? '';
                 $param = $entry[1] ?? null;
-                $names[] = $param ? "{$class}:{$param}" : (string)$class;
-            } else {
-                $names[] = (string)$entry;
+                if (is_string($class)) {
+                    $names[] = is_string($param) && $param !== '' ? "{$class}:{$param}" : $class;
+                }
+            } elseif (is_string($entry)) {
+                $names[] = $entry;
             }
         }
 

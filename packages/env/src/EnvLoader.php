@@ -4,6 +4,7 @@ namespace Codemonster\Env;
 
 class EnvLoader implements LoaderInterface
 {
+    /** @var array<string, true> */
     private array $loaded = [];
     private ParserInterface $parser;
 
@@ -93,6 +94,7 @@ class EnvLoader implements LoaderInterface
         return true;
     }
 
+    /** @param iterable<mixed> $paths */
     public function loadFiles(
         iterable $paths,
         ?string $encoding = null,
@@ -161,6 +163,7 @@ class EnvLoader implements LoaderInterface
         }
     }
 
+    /** @param iterable<mixed> $paths */
     public function safeLoadFiles(
         iterable $paths,
         ?string $encoding = null,
@@ -178,13 +181,14 @@ class EnvLoader implements LoaderInterface
         return true;
     }
 
+    /** @return list<string>|null */
     private function expandPath(string $path, ?int $globFlags): ?array
     {
         if (!strpbrk($path, '*?[')) {
             return null;
         }
 
-        $flags = $globFlags ?? GLOB_BRACE;
+        $flags = $globFlags ?? (defined('GLOB_BRACE') ? constant('GLOB_BRACE') : 0);
         $matches = glob($path, $flags);
 
         if ($matches === false) {
@@ -196,6 +200,7 @@ class EnvLoader implements LoaderInterface
         return $matches;
     }
 
+    /** @param list<array{string, string|null, list<int>}> $entries */
     private function applyEntries(array $entries, bool $strictResolve): void
     {
         foreach ($entries as $entry) {

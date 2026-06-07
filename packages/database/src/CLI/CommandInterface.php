@@ -17,7 +17,7 @@ interface CommandInterface
     /**
      * Handle command.
      *
-     * @param string[] $arguments Arguments after command name
+     * @param list<string> $arguments Arguments after command name
      */
     public function handle(array $arguments): int;
 }

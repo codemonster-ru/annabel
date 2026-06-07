@@ -47,6 +47,49 @@ SECURITY_THROTTLE_MAX_ATTEMPTS=60
 SECURITY_THROTTLE_DECAY_SECONDS=60
 ```
 
+## Sessions
+
+Sessions use the file driver and `storage/sessions` by default. The directory is
+created automatically and must be writable by the PHP process.
+
+Set `SESSION_DRIVER=array` for isolated tests or `SESSION_DRIVER=redis` for
+multi-node deployments. Redis connection and cookie options live in
+`config/session.php`.
+
+## Validation
+
+Validation failures redirect only to local same-origin locations. Old form input
+is flashed without sensitive keys configured in `config/validation.php`.
+
+## Providers
+
+Application providers are configured in `config/app.php`. Keep framework
+defaults enabled, use `disabled` for explicit opt-outs, and add application
+providers through `extra` or `bootstrap/providers/*.php` discovery. Installed
+packages may register their own providers through Composer metadata; use
+`providers.packages.dont_discover` for application-level opt-outs.
+
+Package config, migrations, views, and assets can be published with
+`php vendor/bin/annabel vendor:publish` using an explicit provider, tag, or
+`--all` selector.
+
+Package and application service providers may also register container-resolved
+CLI commands through their `commands()` method.
+
+## Logging
+
+Logs use `config/logging.php` and write to `storage/logs/annabel.log` by default.
+
+## Cache
+
+Cache uses `config/cache.php` and writes file cache entries to `storage/cache` by
+default.
+
+## Events
+
+Events are dispatched through the PSR-14 dispatcher binding. Use the `event()`
+helper to dispatch object events.
+
 ## Requirements
 
 -   PHP **8.2** or higher

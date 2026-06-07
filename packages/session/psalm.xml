@@ -7,6 +7,7 @@
     <stubs>
         <file name="stubs/PredisClient.stub" />
         <file name="stubs/RedisCluster.stub" />
+        <file name="stubs/RedisException.stub" />
         <file name="stubs/RedisSentinel.stub" />
     </stubs>
     <projectFiles>
@@ -30,16 +31,5 @@
                 <file name="tests/CacheSessionHandlerTest.php" />
             </errorLevel>
         </DuplicateClass>
-        <UndefinedThisPropertyFetch>
-            <errorLevel type="suppress">
-                <file name="tests/RedisClusterSessionHandlerTest.php" />
-                <file name="tests/RedisSentinelSessionHandlerTest.php" />
-            </errorLevel>
-        </UndefinedThisPropertyFetch>
-        <UndefinedVariable>
-            <errorLevel type="suppress">
-                <file name="tests/RedisSentinelSessionHandlerTest.php" />
-            </errorLevel>
-        </UndefinedVariable>
     </issueHandlers>
 </psalm>

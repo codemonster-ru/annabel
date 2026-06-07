@@ -20,8 +20,33 @@
         "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
     "scripts": {
-        "test:framework": "cd packages/framework && ../../vendor/bin/phpunit --testdox",
-        "test": "@test:framework"
+        "architecture": "php tools/architecture-check.php",
+        "api:contract": "php tools/api-contract-check.php",
+        "api:snapshot": "php tools/api-snapshot-check.php",
+        "api:snapshot:update": "php tools/api-snapshot-check.php --update",
+        "project:hygiene": "php tools/project-hygiene-check.php",
+        "validate:packages": "composer validate --strict && for dir in packages/* skeleton/annabel-skeleton; do if [ -f \"$dir/composer.json\" ]; then composer validate --strict --no-check-lock --working-dir=\"$dir\"; fi; done",
+        "test:framework": "composer test --working-dir=packages/framework",
+        "test:packages": "set -e; for dir in packages/*; do if [ -f \"$dir/phpunit.xml.dist\" ]; then composer test --working-dir=\"$dir\"; fi; done",
+        "install:ecosystem": "php tools/prepare-ecosystem.php && COMPOSER=composer.dev.json composer update --working-dir=/tmp/annabel-skeleton-acceptance --no-interaction --prefer-dist --no-progress",
+        "test:ecosystem": [
+            "@install:ecosystem",
+            "php tools/ecosystem-smoke.php"
+        ],
+        "analyse:packages": "set -e; for dir in packages/*; do if composer run-script --list --working-dir=\"$dir\" | grep -q '^  analyse '; then composer analyse --working-dir=\"$dir\"; fi; if composer run-script --list --working-dir=\"$dir\" | grep -q '^  psalm '; then composer psalm --working-dir=\"$dir\"; fi; done",
+        "audit:packages": "set -e; for dir in packages/* skeleton/annabel-skeleton; do if [ -f \"$dir/composer.lock\" ]; then composer audit --working-dir=\"$dir\"; fi; done",
+        "quality": [
+            "@validate:packages",
+            "@architecture",
+            "@api:contract",
+            "@api:snapshot",
+            "@project:hygiene",
+            "@test:packages",
+            "@test:ecosystem",
+            "@analyse:packages",
+            "@audit:packages"
+        ],
+        "test": "@test:packages"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

@@ -8,11 +8,17 @@ use Codemonster\Http\Response;
 class VerifyCsrfToken
 {
     protected CsrfTokenManager $tokens;
+    /** @var list<string> */
     protected array $exceptPaths;
+    /** @var list<string> */
     protected array $exceptMethods;
     protected bool $verifyJsonRequests;
     protected string $inputKey;
 
+    /**
+     * @param list<string> $exceptPaths
+     * @param list<string> $exceptMethods
+     */
     public function __construct(
         ?CsrfTokenManager $tokens = null,
         array $exceptPaths = [],

@@ -35,7 +35,6 @@ class ModelQuery
     {
         $rows = $this->builder->get();
 
-        /** @var class-string<Model> $model */
         $model = $this->modelClass;
 
         return $model::hydrate($rows);
@@ -52,7 +51,6 @@ class ModelQuery
             return null;
         }
 
-        /** @var class-string<Model> $model */
         $model = $this->modelClass;
 
         return new $model((array) $row, true);
@@ -69,6 +67,32 @@ class ModelQuery
     }
 
     /**
+     * @param string|callable(QueryBuilder): void $column
+     * @param mixed ...$arguments
+     */
+    public function where(string|callable $column, mixed ...$arguments): static
+    {
+        $this->builder->where($column, ...$arguments);
+
+        return $this;
+    }
+
+    public function whereNull(string $column, string $boolean = 'AND'): static
+    {
+        $this->builder->whereNull($column, $boolean);
+
+        return $this;
+    }
+
+    public function whereNotNull(string $column, string $boolean = 'AND'): static
+    {
+        $this->builder->whereNotNull($column, $boolean);
+
+        return $this;
+    }
+
+    /**
+     * @param list<mixed> $arguments
      * @return mixed
      */
     public function __call(string $name, array $arguments): mixed

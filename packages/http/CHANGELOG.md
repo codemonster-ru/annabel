@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+-   `Request` now implements `Psr\Http\Message\ServerRequestInterface`.
+-   `Response` now implements `Psr\Http\Message\ResponseInterface`.
+-   Added lightweight `Stream` and `Uri` PSR-7 value objects.
+
+### Changed
+
+-   Advanced the development branch alias to `2.1.x-dev`.
+
 ## [2.0.0] - 2025-10-24
 
 ### Added

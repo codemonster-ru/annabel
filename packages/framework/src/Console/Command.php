@@ -2,6 +2,9 @@
 
 namespace Codemonster\Annabel\Console;
 
+use Codemonster\Annabel\Console\Contracts\InputInterface;
+use Codemonster\Annabel\Console\Contracts\OutputInterface;
+
 abstract class Command
 {
     protected ?Console $console = null;
@@ -56,5 +59,10 @@ abstract class Command
     public function handle(array $arguments = []): int
     {
         return 0;
+    }
+
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        return $this->handle($input->tokens());
     }
 }

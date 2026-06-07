@@ -22,7 +22,9 @@ class GrammarResolver
     protected function getDriverName(ConnectionInterface $connection): ?string
     {
         try {
-            return $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $driver = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+            return is_string($driver) ? $driver : null;
         } catch (\Throwable) {
             return null;
         }

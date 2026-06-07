@@ -5,6 +5,7 @@ namespace Codemonster\Session\Handlers;
 use Redis;
 use SessionHandlerInterface;
 
+/** @api */
 class RedisSessionHandler implements SessionHandlerInterface
 {
     protected Redis $redis;

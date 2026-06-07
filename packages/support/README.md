@@ -37,6 +37,11 @@ composer require codemonster-ru/support
 | `json()`               | Return a JSON response                       |
 | `abort()`              | Throw an HTTP-like exception                 |
 | `session()`            | Read or write session data                   |
+| `old()`                | Read flashed old form input                  |
+| `errors()`             | Read flashed validation errors               |
+| `cache()`              | Read, write, or return PSR-16 cache store    |
+| `event()`              | Dispatch an object event through PSR-14      |
+| `deprecate()`          | Trigger a standard API deprecation notice    |
 | `db()`                 | Get a database connection                    |
 | `schema()`             | Schema builder                               |
 | `transaction()`        | Run a DB transaction                         |
@@ -73,6 +78,16 @@ echo render('emails.welcome', ['user' => 'Vasya']);
 // Debug
 dump($request);
 dd('Bye!');
+
+// Cache
+cache('key', 'value', 60);
+echo cache('key');
+
+// Events
+event(new UserRegistered());
+
+// Deprecations
+deprecate('vendor/package', '1.2', 'The "%s" helper is deprecated, use "%s".', 'old', 'new');
 ```
 
 ## Database Helpers

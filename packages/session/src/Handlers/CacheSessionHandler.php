@@ -5,6 +5,7 @@ namespace Codemonster\Session\Handlers;
 use Psr\SimpleCache\CacheInterface;
 use SessionHandlerInterface;
 
+/** @api */
 class CacheSessionHandler implements SessionHandlerInterface
 {
     protected CacheInterface $cache;
@@ -40,7 +41,7 @@ class CacheSessionHandler implements SessionHandlerInterface
 
     public function read(string $id): string|false
     {
-        $value = $this->retry(function () use ($id) {
+        $value = $this->retry(function () use ($id): mixed {
             return $this->cache->get($this->prefix . $id);
         });
 

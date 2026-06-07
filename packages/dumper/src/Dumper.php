@@ -17,6 +17,9 @@ class Dumper
         };
     }
 
+    /**
+     * @param mixed ...$values
+     */
     public static function dd(...$values): never
     {
         $mode = null;
@@ -25,7 +28,8 @@ class Dumper
             $last = end($values);
 
             if (is_string($last) && in_array($last, ['cli', 'html'], true)) {
-                $mode = array_pop($values);
+                $mode = $last;
+                array_pop($values);
             }
         }
 

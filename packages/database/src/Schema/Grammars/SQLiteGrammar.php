@@ -163,7 +163,11 @@ class SQLiteGrammar extends Grammar
             return 'NULL';
         }
 
-        return (string) $value;
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        throw new \InvalidArgumentException('Unsupported column default value.');
     }
 
     protected function mapType(ColumnDefinition $col): string

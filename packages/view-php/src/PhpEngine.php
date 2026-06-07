@@ -10,9 +10,13 @@ final class PhpEngine implements EngineInterface, SupportsInspectionInterface
 {
     public function __construct(
         private readonly LocatorInterface $locator,
+        /** @var string|list<string> */
         private readonly string|array $extensions = 'php'
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function render(string $name, array $data = []): string
     {
         $file = $this->locator->resolve($name, $this->extensions);
@@ -38,6 +42,9 @@ final class PhpEngine implements EngineInterface, SupportsInspectionInterface
         return $this->locator;
     }
 
+    /**
+     * @return list<string>
+     */
     public function getExtensions(): array
     {
         return (array) $this->extensions;

@@ -2,6 +2,7 @@
 
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTest extends TestCase
@@ -10,6 +11,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response('Hello');
 
+        $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('Hello', $response->getContent());
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([], $response->getHeaders());
@@ -38,7 +40,7 @@ class ResponseTest extends TestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/login', $response->getHeaders()['Location']);
+        $this->assertSame(['/login'], $response->getHeaders()['Location']);
     }
 
     public function testSendForHeadSkipsOutput(): void
@@ -114,16 +116,27 @@ class ResponseTest extends TestCase
         $response->header('X-Test', '1');
 
         $this->assertTrue($response->hasHeader('x-test'));
-        $this->assertSame('1', $response->getHeaders()['X-Test']);
+        $this->assertSame(['1'], $response->getHeaders()['X-Test']);
     }
 
     public function testWithStatusDoesNotMutateOriginal(): void
     {
         $response = new Response('Hello', 200);
-        $next = $response->withStatus(201);
+        $next = $response->withStatus(201, 'Created manually');
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(201, $next->getStatusCode());
+        $this->assertSame('Created manually', $next->getReasonPhrase());
+    }
+
+    public function testPsrBodyAndHeaderMethods(): void
+    {
+        $response = (new Response('Hello'))->withAddedHeader('X-Test', '1')->withAddedHeader('X-Test', '2');
+
+        $this->assertSame('Hello', (string) $response->getBody());
+        $this->assertSame(['1', '2'], $response->getHeader('X-Test'));
+        $this->assertSame('1, 2', $response->getHeaderLine('X-Test'));
+        $this->assertSame('OK', $response->getReasonPhrase());
     }
 
     public function testWithoutHeadersDoesNotMutateOriginal(): void
@@ -141,7 +154,7 @@ class ResponseTest extends TestCase
         $next = $response->withType('text/plain');
 
         $this->assertFalse($response->hasHeader('Content-Type'));
-        $this->assertSame('text/plain', $next->getHeaders()['Content-Type']);
+        $this->assertSame(['text/plain'], $next->getHeaders()['Content-Type']);
     }
 
     public function testWithHeaderDoesNotMutateOriginal(): void
@@ -253,7 +266,7 @@ class ResponseTest extends TestCase
 
         $this->assertTrue($response->hasHeader('CONTENT-TYPE'));
         $this->assertSame(1, count($response->getHeaders()));
-        $this->assertSame('application/json', $response->getHeaders()['content-type']);
+        $this->assertSame(['application/json'], $response->getHeaders()['content-type']);
     }
 
     public function testSetContentThrowsOnJsonEncodingError(): void

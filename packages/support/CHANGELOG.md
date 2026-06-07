@@ -2,6 +2,19 @@
 
 All significant changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+-   Added `cache()` helper backed by `Psr\SimpleCache\CacheInterface`.
+-   Added `event()` helper backed by `Psr\EventDispatcher\EventDispatcherInterface`.
+-   Added `deprecate()` helper for standard API deprecation notices.
+-   Added `old()` and `errors()` helpers for flashed validation state.
+
+### Changed
+
+-   Raised `codemonster-ru/http` to `^2.1` for the PSR-7 HTTP line.
+
 ## [1.4.1] - 2026-01-03
 
 ### Changed

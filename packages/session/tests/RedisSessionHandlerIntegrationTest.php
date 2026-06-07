@@ -4,19 +4,21 @@ use Codemonster\Session\Handlers\RedisSessionHandler;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 
-class RedisSessionHandlerIntegrationTest extends TestCase
+final class RedisSessionHandlerIntegrationTest extends TestCase
 {
     public function testReadWriteAndDestroyWithRedis(): void
     {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('ext-redis is required for Redis integration tests.');
         }
-        if (!getenv('REDIS_TESTS')) {
+        if (getenv('REDIS_TESTS') === false || getenv('REDIS_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_TESTS=1 to run Redis integration tests.');
         }
 
-        $host = getenv('REDIS_HOST') ?: '127.0.0.1';
-        $port = (int) (getenv('REDIS_PORT') ?: 6379);
+        $host = getenv('REDIS_HOST');
+        $host = $host === false || $host === '' ? '127.0.0.1' : $host;
+        $port = getenv('REDIS_PORT');
+        $port = (int) ($port === false || $port === '' ? 6379 : $port);
 
         $redis = new Redis();
         $this->assertTrue($redis->connect($host, $port));

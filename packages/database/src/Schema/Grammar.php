@@ -6,26 +6,36 @@ abstract class Grammar
 {
     /**
      * CREATE TABLE statements.
+     *
+     * @return list<string>
      */
     abstract public function compileCreate(Blueprint $blueprint): array;
 
     /**
      * DROP TABLE statements.
+     *
+     * @return list<string>
      */
     abstract public function compileDrop(string $table): array;
 
     /**
      * DROP TABLE IF EXISTS statements.
+     *
+     * @return list<string>
      */
     abstract public function compileDropIfExists(string $table): array;
 
     /**
      * ALTER TABLE commands (add, drop, modify, rename, index)
+     *
+     * @return list<string>
      */
     abstract public function compileAlter(Blueprint $blueprint): array;
 
     /**
      * Rename table.
+     *
+     * @return list<string>
      */
     abstract public function compileRenameTable(Blueprint $blueprint): array;
 

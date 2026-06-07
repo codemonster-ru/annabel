@@ -4,6 +4,16 @@ namespace Codemonster\Session;
 
 use SessionHandlerInterface;
 
+/**
+ * @phpstan-type CookieOptions array{
+ *     path: string,
+ *     secure: bool,
+ *     httponly: bool,
+ *     samesite: 'Lax'|'lax'|'None'|'none'|'Strict'|'strict',
+ *     domain?: string
+ * }
+ * @api
+ */
 class Store
 {
     protected const COOKIE_NAME = 'SESSION_ID';
@@ -17,8 +27,8 @@ class Store
     /** @var array<string, mixed> */
     protected array $data = [];
     protected SessionHandlerInterface $handler;
-    /** @var array<string, mixed> */
-    protected array $cookieOptions = [];
+    /** @var CookieOptions */
+    protected array $cookieOptions;
     protected ?int $cookieLifetime = null;
     protected ?int $cookieExpires = null;
     protected ?string $encryptionKey = null;
@@ -46,7 +56,9 @@ class Store
 
             $this->id = $id;
         } else {
-            $this->id = self::isValidId($existing) ? $existing : bin2hex(random_bytes(16));
+            $this->id = is_string($existing) && self::isValidId($existing)
+                ? $existing
+                : bin2hex(random_bytes(16));
         }
         $this->handler = $handler;
         $this->cookieOptions = $this->normalizeCookieOptions($cookieOptions);
@@ -99,7 +111,20 @@ class Store
 
         try {
             $payload = $this->decryptPayload($raw);
-            $this->data = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+            $decoded = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+
+            if (!is_array($decoded)) {
+                throw new \RuntimeException('Session payload must contain an object.');
+            }
+
+            foreach ($decoded as $key => $_) {
+                if (!is_string($key)) {
+                    throw new \RuntimeException('Session payload keys must be strings.');
+                }
+            }
+
+            /** @var array<string, mixed> $decoded */
+            $this->data = $decoded;
         } catch (\JsonException $e) {
             throw new \RuntimeException('Invalid session payload.', 0, $e);
         }
@@ -151,7 +176,7 @@ class Store
 
         $keys = [];
         foreach ($this->data as $key => $_value) {
-            if (!is_string($key) || str_starts_with($key, '__')) {
+            if (str_starts_with($key, '__')) {
                 continue;
             }
             if ($prefix !== null && !str_starts_with($key, $prefix)) {
@@ -172,7 +197,7 @@ class Store
 
         $keys = [];
         foreach ($this->data as $key => $_value) {
-            if (!is_string($key) || str_starts_with($key, '__')) {
+            if (str_starts_with($key, '__')) {
                 continue;
             }
             if (!$this->matchesPattern($key, $pattern)) {
@@ -190,7 +215,7 @@ class Store
 
         $count = 0;
         foreach ($this->data as $key => $_value) {
-            if (!is_string($key) || str_starts_with($key, '__')) {
+            if (str_starts_with($key, '__')) {
                 continue;
             }
             $count++;
@@ -290,7 +315,7 @@ class Store
             return null;
         }
 
-        $remaining = (int) $ttl[$key] - time();
+        $remaining = $ttl[$key] - time();
 
         return $remaining > 0 ? $remaining : 0;
     }
@@ -307,7 +332,7 @@ class Store
             return null;
         }
 
-        $expiresAt = (int) $ttl[$key];
+        $expiresAt = $ttl[$key];
 
         return $expiresAt > time() ? $expiresAt : null;
     }
@@ -344,7 +369,7 @@ class Store
         $updated = 0;
 
         foreach ($this->data as $key => $_value) {
-            if (!is_string($key) || str_starts_with($key, '__')) {
+            if (str_starts_with($key, '__')) {
                 continue;
             }
             if ($prefix !== null && !str_starts_with($key, $prefix)) {
@@ -417,6 +442,10 @@ class Store
         }
 
         $current = $this->data[$key] ?? 0;
+        if (!is_int($current) && !(is_string($current) && is_numeric($current))) {
+            throw new \UnexpectedValueException("Session value [{$key}] is not an integer.");
+        }
+
         $value = (int) $current + $by;
 
         $this->data[$key] = $value;
@@ -471,7 +500,7 @@ class Store
         $prefix = rtrim($prefix, '.') . '.';
 
         foreach ($this->data as $key => $_value) {
-            if (!is_string($key) || !str_starts_with($key, $prefix)) {
+            if (!str_starts_with($key, $prefix)) {
                 continue;
             }
             unset($this->data[$key]);
@@ -505,36 +534,66 @@ class Store
 
     /**
      * @param array<string, mixed> $options
-     * @return array<string, mixed>
+     * @return CookieOptions
      */
     protected function normalizeCookieOptions(array $options): array
     {
-        $this->cookieLifetime = array_key_exists('lifetime', $options) ? (int) $options['lifetime'] : 86400 * 30;
+        $this->cookieLifetime = array_key_exists('lifetime', $options)
+            ? self::integerOption($options['lifetime'], 'lifetime')
+            : 86400 * 30;
         unset($options['lifetime']);
 
         if (array_key_exists('expires', $options)) {
-            $this->cookieExpires = $options['expires'] !== null ? (int) $options['expires'] : null;
+            $this->cookieExpires = $options['expires'] !== null
+                ? self::integerOption($options['expires'], 'expires')
+                : null;
             unset($options['expires']);
         }
 
-        $defaults = [
-            'path' => '/',
-            'secure' => self::isHttpsRequest(),
-            'httponly' => true,
-            'samesite' => 'Lax'
+        $path = $options['path'] ?? '/';
+        $secure = $options['secure'] ?? self::isHttpsRequest();
+        $httpOnly = $options['httponly'] ?? true;
+        $sameSite = $options['samesite'] ?? 'Lax';
+        $domain = $options['domain'] ?? null;
+
+        if (!is_string($path) || !is_bool($secure) || !is_bool($httpOnly)) {
+            throw new \InvalidArgumentException('Invalid session cookie options.');
+        }
+        if (!is_string($sameSite) || !in_array($sameSite, ['Lax', 'lax', 'None', 'none', 'Strict', 'strict'], true)) {
+            throw new \InvalidArgumentException('Invalid session cookie SameSite value.');
+        }
+        if ($domain !== null && !is_string($domain)) {
+            throw new \InvalidArgumentException('Session cookie domain must be a string or null.');
+        }
+
+        if (strcasecmp($sameSite, 'none') === 0) {
+            $secure = true;
+        }
+
+        $normalized = [
+            'path' => $path,
+            'secure' => $secure,
+            'httponly' => $httpOnly,
+            'samesite' => $sameSite,
         ];
 
-        $merged = array_merge($defaults, $options);
-
-        if (strcasecmp((string) $merged['samesite'], 'none') === 0 && $merged['secure'] !== true) {
-            $merged['secure'] = true;
+        if ($domain !== null) {
+            $normalized['domain'] = $domain;
         }
 
-        if (array_key_exists('domain', $merged) && $merged['domain'] === null) {
-            unset($merged['domain']);
+        return $normalized;
+    }
+
+    private static function integerOption(mixed $value, string $name): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+        if (is_string($value) && preg_match('/\A-?\d+\z/', $value) === 1) {
+            return (int) $value;
         }
 
-        return $merged;
+        throw new \InvalidArgumentException("Session cookie {$name} must be an integer.");
     }
 
     /**
@@ -595,6 +654,10 @@ class Store
 
         if (strlen($key) === 64 && ctype_xdigit($key)) {
             $raw = hex2bin($key);
+
+            if ($raw === false) {
+                throw new \InvalidArgumentException('Invalid hexadecimal encryption key.');
+            }
         } else {
             $decoded = base64_decode($key, true);
             if ($decoded !== false) {
@@ -739,7 +802,18 @@ class Store
     {
         $ttl = $this->data[self::TTL_KEY] ?? [];
 
-        return is_array($ttl) ? $ttl : [];
+        if (!is_array($ttl)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($ttl as $key => $expiresAt) {
+            if (is_string($key) && is_int($expiresAt)) {
+                $normalized[$key] = $expiresAt;
+            }
+        }
+
+        return $normalized;
     }
 
     /**
@@ -762,7 +836,7 @@ class Store
             return false;
         }
 
-        if ((int) $ttl[$key] > time()) {
+        if ($ttl[$key] > time()) {
             return false;
         }
 
@@ -783,7 +857,7 @@ class Store
         $changed = false;
 
         foreach ($ttl as $key => $expiresAt) {
-            if ((int) $expiresAt <= $now) {
+            if ($expiresAt <= $now) {
                 unset($ttl[$key], $this->data[$key]);
                 $changed = true;
             }

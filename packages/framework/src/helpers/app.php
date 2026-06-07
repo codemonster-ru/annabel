@@ -3,6 +3,9 @@
 use Codemonster\Annabel\Application;
 
 if (!function_exists('app')) {
+    /**
+     * @param array<string, mixed> $parameters
+     */
     function app(?string $abstract = null, array $parameters = []): mixed
     {
         if (!class_exists(Application::class) || !Application::isInitialized()) {

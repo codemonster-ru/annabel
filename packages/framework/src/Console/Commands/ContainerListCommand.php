@@ -56,7 +56,7 @@ class ContainerListCommand extends Command
                 $console->writeln(sprintf(
                     '  %s => %s',
                     $console->color($abstract, 'command'),
-                    get_class($instance)
+                    get_debug_type($instance)
                 ));
             }
         }

@@ -34,6 +34,7 @@ interface LoaderInterface
         ?int $maxBytes = null
     ): bool;
 
+    /** @param iterable<mixed> $paths */
     public function loadFiles(
         iterable $paths,
         ?string $encoding = null,
@@ -43,6 +44,7 @@ interface LoaderInterface
         ?int $globFlags = null
     ): void;
 
+    /** @param iterable<mixed> $paths */
     public function safeLoadFiles(
         iterable $paths,
         ?string $encoding = null,

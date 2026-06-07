@@ -25,19 +25,36 @@
         "bin/annabel"
     ],
     "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/support": "^1.4",
-        "codemonster-ru/view-php": "^2.1",
+        "codemonster-ru/config": "^2.0",
+        "codemonster-ru/database": "^2.0",
+        "codemonster-ru/env": "^2.0",
+        "codemonster-ru/errors": "^1.2",
+        "codemonster-ru/http": "^2.1@dev",
         "codemonster-ru/razor": "^1.1",
-        "codemonster-ru/errors": "^1.2"
+        "codemonster-ru/router": "^2.0",
+        "codemonster-ru/session": "^2.0",
+        "codemonster-ru/support": "^1.4",
+        "codemonster-ru/view": "^2.0",
+        "codemonster-ru/view-php": "^2.1",
+        "psr/container": "^2.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-message": "^2.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/log": "^3.0",
+        "psr/simple-cache": "^3.0"
     },
     "require-dev": {
+        "codemonster-ru/security": "^1.1",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
     "suggest": {
+        "codemonster-ru/security": "Enable CSRF protection and rate limiting integration",
         "codemonster-ru/ssr-bridge": "Enable Vue/React/Svelte SSR rendering bridge"
     },
     "autoload": {

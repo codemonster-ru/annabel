@@ -3,10 +3,13 @@
 namespace Codemonster\Annabel;
 
 use Codemonster\Annabel\Bootstrap\Bootstrapper;
+use Codemonster\Annabel\Console\CommandRegistry;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Annabel\Http\Kernel;
+use Codemonster\Annabel\Publishing\PublishRegistry;
+use Codemonster\Annabel\Publishing\ResourcePublisher;
 use Codemonster\View\View;
 
 class Application
@@ -17,6 +20,7 @@ class Application
     protected Container $container;
     protected ?Kernel $kernel = null;
     protected ?View $view = null;
+    /** @var list<ServiceProviderInterface> */
     protected array $providers = [];
     protected bool $booted = false;
 
@@ -30,6 +34,10 @@ class Application
 
         $this->basePath = $basePath ?? dirname(__DIR__);
         $this->container = new Container();
+        $this->container->instance(self::class, $this);
+        $this->container->instance(CommandRegistry::class, new CommandRegistry());
+        $this->container->instance(PublishRegistry::class, new PublishRegistry());
+        $this->container->instance(ResourcePublisher::class, new ResourcePublisher($this->basePath));
 
         self::$instance = $this;
 
@@ -124,6 +132,9 @@ class Application
         return $this->container;
     }
 
+    /**
+     * @return list<ServiceProviderInterface>
+     */
     public function getProviders(): array
     {
         return $this->providers;
@@ -153,6 +164,9 @@ class Application
     // ====================  ROUTES  =======================
     // =====================================================
 
+    /**
+     * @param callable|array{mixed, mixed} $handler
+     */
     public function get(string $path, callable|array $handler): void
     {
         if (!$this->booted) {
@@ -162,6 +176,9 @@ class Application
         $this->getKernel()->getRouter()->get($path, $handler);
     }
 
+    /**
+     * @param callable|array{mixed, mixed} $handler
+     */
     public function post(string $path, callable|array $handler): void
     {
         if (!$this->booted) {
@@ -171,6 +188,9 @@ class Application
         $this->getKernel()->getRouter()->post($path, $handler);
     }
 
+    /**
+     * @param callable|array{mixed, mixed} $handler
+     */
     public function any(string $path, callable|array $handler): void
     {
         if (!$this->booted) {
@@ -193,16 +213,24 @@ class Application
     // ====================  CONTAINER =====================
     // =====================================================
 
+    /** @param \Closure(Container, array<string, mixed>=): mixed|class-string $concrete */
     public function bind(string $abstract, \Closure|string $concrete, bool $singleton = false): void
     {
         $this->container->bind($abstract, $concrete, $singleton);
     }
 
+    /** @param \Closure(Container, array<string, mixed>=): mixed|class-string $concrete */
     public function singleton(string $abstract, \Closure|string $concrete): void
     {
         $this->container->singleton($abstract, $concrete);
     }
 
+    /**
+     * @template T of object
+     * @param class-string<T>|string $abstract
+     * @param array<string, mixed> $parameters
+     * @return ($abstract is class-string<T> ? T : mixed)
+     */
     public function make(string $abstract, array $parameters = []): mixed
     {
         return $this->container->make($abstract, $parameters);

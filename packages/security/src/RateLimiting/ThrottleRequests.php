@@ -13,9 +13,15 @@ class ThrottleRequests
     protected RateLimiterInterface $limiter;
     protected int $maxAttempts;
     protected int $decaySeconds;
+    /** @var list<string> */
     protected array $exceptPaths;
+    /** @var list<string> */
     protected array $trustedProxies;
 
+    /**
+     * @param list<string> $exceptPaths
+     * @param list<string> $trustedProxies
+     */
     public function __construct(
         ?RateLimiterInterface $limiter = null,
         int $maxAttempts = 60,
@@ -39,7 +45,7 @@ class ThrottleRequests
         $preset = is_string($role) ? $this->resolvePresetConfig($role) : null;
 
         if ($preset !== null && is_array($preset['account'] ?? null)) {
-            $ipPreset = is_array($preset['ip'] ?? null) ? $preset['ip'] : $preset;
+            $ipPreset = $this->stringKeyedArray($preset['ip'] ?? null) ?? $preset;
             $ipLimits = $this->presetLimitsFromConfig($ipPreset) ?? [$this->maxAttempts, $this->decaySeconds];
             [$ipMaxAttempts, $ipDecaySeconds] = $ipLimits;
 
@@ -50,8 +56,9 @@ class ThrottleRequests
                 return $this->buildThrottleResponse($request, $ipKey, $ipMaxAttempts);
             }
 
-            $accountLimits = $this->presetLimitsFromConfig($preset['account']);
-            $accountField = (string) ($preset['account']['field'] ?? 'email');
+            $accountPreset = $this->stringKeyedArray($preset['account']);
+            $accountLimits = $accountPreset === null ? null : $this->presetLimitsFromConfig($accountPreset);
+            $accountField = is_string($accountPreset['field'] ?? null) ? $accountPreset['field'] : 'email';
             $accountKey = $this->resolveAccountKey($request, $accountField);
 
             if ($accountKey !== null && $accountLimits !== null) {
@@ -100,6 +107,7 @@ class ThrottleRequests
         return $response;
     }
 
+    /** @return array{int, int} */
     protected function resolveLimits(mixed $role): array
     {
         if (is_string($role)) {
@@ -121,6 +129,7 @@ class ThrottleRequests
         return [$this->maxAttempts, $this->decaySeconds];
     }
 
+    /** @return array<string, mixed>|null */
     protected function resolvePresetConfig(string $name): ?array
     {
         if (!function_exists('config')) {
@@ -137,15 +146,19 @@ class ThrottleRequests
             return null;
         }
 
-        return $presets[$name];
+        return $this->stringKeyedArray($presets[$name]);
     }
 
+    /**
+     * @param array<string, mixed> $preset
+     * @return array{int, int}|null
+     */
     protected function presetLimitsFromConfig(array $preset): ?array
     {
-        $maxAttempts = (int) ($preset['max_attempts'] ?? $preset['max'] ?? 0);
-        $decaySeconds = (int) ($preset['decay_seconds'] ?? $preset['decay'] ?? 0);
+        $maxAttempts = self::positiveInteger($preset['max_attempts'] ?? $preset['max'] ?? null);
+        $decaySeconds = self::positiveInteger($preset['decay_seconds'] ?? $preset['decay'] ?? null);
 
-        if ($maxAttempts <= 0 || $decaySeconds <= 0) {
+        if ($maxAttempts === null || $decaySeconds === null) {
             return null;
         }
 
@@ -195,16 +208,42 @@ class ThrottleRequests
 
     protected function serverRemoteAddr(Request $request): string
     {
-        if (method_exists($request, 'server')) {
-            $server = $request->server();
+        $server = $request->server();
 
-            return (string) ($server['REMOTE_ADDR'] ?? '0.0.0.0');
+        $remote = $server['REMOTE_ADDR'] ?? null;
+
+        return is_string($remote) && $remote !== '' ? $remote : '0.0.0.0';
+    }
+
+    /** @return array<string, mixed>|null */
+    private function stringKeyedArray(mixed $value): ?array
+    {
+        if (!is_array($value)) {
+            return null;
         }
 
-        $all = $request->all();
-        $server = is_array($all['server'] ?? null) ? $all['server'] : [];
+        foreach ($value as $key => $_) {
+            if (!is_string($key)) {
+                return null;
+            }
+        }
 
-        return (string) ($server['REMOTE_ADDR'] ?? '0.0.0.0');
+        /** @var array<string, mixed> $value */
+        return $value;
+    }
+
+    private static function positiveInteger(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value > 0 ? $value : null;
+        }
+        if (is_string($value) && preg_match('/\A\d+\z/', $value) === 1) {
+            $value = (int) $value;
+
+            return $value > 0 ? $value : null;
+        }
+
+        return null;
     }
 
     protected function isFromTrustedProxy(Request $request): bool
@@ -295,6 +334,7 @@ class ThrottleRequests
         return (is_string($path) && $path !== '') ? $path : $uri;
     }
 
+    /** @return array{remaining: int, limited: bool} */
     protected function attemptKey(string $key, int $maxAttempts, int $decaySeconds): array
     {
         $remaining = $maxAttempts;

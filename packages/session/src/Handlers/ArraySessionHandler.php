@@ -4,6 +4,7 @@ namespace Codemonster\Session\Handlers;
 
 use SessionHandlerInterface;
 
+/** @api */
 class ArraySessionHandler implements SessionHandlerInterface
 {
     /** @var array<string, string> */

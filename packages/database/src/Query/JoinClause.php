@@ -7,7 +7,12 @@ class JoinClause
     public string $type;
     public string $table;
 
-    /** @var array[] */
+    /**
+     * @var list<
+     *     array{type: 'on', first: string, operator: string, second: string}
+     *     |array{type: 'where', column: string, operator: string, value: mixed}
+     * >
+     */
     public array $conditions = [];
 
     public function __construct(string $type, string $table)

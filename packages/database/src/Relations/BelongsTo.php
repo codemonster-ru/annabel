@@ -3,6 +3,7 @@
 namespace Codemonster\Database\Relations;
 
 use Codemonster\Database\ORM\Model;
+use Codemonster\Database\Query\QueryBuilder;
 
 /**
  * @template TRelated of Model
@@ -14,7 +15,17 @@ class BelongsTo extends Relation
     protected string $foreignKey;
     protected string $ownerKey;
 
-    public function __construct($builder, Model $parent, Model $related, string $foreignKey, string $ownerKey)
+    /**
+     * @param TParent $parent
+     * @param TRelated $related
+     */
+    public function __construct(
+        QueryBuilder $builder,
+        Model $parent,
+        Model $related,
+        string $foreignKey,
+        string $ownerKey
+    )
     {
         parent::__construct($builder, $parent, $related);
 

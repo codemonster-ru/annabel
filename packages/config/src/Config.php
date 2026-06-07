@@ -4,11 +4,16 @@ namespace Codemonster\Config;
 
 class Config
 {
+    /** @var array<string, mixed> */
     protected static array $items = [];
 
     public static function load(string $path): void
     {
         $files = glob(rtrim($path, '/') . '/*.php');
+
+        if ($files === false) {
+            throw new \RuntimeException("Unable to scan config directory: {$path}");
+        }
 
         foreach ($files as $file) {
             $key = basename($file, '.php');
@@ -49,6 +54,9 @@ class Config
         $ref = $value;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function all(): array
     {
         return static::$items;

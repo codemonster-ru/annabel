@@ -2,6 +2,6 @@
 
 namespace App\Providers;
 
-use Codemonster\Security\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
+use Codemonster\Annabel\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
 
 class SecurityServiceProvider extends BaseSecurityServiceProvider {}

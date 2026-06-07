@@ -19,6 +19,10 @@ abstract class Relation
     /** @var TRelated */
     protected Model $related;
 
+    /**
+     * @param TParent $parent
+     * @param TRelated $related
+     */
     public function __construct(QueryBuilder $builder, Model $parent, Model $related)
     {
         $this->builder = $builder;
@@ -26,16 +30,16 @@ abstract class Relation
         $this->related = $related;
     }
 
-    abstract public function getResults();
+    abstract public function getResults(): mixed;
 
     /**
+     * @param list<array<string, mixed>> $rows
      * @return ModelCollection<TRelated>
      */
     protected function hydrate(array $rows): ModelCollection
     {
         $class = get_class($this->related);
 
-        /** @var class-string<Model> $class */
         return $class::hydrate($rows);
     }
 }

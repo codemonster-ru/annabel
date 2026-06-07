@@ -18,11 +18,13 @@
         "codemonster-ru/session": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
-        "codemonster-ru/support": "^1.0"
+        "codemonster-ru/database": "^2.0",
+        "codemonster-ru/support": "^1.0",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
     "suggest": {
-        "codemonster-ru/annabel": "Registers SecurityServiceProvider to enable middleware integration",
+        "codemonster-ru/annabel": "Provides Annabel integration through Codemonster\\Annabel\\Providers\\SecurityServiceProvider",
         "codemonster-ru/database": "Database storage for throttling (MySQL)",
         "ext-redis": "Redis storage for throttling (optional)",
         "predis/predis": "Redis storage for throttling (optional)"
@@ -44,6 +46,7 @@
         ]
     },
     "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
     "keywords": [
@@ -59,6 +62,8 @@
         "issues": "https://github.com/codemonster-ru/security/issues",
         "source": "https://github.com/codemonster-ru/security"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "branch-alias": {
             "dev-main": "1.0.x-dev"

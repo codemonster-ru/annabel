@@ -67,6 +67,7 @@ class DatabaseCLIKernel
         $this->commands->register(new TruncateCommand($this->migrator->getConnection()));
     }
 
+    /** @param list<string> $argv */
     public function handle(array $argv): int
     {
         return $this->commands->dispatch($argv);

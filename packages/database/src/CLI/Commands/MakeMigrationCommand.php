@@ -91,8 +91,8 @@ class MakeMigrationCommand implements CommandInterface
     {
         $now = new \DateTimeImmutable('now');
         $timestamp = $now->format('Y_m_d_His');
-        $slug = preg_replace('/(?<!^)([A-Z])/', '_$1', $name);
-        $slug = preg_replace('/[^A-Za-z0-9]+/', '_', $slug);
+        $slug = preg_replace('/(?<!^)([A-Z])/', '_$1', $name) ?? $name;
+        $slug = preg_replace('/[^A-Za-z0-9]+/', '_', $slug) ?? $slug;
         $slug = trim($slug, '_');
         $slug = strtolower($slug);
 

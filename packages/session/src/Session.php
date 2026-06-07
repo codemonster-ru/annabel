@@ -6,6 +6,7 @@ use Codemonster\Session\Handlers\ArraySessionHandler;
 use Codemonster\Session\Handlers\FileSessionHandler;
 use SessionHandlerInterface;
 
+/** @api */
 class Session
 {
     protected static ?Store $store = null;
@@ -24,11 +25,17 @@ class Session
             $handler = new ArraySessionHandler();
         } else {
             $savePath = $options['path'] ?? sys_get_temp_dir() . '/sessions';
+            if (!is_string($savePath)) {
+                throw new \InvalidArgumentException('Session path must be a string.');
+            }
             $handler = new FileSessionHandler($savePath);
         }
 
         $cookieOptions = $options['cookie'] ?? [];
         $encryptionOptions = $options['encryption'] ?? [];
+        if (!is_array($cookieOptions) || !is_array($encryptionOptions)) {
+            throw new \InvalidArgumentException('Session cookie and encryption options must be arrays.');
+        }
         static::$store = new Store($handler, null, $cookieOptions, $encryptionOptions);
         static::$store->start();
 
@@ -41,6 +48,10 @@ class Session
     {
         if (!static::$store) {
             static::start();
+        }
+
+        if (!static::$store) {
+            throw new \RuntimeException('Unable to initialize session store.');
         }
 
         return static::$store;

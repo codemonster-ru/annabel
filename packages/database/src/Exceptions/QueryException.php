@@ -7,8 +7,10 @@ use Throwable;
 class QueryException extends DatabaseException
 {
     protected string $sql;
+    /** @var array<int|string, mixed> */
     protected array $bindings;
 
+    /** @param array<int|string, mixed> $bindings */
     public function __construct(
         string $message,
         string $sql = '',
@@ -27,6 +29,7 @@ class QueryException extends DatabaseException
         return $this->sql;
     }
 
+    /** @return array<int|string, mixed> */
     public function getBindings(): array
     {
         return $this->bindings;

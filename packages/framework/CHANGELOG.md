@@ -2,6 +2,38 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+-   Added `Codemonster\Annabel\Providers\SecurityServiceProvider` as the Annabel integration layer for `codemonster-ru/security`.
+-   Added configurable provider registry via `config/app.php` with `defaults`, `disabled`, `extra`, `discover`, and `path` options.
+-   Added PSR-11 container compatibility through `Psr\Container\ContainerInterface`.
+-   Added PSR-compatible container exceptions.
+-   Added PSR-15 middleware support in the HTTP kernel.
+-   Added PSR-3 logger binding and exception reporting in the HTTP kernel.
+-   Added PSR-16 cache binding with array and file cache stores.
+-   Added PSR-14 event dispatcher and listener provider bindings.
+-   Added framework validation layer with `Validator`, validation results, exceptions, and `validator()` helper.
+-   Added request validation lifecycle support with JSON 422 responses, web redirects, and flashed validation state.
+-   Added explicit HTTP exception hierarchy with status and response header contracts.
+-   Added Composer package provider discovery through `extra.annabel.providers`.
+-   Added an automatically invalidated package manifest cache with per-package opt-out.
+-   Added declarative publishable resources for package service providers.
+-   Added `vendor:publish` with provider/tag filters, explicit all mode, and force overwrite.
+-   Added testable console input/output contracts and standard exit codes.
+-   Added service-provider command registration with container-based dependency injection.
+
+### Changed
+
+-   Declared the direct `codemonster-ru/http ^2.1` dependency required by the framework HTTP kernel.
+-   Providers are now registered first and booted after all registrations complete.
+-   The HTTP kernel now normalizes PSR response objects into Annabel responses.
+-   The HTTP kernel now normalizes array and `JsonSerializable` controller returns into JSON responses.
+-   Unhandled route/middleware exceptions are now reported before rendering an error response.
+-   Validation redirects are now restricted to local same-origin targets.
+-   Sensitive fields are recursively excluded from flashed old input.
+
 ## [1.14.1] - 2026-01-03
 
 ### Changed

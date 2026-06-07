@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+-   Updated the security provider base class to `Codemonster\Annabel\Providers\SecurityServiceProvider`.
+-   Bumped `codemonster-ru/annabel` constraint to `^1.15`.
+
+### Added
+
+-   Added `config/app.php` provider registry.
+-   Added `config/logging.php` with file logging defaults.
+-   Added `config/cache.php` with file and array cache stores.
+-   Added `config/validation.php` with sensitive old-input filtering defaults.
+-   Added package provider discovery and manifest cache settings to `config/app.php`.
+-   Documented package resource publishing through `vendor:publish`.
+-   Added PSR-14 event dispatcher support through the framework.
+
 ## [1.3.0] - 2026-01-03
 
 ### Changed

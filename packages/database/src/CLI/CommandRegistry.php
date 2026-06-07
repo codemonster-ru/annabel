@@ -27,6 +27,7 @@ class CommandRegistry
         return $this->commands[$signature] ?? null;
     }
 
+    /** @param list<string> $argv */
     public function dispatch(array $argv): int
     {
         if (count($argv) < 2) {

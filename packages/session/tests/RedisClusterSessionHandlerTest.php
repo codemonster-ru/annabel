@@ -12,10 +12,17 @@ if (!class_exists('RedisCluster')) {
         /** @var array<int, array<int, mixed>> */
         public array $calls = [];
 
-        public function get(string $key)
+        public function __construct(mixed ...$arguments)
+        {
+            unset($arguments);
+        }
+
+        public function get(string $key): ?string
         {
             $this->calls[] = ['get', $key];
-            return $this->store[$key] ?? null;
+            $value = $this->store[$key] ?? null;
+
+            return is_string($value) ? $value : null;
         }
 
         public function set(string $key, mixed $value, mixed $options = null): RedisCluster|string|bool
@@ -25,14 +32,14 @@ if (!class_exists('RedisCluster')) {
             return true;
         }
 
-        public function setex(string $key, int $seconds, string $value)
+        public function setex(string $key, int $seconds, string $value): true
         {
             $this->calls[] = ['setex', $key, $seconds, $value];
             $this->store[$key] = $value;
             return true;
         }
 
-        public function del(string $key)
+        public function del(string $key): int
         {
             $this->calls[] = ['del', $key];
             unset($this->store[$key]);
@@ -41,18 +48,21 @@ if (!class_exists('RedisCluster')) {
     }
 }
 
-class RedisClusterSessionHandlerTest extends TestCase
+final class RedisClusterSessionHandlerTest extends TestCase
 {
     public function testReadWriteAndDestroy(): void
     {
         if (!class_exists('RedisCluster')) {
             $this->markTestSkipped('RedisCluster class is not available.');
         }
-        if (!getenv('REDIS_CLUSTER_TESTS')) {
+        if (getenv('REDIS_CLUSTER_TESTS') === false || getenv('REDIS_CLUSTER_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_CLUSTER_TESTS=1 to run RedisCluster integration tests.');
         }
 
-        $seeds = getenv('REDIS_CLUSTER_SEEDS') ?: '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002';
+        $seeds = getenv('REDIS_CLUSTER_SEEDS');
+        $seeds = $seeds === false || $seeds === ''
+            ? '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002'
+            : $seeds;
         $seedList = array_filter(array_map('trim', explode(',', $seeds)));
         if ($seedList === []) {
             $this->markTestSkipped('REDIS_CLUSTER_SEEDS is empty.');
@@ -75,11 +85,14 @@ class RedisClusterSessionHandlerTest extends TestCase
         if (!class_exists('RedisCluster')) {
             $this->markTestSkipped('RedisCluster class is not available.');
         }
-        if (!getenv('REDIS_CLUSTER_TESTS')) {
+        if (getenv('REDIS_CLUSTER_TESTS') === false || getenv('REDIS_CLUSTER_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_CLUSTER_TESTS=1 to run RedisCluster integration tests.');
         }
 
-        $seeds = getenv('REDIS_CLUSTER_SEEDS') ?: '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002';
+        $seeds = getenv('REDIS_CLUSTER_SEEDS');
+        $seeds = $seeds === false || $seeds === ''
+            ? '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002'
+            : $seeds;
         $seedList = array_filter(array_map('trim', explode(',', $seeds)));
         if ($seedList === []) {
             $this->markTestSkipped('REDIS_CLUSTER_SEEDS is empty.');
@@ -104,11 +117,14 @@ class RedisClusterSessionHandlerTest extends TestCase
         if (!class_exists('RedisCluster')) {
             $this->markTestSkipped('RedisCluster class is not available.');
         }
-        if (!getenv('REDIS_CLUSTER_TESTS')) {
+        if (getenv('REDIS_CLUSTER_TESTS') === false || getenv('REDIS_CLUSTER_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_CLUSTER_TESTS=1 to run RedisCluster integration tests.');
         }
 
-        $seeds = getenv('REDIS_CLUSTER_SEEDS') ?: '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002';
+        $seeds = getenv('REDIS_CLUSTER_SEEDS');
+        $seeds = $seeds === false || $seeds === ''
+            ? '127.0.0.1:7000,127.0.0.1:7001,127.0.0.1:7002'
+            : $seeds;
         $seedList = array_filter(array_map('trim', explode(',', $seeds)));
         if ($seedList === []) {
             $this->markTestSkipped('REDIS_CLUSTER_SEEDS is empty.');
@@ -122,7 +138,13 @@ class RedisClusterSessionHandlerTest extends TestCase
                 if ($this->tries === 1) {
                     throw new \RedisException('fail');
                 }
-                return parent::set($key, $value, $options);
+                if (!is_string($value) || (!is_array($options) && !is_int($options) && $options !== null)) {
+                    return false;
+                }
+
+                return $options === null
+                    ? parent::set($key, $value)
+                    : parent::set($key, $value, $options);
             }
         };
 

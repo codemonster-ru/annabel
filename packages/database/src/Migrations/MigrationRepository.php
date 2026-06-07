@@ -48,7 +48,9 @@ class MigrationRepository
     protected function getDriverName(): ?string
     {
         try {
-            return $this->connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+            $driver = $this->connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+            return is_string($driver) ? $driver : null;
         } catch (\Throwable) {
             return null;
         }
@@ -65,13 +67,16 @@ class MigrationRepository
             "SELECT `migration`, `batch` FROM `{$this->table}` ORDER BY `batch` ASC, `id` ASC"
         );
 
-        return array_map(
-            fn($row) => [
-                'migration' => $row['migration'],
-                'batch'     => (int) $row['batch'],
-            ],
-            $rows
-        );
+        $migrations = [];
+        foreach ($rows as $row) {
+            $migration = $row['migration'] ?? null;
+            $batch = self::integerValue($row['batch'] ?? null);
+            if (is_string($migration) && $batch !== null) {
+                $migrations[] = ['migration' => $migration, 'batch' => $batch];
+            }
+        }
+
+        return $migrations;
     }
 
     public function getLastBatchNumber(): int
@@ -82,7 +87,7 @@ class MigrationRepository
 
         $batch = $rows[0]['batch'] ?? 0;
 
-        return (int) $batch;
+        return self::integerValue($batch) ?? 0;
     }
 
     /**
@@ -97,7 +102,26 @@ class MigrationRepository
             [$batch]
         );
 
-        return array_column($rows, 'migration');
+        $migrations = [];
+        foreach ($rows as $row) {
+            if (is_string($row['migration'] ?? null)) {
+                $migrations[] = $row['migration'];
+            }
+        }
+
+        return $migrations;
+    }
+
+    private static function integerValue(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+        if (is_string($value) && preg_match('/\A-?\d+\z/', $value) === 1) {
+            return (int) $value;
+        }
+
+        return null;
     }
 
     public function log(string $migration, int $batch): void

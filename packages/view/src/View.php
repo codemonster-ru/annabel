@@ -9,10 +9,12 @@ use Codemonster\View\Locator\LocatorInterface;
 
 class View
 {
+    /** @var array<string, EngineInterface> */
     protected array $engines;
 
     protected string $default;
 
+    /** @param array<string, EngineInterface> $engines */
     public function __construct(array $engines = [], string $default = 'php')
     {
         $this->engines = $engines;
@@ -24,6 +26,7 @@ class View
         $this->engines[$name] = $engine;
     }
 
+    /** @param array<string, mixed> $data */
     public function render(string $view, array $data = [], ?string $engine = null): string
     {
         if ($engine !== null) {
@@ -60,7 +63,7 @@ class View
         return null;
     }
 
-    protected function tryResolve($locator, string $view, string $extension): ?string
+    protected function tryResolve(LocatorInterface $locator, string $view, string $extension): ?string
     {
         try {
             $path = $locator->resolve($view, $extension);
@@ -71,6 +74,7 @@ class View
         }
     }
 
+    /** @param array<string, mixed> $data */
     protected function renderWith(string $engine, string $view, array $data): string
     {
         if (!isset($this->engines[$engine])) {

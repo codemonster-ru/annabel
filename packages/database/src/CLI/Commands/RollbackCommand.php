@@ -42,6 +42,7 @@ class RollbackCommand implements CommandInterface
         return 0;
     }
 
+    /** @param list<string> $arguments */
     protected function parseStepOption(array $arguments): int
     {
         foreach ($arguments as $arg) {

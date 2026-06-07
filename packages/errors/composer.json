@@ -22,6 +22,7 @@
         }
     ],
     "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
     "require": {
@@ -29,6 +30,7 @@
         "codemonster-ru/http": "^2.0"
     },
     "require-dev": {
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
     "autoload": {

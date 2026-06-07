@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/annabel": "dev-main as 1.14.99",
+        "codemonster-ru/annabel": "dev-main as 1.15.99",
         "codemonster-ru/config": "dev-main as 2.0.99",
         "codemonster-ru/database": "dev-main as 2.0.99",
         "codemonster-ru/dumper": "dev-main as 1.0.99",

@@ -28,11 +28,14 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
         $status = 500;
 
         if (method_exists($e, 'getStatusCode')) {
-            /** @var object{getStatusCode: callable(): int} $e */
-            $status = $e->getStatusCode();
+            $statusCode = $e->getStatusCode();
+
+            if (is_int($statusCode)) {
+                $status = $statusCode;
+            }
         }
 
-        if (!is_int($status) || $status < 100 || $status > 599) {
+        if ($status < 100 || $status > 599) {
             $status = 500;
         }
 
@@ -61,13 +64,16 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
             ?? $this->fallbackPlain($e, $status);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function renderTemplate(string $template, array $data, int $status): ?Response
     {
         if ($this->viewRenderer) {
             try {
                 $html = ($this->viewRenderer)($template, $data);
 
-                if ($html) {
+                if (is_string($html) && $html !== '') {
                     return new Response($html, $status, ['Content-Type' => 'text/html']);
                 }
             } catch (Throwable $renderError) {
@@ -94,6 +100,10 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
             include $fileMap[$template];
 
             $html = ob_get_clean();
+
+            if ($html === false) {
+                throw new \RuntimeException('Unable to read rendered error template.');
+            }
 
             return new Response($html, $status, ['Content-Type' => 'text/html']);
         }

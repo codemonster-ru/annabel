@@ -4,9 +4,9 @@ use Codemonster\Session\Handlers\RedisSentinelSessionHandler;
 use PHPUnit\Framework\TestCase;
 
 if (!class_exists('RedisSentinel')) {
-    class RedisSentinel
+    final class RedisSentinel
     {
-        public function getMasterAddrByName(string $service)
+        public function getMasterAddrByName(string $_service): mixed
         {
             return ['127.0.0.1', 6379];
         }
@@ -94,20 +94,23 @@ function createSentinel(string $host, int $port): RedisSentinel
     return $ref->newInstanceArgs([$host, $port]);
 }
 
-class RedisSentinelSessionHandlerTest extends TestCase
+final class RedisSentinelSessionHandlerTest extends TestCase
 {
     public function testReadWriteAndDestroy(): void
     {
         if (!class_exists('RedisSentinel') || !class_exists('Redis')) {
             $this->markTestSkipped('RedisSentinel/Redis classes are not available.');
         }
-        if (!getenv('REDIS_SENTINEL_TESTS')) {
+        if (getenv('REDIS_SENTINEL_TESTS') === false || getenv('REDIS_SENTINEL_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_SENTINEL_TESTS=1 to run RedisSentinel integration tests.');
         }
 
-        $host = getenv('REDIS_SENTINEL_HOST') ?: '127.0.0.1';
-        $port = (int) (getenv('REDIS_SENTINEL_PORT') ?: 26379);
-        $service = getenv('REDIS_SENTINEL_SERVICE') ?: 'mymaster';
+        $host = getenv('REDIS_SENTINEL_HOST');
+        $host = $host === false || $host === '' ? '127.0.0.1' : $host;
+        $port = getenv('REDIS_SENTINEL_PORT');
+        $port = (int) ($port === false || $port === '' ? 26379 : $port);
+        $service = getenv('REDIS_SENTINEL_SERVICE');
+        $service = $service === false || $service === '' ? 'mymaster' : $service;
 
         $sentinel = createSentinel($host, $port);
         $handler = new RedisSentinelSessionHandler($sentinel, $service, 'sess_', 0);
@@ -126,13 +129,16 @@ class RedisSentinelSessionHandlerTest extends TestCase
         if (!class_exists('RedisSentinel') || !class_exists('Redis')) {
             $this->markTestSkipped('RedisSentinel/Redis classes are not available.');
         }
-        if (!getenv('REDIS_SENTINEL_TESTS')) {
+        if (getenv('REDIS_SENTINEL_TESTS') === false || getenv('REDIS_SENTINEL_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_SENTINEL_TESTS=1 to run RedisSentinel integration tests.');
         }
 
-        $host = getenv('REDIS_SENTINEL_HOST') ?: '127.0.0.1';
-        $port = (int) (getenv('REDIS_SENTINEL_PORT') ?: 26379);
-        $service = getenv('REDIS_SENTINEL_SERVICE') ?: 'mymaster';
+        $host = getenv('REDIS_SENTINEL_HOST');
+        $host = $host === false || $host === '' ? '127.0.0.1' : $host;
+        $port = getenv('REDIS_SENTINEL_PORT');
+        $port = (int) ($port === false || $port === '' ? 26379 : $port);
+        $service = getenv('REDIS_SENTINEL_SERVICE');
+        $service = $service === false || $service === '' ? 'mymaster' : $service;
 
         $sentinel = createSentinel($host, $port);
         $handler = new RedisSentinelSessionHandler($sentinel, $service, 'sess_', 60);
@@ -143,9 +149,12 @@ class RedisSentinelSessionHandlerTest extends TestCase
         $redis->setAccessible(true);
         $client = $redis->getValue($handler);
 
+        $this->assertIsObject($client);
+
         if (property_exists($client, 'calls')) {
+            /** @var object{calls: array<int, mixed>} $client */
             $this->assertSame(['setex', 'sess_abc', 60, 'value'], $client->calls[1] ?? []);
-        } else {
+        } elseif (method_exists($client, 'ttl')) {
             $ttl = $client->ttl('sess_abc');
             $this->assertGreaterThan(0, $ttl);
             $this->assertLessThanOrEqual(60, $ttl);
@@ -157,13 +166,16 @@ class RedisSentinelSessionHandlerTest extends TestCase
         if (!class_exists('RedisSentinel') || !class_exists('Redis')) {
             $this->markTestSkipped('RedisSentinel/Redis classes are not available.');
         }
-        if (!getenv('REDIS_SENTINEL_TESTS')) {
+        if (getenv('REDIS_SENTINEL_TESTS') === false || getenv('REDIS_SENTINEL_TESTS') === '') {
             $this->markTestSkipped('Set REDIS_SENTINEL_TESTS=1 to run RedisSentinel integration tests.');
         }
 
-        $host = getenv('REDIS_SENTINEL_HOST') ?: '127.0.0.1';
-        $port = (int) (getenv('REDIS_SENTINEL_PORT') ?: 26379);
-        $service = getenv('REDIS_SENTINEL_SERVICE') ?: 'mymaster';
+        $host = getenv('REDIS_SENTINEL_HOST');
+        $host = $host === false || $host === '' ? '127.0.0.1' : $host;
+        $port = getenv('REDIS_SENTINEL_PORT');
+        $port = (int) ($port === false || $port === '' ? 26379 : $port);
+        $service = getenv('REDIS_SENTINEL_SERVICE');
+        $service = $service === false || $service === '' ? 'mymaster' : $service;
 
         $sentinel = createSentinel($host, $port);
 

@@ -5,7 +5,7 @@ use Codemonster\Session\Session;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 
-class SessionTest extends TestCase
+final class SessionTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -27,7 +27,10 @@ class SessionTest extends TestCase
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
 
-        return (string) $property->getValue($store);
+        $id = $property->getValue($store);
+        $this->assertIsString($id);
+
+        return $id;
     }
 
     public function testSessionStartsAndStoresData(): void
@@ -144,6 +147,7 @@ class SessionTest extends TestCase
             $property->setAccessible(true);
 
             $options = $property->getValue($store);
+            $this->assertIsArray($options);
 
             $this->assertTrue($options['secure']);
         } finally {
@@ -161,6 +165,7 @@ class SessionTest extends TestCase
         $property->setAccessible(true);
 
         $options = $property->getValue($store);
+        $this->assertIsArray($options);
 
         $this->assertSame('None', $options['samesite']);
         $this->assertTrue($options['secure']);
@@ -400,6 +405,7 @@ class SessionTest extends TestCase
         $id = $this->getStoreId($store);
         $raw = $handler->read($id);
 
+        $this->assertIsString($raw);
         $this->assertStringStartsWith('v1:', $raw);
         $this->assertStringNotContainsString('value', $raw);
 
@@ -456,6 +462,7 @@ class SessionTest extends TestCase
         $store->start();
 
         $raw = $handler->read($id);
+        $this->assertIsString($raw);
         $this->assertStringStartsWith('v1:', $raw);
         $this->assertSame('abc', $store->get('token'));
     }

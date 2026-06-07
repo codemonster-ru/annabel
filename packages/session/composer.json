@@ -33,7 +33,7 @@
     },
     "scripts": {
         "test": "phpunit --colors=always --testdox",
-        "analyse": "phpstan analyse",
+        "analyse": "phpstan analyse --memory-limit=1G",
         "psalm": "psalm --no-cache",
         "stress": "php scripts/stress.php"
     },

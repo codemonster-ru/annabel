@@ -74,6 +74,7 @@ class Schema
     /**
      * Execute array of SQL statements.
      */
+    /** @param list<string> $sqls */
     protected function runStatements(array $sqls): void
     {
         foreach ($sqls as $sql) {

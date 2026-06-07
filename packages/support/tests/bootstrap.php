@@ -9,7 +9,7 @@ if (!function_exists('app')) {
         static $container;
 
         if ($container === null) {
-            $container = new \Tests\SupportFakeContainer();
+            $container = new \Codemonster\Support\Tests\SupportFakeContainer();
         }
 
         return $abstract ? $container->make($abstract) : $container;

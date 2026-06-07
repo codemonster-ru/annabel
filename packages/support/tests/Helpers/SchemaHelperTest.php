@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Support\Tests\Helpers;
+
 use PHPUnit\Framework\TestCase;
 use Codemonster\Database\Schema\Schema;
 use Codemonster\Database\DatabaseManager;

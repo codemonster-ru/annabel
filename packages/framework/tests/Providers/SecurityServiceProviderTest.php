@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Providers;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Annabel\Providers\SecurityServiceProvider;
@@ -28,7 +30,7 @@ class SecurityServiceProviderTest extends TestCase
         $this->assertTrue($container->has(RateLimiterInterface::class));
         $this->assertTrue($container->has(ThrottleRequests::class));
 
-        $reflection = new ReflectionClass(Kernel::class);
+        $reflection = new \ReflectionClass(Kernel::class);
         $property = $reflection->getProperty('middleware');
         $property->setAccessible(true);
 

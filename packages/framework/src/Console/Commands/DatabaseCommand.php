@@ -3,7 +3,7 @@
 namespace Codemonster\Annabel\Console\Commands;
 
 use Codemonster\Annabel\Console\Command;
-use Codemonster\Database\CLI\DatabaseCLIKernel;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 
 class DatabaseCommand extends Command
 {
@@ -32,8 +32,8 @@ class DatabaseCommand extends Command
         $console = $this->console();
 
         try {
-            /** @var DatabaseCLIKernel $kernel */
-            $kernel = $console->getApplication()->make(DatabaseCLIKernel::class);
+            /** @var DatabaseConsoleKernel $kernel */
+            $kernel = $console->getApplication()->make(DatabaseConsoleKernel::class);
             $command = $kernel->getRegistry()->get($this->signature);
 
             if (!$command) {

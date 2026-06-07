@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Cache;
+
 use Codemonster\Annabel\Cache\ArrayCache;
 use Codemonster\Annabel\Cache\FileCache;
 use Psr\SimpleCache\CacheInterface;

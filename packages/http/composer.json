@@ -3,6 +3,16 @@
     "description": "Lightweight object-oriented HTTP foundation for PHP.",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/http",
     "authors": [
         {

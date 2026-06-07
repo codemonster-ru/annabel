@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Publishing;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Providers\ServiceProvider;
 use Codemonster\Annabel\Publishing\PublishRegistry;
@@ -91,7 +93,7 @@ class ResourcePublisherTest extends TestCase
         $basePath = $this->directory('annabel-publish-app-');
         $source = $this->file('annabel-source-', 'content');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('must be inside application base path');
 
         (new ResourcePublisher($basePath))->publish([
@@ -115,7 +117,7 @@ class ResourcePublisherTest extends TestCase
         }
 
         $this->paths[] = $link;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('contains symbolic link');
 
         (new ResourcePublisher($basePath))->publish([

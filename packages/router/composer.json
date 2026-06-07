@@ -3,6 +3,16 @@
     "description": "Lightweight router for PHP applications",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/router",
     "authors": [
         {
@@ -47,7 +57,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "2.x-dev"
+            "dev-main": "2.5.x-dev"
         }
     }
 }

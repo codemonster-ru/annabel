@@ -6,7 +6,7 @@ use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Query\QueryBuilder;
 use Codemonster\Database\Schema\GrammarResolver;
 use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
-use Codemonster\Database\Schema\MySqlGrammar;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Schema\Schema;
 use Codemonster\Database\Tests\TestCase;
 use PDO;

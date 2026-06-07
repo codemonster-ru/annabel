@@ -1,9 +1,9 @@
 <?php
 
-namespace Codemonster\Database\Tests\QueryBuilder;
+namespace Codemonster\Database\Tests\Schema;
 
 use Codemonster\Database\Schema\Blueprint;
-use Codemonster\Database\Schema\MySqlGrammar;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Tests\TestCase;
 
 class CreateTableTest extends TestCase

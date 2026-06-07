@@ -16,6 +16,18 @@ usable without depending on `codemonster-ru/annabel`.
 - The skeleton is an application template. It may extend framework providers, but
   it must not ship generated dependencies, cache, storage, or local lock files.
 
+## Local Package Development
+
+Every package manifest declares the monorepo sibling packages as a Composer path
+repository (`../*`) with symlinks enabled. This keeps local package development
+using the checked-out `codemonster-ru/*` sources instead of stale Packagist
+archives when a package is installed or tested as the root project.
+
+Composer only honors `repositories` from the root project. Once a package is
+published and consumed as a dependency, its local path repository declaration is
+ignored, and downstream applications resolve `codemonster-ru/*` packages from
+their own configured repositories, normally Packagist.
+
 ## Security Boundary
 
 `security` is a framework-agnostic package. It exposes CSRF and rate-limiting

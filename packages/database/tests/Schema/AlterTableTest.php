@@ -3,7 +3,7 @@
 namespace Codemonster\Database\Tests\Schema;
 
 use Codemonster\Database\Schema\Blueprint;
-use Codemonster\Database\Schema\MySqlGrammar;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Tests\TestCase;
 
 class AlterTableTest extends TestCase

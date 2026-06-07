@@ -165,9 +165,9 @@ Strict mode throws `InvalidFileException` on duplicate names for `parse()` and `
 
 | Scenario                                  | Exception                                            |
 | ----------------------------------------- | ---------------------------------------------------- |
-| Invalid syntax, invalid name, bad escapes | `Codemonster\Env\Exception\InvalidFileException`     |
-| Invalid or unsupported encoding           | `Codemonster\Env\Exception\InvalidEncodingException` |
-| Missing or unreadable file                | `Codemonster\Env\Exception\InvalidPathException`     |
+| Invalid syntax, invalid name, bad escapes | `Codemonster\Env\Exceptions\InvalidFileException`     |
+| Invalid or unsupported encoding           | `Codemonster\Env\Exceptions\InvalidEncodingException` |
+| Missing or unreadable file                | `Codemonster\Env\Exceptions\InvalidPathException`     |
 
 ## Loader Interface
 

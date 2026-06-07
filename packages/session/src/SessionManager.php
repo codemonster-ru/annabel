@@ -2,6 +2,7 @@
 
 namespace Codemonster\Session;
 
+/** @api */
 class SessionManager
 {
     private Store $store;

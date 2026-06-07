@@ -56,14 +56,15 @@ class RateLimiterTest extends TestCase
 
 class ArrayAtomicStorage implements \Codemonster\Security\RateLimiting\Storage\AtomicThrottleStorageInterface
 {
+    /** @var array<string, array{attempts: int, expires_at: int}> */
     private array $data = [];
 
-    public function get(string $key): mixed
+    public function get(string $key): ?array
     {
         return $this->data[$key] ?? null;
     }
 
-    public function put(string $key, mixed $value): void
+    public function put(string $key, array $value): void
     {
         $this->data[$key] = $value;
     }
@@ -77,14 +78,14 @@ class ArrayAtomicStorage implements \Codemonster\Security\RateLimiting\Storage\A
     {
         $record = $this->data[$key] ?? null;
 
-        if (!is_array($record) || $record === [] || ($record['expires_at'] ?? 0) <= $now) {
+        if ($record === null || $record['expires_at'] <= $now) {
             $record = [
                 'attempts' => 0,
                 'expires_at' => $now + $decaySeconds,
             ];
         }
 
-        $record['attempts'] = (int) ($record['attempts'] ?? 0) + 1;
+        $record['attempts']++;
         $this->data[$key] = $record;
 
         return $record;

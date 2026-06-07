@@ -60,6 +60,7 @@ class WipeCommand implements CommandInterface
         return 0;
     }
 
+    /** @param list<string> $arguments */
     protected function isForced(array $arguments): bool
     {
         return in_array('--force', $arguments, true);
@@ -80,7 +81,9 @@ class WipeCommand implements CommandInterface
 
     protected function getDriverName(): string
     {
-        return $this->connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $driver = $this->connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+        return is_string($driver) ? $driver : '';
     }
 
     /**
@@ -113,8 +116,8 @@ class WipeCommand implements CommandInterface
         $names = [];
 
         foreach ($rows as $row) {
-            if (isset($row[$key])) {
-                $names[] = (string) $row[$key];
+            if (is_string($row[$key] ?? null)) {
+                $names[] = $row[$key];
             }
         }
 

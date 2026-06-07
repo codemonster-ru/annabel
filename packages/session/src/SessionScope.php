@@ -2,6 +2,7 @@
 
 namespace Codemonster\Session;
 
+/** @api */
 class SessionScope
 {
     private Store $store;
@@ -90,7 +91,7 @@ class SessionScope
         $filtered = [];
 
         foreach ($all as $key => $_value) {
-            if (!is_string($key) || str_starts_with($key, '__')) {
+            if (str_starts_with($key, '__')) {
                 continue;
             }
             if (str_starts_with($key, $this->prefix)) {

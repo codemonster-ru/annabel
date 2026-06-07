@@ -18,7 +18,12 @@ class QueryBuilder implements QueryBuilderInterface
     /** @var array<int, string|RawExpression> */
     protected array $columns = ['*'];
 
-    /** @var array<int, array<string, mixed>> */
+    /**
+     * @var list<
+     *     array{type: 'raw', raw: string}
+     *     |array{type: 'basic', column: string, direction: 'ASC'|'DESC'}
+     * >
+     */
     protected array $orders = [];
 
     protected ?int $limit = null;
@@ -27,15 +32,20 @@ class QueryBuilder implements QueryBuilderInterface
 
     protected WhereGroup $where;
 
-    /** @var JoinClause[] */
+    /** @var list<JoinClause> */
     protected array $joins = [];
 
     protected bool $distinct = false;
 
-    /** @var string[] */
+    /** @var list<string> */
     protected array $groups = [];
 
-    /** @var array<int, array<string, mixed>> */
+    /**
+     * @var list<
+     *     array{type: 'raw', sql: string, boolean: string}
+     *     |array{type: 'basic', column: string, operator: string, value: mixed, boolean: string}
+     * >
+     */
     protected array $havings = [];
 
     protected string $emptyWhereInBehavior = self::EMPTY_CONDITION_NONE;
@@ -57,15 +67,23 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function select(string|array ...$columns): static
     {
-        if (count($columns) === 1 && is_array($columns[0])) {
-            $columns = $columns[0];
+        $normalized = [];
+
+        foreach ($columns as $column) {
+            if (is_array($column)) {
+                foreach ($column as $nestedColumn) {
+                    $normalized[] = $nestedColumn;
+                }
+            } else {
+                $normalized[] = $column;
+            }
         }
 
-        if (empty($columns)) {
-            $columns = ['*'];
+        if ($normalized === []) {
+            $normalized = ['*'];
         }
 
-        $this->columns = $columns;
+        $this->columns = $normalized;
 
         return $this;
     }
@@ -93,7 +111,7 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function where(string|callable $column, mixed $operator = null, mixed $value = null, string $boolean = 'AND'): static
     {
-        if (is_callable($column)) {
+        if (!is_string($column)) {
             $group = new WhereGroup();
 
             $column($this->newScopedBuilder($group));
@@ -107,6 +125,10 @@ class QueryBuilder implements QueryBuilderInterface
         if (func_num_args() === 2) {
             $value = $operator;
             $operator = '=';
+        }
+
+        if (!is_string($operator)) {
+            throw new \InvalidArgumentException('Where operator must be a string.');
         }
 
         $condition = new WhereCondition(
@@ -322,9 +344,13 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $join = new JoinClause($type, $table);
 
-        if (is_callable($first)) {
+        if (!is_string($first)) {
             $first($join);
         } else {
+            if ($operator === null || $second === null) {
+                throw new \InvalidArgumentException('Join operator and second column are required.');
+            }
+
             $join->on($first, $operator, $second);
         }
 
@@ -350,6 +376,7 @@ class QueryBuilder implements QueryBuilderInterface
         return $this;
     }
 
+    /** @param list<mixed> $bindings */
     protected function compileJoins(array &$bindings): string
     {
         if (empty($this->joins)) {
@@ -441,6 +468,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function orderBy(string $column, string $direction = 'asc'): static
     {
         $this->orders[] = [
+            'type' => 'basic',
             'column' => $column,
             'direction' => strtolower($direction) === 'desc' ? 'DESC' : 'ASC',
         ];
@@ -477,7 +505,7 @@ class QueryBuilder implements QueryBuilderInterface
     // ------------------------------------------------------
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return list<array<string, mixed>>
      */
     public function get(): array
     {
@@ -532,6 +560,10 @@ class QueryBuilder implements QueryBuilderInterface
         return (int) $this->connection->getPdo()->lastInsertId();
     }
 
+    /**
+     * @param array<string, mixed> $values
+     * @return array{string, list<mixed>}
+     */
     protected function compileInsert(array $values): array
     {
         $columns = array_keys($values);
@@ -559,6 +591,10 @@ class QueryBuilder implements QueryBuilderInterface
         return $this->connection->update($sql, $bindings);
     }
 
+    /**
+     * @param array<string, mixed> $values
+     * @return array{string, list<mixed>}
+     */
     protected function compileUpdate(array $values): array
     {
         $set = [];
@@ -592,6 +628,7 @@ class QueryBuilder implements QueryBuilderInterface
         return $this->connection->delete($sql, $bindings);
     }
 
+    /** @return array{string, list<mixed>} */
     protected function compileDelete(): array
     {
         $bindings = [];
@@ -610,6 +647,7 @@ class QueryBuilder implements QueryBuilderInterface
     // SELECT compiler
     // ------------------------------------------------------
 
+    /** @return array{string, list<mixed>} */
     protected function compileSelect(): array
     {
         $bindings = [];
@@ -678,9 +716,9 @@ class QueryBuilder implements QueryBuilderInterface
             $parts = [];
 
             foreach ($this->orders as $order) {
-                if (($order['type'] ?? null) === 'raw') {
+                if ($order['type'] === 'raw') {
                     $parts[] = $order['raw'];
-                } else {
+                } elseif ($order['type'] === 'basic') {
                     $parts[] = $this->wrapColumn($order['column']) . ' ' . $order['direction'];
                 }
             }
@@ -723,6 +761,7 @@ class QueryBuilder implements QueryBuilderInterface
     // WHERE compilation
     // ------------------------------------------------------
 
+    /** @param list<mixed> $bindings */
     protected function compileWhere(WhereGroup $group, array &$bindings): ?string
     {
         if ($group->isEmpty()) {
@@ -740,7 +779,14 @@ class QueryBuilder implements QueryBuilderInterface
 
                 // RAW
                 if ($cond->operator === 'RAW') {
-                    [$expr, $params] = $cond->value;
+                    if (!is_array($cond->value)
+                        || !is_string($cond->value[0] ?? null)
+                        || !is_array($cond->value[1] ?? null)) {
+                        throw new \LogicException('Invalid raw where condition.');
+                    }
+
+                    $expr = $cond->value[0];
+                    $params = $cond->value[1];
 
                     foreach ($params as $p) {
                         $bindings[] = $p;
@@ -764,8 +810,13 @@ class QueryBuilder implements QueryBuilderInterface
 
                 // BETWEEN / NOT BETWEEN
                 if ($cond->operator === 'BETWEEN' || $cond->operator === 'NOT BETWEEN') {
-                    $bindings[] = $cond->value[0];
-                    $bindings[] = $cond->value[1];
+                    if (!is_array($cond->value) || count($cond->value) !== 2) {
+                        throw new \LogicException('Between condition requires exactly two values.');
+                    }
+
+                    $range = array_values($cond->value);
+                    $bindings[] = $range[0];
+                    $bindings[] = $range[1];
 
                     $sqlParts[] = $boolean . sprintf(
                         '%s %s ? AND ?',
@@ -778,6 +829,10 @@ class QueryBuilder implements QueryBuilderInterface
 
                 // IN / NOT IN
                 if ($cond->isList && ($cond->operator === 'IN' || $cond->operator === 'NOT IN')) {
+                    if (!is_array($cond->value)) {
+                        throw new \LogicException('IN condition requires an array.');
+                    }
+
                     $placeholders = implode(', ', array_fill(0, count($cond->value), '?'));
 
                     foreach ($cond->value as $v) {
@@ -848,27 +903,41 @@ class QueryBuilder implements QueryBuilderInterface
 
     public function count(string $column = '*'): int
     {
-        return (int) $this->aggregate('COUNT', $column);
+        return (int) $this->numericAggregate('COUNT', $column);
     }
 
     public function sum(string $column): float|int
     {
-        return $this->aggregate('SUM', $column);
+        return $this->numericAggregate('SUM', $column);
     }
 
     public function avg(string $column): float|int
     {
-        return $this->aggregate('AVG', $column);
+        return $this->numericAggregate('AVG', $column);
     }
 
     public function min(string $column): float|int
     {
-        return $this->aggregate('MIN', $column);
+        return $this->numericAggregate('MIN', $column);
     }
 
     public function max(string $column): float|int
     {
-        return $this->aggregate('MAX', $column);
+        return $this->numericAggregate('MAX', $column);
+    }
+
+    protected function numericAggregate(string $function, string $column): float|int
+    {
+        $value = $this->aggregate($function, $column);
+
+        if (is_int($value) || is_float($value)) {
+            return $value;
+        }
+        if (is_string($value) && is_numeric($value)) {
+            return str_contains($value, '.') ? (float) $value : (int) $value;
+        }
+
+        return 0;
     }
 
     public function exists(): bool
@@ -926,9 +995,14 @@ class QueryBuilder implements QueryBuilderInterface
 
         foreach ($rows as $row) {
             if ($keyName !== null) {
-                $result[$row[$keyName]] = $row[$valueKey];
+                $resultKey = $row[$keyName] ?? null;
+                if ((is_int($resultKey) || is_string($resultKey)) && array_key_exists($valueKey, $row)) {
+                    $result[$resultKey] = $row[$valueKey];
+                }
             } else {
-                $result[] = $row[$valueKey];
+                if (array_key_exists($valueKey, $row)) {
+                    $result[] = $row[$valueKey];
+                }
             }
         }
 
@@ -998,9 +1072,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected function splitAlias(string $value): array
     {
         if (preg_match('/\s+as\s+/i', $value)) {
-            [$expr, $alias] = preg_split('/\s+as\s+/i', $value, 2);
+            $parts = preg_split('/\s+as\s+/i', $value, 2);
 
-            return [trim($expr), trim($alias)];
+            if ($parts === false || count($parts) !== 2) {
+                return [$value, null];
+            }
+
+            return [trim($parts[0]), trim($parts[1])];
         }
 
         if (preg_match('/^(.+)\s+([A-Za-z_][A-Za-z0-9_]*)$/', trim($value), $matches)) {

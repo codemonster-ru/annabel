@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/packagist/l/codemonster-ru/security.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/security)
 [![Tests](https://github.com/codemonster-ru/security/actions/workflows/tests.yml/badge.svg)](https://github.com/codemonster-ru/security/actions/workflows/tests.yml)
 
-`codemonster-ru/security` is a set of reusable security components for the Annabel ecosystem:
+`codemonster-ru/security` is a set of reusable security components for PHP applications:
 
 -   CSRF protection (`VerifyCsrfToken`) with a token from POST (`_token`) and/or headers (`X-CSRF-TOKEN`, `X-XSRF-TOKEN`)
 -   Rate limiting / brute-force protection (`ThrottleRequests`) with a configurable key and storage layer
@@ -30,7 +30,8 @@ For monorepo development, you can use a `path` repository (as in `annabel-skelet
 
 ## Quick Start (Annabel)
 
-Annabel loads providers from `bootstrap/providers/*.php`.
+The package itself is framework-agnostic. Annabel integration is provided by
+`codemonster-ru/annabel`, which loads providers from `bootstrap/providers/*.php`.
 
 1. Add a provider:
 
@@ -41,7 +42,7 @@ Annabel loads providers from `bootstrap/providers/*.php`.
 
 namespace App\Providers;
 
-use Codemonster\Security\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
+use Codemonster\Annabel\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
 
 class SecurityServiceProvider extends BaseSecurityServiceProvider {}
 ```

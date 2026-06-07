@@ -4,9 +4,9 @@ use Codemonster\Session\Handlers\FileSessionHandler;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 
-class FileSessionHandlerTest extends TestCase
+final class FileSessionHandlerTest extends TestCase
 {
-    protected string $path;
+    protected string $path = '';
 
     protected function setUp(): void
     {
@@ -17,7 +17,8 @@ class FileSessionHandlerTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (glob("{$this->path}/sess_*") ?: [] as $file) {
+        $files = glob("{$this->path}/sess_*");
+        foreach ($files === false ? [] : $files as $file) {
             @unlink($file);
         }
 

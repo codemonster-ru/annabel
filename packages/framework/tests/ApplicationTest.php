@@ -20,9 +20,10 @@ class ApplicationTest extends TestCase
     {
         Application::resetInstance();
 
-        new Application(__DIR__ . '/..');
+        $app = new Application(__DIR__ . '/..');
 
         $this->assertInstanceOf(Application::class, Application::getInstance());
+        $this->assertSame($app, $app->make(Application::class));
     }
 
     public function test_routes_can_be_registered_before_bootstrap()

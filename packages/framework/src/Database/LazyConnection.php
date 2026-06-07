@@ -11,9 +11,11 @@ use Codemonster\Database\Schema\Schema;
  */
 class LazyConnection implements ConnectionInterface
 {
+    /** @var \Closure(): ConnectionInterface */
     protected \Closure $resolver;
     protected ?ConnectionInterface $resolved = null;
 
+    /** @param \Closure(): ConnectionInterface $resolver */
     public function __construct(\Closure $resolver)
     {
         $this->resolver = $resolver;
@@ -22,37 +24,79 @@ class LazyConnection implements ConnectionInterface
     protected function connection(): ConnectionInterface
     {
         if (!$this->resolved) {
-            $this->resolved = ($this->resolver)();
+            $connection = ($this->resolver)();
+
+            if (!$connection instanceof ConnectionInterface) {
+                throw new \RuntimeException('Lazy connection resolver must return ConnectionInterface.');
+            }
+
+            $this->resolved = $connection;
         }
 
         return $this->resolved;
     }
 
+    /**
+     * @param array<string|int, mixed> $params
+     * @return list<array<string, mixed>>
+     */
     public function select(string $query, array $params = []): array
     {
-        return $this->connection()->select($query, $params);
+        $rows = [];
+        foreach ($this->connection()->select($query, $params) as $row) {
+            if (is_array($row)) {
+                $rows[] = $this->normalizeRow($row);
+            }
+        }
+
+        return $rows;
     }
 
+    /**
+     * @param array<string|int, mixed> $params
+     * @return array<string, mixed>|null
+     */
     public function selectOne(string $query, array $params = []): ?array
     {
-        return $this->connection()->selectOne($query, $params);
+        $row = $this->connection()->selectOne($query, $params);
+
+        return $row === null ? null : $this->normalizeRow($row);
     }
 
+    /** @param array<mixed, mixed> $row
+     *  @return array<string, mixed>
+     */
+    private function normalizeRow(array $row): array
+    {
+        $normalized = [];
+        foreach ($row as $key => $value) {
+            if (is_string($key)) {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /** @param array<string|int, mixed> $params */
     public function insert(string $query, array $params = []): bool
     {
         return $this->connection()->insert($query, $params);
     }
 
+    /** @param array<string|int, mixed> $params */
     public function update(string $query, array $params = []): int
     {
         return $this->connection()->update($query, $params);
     }
 
+    /** @param array<string|int, mixed> $params */
     public function delete(string $query, array $params = []): int
     {
         return $this->connection()->delete($query, $params);
     }
 
+    /** @param array<string|int, mixed> $params */
     public function statement(string $query, array $params = []): bool
     {
         return $this->connection()->statement($query, $params);

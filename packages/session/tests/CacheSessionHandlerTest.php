@@ -5,7 +5,7 @@ use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 
-class CacheSessionHandlerTest extends TestCase
+final class CacheSessionHandlerTest extends TestCase
 {
     public function testReadWriteAndDestroy(): void
     {
@@ -153,7 +153,7 @@ if ($typedSignatures) {
         }
     }
 
-    class FlakyCache extends ArrayCache
+final class FlakyCache extends ArrayCache
     {
         private int $tries = 0;
 

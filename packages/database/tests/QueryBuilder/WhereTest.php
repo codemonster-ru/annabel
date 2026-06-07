@@ -16,6 +16,16 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE `id` = ?', $sql);
     }
 
+    public function test_callable_function_name_is_treated_as_column()
+    {
+        $qb = new QueryBuilder($this->fakeConnection(), 'users');
+
+        $sql = $qb->where('key', '=', 'account')->toSql();
+
+        $this->assertStringContainsString('WHERE `key` = ?', $sql);
+        $this->assertSame(['account'], $qb->getBindings());
+    }
+
     public function test_nested_where_groups()
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');

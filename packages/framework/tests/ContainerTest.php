@@ -1,5 +1,8 @@
 <?php
 
+namespace Codemonster\Annabel\Tests;
+
+
 use Codemonster\Annabel\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -46,10 +49,10 @@ class ContainerTest extends TestCase
     public function test_singleton_returns_same_instance()
     {
         $c = new Container();
-        $c->singleton(stdClass::class, fn() => new stdClass());
+        $c->singleton(\stdClass::class, fn() => new \stdClass());
 
-        $a = $c->make(stdClass::class);
-        $b = $c->make(stdClass::class);
+        $a = $c->make(\stdClass::class);
+        $b = $c->make(\stdClass::class);
 
         $this->assertSame($a, $b);
     }
@@ -89,7 +92,7 @@ class ContainerTest extends TestCase
         $c->singleton(ParamSubject::class, fn($container, array $params) => new ParamSubject($params['name']));
         $c->make(ParamSubject::class, ['name' => 'first']);
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $c->make(ParamSubject::class, ['name' => 'second']);
     }
 }

@@ -1,45 +1,44 @@
 <?php
 
-namespace Codemonster\Database\Tests\CLI;
+namespace Codemonster\Database\Tests\Console;
 
-use Codemonster\Database\CLI\Commands\WipeCommand;
+use Codemonster\Database\Console\Commands\TruncateCommand;
 use Codemonster\Database\Tests\TestCase;
 
-class WipeCommandTest extends TestCase
+class TruncateCommandTest extends TestCase
 {
-    public function test_wipe_command_drops_all_tables_for_sqlite()
+    public function test_truncate_command_cleans_tables_except_migrations_for_sqlite()
     {
         $connection = $this->fakeConnection();
         $query = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'";
         $connection->results[$query] = [
             ['name' => 'migrations'],
-            ['name' => 'posts'],
+            ['name' => 'users'],
         ];
 
-        $command = new WipeCommand($connection);
+        $command = new TruncateCommand($connection);
 
-        $this->expectOutputString("Database wiped.\n");
+        $this->expectOutputString("Database cleaned.\n");
         $this->assertSame(0, $command->handle(['--force']));
 
         $queries = $this->statementQueries($connection->log);
 
         $this->assertSame([
             'PRAGMA foreign_keys = OFF',
-            'DROP TABLE IF EXISTS "migrations"',
-            'DROP TABLE IF EXISTS "posts"',
+            'DELETE FROM "users"',
             'PRAGMA foreign_keys = ON',
         ], $queries);
     }
 
-    public function test_wipe_command_reports_when_nothing_to_wipe()
+    public function test_truncate_command_reports_when_nothing_to_clean()
     {
         $connection = $this->fakeConnection();
         $query = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'";
         $connection->results[$query] = [];
 
-        $command = new WipeCommand($connection);
+        $command = new TruncateCommand($connection);
 
-        $this->expectOutputString("Nothing to wipe.\n");
+        $this->expectOutputString("Nothing to clean.\n");
         $this->assertSame(0, $command->handle(['--force']));
         $this->assertSame([], $this->statementQueries($connection->log));
     }

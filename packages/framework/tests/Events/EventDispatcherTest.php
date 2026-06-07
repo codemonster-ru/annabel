@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Events;
+
 use Codemonster\Annabel\Events\EventDispatcher;
 use Codemonster\Annabel\Events\ListenerProvider;
 use PHPUnit\Framework\TestCase;

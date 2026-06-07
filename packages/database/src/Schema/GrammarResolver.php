@@ -3,6 +3,7 @@
 namespace Codemonster\Database\Schema;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
 use PDO;
 

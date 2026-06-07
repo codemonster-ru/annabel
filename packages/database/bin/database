@@ -19,7 +19,7 @@ if (false) {
 require __DIR__ . '/../vendor/autoload.php';
 
 use Codemonster\Database\DatabaseManager;
-use Codemonster\Database\CLI\DatabaseCLIKernel;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 
 // ---------------------------------------------------------------------
 //  Configuration loader
@@ -76,7 +76,7 @@ try {
 //  Run CLI Kernel
 // ---------------------------------------------------------------------
 
-$kernel = new DatabaseCLIKernel($connection);
+$kernel = new DatabaseConsoleKernel($connection);
 
 // Launch
 exit($kernel->handle($_SERVER['argv']));

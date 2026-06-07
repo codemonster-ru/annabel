@@ -3,6 +3,16 @@
     "description": "A universal PHP bridge for interacting with Node.js SSR services (locally or via HTTP).",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/ssr-bridge",
     "authors": [
         {
@@ -48,5 +58,10 @@
         "framework-integration",
         "frontend-integration",
         "annabel"
-    ]
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.0.x-dev"
+        }
+    }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Codemonster\Database\Tests\CLI;
+namespace Codemonster\Database\Tests\Console;
 
-use Codemonster\Database\CLI\Commands\SeedCommand;
+use Codemonster\Database\Console\Commands\SeedCommand;
 use Codemonster\Database\Seeders\SeederRunner;
 use Codemonster\Database\Tests\TestCase;
 

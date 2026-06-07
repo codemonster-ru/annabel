@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Fakes;
+namespace Codemonster\Support\Tests\Fakes;
 
 use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Contracts\ConnectionInterface;

@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Validation;
+
 use Codemonster\Annabel\Validation\ValidationException;
 use Codemonster\Annabel\Validation\Validator;
 use PHPUnit\Framework\TestCase;

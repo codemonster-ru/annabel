@@ -3,6 +3,16 @@
     "description": "Lightweight, framework-agnostic database layer with PDO connections, fluent Query Builder, Schema Builder, and full migration system.",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "readme": "README.md",
     "authors": [
         {
@@ -66,7 +76,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "2.x-dev"
+            "dev-main": "2.0.x-dev"
         }
     }
 }

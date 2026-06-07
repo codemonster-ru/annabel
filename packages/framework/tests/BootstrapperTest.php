@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Bootstrap\Bootstrapper;
 use Codemonster\Annabel\Bootstrap\PackageManifest;
@@ -26,7 +28,7 @@ class BootstrapperTest extends TestCase
 
         file_put_contents($file, $php);
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
 
         try {
             $bootstrapper->exposeResolve($file);

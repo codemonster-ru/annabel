@@ -152,7 +152,7 @@ class Env
                 $name = $entry[0];
 
                 if (isset($seen[$name])) {
-                    throw new Exception\InvalidFileException("Duplicate entry for {$name}.");
+                    throw new Exceptions\InvalidFileException("Duplicate entry for {$name}.");
                 }
 
                 $seen[$name] = true;
@@ -175,7 +175,7 @@ class Env
             $name = $entry[0];
 
             if ($strict && array_key_exists($name, $parsed)) {
-                throw new Exception\InvalidFileException("Duplicate entry for {$name}.");
+                throw new Exceptions\InvalidFileException("Duplicate entry for {$name}.");
             }
 
             $parsed[$name] = $entry[1];

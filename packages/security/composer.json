@@ -3,6 +3,16 @@
     "description": "Security components for Annabel ecosystem: CSRF protection and rate limiting.",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/security",
     "authors": [
         {
@@ -66,7 +76,7 @@
     "prefer-stable": true,
     "extra": {
         "branch-alias": {
-            "dev-main": "1.0.x-dev"
+            "dev-main": "1.1.x-dev"
         }
     }
 }

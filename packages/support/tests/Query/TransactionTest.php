@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Query;
+namespace Codemonster\Support\Tests\Query;
 
 use PHPUnit\Framework\TestCase;
-use Tests\Fakes\FakeConnection;
+use Codemonster\Support\Tests\Fakes\FakeConnection;
 
 class TransactionTest extends TestCase
 {

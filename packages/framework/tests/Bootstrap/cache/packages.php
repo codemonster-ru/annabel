@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'fingerprint' => 'd199e7636be242c1da88d499fd14165cef639fca17bede7cb162f730b483dead',
+  'fingerprint' => 'd594457242b81ca76fb643960454480410f5be4435036f81d219144b7e0e66f4',
   'providers' => 
   array (
   ),

@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Console;
+
 use Codemonster\Annabel\Console\ArgvInput;
 use PHPUnit\Framework\TestCase;
 

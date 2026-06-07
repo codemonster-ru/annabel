@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Http;
+
 use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Annabel\Http\Exceptions\MethodNotAllowedHttpException;
 use Codemonster\Http\Request;
@@ -171,7 +173,7 @@ class KernelTest extends TestCase
 
         $logger = new TestArrayLogger();
         $router = new Router();
-        $router->get('/boom', fn() => throw new RuntimeException('Boom'));
+        $router->get('/boom', fn() => throw new \RuntimeException('Boom'));
         $app = new Application(__DIR__ . '/..');
         $app->getContainer()->instance(\Psr\Log\LoggerInterface::class, $logger);
         $kernel = new Kernel($app, $router);
@@ -181,7 +183,7 @@ class KernelTest extends TestCase
         $this->assertEquals(500, $res->getStatusCode());
         $this->assertSame('error', $logger->records[0]['level']);
         $this->assertSame('Boom', $logger->records[0]['message']);
-        $this->assertInstanceOf(RuntimeException::class, $logger->records[0]['context']['exception']);
+        $this->assertInstanceOf(\RuntimeException::class, $logger->records[0]['context']['exception']);
     }
 
     public function test_kernel_returns_json_422_for_validation_exceptions()

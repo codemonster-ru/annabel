@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Providers;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Config\Config;
 use Codemonster\Annabel\Providers\CoreServiceProvider;
@@ -46,7 +48,7 @@ class SessionServiceProviderTest extends TestCase
             'session.driver' => 'unknown',
         ]);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Unsupported session driver: unknown');
 
         $app->make('session');

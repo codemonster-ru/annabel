@@ -3,6 +3,16 @@
     "description": "Lightweight session management library for PHP with pluggable handlers",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/session",
     "authors": [
         {
@@ -55,7 +65,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "2.x-dev"
+            "dev-main": "2.0.x-dev"
         }
     }
 }

@@ -3,6 +3,16 @@
     "description": "Simple and elegant PHP variable dumper for CLI and web environments",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "homepage": "https://github.com/codemonster-ru/dumper",
     "authors": [
         {

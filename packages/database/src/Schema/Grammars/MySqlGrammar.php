@@ -1,6 +1,11 @@
 <?php
 
-namespace Codemonster\Database\Schema;
+namespace Codemonster\Database\Schema\Grammars;
+
+use Codemonster\Database\Schema\Blueprint;
+use Codemonster\Database\Schema\ColumnDefinition;
+use Codemonster\Database\Schema\ForeignKeyDefinition;
+use Codemonster\Database\Schema\Grammar;
 
 /**
  * @phpstan-import-type IndexDefinition from Blueprint

@@ -1,5 +1,5 @@
 <?php
 
-namespace Codemonster\Env\Exception;
+namespace Codemonster\Env\Exceptions;
 
 class InvalidFileException extends \InvalidArgumentException {}

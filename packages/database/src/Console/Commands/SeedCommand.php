@@ -1,8 +1,8 @@
 <?php
 
-namespace Codemonster\Database\CLI\Commands;
+namespace Codemonster\Database\Console\Commands;
 
-use Codemonster\Database\CLI\CommandInterface;
+use Codemonster\Database\Console\CommandInterface;
 use Codemonster\Database\Seeders\SeederRunner;
 
 class SeedCommand implements CommandInterface

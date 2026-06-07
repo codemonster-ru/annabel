@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Http\Request;
 use Codemonster\View\View;
@@ -55,7 +57,7 @@ class ApplicationTest extends TestCase
 
         new Application(__DIR__ . '/..');
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
 
         try {
             new Application(__DIR__ . '/..');

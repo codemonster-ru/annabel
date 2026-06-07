@@ -25,7 +25,7 @@ class EnvLoader implements LoaderInterface
         bool $strictResolve = false
     ): void {
         if (!is_file($path)) {
-            throw new Exception\InvalidPathException("Env file not found: $path");
+            throw new Exceptions\InvalidPathException("Env file not found: $path");
         }
 
         $content = $this->readFileContents($path, $maxBytes);
@@ -47,7 +47,7 @@ class EnvLoader implements LoaderInterface
 
         try {
             $this->loadFile($path, $encoding, $maxBytes, $strictResolve);
-        } catch (Exception\InvalidFileException | Exception\InvalidPathException) {
+        } catch (Exceptions\InvalidFileException | Exceptions\InvalidPathException) {
             return false;
         }
 
@@ -62,13 +62,13 @@ class EnvLoader implements LoaderInterface
     ): void {
         if ($maxBytes !== null) {
             if ($maxBytes < 0) {
-                throw new Exception\InvalidFileException('Maximum content size cannot be negative.');
+                throw new Exceptions\InvalidFileException('Maximum content size cannot be negative.');
             }
 
             $length = strlen($content);
 
             if ($length > $maxBytes) {
-                throw new Exception\InvalidFileException(
+                throw new Exceptions\InvalidFileException(
                     "Env content size exceeds {$maxBytes} bytes."
                 );
             }
@@ -87,7 +87,7 @@ class EnvLoader implements LoaderInterface
     ): bool {
         try {
             $this->loadString($content, $encoding, $strictResolve, $maxBytes);
-        } catch (Exception\InvalidFileException | Exception\InvalidPathException) {
+        } catch (Exceptions\InvalidFileException | Exceptions\InvalidPathException) {
             return false;
         }
 
@@ -118,7 +118,7 @@ class EnvLoader implements LoaderInterface
                         continue;
                     }
 
-                    throw new Exception\InvalidPathException("Env file not found: {$path}");
+                    throw new Exceptions\InvalidPathException("Env file not found: {$path}");
                 }
 
                 foreach ($expanded as $expandedPath) {
@@ -146,7 +146,7 @@ class EnvLoader implements LoaderInterface
                     continue;
                 }
 
-                throw new Exception\InvalidPathException("Env file not found: {$path}");
+                throw new Exceptions\InvalidPathException("Env file not found: {$path}");
             }
 
             $this->loadFile($path, $encoding, $maxBytes, $strictResolve);
@@ -159,7 +159,7 @@ class EnvLoader implements LoaderInterface
         }
 
         if (!$loadedAny) {
-            throw new Exception\InvalidPathException('No env files could be loaded.');
+            throw new Exceptions\InvalidPathException('No env files could be loaded.');
         }
     }
 
@@ -174,7 +174,7 @@ class EnvLoader implements LoaderInterface
     ): bool {
         try {
             $this->loadFiles($paths, $encoding, $maxBytes, $strictResolve, $shortCircuit, $globFlags);
-        } catch (Exception\InvalidFileException | Exception\InvalidPathException) {
+        } catch (Exceptions\InvalidFileException | Exceptions\InvalidPathException) {
             return false;
         }
 
@@ -219,7 +219,7 @@ class EnvLoader implements LoaderInterface
                     $unique = array_values(array_unique($unresolved));
                     $missing = implode(', ', $unique);
 
-                    throw new Exception\InvalidFileException(
+                    throw new Exceptions\InvalidFileException(
                         "Unresolved variable reference(s) [{$missing}] in value for {$name}."
                     );
                 }
@@ -243,14 +243,14 @@ class EnvLoader implements LoaderInterface
     private function readFileContents(string $path, ?int $maxBytes): string
     {
         if ($maxBytes !== null && $maxBytes < 0) {
-            throw new Exception\InvalidFileException('Maximum file size cannot be negative.');
+            throw new Exceptions\InvalidFileException('Maximum file size cannot be negative.');
         }
 
         if ($maxBytes !== null) {
             $size = @filesize($path);
 
             if (is_int($size) && $size > $maxBytes) {
-                throw new Exception\InvalidFileException(
+                throw new Exceptions\InvalidFileException(
                     "Env file size exceeds {$maxBytes} bytes: {$path}"
                 );
             }
@@ -259,7 +259,7 @@ class EnvLoader implements LoaderInterface
         $handle = @fopen($path, 'rb');
 
         if ($handle === false) {
-            throw new Exception\InvalidPathException("Unable to read env file: $path");
+            throw new Exceptions\InvalidPathException("Unable to read env file: $path");
         }
 
         $buffer = '';
@@ -270,7 +270,7 @@ class EnvLoader implements LoaderInterface
             if ($chunk === false) {
                 fclose($handle);
 
-                throw new Exception\InvalidPathException("Unable to read env file: $path");
+                throw new Exceptions\InvalidPathException("Unable to read env file: $path");
             }
 
             if ($chunk === '') {
@@ -282,7 +282,7 @@ class EnvLoader implements LoaderInterface
             if ($maxBytes !== null && strlen($buffer) > $maxBytes) {
                 fclose($handle);
 
-                throw new Exception\InvalidFileException(
+                throw new Exceptions\InvalidFileException(
                     "Env file size exceeds {$maxBytes} bytes: {$path}"
                 );
             }

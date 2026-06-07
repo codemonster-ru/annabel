@@ -64,7 +64,7 @@ class EnvParser
     {
         if (!function_exists('mb_convert_encoding')) {
             if ($encoding !== null) {
-                throw new Exception\InvalidEncodingException('mbstring is required to use custom file encodings.');
+                throw new Exceptions\InvalidEncodingException('mbstring is required to use custom file encodings.');
             }
 
             return self::stripUtf8Bom($input);
@@ -76,7 +76,7 @@ class EnvParser
 
         if ($encoding !== null && function_exists('mb_list_encodings')) {
             if (!in_array($encoding, mb_list_encodings(), true)) {
-                throw new Exception\InvalidEncodingException("Illegal character encoding [{$encoding}] specified.");
+                throw new Exceptions\InvalidEncodingException("Illegal character encoding [{$encoding}] specified.");
             }
         }
 
@@ -85,7 +85,7 @@ class EnvParser
             : @mb_convert_encoding($input, 'UTF-8', $encoding);
 
         if (!is_string($converted)) {
-            throw new Exception\InvalidEncodingException(
+            throw new Exceptions\InvalidEncodingException(
                 sprintf('Conversion from encoding [%s] failed.', $encoding ?? 'NULL')
             );
         }
@@ -308,7 +308,7 @@ class EnvParser
         $lines = preg_split("/(\r\n|\n|\r)/", $content);
 
         if ($lines === false) {
-            throw new Exception\InvalidFileException('Could not split into separate lines.');
+            throw new Exceptions\InvalidFileException('Could not split into separate lines.');
         }
 
         $entries = [];
@@ -460,7 +460,7 @@ class EnvParser
             self::formatParseError($cause, $subject)
         );
 
-        throw new Exception\InvalidFileException($message);
+        throw new Exceptions\InvalidFileException($message);
     }
 
     private static function formatParseError(string $cause, string $subject): string

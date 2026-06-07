@@ -1,5 +1,7 @@
 <?php
 
+namespace Codemonster\Annabel\Tests\Console;
+
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Console\BufferedOutput;
 use Codemonster\Annabel\Console\Command;
@@ -292,6 +294,6 @@ class TestFailingCliCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        throw new RuntimeException('Boom');
+        throw new \RuntimeException('Boom');
     }
 }

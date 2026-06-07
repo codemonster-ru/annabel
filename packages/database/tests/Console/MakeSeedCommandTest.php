@@ -1,8 +1,8 @@
 <?php
 
-namespace Codemonster\Database\Tests\CLI;
+namespace Codemonster\Database\Tests\Console;
 
-use Codemonster\Database\CLI\Commands\MakeSeedCommand;
+use Codemonster\Database\Console\Commands\MakeSeedCommand;
 use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Tests\TestCase;
 

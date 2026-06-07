@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Query;
+namespace Codemonster\Support\Tests\Query;
 
 use Codemonster\Database\Query\QueryBuilder;
 use PHPUnit\Framework\TestCase;
-use Tests\Fakes\FakeConnection;
+use Codemonster\Support\Tests\Fakes\FakeConnection;
 
 class QueryBuilderCrudTest extends TestCase
 {

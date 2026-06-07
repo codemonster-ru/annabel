@@ -361,7 +361,7 @@ All significant changes to this project will be documented in this file.
     -   `vendor/bin/database migrate:rollback`
     -   `vendor/bin/database migrate:status`
     -   `vendor/bin/database make:migration`
-    -   CLI kernel (`DatabaseCLIKernel`) and command registry
+    -   CLI kernel (`DatabaseConsoleKernel`) and command registry
 -   Automatic CLI integration support for external frameworks (e.g. Codemonster Annabel)
 -   Support for multiple migration directories (modules, packages, custom paths)
 -   Improved Schema Builder:

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Codemonster\View\Locator\DefaultLocator;
 use Codemonster\View\Engines\PhpEngine;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 final class PhpEngineTest extends TestCase
 {

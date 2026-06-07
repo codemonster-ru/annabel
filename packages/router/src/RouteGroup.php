@@ -5,26 +5,31 @@ namespace Codemonster\Router;
 class RouteGroup
 {
     protected string $prefix;
-    protected $callback;
+    protected \Closure $callback;
     protected Router $router;
+    /** @var list<list<string|array<mixed>>> */
     protected array $middleware = [];
+    /** @var list<list<string|array<mixed>>> */
     protected array $parentMiddleware = [];
 
+    /** @param list<list<string|array<mixed>>> $parentMiddleware */
     public function __construct(string $prefix, callable $callback, Router $router, array $parentMiddleware = [])
     {
         $this->prefix = rtrim($prefix, '/');
-        $this->callback = $callback;
+        $this->callback = \Closure::fromCallable($callback);
         $this->router = $router;
         $this->parentMiddleware = $parentMiddleware;
     }
 
+    /** @param string|array<mixed> ...$middleware */
     public function middleware(string|array ...$middleware): static
     {
-        $this->middleware[] = $middleware;
+        $this->middleware[] = array_values($middleware);
 
         return $this;
     }
 
+    /** @return list<list<string|array<mixed>>> */
     protected function fullMiddleware(): array
     {
         return array_merge($this->parentMiddleware, $this->middleware);

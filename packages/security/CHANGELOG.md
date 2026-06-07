@@ -2,6 +2,16 @@
 
 All notable changes to this package will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+-   Moved Annabel integration provider to `codemonster-ru/annabel` as `Codemonster\Annabel\Providers\SecurityServiceProvider`.
+
+### Removed
+
+-   Removed `Codemonster\Security\Providers\SecurityServiceProvider` to keep this package framework-agnostic.
+
 ## [1.1.0] - 2025-12-28
 
 ### Added

@@ -2,24 +2,32 @@
 
 namespace Codemonster\Database\ORM;
 
+/**
+ * @template TModel of Model
+ * @implements \ArrayAccess<int, TModel>
+ * @implements \IteratorAggregate<int, TModel>
+ */
 class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
-    /** @var Model[] */
+    /** @var list<TModel> */
     protected array $items = [];
 
+    /** @param list<TModel> $items */
     public function __construct(array $items = [])
     {
         $this->items = $items;
     }
 
+    /** @param TModel $model */
     public function add(Model $model): void
     {
         $this->items[] = $model;
     }
 
-    public function load($relations): self
+    /** @param string|list<string> $relations */
+    public function load(string|array $relations): static
     {
-        $relations = is_array($relations) ? $relations : func_get_args();
+        $relations = is_array($relations) ? $relations : [$relations];
 
         foreach ($this->items as $item) {
             $item->load($relations);
@@ -28,6 +36,7 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
         return $this;
     }
 
+    /** @return list<array<string, mixed>> */
     public function toArray(): array
     {
         return array_map(
@@ -36,11 +45,13 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
         );
     }
 
+    /** @return list<array<string, mixed>> */
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
+    /** @return \Traversable<int, TModel> */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->items);
@@ -48,17 +59,18 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
 
     // Array Access
 
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->items[$offset]);
     }
 
-    public function offsetGet($offset): ?Model
+    /** @return TModel|null */
+    public function offsetGet(mixed $offset): ?Model
     {
         return $this->items[$offset] ?? null;
     }
 
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (!$value instanceof Model) {
             throw new \InvalidArgumentException('ModelCollection accepts only Model instances.');
@@ -67,13 +79,31 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
         if ($offset === null) {
             $this->items[] = $value;
         } else {
-            $this->items[$offset] = $value;
+            if (!is_int($offset) || $offset < 0) {
+                throw new \InvalidArgumentException('ModelCollection offsets must be non-negative integers.');
+            }
+
+            if ($offset > count($this->items)) {
+                throw new \InvalidArgumentException('ModelCollection does not support sparse offsets.');
+            }
+
+            if ($offset === count($this->items)) {
+                $this->items[] = $value;
+            } else {
+                $items = $this->items;
+                $items[$offset] = $value;
+                $this->items = array_values($items);
+            }
         }
     }
 
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
-        unset($this->items[$offset]);
+        if (is_int($offset)) {
+            $items = $this->items;
+            unset($items[$offset]);
+            $this->items = array_values($items);
+        }
     }
 
     public function count(): int

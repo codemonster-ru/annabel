@@ -1,0 +1,10 @@
+parameters:
+    level: max
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - src
+    tmpDir: ../../var/phpstan/security
+    stubFiles:
+        - stubs/PredisClient.stub
+    scanFiles:
+        - stubs/PredisClient.stub

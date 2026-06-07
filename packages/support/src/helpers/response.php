@@ -3,9 +3,13 @@
 use Codemonster\Http\Response;
 
 if (!function_exists('response')) {
+    /** @param array<string, string|string[]> $headers */
     function response(string $content = '', int $status = 200, array $headers = []): Response
     {
         $response = app('response');
+        if (!$response instanceof Response) {
+            throw new RuntimeException('Response service is not available.');
+        }
 
         if ($content !== '') {
             $response->setContent($content);
@@ -19,12 +23,13 @@ if (!function_exists('response')) {
 }
 
 if (!function_exists('json')) {
+    /** @param array<string, string|string[]> $headers */
     function json(mixed $data, int $status = 200, array $headers = []): Response
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         if ($content === false) {
-            $content = json_encode(['error' => 'Failed to encode JSON'], JSON_UNESCAPED_UNICODE);
+            $content = '{"error":"Failed to encode JSON"}';
             $status = 500;
         }
 

@@ -850,6 +850,10 @@ class EnvTest extends TestCase
 
     public function testEnvLoadFilesGlobFlagsControlBraceExpansion(): void
     {
+        if (!defined('GLOB_BRACE')) {
+            $this->markTestSkipped('GLOB_BRACE is not available on this platform.');
+        }
+
         $dir = sys_get_temp_dir();
         $file1 = tempnam($dir, 'foo');
         $file2 = tempnam($dir, 'bar');
@@ -860,7 +864,7 @@ class EnvTest extends TestCase
         $pattern = $dir . DIRECTORY_SEPARATOR . '{foo,bar}*';
 
         try {
-            Env::loadFiles([$pattern], null, null, false, false, GLOB_BRACE);
+            Env::loadFiles([$pattern], null, null, false, false, constant('GLOB_BRACE'));
 
             $this->assertSame('1', Env::get('GLOB_FLAG_ONE'));
             $this->assertSame('2', Env::get('GLOB_FLAG_TWO'));

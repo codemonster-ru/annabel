@@ -1,5 +1,5 @@
 parameters:
-    level: 6
+    level: max
     paths:
         - src
         - tests
@@ -8,8 +8,10 @@ parameters:
     stubFiles:
         - stubs/PredisClient.stub
         - stubs/RedisCluster.stub
+        - stubs/RedisException.stub
         - stubs/RedisSentinel.stub
     scanFiles:
         - stubs/PredisClient.stub
         - stubs/RedisCluster.stub
+        - stubs/RedisException.stub
         - stubs/RedisSentinel.stub

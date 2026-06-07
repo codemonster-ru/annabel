@@ -13,7 +13,8 @@
 [![License](https://img.shields.io/packagist/l/codemonster-ru/http.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/http)
 [![Tests](https://github.com/codemonster-ru/http/actions/workflows/tests.yml/badge.svg)](https://github.com/codemonster-ru/http/actions/workflows/tests.yml)
 
-Lightweight object-oriented HTTP foundation for PHP.
+Lightweight object-oriented HTTP foundation for PHP with PSR-7-compatible
+request and response objects.
 
 ## Table of Contents
 
@@ -31,6 +32,7 @@ Lightweight object-oriented HTTP foundation for PHP.
 
 -   Simple, small HTTP layer for frameworks or microservices.
 -   Predictable, test-friendly API with immutable helpers.
+-   PSR-7 compatibility without giving up Annabel's convenience methods.
 -   Safe defaults for headers, cookies, and proxy handling.
 
 ## Installation

@@ -2,29 +2,36 @@
 
 namespace Codemonster\Database\Schema;
 
+/**
+ * @phpstan-type IndexDefinition array{
+ *     type: 'index'|'unique'|'primary',
+ *     columns: list<string>,
+ *     name: string|null
+ * }
+ */
 class Blueprint
 {
     public string $table;
 
-    /** @var ColumnDefinition[] */
+    /** @var list<ColumnDefinition> */
     public array $columns = [];
 
-    /** @var ForeignKeyDefinition[] */
+    /** @var list<ForeignKeyDefinition> */
     public array $foreignKeys = [];
 
-    /** @var array[] */
+    /** @var list<IndexDefinition> */
     public array $indexes = [];
 
-    /** @var string[] */
+    /** @var list<string> */
     public array $dropColumns = [];
 
-    /** @var string[] */
+    /** @var list<string> */
     public array $dropIndexes = [];
 
-    /** @var string[] */
+    /** @var list<string> */
     public array $dropForeignKeys = [];
 
-    /** @var string[] */
+    /** @var list<string> */
     public array $dropPrimaryKeys = [];
 
     /** @var array<int, array{from: string, to: string}> */
@@ -167,6 +174,7 @@ class Blueprint
         $this->timestamp('updated_at')->nullable();
     }
 
+    /** @param array{length?: int, precision?: int, scale?: int} $options */
     protected function addColumn(string $type, string $name, array $options = []): ColumnDefinition
     {
         $column = new ColumnDefinition($type, $name, $options);
@@ -178,6 +186,7 @@ class Blueprint
 
     // ----------------------- Indexes -----------------------
 
+    /** @param string|list<string> $columns */
     public function index(string|array $columns, ?string $name = null): void
     {
         $this->indexes[] = [
@@ -187,6 +196,7 @@ class Blueprint
         ];
     }
 
+    /** @param string|list<string> $columns */
     public function unique(string|array $columns, ?string $name = null): void
     {
         $this->indexes[] = [
@@ -196,6 +206,7 @@ class Blueprint
         ];
     }
 
+    /** @param string|list<string> $columns */
     public function primary(string|array $columns, ?string $name = null): void
     {
         $this->indexes[] = [

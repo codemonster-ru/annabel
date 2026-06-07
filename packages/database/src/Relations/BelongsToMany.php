@@ -4,6 +4,7 @@ namespace Codemonster\Database\Relations;
 
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\ORM\ModelCollection;
+use Codemonster\Database\Query\QueryBuilder;
 
 /**
  * @template TRelated of Model
@@ -18,8 +19,12 @@ class BelongsToMany extends Relation
     protected string $parentKey;
     protected string $relatedKey;
 
+    /**
+     * @param TParent $parent
+     * @param TRelated $related
+     */
     public function __construct(
-        $builder,
+        QueryBuilder $builder,
         Model $parent,
         Model $related,
         string $pivotTable,
@@ -58,7 +63,6 @@ class BelongsToMany extends Relation
 
         $class = get_class($this->related);
 
-        /** @var class-string<Model> $class */
         return $class::hydrate($rows);
     }
 }

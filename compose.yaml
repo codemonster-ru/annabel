@@ -5,9 +5,14 @@ services:
       dockerfile: docker/php/Dockerfile
       args:
         PHP_VERSION: ${PHP_VERSION:-8.4}
+    # Codex uses sandboxing that needs nested user namespaces in Docker.
+    # Keep this development-only; production containers should retain seccomp.
+    security_opt:
+      - seccomp=unconfined
     working_dir: /workspace
     volumes:
       - .:/workspace
+      - ${HOME}/.codex-annabel:/root/.codex
       - composer-cache:/tmp/composer-cache
     environment:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
@@ -40,6 +45,15 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD:-annabel}
       COMPOSER_CACHE_DIR: /tmp/composer-cache
       COMPOSER_MEMORY_LIMIT: -1
+
+  nginx:
+    image: nginx:1.28-alpine
+    ports:
+      - "${NGINX_PORT:-8002}:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
 
   db:
     image: mysql:8.4

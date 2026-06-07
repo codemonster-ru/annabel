@@ -6,8 +6,10 @@ use RuntimeException;
 
 final class DefaultLocator implements LocatorInterface
 {
+    /** @var array<string, list<string>> */
     private array $paths = ['' => []];
 
+    /** @param string|list<string> $paths */
     public function __construct(array|string $paths = [])
     {
         foreach ((array) $paths as $p) {
@@ -35,6 +37,7 @@ final class DefaultLocator implements LocatorInterface
         $this->paths[$namespace][] = rtrim($real, DIRECTORY_SEPARATOR);
     }
 
+    /** @param string|list<string> $extensions */
     public function resolve(string $name, string|array $extensions): string
     {
         $extensions = (array) $extensions;
@@ -63,6 +66,7 @@ final class DefaultLocator implements LocatorInterface
         throw new RuntimeException("View not found: {$name}");
     }
 
+    /** @return array{string, string} */
     private function splitNs(string $name): array
     {
         $pos = strpos($name, '::');
@@ -74,6 +78,7 @@ final class DefaultLocator implements LocatorInterface
         return [substr($name, 0, $pos), substr($name, $pos + 2)];
     }
 
+    /** @return list<string> */
     private function pathsLookup(string $ns): array
     {
         $out = [];

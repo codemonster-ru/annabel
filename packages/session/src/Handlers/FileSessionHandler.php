@@ -4,6 +4,7 @@ namespace Codemonster\Session\Handlers;
 
 use SessionHandlerInterface;
 
+/** @api */
 class FileSessionHandler implements SessionHandlerInterface
 {
     public function __construct(protected string $path)
@@ -45,7 +46,8 @@ class FileSessionHandler implements SessionHandlerInterface
         $contents = '';
 
         if (flock($handle, LOCK_SH)) {
-            $contents = stream_get_contents($handle) ?: '';
+            $read = stream_get_contents($handle);
+            $contents = $read === false ? '' : $read;
             flock($handle, LOCK_UN);
         }
 
@@ -84,8 +86,15 @@ class FileSessionHandler implements SessionHandlerInterface
     {
         $count = 0;
 
-        foreach (glob("{$this->path}/sess_*") as $file) {
-            if (filemtime($file) + $max_lifetime < time()) {
+        $files = glob("{$this->path}/sess_*");
+
+        if ($files === false) {
+            return false;
+        }
+
+        foreach ($files as $file) {
+            $modifiedAt = filemtime($file);
+            if ($modifiedAt !== false && $modifiedAt + $max_lifetime < time()) {
                 if (unlink($file)) {
                     $count++;
                 }

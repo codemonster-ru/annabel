@@ -2,6 +2,8 @@
 
 namespace Codemonster\Annabel\Providers;
 
+use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Annabel\Database\ConsoleDatabaseCLIKernel;
 use Codemonster\Annabel\Database\LazyConnection;
@@ -16,7 +18,7 @@ use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
 {
-    public function __construct(protected $app) {}
+    public function __construct(protected Application $app) {}
 
     public function register(): void
     {
@@ -26,12 +28,21 @@ class DatabaseServiceProvider implements ServiceProviderInterface
                 'default' => 'mysql',
                 'connections' => [],
             ];
+            if (!is_array($config)) {
+                throw new \RuntimeException('Database config must be an array.');
+            }
 
-            return new DatabaseManager($config);
+            $normalized = [];
+            foreach ($config as $key => $value) {
+                if (is_string($key)) {
+                    $normalized[$key] = $value;
+                }
+            }
+
+            return new DatabaseManager($normalized);
         });
 
-        $this->app->singleton(ConnectionInterface::class, function ($app) {
-            /** @var DatabaseManager $manager */
+        $this->app->singleton(ConnectionInterface::class, function (Container $app) {
             $manager = $app->make(DatabaseManager::class);
 
             return new LazyConnection(fn() => $manager->connection());
@@ -47,7 +58,9 @@ class DatabaseServiceProvider implements ServiceProviderInterface
 
             if (is_array($paths)) {
                 foreach ($paths as $path) {
-                    $resolver->addPath($path);
+                    if (is_string($path)) {
+                        $resolver->addPath($path);
+                    }
                 }
             }
 
@@ -58,11 +71,11 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             return $resolver;
         });
 
-        $this->app->singleton(\Codemonster\Database\Migrations\MigrationRepository::class, function ($app) {
+        $this->app->singleton(\Codemonster\Database\Migrations\MigrationRepository::class, function (Container $app) {
             $connection = $app->make(ConnectionInterface::class);
             $table = config('database.migrations.table') ?? 'migrations';
 
-            return new LazyMigrationRepository($connection, $table);
+            return new LazyMigrationRepository($connection, is_string($table) ? $table : 'migrations');
         });
 
         $this->app->singleton(SeedPathResolver::class, function () {
@@ -75,7 +88,9 @@ class DatabaseServiceProvider implements ServiceProviderInterface
 
             if (is_array($paths)) {
                 foreach ($paths as $path) {
-                    $resolver->addPath($path);
+                    if (is_string($path)) {
+                        $resolver->addPath($path);
+                    }
                 }
             }
 
@@ -86,7 +101,7 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             return $resolver;
         });
 
-        $this->app->singleton(Migrator::class, function ($app) {
+        $this->app->singleton(Migrator::class, function (Container $app) {
             $repository = $app->make(MigrationRepository::class);
             $connection = $app->make(ConnectionInterface::class);
             $paths = $app->make(MigrationPathResolver::class);
@@ -94,7 +109,7 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             return new Migrator($repository, $connection, $paths);
         });
 
-        $this->app->singleton(DatabaseCLIKernel::class, function ($app) {
+        $this->app->singleton(DatabaseCLIKernel::class, function (Container $app) {
             $connection = $app->make(ConnectionInterface::class);
             $paths = $app->make(MigrationPathResolver::class);
             $seedPaths = $app->make(SeedPathResolver::class);

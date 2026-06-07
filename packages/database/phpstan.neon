@@ -1,0 +1,10 @@
+parameters:
+    level: max
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - src
+    tmpDir: ../../var/phpstan/database
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: src/Traits/SoftDeletes.php

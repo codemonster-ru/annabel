@@ -13,30 +13,38 @@ class Router
 
     public function get(string $path, mixed $handler): Route
     {
-        $route = new Route('GET', $path, $handler);
-
-        $this->routes->addRoute($route);
-
-        return $route;
+        return $this->add('GET', $path, $handler);
     }
 
     public function post(string $path, mixed $handler): Route
     {
-        $route = new Route('POST', $path, $handler);
+        return $this->add('POST', $path, $handler);
+    }
 
+    public function any(string $path, mixed $handler): Route
+    {
+        return $this->add(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $path, $handler);
+    }
+
+    /** @param string|list<string> $methods */
+    public function add(string|array $methods, string $path, mixed $handler): Route
+    {
+        $route = new Route($methods, $path, $handler);
         $this->routes->addRoute($route);
 
         return $route;
     }
 
-    public function any(string $path, mixed $handler): Route
+    /** @return list<Route> */
+    public function routes(): array
     {
-        $methods = ['GET', 'POST'];
-        $route = new Route($methods, $path, $handler);
+        return $this->routes->all();
+    }
 
-        $this->routes->addRoute($route);
-
-        return $route;
+    /** @param array<string, scalar|null> $parameters */
+    public function route(string $name, array $parameters = []): string
+    {
+        return $this->routes->route($name, $parameters);
     }
 
     public function dispatch(string $method, string $uri): ?Route

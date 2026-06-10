@@ -31,5 +31,17 @@
                 <file name="tests/CacheSessionHandlerTest.php" />
             </errorLevel>
         </DuplicateClass>
+        <UndefinedThisPropertyFetch>
+            <errorLevel type="suppress">
+                <file name="tests/RedisClusterSessionHandlerTest.php" />
+                <file name="tests/RedisSentinelSessionHandlerTest.php" />
+            </errorLevel>
+        </UndefinedThisPropertyFetch>
+        <UndefinedVariable>
+            <errorLevel type="suppress">
+                <file name="tests/RedisClusterSessionHandlerTest.php" />
+                <file name="tests/RedisSentinelSessionHandlerTest.php" />
+            </errorLevel>
+        </UndefinedVariable>
     </issueHandlers>
 </psalm>

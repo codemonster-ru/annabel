@@ -101,7 +101,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
                 [],
                 ['X-Forwarded-For' => '203.0.113.5'],
                 '',
-                ['REMOTE_ADDR' => '10.0.0.2']
+                ['REMOTE_ADDR' => '10.0.0.2'],
             );
 
             $middleware = new TestableThrottleRequests(null, 60, 60, [], ['10.0.0.1']);
@@ -118,7 +118,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
                 [],
                 ['X-Forwarded-For' => '203.0.113.5, 10.0.0.1'],
                 '',
-                ['REMOTE_ADDR' => '10.0.0.1']
+                ['REMOTE_ADDR' => '10.0.0.1'],
             );
 
             $middleware = new TestableThrottleRequests(null, 60, 60, [], ['10.0.0.1']);
@@ -135,7 +135,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
                 [],
                 ['X-Forwarded-For' => '2001:db8::1234, 2001:db8::1'],
                 '',
-                ['REMOTE_ADDR' => '2001:db8::1']
+                ['REMOTE_ADDR' => '2001:db8::1'],
             );
 
             $middleware = new TestableThrottleRequests(null, 60, 60, [], ['2001:db8::/32']);
@@ -150,7 +150,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
 
             $request = new Request('POST', '/api/login');
 
-            $response = $middleware->handle($request, fn() => new Response('ok'));
+            $response = $middleware->handle($request, fn () => new Response('ok'));
 
             $this->assertSame(200, $response->getStatusCode());
         }
@@ -194,8 +194,8 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $middleware = new ThrottleRequests(new RateLimiter(new SessionThrottleStorage()));
             $request = new Request('POST', '/login', [], ['email' => 'user@example.com']);
 
-            $this->assertSame(200, $middleware->handle($request, fn() => new Response('ok'), 'login')->getStatusCode());
-            $this->assertSame(429, $middleware->handle($request, fn() => new Response('ok'), 'login')->getStatusCode());
+            $this->assertSame(200, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
+            $this->assertSame(429, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
 
             \TestConfigRepository::reset();
         }
@@ -205,7 +205,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $middleware = new ThrottleRequests(new RateLimiter(new SessionThrottleStorage()), 5, 60);
             $request = new Request('POST', '/login');
 
-            $response = $middleware->handle($request, fn() => new Response('ok'));
+            $response = $middleware->handle($request, fn () => new Response('ok'));
             $headers = $response->getHeaders();
 
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
@@ -221,9 +221,9 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $middleware = new ThrottleRequests(new RateLimiter(new SessionThrottleStorage()), 1, 60);
             $request = new Request('POST', '/login');
 
-            $this->assertSame(200, $middleware->handle($request, fn() => new Response('ok'))->getStatusCode());
+            $this->assertSame(200, $middleware->handle($request, fn () => new Response('ok'))->getStatusCode());
 
-            $response = $middleware->handle($request, fn() => new Response('ok'));
+            $response = $middleware->handle($request, fn () => new Response('ok'));
             $this->assertSame(429, $response->getStatusCode());
 
             $headers = $response->getHeaders();

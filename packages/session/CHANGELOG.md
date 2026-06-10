@@ -2,6 +2,12 @@
 
 All significant changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-06-10
+
+### Fixed
+
+- Added the session invalidation API promised by `2.0.0`, including data clearing, ID rotation, and destruction of the old session.
+
 ## [2.0.0] - 2025-12-28
 
 ### Added

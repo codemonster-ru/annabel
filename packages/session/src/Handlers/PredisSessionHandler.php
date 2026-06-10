@@ -19,9 +19,8 @@ class PredisSessionHandler implements SessionHandlerInterface
         string $prefix = 'sess_',
         int $ttl = 0,
         int $retries = 1,
-        int $retryDelayMs = 50
-    )
-    {
+        int $retryDelayMs = 50,
+    ) {
         $this->client = $client;
         $this->prefix = $prefix;
         $this->ttl = $ttl;

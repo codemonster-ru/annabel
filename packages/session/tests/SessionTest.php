@@ -110,6 +110,25 @@ final class SessionTest extends TestCase
         $this->assertSame('Vasya', Session::get('user'));
     }
 
+    public function testInvalidateRotatesIdAndClearsData(): void
+    {
+        $handler = new ArraySessionHandler();
+        Session::start(customHandler: $handler);
+        Session::put('user', 'Vasya');
+
+        $store = Session::store();
+        $firstId = $this->getStoreId($store);
+
+        Session::invalidate();
+
+        $secondId = $this->getStoreId(Session::store());
+
+        $this->assertNotSame($firstId, $secondId);
+        $this->assertSame([], Session::all());
+        $this->assertSame('', $handler->read($firstId));
+        $this->assertNotSame('', $handler->read($secondId));
+    }
+
     public function testInvalidCookieIdIsRejected(): void
     {
         $_COOKIE['SESSION_ID'] = '../evil';

@@ -44,9 +44,8 @@ class Store
         SessionHandlerInterface $handler,
         ?string $id = null,
         array $cookieOptions = [],
-        array $encryptionOptions = []
-    )
-    {
+        array $encryptionOptions = [],
+    ) {
         $existing = $_COOKIE[self::COOKIE_NAME] ?? null;
 
         if ($id !== null) {
@@ -106,6 +105,7 @@ class Store
 
         if (!is_string($raw) || $raw === '') {
             $this->data = [];
+
             return;
         }
 
@@ -147,10 +147,22 @@ class Store
         }
     }
 
+    public function invalidate(): void
+    {
+        $oldId = $this->id;
+        $this->data = [];
+        $this->id = bin2hex(random_bytes(16));
+
+        $this->setSessionCookie();
+        $this->persist();
+        $this->handler->destroy($oldId);
+    }
+
     public function get(string $key, mixed $default = null): mixed
     {
         if ($this->purgeExpiredKey($key)) {
             $this->persist();
+
             return $default;
         }
 
@@ -161,6 +173,7 @@ class Store
     {
         if ($this->purgeExpiredKey($key)) {
             $this->persist();
+
             return false;
         }
 
@@ -291,6 +304,7 @@ class Store
     {
         if ($ttlSeconds <= 0) {
             $this->forget($key);
+
             return;
         }
 
@@ -307,6 +321,7 @@ class Store
     {
         if ($this->purgeExpiredKey($key)) {
             $this->persist();
+
             return null;
         }
 
@@ -324,6 +339,7 @@ class Store
     {
         if ($this->purgeExpiredKey($key)) {
             $this->persist();
+
             return null;
         }
 
@@ -345,6 +361,7 @@ class Store
 
         if ($ttlSeconds <= 0) {
             $this->forget($key);
+
             return false;
         }
 
@@ -426,6 +443,7 @@ class Store
     {
         if ($this->purgeExpiredKey($key)) {
             $this->persist();
+
             return $default;
         }
 
@@ -478,6 +496,7 @@ class Store
     public function all(): array
     {
         $this->sweepExpired();
+
         return $this->data;
     }
 
@@ -528,7 +547,7 @@ class Store
 
         $this->handler->write(
             $this->id,
-            $payload
+            $payload,
         );
     }
 
@@ -642,7 +661,7 @@ class Store
         $this->normalizeEncryptionOptions([
             'key' => $newKey,
             'previous_keys' => $previousKeys,
-            'allow_plaintext' => $allowPlaintext
+            'allow_plaintext' => $allowPlaintext,
         ]);
 
         $this->persist();
@@ -755,6 +774,7 @@ class Store
         $forwarded = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
         if (is_string($forwarded) && $forwarded !== '') {
             $proto = strtolower(trim(explode(',', $forwarded)[0]));
+
             return $proto === 'https';
         }
 
@@ -823,6 +843,7 @@ class Store
     {
         if ($ttl === []) {
             unset($this->data[self::TTL_KEY]);
+
             return;
         }
 

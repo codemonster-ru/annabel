@@ -17,7 +17,7 @@ class Session
     public static function start(
         string $driver = 'file',
         array $options = [],
-        ?SessionHandlerInterface $customHandler = null
+        ?SessionHandlerInterface $customHandler = null,
     ): void {
         if ($customHandler) {
             $handler = $customHandler;
@@ -65,6 +65,11 @@ class Session
     public static function regenerate(bool $destroyOld = true): void
     {
         static::store()->regenerateId($destroyOld);
+    }
+
+    public static function invalidate(): void
+    {
+        static::store()->invalidate();
     }
 
     public static function get(string $key, mixed $default = null): mixed
@@ -177,7 +182,7 @@ class Session
     public static function rotateEncryptionKey(
         string $newKey,
         array $previousKeys = [],
-        bool $allowPlaintext = false
+        bool $allowPlaintext = false,
     ): void {
         static::store()->rotateEncryptionKey($newKey, $previousKeys, $allowPlaintext);
     }

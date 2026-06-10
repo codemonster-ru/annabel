@@ -2,6 +2,12 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.15.2] - 2026-06-10
+
+### Changed
+
+-   Raised the minimum `codemonster-ru/session` version to `^2.0.1` so auth logout always has the session invalidation API.
+
 ## [1.15.1] - 2026-06-10
 
 ### Changed

@@ -22,6 +22,11 @@ class SessionManager
         $this->store->regenerateId($destroyOld);
     }
 
+    public function invalidate(): void
+    {
+        $this->store->invalidate();
+    }
+
     public function get(string $key, mixed $default = null): mixed
     {
         return $this->store->get($key, $default);
@@ -109,7 +114,7 @@ class SessionManager
     public function rotateEncryptionKey(
         string $newKey,
         array $previousKeys = [],
-        bool $allowPlaintext = false
+        bool $allowPlaintext = false,
     ): void {
         $this->store->rotateEncryptionKey($newKey, $previousKeys, $allowPlaintext);
     }

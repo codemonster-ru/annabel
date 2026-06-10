@@ -28,6 +28,7 @@
         "codemonster-ru/session": "^2.0"
     },
     "require-dev": {
+        "codemonster-ru/config": "^2.0",
         "codemonster-ru/database": "^2.0",
         "codemonster-ru/support": "^1.0",
         "phpstan/phpstan": "^2.1",

@@ -43,8 +43,8 @@ $opsPerSec = $iterations / max($elapsed, 0.0001);
 
 echo "Iterations: {$iterations}\n";
 echo "Driver: {$driver}\n";
-echo "Elapsed: " . number_format($elapsed, 4) . "s\n";
-echo "Ops/sec: " . number_format($opsPerSec, 2) . "\n";
+echo 'Elapsed: ' . number_format($elapsed, 4) . "s\n";
+echo 'Ops/sec: ' . number_format($opsPerSec, 2) . "\n";
 
 if ($minOps > 0 && $opsPerSec < $minOps) {
     fwrite(STDERR, "Ops/sec ниже порога: {$minOps}\n");

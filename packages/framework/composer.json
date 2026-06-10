@@ -58,7 +58,7 @@
         "codemonster-ru/router": "^2.6",
         "codemonster-ru/scheduler": "^1.0",
         "codemonster-ru/security": "^1.1",
-        "codemonster-ru/session": "^2.0",
+        "codemonster-ru/session": "^2.0.1",
         "codemonster-ru/support": "^1.4",
         "codemonster-ru/validation": "^1.0",
         "codemonster-ru/view": "^2.0",

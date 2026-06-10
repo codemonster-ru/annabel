@@ -153,7 +153,7 @@ if ($typedSignatures) {
         }
     }
 
-final class FlakyCache extends ArrayCache
+    final class FlakyCache extends ArrayCache
     {
         private int $tries = 0;
 

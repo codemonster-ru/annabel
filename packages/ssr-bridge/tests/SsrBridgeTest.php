@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use Codemonster\Ssr\SsrBridge;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Codemonster\Ssr\SsrBridge;
 
 #[CoversClass(SsrBridge::class)]
 final class SsrBridgeTest extends TestCase

@@ -2,11 +2,11 @@
 
 namespace Codemonster\View\Tests;
 
-use Codemonster\View\View;
-use Codemonster\View\EngineInterface;
 use Codemonster\View\Contracts\SupportsInspectionInterface;
+use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\DefaultLocator;
 use Codemonster\View\Locator\LocatorInterface;
+use Codemonster\View\View;
 use PHPUnit\Framework\TestCase;
 
 class DummyEngine implements EngineInterface
@@ -22,7 +22,7 @@ class InspectableEngine implements EngineInterface, SupportsInspectionInterface
     public function __construct(
         private LocatorInterface $locator,
         private array $extensions,
-        private string $tag
+        private string $tag,
     ) {
     }
 
@@ -46,7 +46,7 @@ class LocatorRenderingEngine implements EngineInterface, SupportsInspectionInter
 {
     public function __construct(
         private LocatorInterface $locator,
-        private array $extensions
+        private array $extensions,
     ) {
     }
 
@@ -93,7 +93,7 @@ class ViewTest extends TestCase
 
         $view = new View(
             ['php' => $phpEngine, 'phtml' => $phtmlEngine],
-            'php'
+            'php',
         );
 
         $output = $view->render('custom');
@@ -112,7 +112,7 @@ class ViewTest extends TestCase
 
         $view = new View(
             ['php' => $phpEngine, 'dummy' => $dummyEngine],
-            'dummy'
+            'dummy',
         );
 
         $output = $view->render('missing');

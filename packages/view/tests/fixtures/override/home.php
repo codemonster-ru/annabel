@@ -1,1 +1,3 @@
-<?php echo "override home";
+<?php
+
+echo 'override home';

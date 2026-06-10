@@ -1,1 +1,3 @@
-<?php echo "custom.php";
+<?php
+
+echo 'custom.php';

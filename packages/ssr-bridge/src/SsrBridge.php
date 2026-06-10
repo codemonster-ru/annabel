@@ -102,7 +102,7 @@ class SsrBridge
     protected function renderHttp(string $payload): string
     {
         if (!$this->config['url']) {
-            throw new RuntimeException("SSR URL is not configured.");
+            throw new RuntimeException('SSR URL is not configured.');
         }
 
         $opts = [
@@ -167,7 +167,7 @@ class SsrBridge
         $result = ProcessHelper::run('node', $args, $payload, $this->config['cwd']);
 
         if ($result['exitCode'] !== 0) {
-            throw new RuntimeException("Local SSR failed: " . $result['stderr']);
+            throw new RuntimeException('Local SSR failed: ' . $result['stderr']);
         }
 
         return $result['stdout'];

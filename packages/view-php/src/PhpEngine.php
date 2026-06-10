@@ -2,17 +2,18 @@
 
 namespace Codemonster\View\Engines;
 
+use Codemonster\View\Contracts\SupportsInspectionInterface;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\LocatorInterface;
-use Codemonster\View\Contracts\SupportsInspectionInterface;
 
 final class PhpEngine implements EngineInterface, SupportsInspectionInterface
 {
     public function __construct(
         private readonly LocatorInterface $locator,
         /** @var string|list<string> */
-        private readonly string|array $extensions = 'php'
-    ) {}
+        private readonly string|array $extensions = 'php',
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data

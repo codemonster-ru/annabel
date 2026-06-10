@@ -42,10 +42,7 @@ if (!function_exists('json')) {
 if (!function_exists('abort')) {
     function abort(int $status, string $message = ''): never
     {
-        throw new class($message ?: "HTTP {$status}", $status)
-        extends \RuntimeException
-        implements \Codemonster\Support\Contracts\HttpStatusExceptionInterface
-        {
+        throw new class ($message ?: "HTTP {$status}", $status) extends \RuntimeException implements \Codemonster\Support\Contracts\HttpStatusExceptionInterface {
             protected int $statusCode;
 
             public function __construct(string $message, int $status)

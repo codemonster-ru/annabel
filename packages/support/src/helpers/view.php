@@ -1,7 +1,7 @@
 <?php
 
-use Codemonster\View\View;
 use Codemonster\Http\Response;
+use Codemonster\View\View;
 
 if (!function_exists('view')) {
     /** @param array<string, mixed> $data */

@@ -42,7 +42,7 @@ class VendorPublishCommand extends Command
         if (($provider !== null && !is_string($provider)) || ($tag !== null && !is_string($tag))) {
             $output->writeln($console->color(
                 'Options --provider and --tag require string values.',
-                'error'
+                'error',
             ));
 
             return ExitCode::INVALID;
@@ -51,7 +51,7 @@ class VendorPublishCommand extends Command
         if (!$all && $provider === null && $tag === null) {
             $output->writeln($console->color(
                 'Select resources with --provider, --tag, or --all.',
-                'error'
+                'error',
             ));
 
             return ExitCode::INVALID;
@@ -91,7 +91,7 @@ class VendorPublishCommand extends Command
         $output->writeln(sprintf(
             'Published %d file(s); skipped %d existing file(s).',
             count($result->published),
-            count($result->skipped)
+            count($result->skipped),
         ));
 
         return ExitCode::SUCCESS;

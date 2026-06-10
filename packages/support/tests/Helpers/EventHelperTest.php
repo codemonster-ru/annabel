@@ -19,7 +19,9 @@ class EventHelperTest extends TestCase
     }
 }
 
-class FakeEvent {}
+class FakeEvent
+{
+}
 
 class FakeEventDispatcher implements EventDispatcherInterface
 {

@@ -3,10 +3,9 @@
 namespace Codemonster\Annabel\Providers;
 
 use Codemonster\Annabel\Application;
-use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Http\Kernel;
-use Codemonster\Http\Request;
 use Codemonster\Database\DatabaseManager;
+use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 use Codemonster\Security\Csrf\VerifyCsrfToken;
 use Codemonster\Security\RateLimiting\Contracts\RateLimiterInterface;
@@ -21,7 +20,11 @@ class SecurityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app()->singleton(CsrfTokenManager::class, fn() => new CsrfTokenManager());
+        $this->publishes([
+            __DIR__ . '/../../config/security.php' => $this->app()->getBasePath() . '/config/security.php',
+        ], ['config', 'security']);
+
+        $this->app()->singleton(CsrfTokenManager::class, fn () => new CsrfTokenManager());
 
         $this->app()->bind(VerifyCsrfToken::class, function () {
             $cfg = $this->arrayConfig('security.csrf');
@@ -84,6 +87,12 @@ class SecurityServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $kernel = $this->app()->make(Kernel::class);
+
+        $kernel->aliasMiddleware('csrf', VerifyCsrfToken::class);
+        $kernel->aliasMiddleware('throttle', ThrottleRequests::class);
+        $kernel->appendMiddlewareToGroup('web', 'csrf');
+        $kernel->appendMiddlewareToGroup('api', 'throttle');
+
         $csrf = $this->arrayConfig('security.csrf');
 
         if (self::boolValue($csrf['enabled'] ?? null, true)

@@ -12,7 +12,7 @@ class ConfigHelperTest extends TestCase
         $config->set('app.name', 'Codemonster');
         $config->set('app.debug', true);
 
-        app()->singleton('config', fn() => $config);
+        app()->singleton('config', fn () => $config);
     }
 
     public function testGetsConfigValue()

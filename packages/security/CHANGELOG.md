@@ -13,6 +13,12 @@ All notable changes to this package will be documented in this file.
 
 -   Removed `Codemonster\Security\Providers\SecurityServiceProvider` to keep this package framework-agnostic.
 
+## [1.1.1] - 2026-06-10
+
+### Fixed
+
+-   Included the rate-limiting storage contracts, session/database/Redis storage implementations, and their integration tests in the distributed package.
+
 ## [1.1.0] - 2025-12-28
 
 ### Added

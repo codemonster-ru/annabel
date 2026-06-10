@@ -33,6 +33,9 @@ composer.dev.lock
 **/.phpunit.cache/
 phpunix.xml
 
+# Code style
+.php-cs-fixer.cache
+
 # Build / runtime output
 build/
 dist/

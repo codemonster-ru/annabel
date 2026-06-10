@@ -2,4 +2,6 @@
 
 namespace Codemonster\Razor\Exceptions;
 
-class RazorException extends \RuntimeException {}
+class RazorException extends \RuntimeException
+{
+}

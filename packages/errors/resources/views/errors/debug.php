@@ -135,7 +135,7 @@
         <div class="header">
             <?php
             $status = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
-            ?>
+    ?>
             <h1><?= htmlspecialchars($exception->getMessage()) ?> <small>(HTTP <?= htmlspecialchars($status) ?>)</small></h1>
         </div>
 

@@ -2,9 +2,9 @@
 
 namespace Codemonster\Errors\Handlers;
 
+use Closure;
 use Codemonster\Errors\Contracts\ExceptionHandlerInterface;
 use Codemonster\Http\Response;
-use Closure;
 use Throwable;
 
 class SmartExceptionHandler implements ExceptionHandlerInterface
@@ -50,7 +50,7 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
                 'message' => $e->getMessage(),
                 'exception' => $e,
             ],
-            $status
+            $status,
         )
             ?? $this->renderTemplate(
                 'errors.generic',
@@ -59,7 +59,7 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
                     'message' => $e->getMessage(),
                     'exception' => $e,
                 ],
-                $status
+                $status,
             )
             ?? $this->fallbackPlain($e, $status);
     }
@@ -86,7 +86,7 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
         $basePath = $this->templatePath;
         $fileMap = [
             'errors.generic' => "$basePath/generic.php",
-            'errors.debug'   => "$basePath/debug.php",
+            'errors.debug' => "$basePath/debug.php",
         ];
 
         if (!isset($fileMap[$template]) && preg_match('/^errors\.(\d{3})$/', $template, $matches)) {
@@ -115,7 +115,7 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
     {
         $content = sprintf(
             "HTTP %d\nAn unexpected error occurred.",
-            $status
+            $status,
         );
 
         return new Response($content, $status, ['Content-Type' => 'text/plain']);
@@ -129,7 +129,7 @@ class SmartExceptionHandler implements ExceptionHandlerInterface
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),
-            $e->getTraceAsString()
+            $e->getTraceAsString(),
         );
 
         return new Response($content, $status, ['Content-Type' => 'text/plain']);

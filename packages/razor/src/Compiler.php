@@ -34,7 +34,7 @@ class Compiler
             $contents = preg_replace(
                 '/@include\s*\(\s*[\'"](.*?)[\'"]\s*\)/',
                 '<?php echo $this->render("$1", get_defined_vars()); ?>',
-                $contents
+                $contents,
             ) ?? $contents;
 
             file_put_contents($cacheFile, $contents);

@@ -2,9 +2,9 @@
 
 namespace Codemonster\Razor;
 
+use Codemonster\View\Contracts\SupportsInspectionInterface;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\LocatorInterface;
-use Codemonster\View\Contracts\SupportsInspectionInterface;
 
 class RazorEngine implements EngineInterface, SupportsInspectionInterface
 {

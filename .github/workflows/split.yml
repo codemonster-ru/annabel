@@ -183,7 +183,7 @@ jobs:
                   VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
 
             - name: Validate split token
-              if: steps.target.outputs.up_to_date != 'true'
+              if: steps.target.outputs.up_to_date != 'true' || (github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id)
               run: |
                   if [ -z "${MONOREPO_SPLIT_TOKEN}" ]; then
                     echo "MONOREPO_SPLIT_TOKEN secret is required to push split repositories."
@@ -233,12 +233,24 @@ jobs:
                   PACKAGE_PATH: ${{ matrix.package.path }}
                   VERSION_TAG: ${{ steps.tag.outputs.version_tag }}
 
-            - name: Create GitHub Release
+            - name: Create monorepo GitHub Release
               if: github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id
-              uses: softprops/action-gh-release@v2
+              uses: softprops/action-gh-release@v3
               with:
                   tag_name: ${{ github.ref_name }}
                   name: ${{ github.ref_name }}
                   body_path: RELEASE_NOTES.md
+                  make_latest: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create package GitHub Release
+              if: github.ref_type == 'tag' && matrix.package.id == steps.tag.outputs.package_id
+              uses: softprops/action-gh-release@v3
+              with:
+                  repository: ${{ matrix.package.repository }}
+                  token: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+                  tag_name: ${{ steps.tag.outputs.version_tag }}
+                  name: ${{ steps.tag.outputs.version_tag }}
+                  body_path: RELEASE_NOTES.md
+                  make_latest: legacy

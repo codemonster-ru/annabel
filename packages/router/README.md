@@ -30,6 +30,9 @@ $router = new Router();
 
 $router->get('/', fn() => 'Home Page');
 $router->get('/about', fn() => 'About Us');
+$router->get('/users/{id}', fn(string $id) => "User {$id}")
+    ->where('id', '\d+')
+    ->name('users.show');
 
 $result = $router->dispatch(
     $_SERVER['REQUEST_METHOD'],
@@ -43,11 +46,16 @@ if ($result === null) {
 } else {
     echo $result;
 }
+
+echo $router->route('users.show', ['id' => 42]); // /users/42
 ```
 
 ## ✨ Features
 
 -   Simple route registration (`get`, `post`, `any`)
+-   Dynamic route parameters (`/users/{id}`)
+-   Route parameter constraints with `where()`
+-   Named routes and URI generation
 -   Support for callbacks, `[Controller::class, 'method']` controllers, and `Controller@method` strings
 -   Returns a **pure result**, without binding to a specific `Response`
 

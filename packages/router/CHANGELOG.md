@@ -2,7 +2,15 @@
 
 All significant changes to this project will be documented in this file.
 
-# Changelog
+## [2.6.0] - 2026-06-10
+
+### Added
+
+-   Added route inspection APIs used by Annabel route caching and optimization.
+
+### Changed
+
+-   Refined route, route collection, and route group behavior for framework cache/attribute workflows.
 
 ## [2.5.0] - 2025-11-16
 

@@ -62,12 +62,23 @@ class RouteGroup
         return $route;
     }
 
+    public function any(string $path, mixed $handler): Route
+    {
+        $route = $this->router->any($this->prefix . $path, $handler);
+
+        foreach ($this->fullMiddleware() as $mw) {
+            $route->middleware(...$mw);
+        }
+
+        return $route;
+    }
+
     public function group(string $prefix, callable $callback): RouteGroup
     {
         return $this->router->group(
             $this->prefix . $prefix,
             $callback,
-            array_merge($this->parentMiddleware, $this->middleware)
+            array_merge($this->parentMiddleware, $this->middleware),
         );
     }
 }

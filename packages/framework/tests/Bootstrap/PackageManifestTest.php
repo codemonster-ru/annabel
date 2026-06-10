@@ -26,7 +26,7 @@ class PackageManifestTest extends TestCase
         $packagePath = $this->package('vendor/example', [
             'Example\\Package\\ServiceProvider',
         ]);
-        $manifest = new PackageManifest($basePath, fn() => [
+        $manifest = new PackageManifest($basePath, fn () => [
             'vendor/example' => $packagePath,
         ]);
 
@@ -41,7 +41,7 @@ class PackageManifestTest extends TestCase
         $packagePath = $this->package('vendor/example', [
             'Example\\Package\\ServiceProvider',
         ]);
-        $manifest = new PackageManifest($basePath, fn() => [
+        $manifest = new PackageManifest($basePath, fn () => [
             'vendor/example' => $packagePath,
         ]);
 
@@ -55,7 +55,7 @@ class PackageManifestTest extends TestCase
         $packagePath = $this->package('vendor/example', [
             'Example\\Package\\FirstProvider',
         ]);
-        $manifest = new PackageManifest($basePath, fn() => [
+        $manifest = new PackageManifest($basePath, fn () => [
             'vendor/example' => $packagePath,
         ]);
 
@@ -86,7 +86,7 @@ class PackageManifestTest extends TestCase
             ],
         ], JSON_THROW_ON_ERROR));
         $this->paths[] = $packagePath . '/composer.json';
-        $manifest = new PackageManifest($basePath, fn() => [
+        $manifest = new PackageManifest($basePath, fn () => [
             'vendor/example' => $packagePath,
         ]);
 

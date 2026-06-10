@@ -1,8 +1,8 @@
 <?php
 
 use Codemonster\Http\Request;
-use Psr\Http\Message\ServerRequestInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
 
 class RequestTest extends TestCase
 {
@@ -40,7 +40,7 @@ class RequestTest extends TestCase
                 'name' => 'Vasya',
                 'avatar' => $files['avatar'],
             ],
-            $request->all()
+            $request->all(),
         );
     }
 
@@ -82,7 +82,7 @@ class RequestTest extends TestCase
                     'size' => 456,
                 ],
             ],
-            $request->files('photos')
+            $request->files('photos'),
         );
     }
 
@@ -143,7 +143,7 @@ class RequestTest extends TestCase
                     ],
                 ],
             ],
-            $request->files('attachments')
+            $request->files('attachments'),
         );
         $this->assertSame('a.txt', $request->files('attachments.docs.a.name'));
     }
@@ -239,7 +239,7 @@ class RequestTest extends TestCase
                     'name' => 'Vasya',
                 ],
             ],
-            $request->only(['user.name'])
+            $request->only(['user.name']),
         );
         $this->assertSame(
             [
@@ -250,7 +250,7 @@ class RequestTest extends TestCase
                     'count' => 1,
                 ],
             ],
-            $request->except(['user.name'])
+            $request->except(['user.name']),
         );
     }
 

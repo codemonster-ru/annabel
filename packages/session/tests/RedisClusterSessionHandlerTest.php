@@ -29,6 +29,7 @@ if (!class_exists('RedisCluster')) {
         {
             $this->calls[] = ['set', $key, $value];
             $this->store[$key] = $value;
+
             return true;
         }
 
@@ -36,6 +37,7 @@ if (!class_exists('RedisCluster')) {
         {
             $this->calls[] = ['setex', $key, $seconds, $value];
             $this->store[$key] = $value;
+
             return true;
         }
 
@@ -43,6 +45,7 @@ if (!class_exists('RedisCluster')) {
         {
             $this->calls[] = ['del', $key];
             unset($this->store[$key]);
+
             return 1;
         }
     }
@@ -70,14 +73,15 @@ final class RedisClusterSessionHandlerTest extends TestCase
 
         $cluster = new RedisCluster(null, $seedList);
         $handler = new RedisClusterSessionHandler($cluster, 'sess_', 0);
+        $id = bin2hex(random_bytes(8));
 
-        $this->assertSame('', $handler->read('abc'));
+        $this->assertSame('', $handler->read($id));
 
-        $this->assertTrue($handler->write('abc', 'value'));
-        $this->assertSame('value', $handler->read('abc'));
+        $this->assertTrue($handler->write($id, 'value'));
+        $this->assertSame('value', $handler->read($id));
 
-        $this->assertTrue($handler->destroy('abc'));
-        $this->assertSame('', $handler->read('abc'));
+        $this->assertTrue($handler->destroy($id));
+        $this->assertSame('', $handler->read($id));
     }
 
     public function testWriteUsesTtlWhenConfigured(): void
@@ -130,7 +134,7 @@ final class RedisClusterSessionHandlerTest extends TestCase
             $this->markTestSkipped('REDIS_CLUSTER_SEEDS is empty.');
         }
 
-        $cluster = new class(null, $seedList) extends RedisCluster {
+        $cluster = new class (null, $seedList) extends RedisCluster {
             private int $tries = 0;
             public function set(string $key, mixed $value, mixed $options = null): RedisCluster|string|bool
             {

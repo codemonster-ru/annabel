@@ -31,7 +31,8 @@ composer require codemonster-ru/support
 | `config()`             | Get or set configuration values              |
 | `env()`                | Read environment variables                   |
 | `view()` / `render()`  | Render or return a view instance             |
-| `router()` / `route()` | Access router instance                       |
+| `router()`             | Access router instance or register a route   |
+| `route()`              | Generate a named route URI                   |
 | `request()`            | Get the current HTTP request                 |
 | `response()`           | Create a new HTTP response                   |
 | `json()`               | Return a JSON response                       |
@@ -70,7 +71,8 @@ $request = request();
 return response('Hello World', 200);
 
 // Router
-router()->get('/', fn() => response('Home'));
+router()->get('/', fn() => response('Home'))->name('home');
+echo route('home');
 
 // Views
 echo render('emails.welcome', ['user' => 'Vasya']);

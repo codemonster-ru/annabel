@@ -3,19 +3,30 @@ name: Split Packages
 on:
     push:
         tags:
+            - 'api-resource/v*.*.*'
             - 'framework/v*.*.*'
             - 'support/v*.*.*'
             - 'http/v*.*.*'
+            - 'http-client/v*.*.*'
+            - 'logging/v*.*.*'
+            - 'mail/v*.*.*'
+            - 'queue/v*.*.*'
+            - 'scheduler/v*.*.*'
             - 'router/v*.*.*'
             - 'view/v*.*.*'
             - 'view-php/v*.*.*'
             - 'view-ssr/v*.*.*'
             - 'razor/v*.*.*'
+            - 'cache/v*.*.*'
             - 'config/v*.*.*'
             - 'env/v*.*.*'
+            - 'events/v*.*.*'
             - 'database/v*.*.*'
             - 'session/v*.*.*'
+            - 'auth/v*.*.*'
             - 'errors/v*.*.*'
+            - 'filesystem/v*.*.*'
+            - 'validation/v*.*.*'
             - 'security/v*.*.*'
             - 'dumper/v*.*.*'
             - 'ssr-bridge/v*.*.*'
@@ -35,12 +46,30 @@ jobs:
                     - id: framework
                       path: packages/framework
                       repository: codemonster-ru/annabel-framework
+                    - id: api-resource
+                      path: packages/api-resource
+                      repository: codemonster-ru/api-resource
                     - id: support
                       path: packages/support
                       repository: codemonster-ru/support
                     - id: http
                       path: packages/http
                       repository: codemonster-ru/http
+                    - id: http-client
+                      path: packages/http-client
+                      repository: codemonster-ru/http-client
+                    - id: logging
+                      path: packages/logging
+                      repository: codemonster-ru/logging
+                    - id: mail
+                      path: packages/mail
+                      repository: codemonster-ru/mail
+                    - id: queue
+                      path: packages/queue
+                      repository: codemonster-ru/queue
+                    - id: scheduler
+                      path: packages/scheduler
+                      repository: codemonster-ru/scheduler
                     - id: router
                       path: packages/router
                       repository: codemonster-ru/router
@@ -56,21 +85,36 @@ jobs:
                     - id: razor
                       path: packages/razor
                       repository: codemonster-ru/razor
+                    - id: cache
+                      path: packages/cache
+                      repository: codemonster-ru/cache
                     - id: config
                       path: packages/config
                       repository: codemonster-ru/config-php
                     - id: env
                       path: packages/env
                       repository: codemonster-ru/env
+                    - id: events
+                      path: packages/events
+                      repository: codemonster-ru/events
                     - id: database
                       path: packages/database
                       repository: codemonster-ru/database
                     - id: session
                       path: packages/session
                       repository: codemonster-ru/session
+                    - id: auth
+                      path: packages/auth
+                      repository: codemonster-ru/auth
                     - id: errors
                       path: packages/errors
                       repository: codemonster-ru/errors
+                    - id: filesystem
+                      path: packages/filesystem
+                      repository: codemonster-ru/filesystem
+                    - id: validation
+                      path: packages/validation
+                      repository: codemonster-ru/validation
                     - id: security
                       path: packages/security
                       repository: codemonster-ru/security

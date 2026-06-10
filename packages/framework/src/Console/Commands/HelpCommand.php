@@ -54,7 +54,7 @@ class HelpCommand extends Command
         $console = $this->console();
         $version = $console->getVersion();
 
-        $console->writeln($console->color(" Annabel CLI ", 'title') . $console->color("({$version})", 'muted'));
+        $console->writeln($console->color(' Annabel CLI ', 'title') . $console->color("({$version})", 'muted'));
         $console->writeln($console->color(str_repeat('-', 48), 'muted'));
         $console->writeln($console->color('Usage:', 'label'));
         $console->writeln('  ' . $console->color('php vendor/bin/annabel [command]', 'command'));
@@ -78,7 +78,7 @@ class HelpCommand extends Command
                 '  %s  %s%s',
                 $console->color(str_pad($command->getName(), $maxLength), 'command'),
                 $command->getDescription(),
-                $aliasText ? ' ' . $console->color($aliasText, 'muted') : ''
+                $aliasText ? ' ' . $console->color($aliasText, 'muted') : '',
             ));
         }
 
@@ -95,7 +95,7 @@ class HelpCommand extends Command
         $aliases = $console->getAliasesFor($command->getName());
         $version = $console->getVersion();
 
-        $console->writeln($console->color(" Annabel CLI ", 'title') . $console->color("({$version})", 'muted'));
+        $console->writeln($console->color(' Annabel CLI ', 'title') . $console->color("({$version})", 'muted'));
         $console->writeln($console->color(str_repeat('-', 48), 'muted'));
         $console->writeln($console->color('Command:', 'label') . ' ' . $console->color($command->getName(), 'command'));
 

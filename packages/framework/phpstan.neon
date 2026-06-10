@@ -8,3 +8,6 @@ parameters:
         -
             identifier: trait.unused
             path: src/Http/ValidatesRequests.php
+        -
+            identifier: trait.unused
+            path: src/Testing/InteractsWithApplication.php

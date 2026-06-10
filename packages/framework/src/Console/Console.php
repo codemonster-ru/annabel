@@ -3,15 +3,34 @@
 namespace Codemonster\Annabel\Console;
 
 use Codemonster\Annabel\Application;
-use Codemonster\Annabel\Console\Contracts\OutputInterface;
 use Codemonster\Annabel\Console\Commands\AboutCommand;
+use Codemonster\Annabel\Console\Commands\ConfigCacheCommand;
+use Codemonster\Annabel\Console\Commands\ConfigClearCommand;
 use Codemonster\Annabel\Console\Commands\ConfigGetCommand;
+use Codemonster\Annabel\Console\Commands\ConfigListCommand;
 use Codemonster\Annabel\Console\Commands\ContainerListCommand;
+use Codemonster\Annabel\Console\Commands\DatabaseCommand;
 use Codemonster\Annabel\Console\Commands\HelpCommand;
+use Codemonster\Annabel\Console\Commands\MakeControllerCommand;
+use Codemonster\Annabel\Console\Commands\MakeJobCommand;
+use Codemonster\Annabel\Console\Commands\MakeMiddlewareCommand;
+use Codemonster\Annabel\Console\Commands\MakeModelCommand;
+use Codemonster\Annabel\Console\Commands\MakePolicyCommand;
+use Codemonster\Annabel\Console\Commands\MakeRequestCommand;
+use Codemonster\Annabel\Console\Commands\OptimizeClearCommand;
+use Codemonster\Annabel\Console\Commands\OptimizeCommand;
+use Codemonster\Annabel\Console\Commands\QueueFailedCommand;
+use Codemonster\Annabel\Console\Commands\QueueFlushCommand;
+use Codemonster\Annabel\Console\Commands\QueueRetryCommand;
+use Codemonster\Annabel\Console\Commands\QueueWorkCommand;
+use Codemonster\Annabel\Console\Commands\RouteCacheCommand;
+use Codemonster\Annabel\Console\Commands\RouteClearCommand;
 use Codemonster\Annabel\Console\Commands\RouteListCommand;
+use Codemonster\Annabel\Console\Commands\ScheduleListCommand;
+use Codemonster\Annabel\Console\Commands\ScheduleRunCommand;
 use Codemonster\Annabel\Console\Commands\ServeCommand;
 use Codemonster\Annabel\Console\Commands\VendorPublishCommand;
-use Codemonster\Annabel\Console\Commands\DatabaseCommand;
+use Codemonster\Annabel\Console\Contracts\OutputInterface;
 use Codemonster\Database\Console\DatabaseConsoleKernel;
 
 class Console
@@ -47,10 +66,29 @@ class Console
         $this->register(new HelpCommand());
         $this->register(new AboutCommand());
         $this->register(new RouteListCommand());
+        $this->register(new RouteCacheCommand());
+        $this->register(new RouteClearCommand());
+        $this->register(new ConfigCacheCommand());
+        $this->register(new ConfigClearCommand());
         $this->register(new ConfigGetCommand());
+        $this->register(new ConfigListCommand());
         $this->register(new ContainerListCommand());
         $this->register(new ServeCommand());
         $this->register(new VendorPublishCommand());
+        $this->register(new OptimizeCommand());
+        $this->register(new OptimizeClearCommand());
+        $this->register(new QueueFailedCommand());
+        $this->register(new QueueFlushCommand());
+        $this->register(new QueueRetryCommand());
+        $this->register(new QueueWorkCommand());
+        $this->register(new ScheduleListCommand());
+        $this->register(new ScheduleRunCommand());
+        $this->register(new MakeControllerCommand());
+        $this->register(new MakeJobCommand());
+        $this->register(new MakeModelCommand());
+        $this->register(new MakeMiddlewareCommand());
+        $this->register(new MakeRequestCommand());
+        $this->register(new MakePolicyCommand());
     }
 
     public function register(Command|string $command): void
@@ -105,7 +143,7 @@ class Console
         } catch (\Throwable $e) {
             $this->writeln($this->color(
                 sprintf('Command [%s] failed: %s', $command->getName(), $e->getMessage()),
-                'error'
+                'error',
             ));
 
             return ExitCode::FAILURE;

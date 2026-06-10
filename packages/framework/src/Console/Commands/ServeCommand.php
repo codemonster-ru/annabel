@@ -43,14 +43,14 @@ class ServeCommand extends Command
         $command = sprintf(
             'php -S %s:%s -t %s %s',
             escapeshellarg($host),
-            escapeshellarg((string)$port),
+            escapeshellarg((string) $port),
             escapeshellarg($publicDir),
-            escapeshellarg($index)
+            escapeshellarg($index),
         );
 
         passthru($command, $exitCode);
 
-        return (int)$exitCode;
+        return (int) $exitCode;
     }
 
     /**
@@ -68,9 +68,9 @@ class ServeCommand extends Command
         if (str_contains($arg, ':')) {
             [$h, $p] = explode(':', $arg, 2);
             $host = $h ?: $host;
-            $port = (int)$p ?: $port;
+            $port = (int) $p ?: $port;
         } elseif (is_numeric($arg)) {
-            $port = (int)$arg;
+            $port = (int) $arg;
         }
 
         return [$host, $port];

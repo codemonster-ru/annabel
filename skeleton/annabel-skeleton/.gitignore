@@ -3,6 +3,8 @@
 .vscode
 vendor
 node_modules
+public/build
+public/hot
 composer.local.json
 composer.local.lock
 /bootstrap/cache/*.php

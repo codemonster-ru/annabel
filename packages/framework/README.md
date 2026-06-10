@@ -52,15 +52,22 @@ Annabel ships with a lightweight CLI similar to Laravel's `artisan`. It already 
 -   `about` - show version, base path, and loaded providers
 -   `route:list` - list registered routes
 -   `config:get key` - read a config value
+-   `config:list` - list config values with secrets redacted
 -   `container:list` - show container bindings/instances
 -   `vendor:publish` - publish package config, migrations, views, or assets
 -   `serve` - run PHP built-in server (default 127.0.0.1:8000)
+-   `make:controller`, `make:model`, `make:middleware`, `make:request`, `make:policy` - generate application classes
 -   With `codemonster-ru/database` installed: `make:migration`, `migrate`, `migrate:rollback`, `migrate:status`, `make:seed`, `seed` (appear in `annabel list`; connection is checked when commands run)
 
 ```bash
 php vendor/bin/annabel
 php vendor/bin/annabel help
 php vendor/bin/annabel help list
+php vendor/bin/annabel make:controller Admin/User
+php vendor/bin/annabel make:model User
+php vendor/bin/annabel make:policy Post
+php vendor/bin/annabel queue:work --once
+php vendor/bin/annabel schedule:run
 ```
 
 Commands may be registered by service providers and are resolved through the
@@ -82,6 +89,31 @@ New commands may implement `execute(InputInterface $input, OutputInterface
 $output): int`. `ArgvInput` provides positional arguments and parsed long
 options; commands return `ExitCode` constants. The legacy `handle(array)` method
 remains supported for existing commands.
+
+## Testing
+
+Application tests can use Annabel's lightweight HTTP helpers:
+
+```php
+use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Testing\InteractsWithApplication;
+use PHPUnit\Framework\TestCase;
+
+class FeatureTest extends TestCase
+{
+    use InteractsWithApplication;
+
+    protected function createApplication(): Application
+    {
+        return require __DIR__ . '/../bootstrap/app.php';
+    }
+
+    public function test_homepage(): void
+    {
+        $this->get('/')->assertOk()->assertSee('Welcome');
+    }
+}
+```
 
 ## Database Integration
 
@@ -142,12 +174,21 @@ transaction(function () {
 | `dump()` / `dd()`       | Debugging utilities                |
 | `request()`             | Get current HTTP request           |
 | `response()` / `json()` | Create HTTP response               |
-| `router()` / `route()`  | Access router instance             |
+| `http_client()`         | Access the HTTP client             |
+| `router()`              | Access router or register route    |
+| `route()`               | Generate a named route URI         |
 | `view()`                | Render or return view instance     |
 | `session()`             | Access session store               |
+| `storage()`             | Access filesystem storage disks    |
 | `old()`                 | Read flashed old form input        |
 | `errors()`              | Read flashed validation errors     |
+| `auth()`                | Access the authentication guard    |
+| `user()`                | Read the authenticated user        |
 | `cache()`               | Access PSR-16 cache store          |
+| `mailer()`              | Access mailers                     |
+| `queue()`               | Access queue connections           |
+| `dispatch()`            | Dispatch a queue job               |
+| `schedule()`            | Access scheduled tasks             |
 | `validator()`           | Validate input data                |
 | `db()`                  | Get the active database connection |
 | `schema()`              | Get the schema builder             |
@@ -155,11 +196,153 @@ transaction(function () {
 
 All helpers are autoloaded automatically.
 
+## Filesystem
+
+Annabel registers `codemonster-ru/filesystem` by default. Publish the default
+config and use `storage()` to read or write files:
+
+```bash
+php vendor/bin/annabel vendor:publish --tag=filesystem
+```
+
+```php
+storage('public')->put('avatars/user-1.txt', 'avatar');
+
+$url = storage('public')->url('avatars/user-1.txt');
+```
+
+## HTTP Client
+
+Annabel registers `codemonster-ru/http-client` by default. Configure defaults in
+`config/http-client.php` and use `http_client()` for external API calls:
+
+```php
+$response = http_client()
+    ->baseUrl('https://api.example.com')
+    ->acceptJson()
+    ->get('/users/1');
+
+$user = $response->throw()->json();
+```
+
 ## Middleware
 
 Annabel supports PSR-15 middleware via `Psr\Http\Server\MiddlewareInterface`.
 Route middleware may be registered by class name, and global middleware may be
 added to the kernel with `addMiddleware()`.
+
+Middleware aliases and groups keep routes compact:
+
+```php
+router()->get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth');
+
+router()->get('/posts/{post}', [PostController::class, 'show'])
+    ->middleware('can:posts.view,post');
+
+router()->post('/posts', [PostController::class, 'store'])
+    ->middleware('web');
+```
+
+The framework registers `auth` and `can` when auth is enabled. The security
+provider registers `csrf`, `throttle`, and the default `web` / `api` groups.
+Custom aliases and groups can be registered on the HTTP kernel:
+
+```php
+app(\Codemonster\Annabel\Http\Kernel::class)
+    ->aliasMiddleware('admin', App\Http\Middleware\AdminOnly::class);
+```
+
+Publish the security config to tune CSRF, rate-limit storage, trusted proxies,
+and named throttle presets:
+
+```bash
+php vendor/bin/annabel vendor:publish --tag=security
+```
+
+```php
+router()->post('/login', [LoginController::class, 'store'])
+    ->middleware('throttle:login');
+```
+
+## Authentication
+
+Annabel registers `codemonster-ru/auth` by default. Publish the default config
+and configure a user provider in `config/auth.php`, or provide a small in-memory
+list for local applications:
+
+```bash
+php vendor/bin/annabel vendor:publish --tag=auth
+```
+
+```php
+return [
+    'provider' => 'database',
+    'database' => [
+        'table' => 'users',
+        'identifier_column' => 'id',
+        'password_column' => 'password',
+    ],
+    'users' => [
+        new App\User(1, 'admin@example.com', password_hash('secret', PASSWORD_DEFAULT)),
+    ],
+    'redirect_to' => '/login',
+];
+```
+
+```php
+if (auth()->attempt(['email' => $email, 'password' => $password])) {
+    return response()->redirect('/dashboard');
+}
+
+router()->get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth');
+```
+
+Production applications should bind a database-backed
+`Codemonster\Auth\Contracts\UserProviderInterface` implementation through
+`auth.provider`.
+
+## Routing
+
+Routes support dynamic parameters, constraints, names, and URI generation:
+
+```php
+router()->get('/users/{id}', [UserController::class, 'show'])
+    ->where('id', '\d+')
+    ->name('users.show');
+
+route('users.show', ['id' => 42]); // /users/42
+```
+
+Route parameters are injected into closures and controllers by parameter name.
+The current `Codemonster\Http\Request` may be type-hinted alongside route
+parameters.
+
+## API Resources
+
+API resources provide one transformation for individual models, collections,
+and existing `simplePaginate()` results:
+
+```php
+use Codemonster\ApiResource\JsonResource;
+
+final class UserResource extends JsonResource
+{
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->resource->getKey(),
+            'name' => $this->resource->name,
+        ];
+    }
+}
+
+return UserResource::paginated(
+    User::query()->simplePaginate(20, $page),
+    '/api/users',
+)->response();
+```
 
 ## Logging
 
@@ -170,8 +353,112 @@ the error response is rendered.
 ## Cache
 
 Annabel binds `Psr\SimpleCache\CacheInterface` in the container. Configure the
-default store in `config/cache.php`; the framework ships with `array` and `file`
-stores.
+default store in `config/cache.php`; the framework ships with `array`, `file`,
+and `redis` stores. Set `CACHE_STORE=redis` and configure `REDIS_HOST`,
+`REDIS_PORT`, `REDIS_PASSWORD`, and `REDIS_CACHE_DB` for shared cache in
+multi-instance deployments.
+
+## Mail
+
+Annabel registers `codemonster-ru/mail` by default. Configure the default
+mailer in `config/mail.php`; the framework ships with `array`, `log`,
+`sendmail`, and Symfony-powered `smtp` transports. Set `MAIL_MAILER=smtp` and
+provide an SMTP DSN through `MAILER_DSN`.
+
+```php
+use Codemonster\Mail\Message;
+
+mailer('log')->send(
+    Message::make()
+        ->from('hello@example.com', 'Annabel')
+        ->to('user@example.com')
+        ->subject('Welcome')
+        ->text('Welcome to Annabel.'),
+);
+```
+
+## Queue
+
+Annabel registers `codemonster-ru/queue` by default. Configure the default
+connection in `config/queue.php`; the framework ships with `sync`, `database`,
+and `redis` drivers.
+
+```php
+use Codemonster\Queue\Contracts\JobInterface;
+
+class SendWelcomeEmailJob implements JobInterface
+{
+    public function handle(): void
+    {
+        //
+    }
+}
+
+dispatch(new SendWelcomeEmailJob());
+```
+
+The default `sync` connection runs jobs immediately. For SQL-backed background
+jobs, set `QUEUE_CONNECTION=database`, publish queue migrations, run `migrate`,
+and start the worker:
+
+```bash
+php vendor/bin/annabel vendor:publish --tag=queue-migrations
+php vendor/bin/annabel migrate
+php vendor/bin/annabel queue:work
+php vendor/bin/annabel queue:work --stop-when-empty
+php vendor/bin/annabel queue:failed
+php vendor/bin/annabel queue:retry 1
+php vendor/bin/annabel queue:retry all
+php vendor/bin/annabel queue:flush
+```
+
+For Redis-backed workers, set `QUEUE_CONNECTION=redis` and configure
+`REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `REDIS_QUEUE_DB`, and
+`QUEUE_REDIS_PREFIX`. Redis failed jobs are stored in Redis and work with the
+same `queue:failed`, `queue:retry`, and `queue:flush` commands.
+
+## Scheduler
+
+Annabel registers `codemonster-ru/scheduler` by default. Define tasks in
+`routes/schedule.php` and run `schedule:run` every minute from cron:
+
+```php
+use Codemonster\Scheduler\Schedule;
+
+/** @var Schedule $schedule */
+$schedule->call(fn () => cleanup(), 'cleanup')
+    ->dailyAt('03:00')
+    ->withoutOverlapping();
+```
+
+```bash
+* * * * * php /path/to/app/vendor/bin/annabel schedule:run
+```
+
+Use `schedule:list` to inspect registered tasks, cron expressions, due status,
+and overlap locks.
+
+Scheduler locks use the configured cache store when the cache provider is
+registered.
+
+## Production optimization
+
+Build configuration and route caches during deployment:
+
+```bash
+php vendor/bin/annabel optimize
+```
+
+Routes with closures cannot be cached. Use controller handlers such as
+`[HomeController::class, 'index']`. Clear all generated caches before changing
+environment configuration or when troubleshooting:
+
+```bash
+php vendor/bin/annabel optimize:clear
+```
+
+The individual `config:cache`, `config:clear`, `route:cache`, and `route:clear`
+commands are also available.
 
 ## Events
 

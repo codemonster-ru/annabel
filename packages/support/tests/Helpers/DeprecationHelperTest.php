@@ -14,6 +14,7 @@ class DeprecationHelperTest extends TestCase
         set_error_handler(static function (int $severity, string $error) use (&$message): bool {
             if ($severity === E_USER_DEPRECATED) {
                 $message = $error;
+
                 return true;
             }
 
@@ -28,7 +29,7 @@ class DeprecationHelperTest extends TestCase
 
         $this->assertSame(
             'Since codemonster-ru/support 1.5: Use "new_api" instead.',
-            $message
+            $message,
         );
     }
 

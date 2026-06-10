@@ -2,14 +2,14 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
 use Codemonster\Http\Response;
+use PHPUnit\Framework\TestCase;
 
 class ResponseHelperTest extends TestCase
 {
     protected function setUp(): void
     {
-        app()->singleton('response', fn() => new Response());
+        app()->singleton('response', fn () => new Response());
     }
 
     public function testResponseReturnsInstance()

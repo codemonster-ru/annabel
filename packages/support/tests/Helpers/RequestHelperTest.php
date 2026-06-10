@@ -2,14 +2,14 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
 use Codemonster\Http\Request;
+use PHPUnit\Framework\TestCase;
 
 class RequestHelperTest extends TestCase
 {
     protected function setUp(): void
     {
-        app()->singleton('request', fn() => Request::capture());
+        app()->singleton('request', fn () => Request::capture());
     }
 
     public function testRequestReturnsInstance()
@@ -21,7 +21,7 @@ class RequestHelperTest extends TestCase
     {
         $_GET['key'] = 'value';
 
-        app()->singleton('request', fn() => \Codemonster\Http\Request::capture());
+        app()->singleton('request', fn () => \Codemonster\Http\Request::capture());
 
         $this->assertSame('value', request('key'));
     }
@@ -31,7 +31,7 @@ class RequestHelperTest extends TestCase
         $_GET['empty'] = '';
         $_GET['zero'] = '0';
 
-        app()->singleton('request', fn() => \Codemonster\Http\Request::capture());
+        app()->singleton('request', fn () => \Codemonster\Http\Request::capture());
 
         $this->assertSame('', request('empty'));
         $this->assertSame('0', request('zero'));

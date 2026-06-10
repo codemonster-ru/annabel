@@ -25,24 +25,28 @@ if (!class_exists('Redis')) {
         public function connect(string $host, int $port): bool
         {
             $this->calls[] = ['connect', $host, $port];
+
             return true;
         }
 
         public function auth(string $password): bool
         {
             $this->calls[] = ['auth', $password];
+
             return true;
         }
 
         public function select(int $db): bool
         {
             $this->calls[] = ['select', $db];
+
             return true;
         }
 
         public function get(string $key): mixed
         {
             $this->calls[] = ['get', $key];
+
             return $this->store[$key] ?? null;
         }
 
@@ -50,6 +54,7 @@ if (!class_exists('Redis')) {
         {
             $this->calls[] = ['set', $key, $value];
             $this->store[$key] = $value;
+
             return true;
         }
 
@@ -57,6 +62,7 @@ if (!class_exists('Redis')) {
         {
             $this->calls[] = ['setex', $key, $seconds, $value];
             $this->store[$key] = $value;
+
             return true;
         }
 
@@ -64,6 +70,7 @@ if (!class_exists('Redis')) {
         {
             $this->calls[] = ['del', $key];
             unset($this->store[$key]);
+
             return 1;
         }
     }
@@ -87,8 +94,10 @@ function createSentinel(string $host, int $port): RedisSentinel
             }
         }
 
-        $address = sprintf('%s:%d', $host, $port);
-        return $ref->newInstanceArgs([[$address]]);
+        return $ref->newInstanceArgs([[
+            'host' => $host,
+            'port' => $port,
+        ]]);
     }
 
     return $ref->newInstanceArgs([$host, $port]);
@@ -114,14 +123,15 @@ final class RedisSentinelSessionHandlerTest extends TestCase
 
         $sentinel = createSentinel($host, $port);
         $handler = new RedisSentinelSessionHandler($sentinel, $service, 'sess_', 0);
+        $id = bin2hex(random_bytes(8));
 
-        $this->assertSame('', $handler->read('abc'));
+        $this->assertSame('', $handler->read($id));
 
-        $this->assertTrue($handler->write('abc', 'value'));
-        $this->assertSame('value', $handler->read('abc'));
+        $this->assertTrue($handler->write($id, 'value'));
+        $this->assertSame('value', $handler->read($id));
 
-        $this->assertTrue($handler->destroy('abc'));
-        $this->assertSame('', $handler->read('abc'));
+        $this->assertTrue($handler->destroy($id));
+        $this->assertSame('', $handler->read($id));
     }
 
     public function testWriteUsesTtlWhenConfigured(): void
@@ -179,7 +189,7 @@ final class RedisSentinelSessionHandlerTest extends TestCase
 
         $sentinel = createSentinel($host, $port);
 
-        $handler = new class($sentinel, $service, 'sess_', 0, null, null, 1, 0) extends RedisSentinelSessionHandler {
+        $handler = new class ($sentinel, $service, 'sess_', 0, null, null, 1, 0) extends RedisSentinelSessionHandler {
             public function __construct(
                 RedisSentinel $sentinel,
                 string $service,
@@ -188,11 +198,10 @@ final class RedisSentinelSessionHandlerTest extends TestCase
                 ?string $password,
                 ?int $database,
                 int $retries,
-                int $retryDelayMs
-            )
-            {
+                int $retryDelayMs,
+            ) {
                 parent::__construct($sentinel, $service, $prefix, $ttl, $password, $database, $retries, $retryDelayMs);
-                $redis = new class extends \Redis {
+                $redis = new class () extends \Redis {
                     private int $tries = 0;
                     public function set(string $key, mixed $value, mixed $options = null): \Redis|string|bool
                     {
@@ -200,6 +209,7 @@ final class RedisSentinelSessionHandlerTest extends TestCase
                         if ($this->tries === 1) {
                             throw new \RedisException('fail');
                         }
+
                         return true;
                     }
                 };

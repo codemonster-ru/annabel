@@ -22,11 +22,15 @@ RUN apk add --no-cache \
         ripgrep \
         unzip \
         zip \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && docker-php-ext-install \
         intl \
         mbstring \
         pcntl \
-        pdo_mysql
+        pdo_mysql \
+    && printf "\n\n\n\n\n\n" | pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps
 
 RUN npm install -g @openai/codex
 

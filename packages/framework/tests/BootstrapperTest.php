@@ -4,6 +4,8 @@ namespace Codemonster\Annabel\Tests;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Bootstrap\Bootstrapper;
+use Codemonster\Annabel\Bootstrap\CacheFile;
+use Codemonster\Annabel\Bootstrap\ConfigCache;
 use Codemonster\Annabel\Bootstrap\PackageManifest;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use PHPUnit\Framework\TestCase;
@@ -145,6 +147,33 @@ class BootstrapperTest extends TestCase
         $this->assertSame([], $bootstrapper->exposeResolveProviders());
     }
 
+    public function test_provider_config_is_loaded_from_application_cache(): void
+    {
+        $basePath = sys_get_temp_dir() . '/annabel-bootstrapper-cache-' . bin2hex(random_bytes(6));
+        mkdir($basePath . '/bootstrap/cache', 0770, true);
+        CacheFile::write(ConfigCache::path($basePath), [
+            'app' => [
+                'providers' => [
+                    'defaults' => false,
+                    'extra' => [TestLifecycleProvider::class],
+                    'discover' => false,
+                ],
+            ],
+        ]);
+
+        $app = new Application($basePath, null, false);
+        $bootstrapper = new TestBootstrapper($app);
+
+        try {
+            $this->assertSame([TestLifecycleProvider::class], $bootstrapper->exposeResolveProviders());
+        } finally {
+            @unlink(ConfigCache::path($basePath));
+            @rmdir($basePath . '/bootstrap/cache');
+            @rmdir($basePath . '/bootstrap');
+            @rmdir($basePath);
+        }
+    }
+
     private function makeAppConfig(array $config): string
     {
         $basePath = sys_get_temp_dir() . '/annabel-bootstrapper-' . bin2hex(random_bytes(6));
@@ -153,7 +182,7 @@ class BootstrapperTest extends TestCase
         mkdir($configPath, 0770, true);
         file_put_contents(
             $configPath . '/app.php',
-            "<?php\nreturn " . var_export($config, true) . ";\n"
+            "<?php\nreturn " . var_export($config, true) . ";\n",
         );
 
         return $basePath;
@@ -182,7 +211,9 @@ class TestLifecycleProvider implements ServiceProviderInterface
 {
     public static array $events = [];
 
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app)
+    {
+    }
 
     public function register(): void
     {
@@ -197,7 +228,9 @@ class TestLifecycleProvider implements ServiceProviderInterface
 
 class TestSecondLifecycleProvider implements ServiceProviderInterface
 {
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app)
+    {
+    }
 
     public function register(): void
     {
@@ -212,24 +245,30 @@ class TestSecondLifecycleProvider implements ServiceProviderInterface
 
 class TestThirdLifecycleProvider implements ServiceProviderInterface
 {
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app)
+    {
+    }
 
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+    }
 }
 
 class TestPackageManifest extends PackageManifest
 {
     public function __construct(string $basePath, private array $discovered)
     {
-        parent::__construct($basePath, fn() => []);
+        parent::__construct($basePath, fn () => []);
     }
 
     public function providers(
         array $dontDiscover = [],
         bool $useCache = true,
-        ?string $cachePath = null
+        ?string $cachePath = null,
     ): array {
         return $this->discovered;
     }

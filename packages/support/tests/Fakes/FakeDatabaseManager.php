@@ -2,8 +2,8 @@
 
 namespace Codemonster\Support\Tests\Fakes;
 
-use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Database\DatabaseManager;
 
 class FakeDatabaseManager extends DatabaseManager
 {

@@ -17,9 +17,13 @@ abstract class ServiceProvider implements ServiceProviderInterface
         $this->app = $app;
     }
 
-    public function register(): void {}
+    public function register(): void
+    {
+    }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+    }
 
     protected function app(): Application
     {

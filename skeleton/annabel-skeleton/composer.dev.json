@@ -16,17 +16,27 @@
     "require": {
         "php": ">=8.2",
         "codemonster-ru/annabel": "dev-main as 1.15.99",
+        "codemonster-ru/api-resource": "dev-main as 1.0.99",
+        "codemonster-ru/cache": "dev-main as 1.0.99",
         "codemonster-ru/config": "dev-main as 2.0.99",
         "codemonster-ru/database": "dev-main as 2.0.99",
         "codemonster-ru/dumper": "dev-main as 1.0.99",
         "codemonster-ru/env": "dev-main as 2.3.99",
         "codemonster-ru/errors": "dev-main as 1.2.99",
+        "codemonster-ru/events": "dev-main as 1.0.99",
+        "codemonster-ru/filesystem": "dev-main as 1.0.99",
         "codemonster-ru/http": "dev-main as 2.1.99",
+        "codemonster-ru/http-client": "dev-main as 1.0.99",
+        "codemonster-ru/logging": "dev-main as 1.0.99",
+        "codemonster-ru/mail": "dev-main as 1.0.99",
+        "codemonster-ru/queue": "dev-main as 1.0.99",
         "codemonster-ru/razor": "dev-main as 1.1.99",
         "codemonster-ru/router": "dev-main as 2.5.99",
+        "codemonster-ru/scheduler": "dev-main as 1.0.99",
         "codemonster-ru/security": "dev-main as 1.1.99",
         "codemonster-ru/session": "dev-main as 2.0.99",
         "codemonster-ru/support": "dev-main as 1.4.99",
+        "codemonster-ru/validation": "dev-main as 1.0.99",
         "codemonster-ru/view": "dev-main as 2.3.99",
         "codemonster-ru/view-php": "dev-main as 2.1.99"
     },
@@ -36,7 +46,16 @@
         }
     },
     "scripts": {
-        "start": "@php -S localhost:8000 -t public"
+        "annabel": "@php vendor/bin/annabel",
+        "start": "@php vendor/bin/annabel serve",
+        "serve": "@php vendor/bin/annabel serve",
+        "migrate": "@php vendor/bin/annabel migrate",
+        "optimize": "@php vendor/bin/annabel optimize",
+        "optimize:clear": "@php vendor/bin/annabel optimize:clear",
+        "queue": "@php vendor/bin/annabel queue:work",
+        "queue:work": "@php vendor/bin/annabel queue:work",
+        "schedule": "@php vendor/bin/annabel schedule:run",
+        "schedule:run": "@php vendor/bin/annabel schedule:run"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

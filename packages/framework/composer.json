@@ -40,15 +40,27 @@
     },
     "require": {
         "php": ">=8.2",
+        "codemonster-ru/api-resource": "^1.0",
+        "codemonster-ru/auth": "^1.0",
+        "codemonster-ru/cache": "^1.0",
         "codemonster-ru/config": "^2.0",
         "codemonster-ru/database": "^2.0",
         "codemonster-ru/env": "^2.0",
         "codemonster-ru/errors": "^1.2",
-        "codemonster-ru/http": "^2.1@dev",
+        "codemonster-ru/events": "^1.0",
+        "codemonster-ru/filesystem": "^1.0",
+        "codemonster-ru/http": "^2.1",
+        "codemonster-ru/http-client": "^1.0",
+        "codemonster-ru/logging": "^1.0",
+        "codemonster-ru/mail": "^1.0",
+        "codemonster-ru/queue": "^1.0",
         "codemonster-ru/razor": "^1.1",
-        "codemonster-ru/router": "^2.0",
+        "codemonster-ru/router": "^2.5",
+        "codemonster-ru/scheduler": "^1.0",
+        "codemonster-ru/security": "^1.1",
         "codemonster-ru/session": "^2.0",
         "codemonster-ru/support": "^1.4",
+        "codemonster-ru/validation": "^1.0",
         "codemonster-ru/view": "^2.0",
         "codemonster-ru/view-php": "^2.1",
         "psr/container": "^2.0",
@@ -59,7 +71,6 @@
         "psr/simple-cache": "^3.0"
     },
     "require-dev": {
-        "codemonster-ru/security": "^1.1",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
     },
@@ -91,5 +102,7 @@
         "branch-alias": {
             "dev-main": "1.15.x-dev"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

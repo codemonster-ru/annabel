@@ -2,13 +2,13 @@
 
 namespace Codemonster\Annabel\Providers;
 
-use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\View\View;
-use Codemonster\View\Locator\DefaultLocator;
-use Codemonster\View\Engines\PhpEngine;
 use Codemonster\Razor\RazorEngine;
+use Codemonster\View\Engines\PhpEngine;
+use Codemonster\View\Locator\DefaultLocator;
+use Codemonster\View\View;
 
 class ViewServiceProvider implements ServiceProviderInterface
 {
@@ -57,8 +57,10 @@ class ViewServiceProvider implements ServiceProviderInterface
             return new View($engines, 'php');
         });
 
-        $this->app->singleton('view', fn(Container $c) => $c->make(View::class));
+        $this->app->singleton('view', fn (Container $c) => $c->make(View::class));
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+    }
 }

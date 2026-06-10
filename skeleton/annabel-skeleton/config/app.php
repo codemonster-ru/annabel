@@ -14,4 +14,19 @@ return [
             'cache_path' => base_path('bootstrap/cache/packages.php'),
         ],
     ],
+    'routing' => [
+        'attributes' => [
+            'enabled' => true,
+            'paths' => [
+                base_path('app/Controllers'),
+            ],
+        ],
+    ],
+    'services' => [
+        'enabled' => true,
+        'paths' => [
+            base_path('app'),
+        ],
+        'autoconfigure' => [],
+    ],
 ];

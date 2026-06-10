@@ -24,7 +24,7 @@ class CommandRegistry
                 && !is_subclass_of($command, Command::class)
             ) {
                 throw new InvalidArgumentException(
-                    'Console commands must extend ' . Command::class . '.'
+                    'Console commands must extend ' . Command::class . '.',
                 );
             }
 

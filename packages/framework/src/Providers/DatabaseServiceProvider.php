@@ -5,20 +5,22 @@ namespace Codemonster\Annabel\Providers;
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\Annabel\Database\LazyDatabaseConsoleKernel;
 use Codemonster\Annabel\Database\LazyConnection;
+use Codemonster\Annabel\Database\LazyDatabaseConsoleKernel;
 use Codemonster\Annabel\Database\LazyMigrationRepository;
-use Codemonster\Database\DatabaseManager;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
-use Codemonster\Database\Console\DatabaseConsoleKernel;
 use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
 {
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app)
+    {
+    }
 
     public function register(): void
     {
@@ -45,7 +47,7 @@ class DatabaseServiceProvider implements ServiceProviderInterface
         $this->app->singleton(ConnectionInterface::class, function (Container $app) {
             $manager = $app->make(DatabaseManager::class);
 
-            return new LazyConnection(fn() => $manager->connection());
+            return new LazyConnection(fn () => $manager->connection());
         });
 
         $this->app->singleton(MigrationPathResolver::class, function () {

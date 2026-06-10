@@ -13,9 +13,9 @@ class PackageManifest
 
     public function __construct(
         protected string $basePath,
-        ?Closure $packagePaths = null
+        ?Closure $packagePaths = null,
     ) {
-        $this->packagePaths = $packagePaths ?? fn(): array => $this->installedPackagePaths();
+        $this->packagePaths = $packagePaths ?? fn (): array => $this->installedPackagePaths();
     }
 
     /**
@@ -25,7 +25,7 @@ class PackageManifest
     public function providers(
         array $dontDiscover = [],
         bool $useCache = true,
-        ?string $cachePath = null
+        ?string $cachePath = null,
     ): array {
         if (in_array('*', $dontDiscover, true)) {
             return [];
@@ -112,12 +112,12 @@ class PackageManifest
                     (string) file_get_contents($composerFile),
                     true,
                     512,
-                    JSON_THROW_ON_ERROR
+                    JSON_THROW_ON_ERROR,
                 );
             } catch (\JsonException $e) {
                 throw new RuntimeException(
                     "Invalid composer.json for discovered package [$package].",
-                    previous: $e
+                    previous: $e,
                 );
             }
 
@@ -131,14 +131,14 @@ class PackageManifest
 
             if (!is_array($declared)) {
                 throw new RuntimeException(
-                    "Package [$package] extra.annabel.providers must be a string or array."
+                    "Package [$package] extra.annabel.providers must be a string or array.",
                 );
             }
 
             foreach ($declared as $provider) {
                 if (!is_string($provider) || $provider === '') {
                     throw new RuntimeException(
-                        "Package [$package] contains an invalid Annabel provider declaration."
+                        "Package [$package] contains an invalid Annabel provider declaration.",
                     );
                 }
 

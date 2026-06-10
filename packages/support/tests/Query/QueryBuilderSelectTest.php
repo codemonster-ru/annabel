@@ -3,8 +3,8 @@
 namespace Codemonster\Support\Tests\Query;
 
 use Codemonster\Database\Query\QueryBuilder;
-use PHPUnit\Framework\TestCase;
 use Codemonster\Support\Tests\Fakes\FakeConnection;
+use PHPUnit\Framework\TestCase;
 
 class QueryBuilderSelectTest extends TestCase
 {
@@ -53,7 +53,7 @@ class QueryBuilderSelectTest extends TestCase
 
         $this->assertSame(
             'SELECT * FROM `users` WHERE `active` = ? OR `role` = ?',
-            $sql
+            $sql,
         );
         $this->assertSame([1, 'admin'], $bindings);
     }
@@ -74,7 +74,7 @@ class QueryBuilderSelectTest extends TestCase
 
         $this->assertSame(
             'SELECT `id`, `email` FROM `users` WHERE `active` = ? ORDER BY `created_at` DESC LIMIT 10 OFFSET 20',
-            $sql
+            $sql,
         );
         $this->assertSame([1], $bindings);
     }
@@ -93,7 +93,7 @@ class QueryBuilderSelectTest extends TestCase
 
         $this->assertSame(
             'SELECT * FROM `users` WHERE `id` = ?',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame([1], $this->connection->lastBindings);
         $this->assertSame($this->connection->selectResult, $result);
@@ -111,7 +111,7 @@ class QueryBuilderSelectTest extends TestCase
 
         $this->assertSame(
             'SELECT * FROM `users` WHERE `id` = ? LIMIT 1',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame([2], $this->connection->lastBindings);
         $this->assertSame($this->connection->selectOneResult, $result);

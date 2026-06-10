@@ -1,7 +1,7 @@
 <?php
 
-use Codemonster\Router\Router;
 use Codemonster\Router\Route;
+use Codemonster\Router\Router;
 
 if (!function_exists('router')) {
     /** @param callable|array{mixed, mixed}|null $handler */
@@ -26,12 +26,14 @@ if (!function_exists('router')) {
 }
 
 if (!function_exists('route')) {
-    /** @param callable|array{mixed, mixed} $handler */
-    function route(string $path, callable|array $handler, string $method = 'GET'): Route
+    /** @param array<string, scalar|null> $parameters */
+    function route(string $name, array $parameters = []): string
     {
-        /** @var Route $route */
-        $route = router($path, $handler, $method);
+        $router = router();
+        if (!$router instanceof Router) {
+            throw new RuntimeException('Router service is not available.');
+        }
 
-        return $route;
+        return $router->route($name, $parameters);
     }
 }

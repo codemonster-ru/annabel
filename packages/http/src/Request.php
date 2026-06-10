@@ -159,7 +159,7 @@ class Request implements ServerRequestInterface
                 $data['type'],
                 $data['tmp_name'],
                 $data['error'],
-                $data['size']
+                $data['size'],
             );
         }
 
@@ -177,7 +177,7 @@ class Request implements ServerRequestInterface
                     is_array($type) ? ($type[$key] ?? null) : null,
                     is_array($tmpName) ? ($tmpName[$key] ?? null) : null,
                     is_array($error) ? ($error[$key] ?? null) : null,
-                    is_array($size) ? ($size[$key] ?? null) : null
+                    is_array($size) ? ($size[$key] ?? null) : null,
                 );
             }
 
@@ -247,7 +247,7 @@ class Request implements ServerRequestInterface
         array $headers = [],
         string $rawBody = '',
         array $server = [],
-        array $files = []
+        array $files = [],
     ) {
         $this->method = strtoupper($method);
         $path = parse_url($uri, PHP_URL_PATH);
@@ -365,7 +365,7 @@ class Request implements ServerRequestInterface
             $headers,
             $rawBody,
             $server,
-            $_FILES
+            $_FILES,
         );
     }
 

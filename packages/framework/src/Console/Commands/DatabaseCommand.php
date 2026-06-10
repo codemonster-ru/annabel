@@ -9,8 +9,9 @@ class DatabaseCommand extends Command
 {
     public function __construct(
         protected string $signature,
-        protected string $description
-    ) {}
+        protected string $description,
+    ) {
+    }
 
     public function getName(): string
     {
@@ -42,11 +43,11 @@ class DatabaseCommand extends Command
                 return 1;
             }
 
-            return $command->handle($arguments);
+            return $command->handle(array_values($arguments));
         } catch (\Throwable $e) {
             $console->writeln($console->color(
                 "Cannot run database command [{$this->signature}]. Check database configuration and connection. Error: {$e->getMessage()}",
-                'error'
+                'error',
             ));
 
             return 1;

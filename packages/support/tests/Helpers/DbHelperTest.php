@@ -2,9 +2,9 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
-use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Database\DatabaseManager;
+use PHPUnit\Framework\TestCase;
 
 class DbHelperTest extends TestCase
 {
@@ -24,7 +24,7 @@ class DbHelperTest extends TestCase
 
         $this->assertInstanceOf(
             ConnectionInterface::class,
-            db()
+            db(),
         );
     }
 }

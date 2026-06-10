@@ -10,16 +10,16 @@ use Codemonster\Annabel\Http\Exceptions\MethodNotAllowedHttpException;
 use Codemonster\Annabel\Http\Exceptions\NotFoundHttpException;
 use Codemonster\Annabel\Http\Exceptions\UnauthorizedHttpException;
 use Codemonster\Errors\Contracts\ExceptionHandlerInterface;
-use Codemonster\Router\Route;
-use Codemonster\Router\Router;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
-use Codemonster\Annabel\Validation\ValidationException;
+use Codemonster\Router\Route;
+use Codemonster\Router\Router;
+use Codemonster\Validation\ValidationException;
+use JsonSerializable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use JsonSerializable;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -29,6 +29,10 @@ class Kernel
     protected Router $router;
     /** @var list<callable|MiddlewareInterface|string> */
     protected array $middleware = [];
+    /** @var array<string, string> */
+    protected array $middlewareAliases = [];
+    /** @var array<string, list<string|array{0: string, 1?: mixed}>> */
+    protected array $middlewareGroups = [];
 
     public function __construct(Application $app, Router $router)
     {
@@ -39,7 +43,7 @@ class Kernel
     public function handle(Request $request): Response
     {
         try {
-            $response = $this->runMiddleware($request, fn(Request $req) => $this->dispatch($req));
+            $response = $this->runMiddleware($request, fn (Request $req) => $this->dispatch($req));
 
             $response = $this->normalizeResponse($response);
 
@@ -76,7 +80,7 @@ class Kernel
             return new Response(
                 (string) $response->getBody(),
                 $response->getStatusCode(),
-                $this->normalizeHeaders($response->getHeaders())
+                $this->normalizeHeaders($response->getHeaders()),
             );
         }
 
@@ -335,9 +339,9 @@ class Kernel
             return $response;
         } catch (Throwable $inner) {
             return new Response(
-                sprintf("HTTP %d: %s", $status, $inner->getMessage()),
+                sprintf('HTTP %d: %s', $status, $inner->getMessage()),
                 $status,
-                ['Content-Type' => 'text/plain']
+                ['Content-Type' => 'text/plain'],
             );
         }
     }
@@ -359,13 +363,65 @@ class Kernel
         $this->middleware[] = $middleware;
     }
 
+    public function aliasMiddleware(string $alias, string $middleware): void
+    {
+        if ($alias === '' || $middleware === '') {
+            throw new \InvalidArgumentException('Middleware alias and class cannot be empty.');
+        }
+
+        $this->middlewareAliases[$alias] = $middleware;
+    }
+
+    /**
+     * @param list<string|array{0: string, 1?: mixed}> $middleware
+     */
+    public function middlewareGroup(string $group, array $middleware): void
+    {
+        if ($group === '') {
+            throw new \InvalidArgumentException('Middleware group name cannot be empty.');
+        }
+
+        $this->middlewareGroups[$group] = $middleware;
+    }
+
+    /** @param string|array{0: string, 1?: mixed} $middleware */
+    public function appendMiddlewareToGroup(string $group, string|array $middleware): void
+    {
+        if ($group === '') {
+            throw new \InvalidArgumentException('Middleware group name cannot be empty.');
+        }
+
+        if (is_array($middleware) && !is_string($middleware[0] ?? null)) {
+            throw new \InvalidArgumentException('Invalid middleware group entry.');
+        }
+
+        $this->middlewareGroups[$group] ??= [];
+        $this->middlewareGroups[$group][] = $middleware;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getMiddlewareAliases(): array
+    {
+        return $this->middlewareAliases;
+    }
+
+    /**
+     * @return array<string, list<string|array{0: string, 1?: mixed}>>
+     */
+    public function getMiddlewareGroups(): array
+    {
+        return $this->middlewareGroups;
+    }
+
     protected function runMiddleware(Request $request, callable $next): mixed
     {
         $pipeline = array_reduce(
             array_reverse($this->middleware),
-            fn(callable $next, callable|MiddlewareInterface|string $middleware): callable =>
-                fn(Request $req) => $this->runSingleMiddleware($middleware, $req, $next),
-            $next
+            fn (callable $next, callable|MiddlewareInterface|string $middleware): callable =>
+                fn (Request $req) => $this->runSingleMiddleware($middleware, $req, $next),
+            $next,
         );
 
         return $pipeline($request);
@@ -390,7 +446,7 @@ class Kernel
 
     protected function requestHandler(callable $next): RequestHandlerInterface
     {
-        return new class($next) implements RequestHandlerInterface {
+        return new class ($next) implements RequestHandlerInterface {
             private \Closure $next;
 
             public function __construct(callable $next)
@@ -430,11 +486,13 @@ class Kernel
     protected function runRoute(Route $route, Request $request): mixed
     {
         $handler = $route->handler;
+        $routeParameters = $route->parameters();
+        $request = $request->withAttribute('route.parameters', $routeParameters);
         $middlewareList = $this->normalizeMiddlewareList($route->getMiddleware());
 
         $kernel = $this;
 
-        $core = function (Request $req) use ($handler, $kernel) {
+        $core = function (Request $req) use ($handler, $kernel, $routeParameters) {
 
             if (is_array($handler)) {
                 $class = $handler[0] ?? null;
@@ -448,7 +506,7 @@ class Kernel
                 if (!is_object($controller)) {
                     return $kernel->handleHttpError(
                         500,
-                        sprintf('Handler controller [%s] did not resolve to an object', $class)
+                        sprintf('Handler controller [%s] did not resolve to an object', $class),
                     );
                 }
 
@@ -457,28 +515,20 @@ class Kernel
                 if (!is_callable($callable)) {
                     return $kernel->handleHttpError(
                         500,
-                        sprintf('Handler [%s@%s] not found', $class, $method)
+                        sprintf('Handler [%s@%s] not found', $class, $method),
                     );
                 }
 
                 $ref = new \ReflectionMethod($controller, $method);
 
-                if ($ref->getNumberOfParameters() === 0) {
-                    return $callable();
-                }
-
-                return $callable($req);
+                return $callable(...$kernel->routeHandlerArguments($ref, $req, $routeParameters));
             }
 
             if (is_callable($handler)) {
                 $callable = \Closure::fromCallable($handler);
                 $ref = new \ReflectionFunction($callable);
 
-                if ($ref->getNumberOfParameters() === 0) {
-                    return $callable();
-                }
-
-                return $callable($req);
+                return $callable(...$kernel->routeHandlerArguments($ref, $req, $routeParameters));
             }
 
             return $kernel->handleHttpError(500, 'Invalid route handler definition');
@@ -510,10 +560,57 @@ class Kernel
                     return $handler($req, $next, $role);
                 };
             },
-            $core
+            $core,
         );
 
         return $pipeline($request);
+    }
+
+    /**
+     * @param array<string, string> $routeParameters
+     * @return list<mixed>
+     */
+    protected function routeHandlerArguments(
+        \ReflectionFunctionAbstract $reflection,
+        Request $request,
+        array $routeParameters,
+    ): array {
+        $arguments = [];
+
+        foreach ($reflection->getParameters() as $parameter) {
+            $type = $parameter->getType();
+
+            if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                $typeName = $type->getName();
+
+                if ($typeName === Request::class || is_a(Request::class, $typeName, true)) {
+                    $arguments[] = $request;
+
+                    continue;
+                }
+
+                $arguments[] = $this->app->make($typeName);
+
+                continue;
+            }
+
+            $name = $parameter->getName();
+            if (array_key_exists($name, $routeParameters)) {
+                $arguments[] = $routeParameters[$name];
+
+                continue;
+            }
+
+            if ($parameter->isDefaultValueAvailable()) {
+                $arguments[] = $parameter->getDefaultValue();
+
+                continue;
+            }
+
+            throw new \RuntimeException("Unable to resolve route parameter [{$name}].");
+        }
+
+        return $arguments;
     }
 
     /**
@@ -526,7 +623,7 @@ class Kernel
 
         foreach ($middlewareList as $middleware) {
             if (is_string($middleware)) {
-                $normalized[] = [$middleware, null];
+                array_push($normalized, ...$this->resolveMiddlewareString($middleware));
 
                 continue;
             }
@@ -544,9 +641,9 @@ class Kernel
             if ($this->isMiddlewareGroup($middleware)) {
                 foreach ($middleware as $item) {
                     if (is_string($item)) {
-                        $normalized[] = [$item, null];
+                        array_push($normalized, ...$this->resolveMiddlewareString($item));
                     } elseif (is_array($item) && is_string($item[0] ?? null)) {
-                        $normalized[] = [$item[0], $item[1] ?? null];
+                        array_push($normalized, ...$this->resolveMiddlewareArray($item));
                     }
                 }
 
@@ -554,13 +651,64 @@ class Kernel
             }
 
             if (is_string($middleware[0] ?? null)) {
-                $normalized[] = [$middleware[0], $middleware[1] ?? null];
+                array_push($normalized, ...$this->resolveMiddlewareArray($middleware));
             } else {
                 $this->warnInvalidMiddleware($middleware);
             }
         }
 
         return $normalized;
+    }
+
+    /**
+     * @return list<array{0: string, 1: mixed}>
+     */
+    protected function resolveMiddlewareString(string $middleware): array
+    {
+        if (isset($this->middlewareGroups[$middleware])) {
+            return $this->normalizeMiddlewareList($this->middlewareGroups[$middleware]);
+        }
+
+        [$name, $argument] = $this->parseMiddlewareString($middleware);
+        $class = $this->middlewareAliases[$name] ?? $name;
+
+        return [[$class, $argument]];
+    }
+
+    /**
+     * @param array<mixed> $middleware
+     * @return list<array{0: string, 1: mixed}>
+     */
+    protected function resolveMiddlewareArray(array $middleware): array
+    {
+        $name = $middleware[0] ?? null;
+
+        if (!is_string($name)) {
+            return [];
+        }
+
+        if (count($middleware) === 1 && isset($this->middlewareGroups[$name])) {
+            return $this->normalizeMiddlewareList($this->middlewareGroups[$name]);
+        }
+
+        [$parsedName, $parsedArgument] = $this->parseMiddlewareString($name);
+        $class = $this->middlewareAliases[$parsedName] ?? $parsedName;
+
+        return [[$class, $middleware[1] ?? $parsedArgument]];
+    }
+
+    /**
+     * @return array{0: string, 1: string|null}
+     */
+    protected function parseMiddlewareString(string $middleware): array
+    {
+        if (!str_contains($middleware, ':')) {
+            return [$middleware, null];
+        }
+
+        [$name, $arguments] = explode(':', $middleware, 2);
+
+        return [$name, $arguments];
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
-use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Schema\Schema;
 
 /**

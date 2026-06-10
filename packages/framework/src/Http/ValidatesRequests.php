@@ -2,8 +2,8 @@
 
 namespace Codemonster\Annabel\Http;
 
-use Codemonster\Annabel\Validation\Validator;
 use Codemonster\Http\Request;
+use Codemonster\Validation\Validator;
 
 trait ValidatesRequests
 {

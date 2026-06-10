@@ -1,7 +1,7 @@
 <?php
 
-use Codemonster\Session\Store;
 use Codemonster\Session\Session;
+use Codemonster\Session\Store;
 
 if (!function_exists('old')) {
     function old(?string $key = null, mixed $default = null): mixed

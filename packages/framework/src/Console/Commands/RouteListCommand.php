@@ -4,9 +4,7 @@ namespace Codemonster\Annabel\Console\Commands;
 
 use Codemonster\Annabel\Console\Command;
 use Codemonster\Router\Route;
-use Codemonster\Router\RouteCollection;
 use Codemonster\Router\Router;
-use ReflectionProperty;
 
 class RouteListCommand extends Command
 {
@@ -50,7 +48,7 @@ class RouteListCommand extends Command
             str_pad('Method', 10),
             str_pad('URI', 30),
             str_pad('Handler', 30),
-            'Middleware'
+            'Middleware',
         ));
 
         foreach ($routes as $route) {
@@ -63,7 +61,7 @@ class RouteListCommand extends Command
                 str_pad($methods, 10),
                 str_pad($route->path, 30),
                 str_pad($handler, 30),
-                $middleware
+                $middleware,
             ));
         }
 
@@ -75,19 +73,7 @@ class RouteListCommand extends Command
      */
     protected function extractRoutes(Router $router): array
     {
-        $routesProperty = new ReflectionProperty($router, 'routes');
-        $routesProperty->setAccessible(true);
-
-        /** @var RouteCollection $collection */
-        $collection = $routesProperty->getValue($router);
-
-        $collectionProperty = new ReflectionProperty($collection, 'routes');
-        $collectionProperty->setAccessible(true);
-
-        /** @var Route[] $routes */
-        $routes = $collectionProperty->getValue($collection);
-
-        return $routes;
+        return $router->routes();
     }
 
     protected function describeHandler(mixed $handler): string

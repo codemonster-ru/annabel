@@ -10,6 +10,7 @@ class PublishResult
      */
     public function __construct(
         public readonly array $published,
-        public readonly array $skipped
-    ) {}
+        public readonly array $skipped,
+    ) {
+    }
 }

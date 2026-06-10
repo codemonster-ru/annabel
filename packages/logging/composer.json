@@ -1,0 +1,66 @@
+{
+    "name": "codemonster-ru/logging",
+    "description": "PSR-3 logging primitives for Annabel applications.",
+    "type": "library",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "homepage": "https://github.com/codemonster-ru/logging",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Logging\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Logging\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "logging",
+        "logger",
+        "psr-3",
+        "annabel",
+        "codemonster"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/logging/issues",
+        "source": "https://github.com/codemonster-ru/logging"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
+}

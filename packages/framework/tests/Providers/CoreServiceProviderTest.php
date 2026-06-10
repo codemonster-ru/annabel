@@ -2,17 +2,16 @@
 
 namespace Codemonster\Annabel\Tests\Providers;
 
-
 use Codemonster\Annabel\Application;
 use Codemonster\Config\Config;
 use Codemonster\Env\Env;
 use Codemonster\Router\Router;
-use Codemonster\Annabel\Validation\Validator;
+use Codemonster\Validation\Validator;
+use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Psr\SimpleCache\CacheInterface;
 use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
 
 class CoreServiceProviderTest extends TestCase
 {

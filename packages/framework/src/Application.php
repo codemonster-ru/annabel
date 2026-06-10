@@ -3,13 +3,14 @@
 namespace Codemonster\Annabel;
 
 use Codemonster\Annabel\Bootstrap\Bootstrapper;
+use Codemonster\Annabel\Bootstrap\RouteCache;
 use Codemonster\Annabel\Console\CommandRegistry;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\Http\Request;
-use Codemonster\Http\Response;
 use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Annabel\Publishing\ResourcePublisher;
+use Codemonster\Http\Request;
+use Codemonster\Http\Response;
 use Codemonster\View\View;
 
 class Application
@@ -28,7 +29,7 @@ class Application
     {
         if (self::$instance !== null) {
             throw new \RuntimeException(
-                'Application instance is already initialized. Call Application::resetInstance() to re-initialize.'
+                'Application instance is already initialized. Call Application::resetInstance() to re-initialize.',
             );
         }
 
@@ -73,7 +74,7 @@ class Application
     public static function getInstance(): Application
     {
         if (!self::$instance) {
-            throw new \RuntimeException("Application instance is not initialized");
+            throw new \RuntimeException('Application instance is not initialized');
         }
 
         return self::$instance;
@@ -163,6 +164,15 @@ class Application
     // =====================================================
     // ====================  ROUTES  =======================
     // =====================================================
+
+    public function loadCachedRoutes(string $path): void
+    {
+        if (!$this->booted) {
+            $this->bootstrap();
+        }
+
+        RouteCache::load($path, $this->getKernel()->getRouter());
+    }
 
     /**
      * @param callable|array{mixed, mixed} $handler

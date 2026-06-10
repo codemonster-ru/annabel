@@ -2,17 +2,22 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [Unreleased]
+## [1.15.0] - 2026-06-10
 
 ### Added
 
 -   Added `Codemonster\Annabel\Providers\SecurityServiceProvider` as the Annabel integration layer for `codemonster-ru/security`.
+-   Added publishable security config with CSRF defaults and throttle presets.
 -   Added configurable provider registry via `config/app.php` with `defaults`, `disabled`, `extra`, `discover`, and `path` options.
 -   Added PSR-11 container compatibility through `Psr\Container\ContainerInterface`.
 -   Added PSR-compatible container exceptions.
 -   Added PSR-15 middleware support in the HTTP kernel.
 -   Added PSR-3 logger binding and exception reporting in the HTTP kernel.
--   Added PSR-16 cache binding with array and file cache stores.
+-   Added PSR-16 cache binding with array, file, and Redis cache stores.
+-   Added Redis queue connection support.
+-   Added cache-backed scheduler locks for `withoutOverlapping()` tasks.
+-   Added `schedule:list` to inspect registered scheduled tasks.
+-   Added `config:list` to inspect configuration with secrets redacted by default.
 -   Added PSR-14 event dispatcher and listener provider bindings.
 -   Added framework validation layer with `Validator`, validation results, exceptions, and `validator()` helper.
 -   Added request validation lifecycle support with JSON 422 responses, web redirects, and flashed validation state.
@@ -26,6 +31,7 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 
 ### Changed
 
+-   Auth logout now invalidates the session by default.
 -   Declared the direct `codemonster-ru/http ^2.1` dependency required by the framework HTTP kernel.
 -   Providers are now registered first and booted after all registrations complete.
 -   The HTTP kernel now normalizes PSR response objects into Annabel responses.

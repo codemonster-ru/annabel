@@ -1,0 +1,65 @@
+{
+    "name": "codemonster-ru/events",
+    "description": "PSR-14 event dispatcher primitives for Annabel applications.",
+    "type": "library",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../*",
+            "canonical": false,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "homepage": "https://github.com/codemonster-ru/events",
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://github.com/KolesnikovKirill",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Events\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Events\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.2",
+        "psr/event-dispatcher": "^1.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "test": "phpunit --colors=always --testdox"
+    },
+    "keywords": [
+        "php",
+        "events",
+        "psr-14",
+        "annabel",
+        "codemonster"
+    ],
+    "support": {
+        "issues": "https://github.com/codemonster-ru/events/issues",
+        "source": "https://github.com/codemonster-ru/events"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    }
+}

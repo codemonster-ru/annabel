@@ -22,7 +22,17 @@
     "require": {
         "php": ">=8.2",
         "codemonster-ru/annabel": "^1.15",
-        "codemonster-ru/security": "^1.1"
+        "codemonster-ru/api-resource": "^1.0",
+        "codemonster-ru/cache": "^1.0",
+        "codemonster-ru/events": "^1.0",
+        "codemonster-ru/filesystem": "^1.0",
+        "codemonster-ru/http-client": "^1.0",
+        "codemonster-ru/logging": "^1.0",
+        "codemonster-ru/mail": "^1.0",
+        "codemonster-ru/queue": "^1.0",
+        "codemonster-ru/scheduler": "^1.0",
+        "codemonster-ru/security": "^1.1",
+        "codemonster-ru/validation": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -30,6 +40,15 @@
         }
     },
     "scripts": {
-        "start": "@php -S localhost:8000 -t public"
+        "annabel": "@php vendor/bin/annabel",
+        "start": "@php vendor/bin/annabel serve",
+        "serve": "@php vendor/bin/annabel serve",
+        "migrate": "@php vendor/bin/annabel migrate",
+        "optimize": "@php vendor/bin/annabel optimize",
+        "optimize:clear": "@php vendor/bin/annabel optimize:clear",
+        "queue": "@php vendor/bin/annabel queue:work",
+        "queue:work": "@php vendor/bin/annabel queue:work",
+        "schedule": "@php vendor/bin/annabel schedule:run",
+        "schedule:run": "@php vendor/bin/annabel schedule:run"
     }
 }

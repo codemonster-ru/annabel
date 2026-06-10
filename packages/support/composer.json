@@ -24,11 +24,11 @@
     ],
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/http": "^2.1@dev",
+        "codemonster-ru/http": "^2.1",
         "codemonster-ru/view": "^2.0",
         "codemonster-ru/config": "^2.0",
         "codemonster-ru/env": "^2.0",
-        "codemonster-ru/router": "^2.0",
+        "codemonster-ru/router": "^2.5",
         "codemonster-ru/session": "^2.0",
         "codemonster-ru/dumper": "^1.0",
         "codemonster-ru/database": "^2.0",
@@ -72,7 +72,7 @@
         "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "homepage": "https://github.com/codemonster-ru/support",
     "keywords": [

@@ -6,7 +6,9 @@ use RuntimeException;
 
 class ResourcePublisher
 {
-    public function __construct(protected string $basePath) {}
+    public function __construct(protected string $basePath)
+    {
+    }
 
     /**
      * @param list<array{provider: class-string, source: string, destination: string, tags: list<string>}> $resources
@@ -19,7 +21,7 @@ class ResourcePublisher
         foreach ($resources as $resource) {
             if (is_link($resource['source'])) {
                 throw new RuntimeException(
-                    "Publish source [{$resource['source']}] cannot be a symbolic link."
+                    "Publish source [{$resource['source']}] cannot be a symbolic link.",
                 );
             }
 
@@ -64,7 +66,7 @@ class ResourcePublisher
 
         if ($destination !== $base && !str_starts_with($destination, $base . DIRECTORY_SEPARATOR)) {
             throw new RuntimeException(
-                "Publish destination [$destination] must be inside application base path [$base]."
+                "Publish destination [$destination] must be inside application base path [$base].",
             );
         }
 
@@ -82,7 +84,7 @@ class ResourcePublisher
         string $destination,
         bool $force,
         array &$published,
-        array &$skipped
+        array &$skipped,
     ): void {
         if (is_file($destination) && !$force) {
             $skipped[] = $destination;
@@ -109,13 +111,13 @@ class ResourcePublisher
         string $destination,
         bool $force,
         array &$published,
-        array &$skipped
+        array &$skipped,
     ): void {
         $this->ensureDirectory($destination);
 
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+            \RecursiveIteratorIterator::SELF_FIRST,
         );
 
         foreach ($iterator as $item) {
@@ -163,7 +165,7 @@ class ResourcePublisher
 
             if (is_link($current)) {
                 throw new RuntimeException(
-                    "Publish destination [$destination] contains symbolic link [$current]."
+                    "Publish destination [$destination] contains symbolic link [$current].",
                 );
             }
         }

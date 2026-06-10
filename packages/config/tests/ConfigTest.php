@@ -61,4 +61,17 @@ class ConfigTest extends TestCase
         $this->assertArrayHasKey('database', $all);
         $this->assertEquals('Codemonster', $all['app']['name']);
     }
+
+    public function test_can_load_cached_config(): void
+    {
+        $cache = $this->configPath . '/cached.php';
+        file_put_contents($cache, "<?php\nreturn ['app' => ['name' => 'Cached']];\n");
+
+        Config::loadCached($cache);
+
+        $this->assertSame('Cached', Config::get('app.name'));
+        $this->assertNull(Config::get('database.host'));
+
+        unlink($cache);
+    }
 }

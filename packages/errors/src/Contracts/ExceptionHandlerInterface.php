@@ -2,8 +2,8 @@
 
 namespace Codemonster\Errors\Contracts;
 
-use Throwable;
 use Codemonster\Http\Response;
+use Throwable;
 
 interface ExceptionHandlerInterface
 {

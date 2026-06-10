@@ -22,7 +22,7 @@ class SmartExceptionHandlerTest extends TestCase
         $response = $handler->handle(new RuntimeException('Debug error'));
 
         self::assertInstanceOf(Response::class, $response);
-        self::assertStringContainsString('errors.debug', (string)$response);
+        self::assertStringContainsString('errors.debug', (string) $response);
         self::assertSame(500, $response->getStatusCode());
     }
 
@@ -31,13 +31,13 @@ class SmartExceptionHandlerTest extends TestCase
         $handler = new SmartExceptionHandler($this->makeRenderer(), false);
         $response = $handler->handle(new RuntimeException('Generic error'));
 
-        self::assertStringContainsString('errors.500', (string)$response);
+        self::assertStringContainsString('errors.500', (string) $response);
         self::assertSame(500, $response->getStatusCode());
     }
 
     public function testRenders404TemplateForNotFoundException(): void
     {
-        $exception = new class('Page missing', 404) extends RuntimeException {
+        $exception = new class ('Page missing', 404) extends RuntimeException {
             public function getStatusCode(): int
             {
                 return 404;
@@ -47,7 +47,7 @@ class SmartExceptionHandlerTest extends TestCase
         $handler = new SmartExceptionHandler($this->makeRenderer(), false);
         $response = $handler->handle($exception);
 
-        self::assertStringContainsString('errors.404', (string)$response);
+        self::assertStringContainsString('errors.404', (string) $response);
         self::assertSame(404, $response->getStatusCode());
     }
 
@@ -63,10 +63,10 @@ class SmartExceptionHandlerTest extends TestCase
         try {
             file_put_contents(
                 $templatePath,
-                "<?php echo 'status-template-' . (int) (\$status ?? 0);"
+                "<?php echo 'status-template-' . (int) (\$status ?? 0);",
             );
 
-            $exception = new class('Page missing', 404) extends RuntimeException {
+            $exception = new class ('Page missing', 404) extends RuntimeException {
                 public function getStatusCode(): int
                 {
                     return 404;
@@ -77,7 +77,7 @@ class SmartExceptionHandlerTest extends TestCase
             $response = $handler->handle($exception);
 
             self::assertSame(404, $response->getStatusCode());
-            self::assertStringContainsString('status-template-404', (string)$response);
+            self::assertStringContainsString('status-template-404', (string) $response);
         } finally {
             if (is_file($templatePath)) {
                 unlink($templatePath);

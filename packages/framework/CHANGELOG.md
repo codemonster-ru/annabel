@@ -2,6 +2,13 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [1.15.1] - 2026-06-10
+
+### Changed
+
+-   Made Vite manifest strictness production-only by default so local skeleton installs can render without built frontend assets.
+-   Raised minimum framework dependencies to `codemonster-ru/config ^2.1`, `codemonster-ru/database ^2.1`, and `codemonster-ru/router ^2.6`.
+
 ## [1.15.0] - 2026-06-10
 
 ### Added

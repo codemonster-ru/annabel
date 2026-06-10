@@ -43,7 +43,7 @@ class DumperTest extends TestCase
     {
         $called = false;
 
-        $mock = new class extends Dumper {
+        $mock = new class () extends Dumper {
             protected static function terminate(): never
             {
                 throw new \RuntimeException('terminate called');

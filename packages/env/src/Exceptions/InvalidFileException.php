@@ -2,4 +2,6 @@
 
 namespace Codemonster\Env\Exceptions;
 
-class InvalidFileException extends \InvalidArgumentException {}
+class InvalidFileException extends \InvalidArgumentException
+{
+}

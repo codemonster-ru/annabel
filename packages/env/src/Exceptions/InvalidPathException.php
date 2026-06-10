@@ -2,4 +2,6 @@
 
 namespace Codemonster\Env\Exceptions;
 
-class InvalidPathException extends \RuntimeException {}
+class InvalidPathException extends \RuntimeException
+{
+}

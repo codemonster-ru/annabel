@@ -38,7 +38,7 @@ class EnvTest extends TestCase
                 'DOUBLE_QUOTED_EXPAND',
                 'SINGLE_QUOTED_EXPAND',
                 'MULTI_EXPAND',
-                'RELOAD_VALUE'
+                'RELOAD_VALUE',
             ] as $key
         ) {
             unset($_ENV[$key], $_SERVER[$key]);
@@ -253,7 +253,7 @@ class EnvTest extends TestCase
     {
         $path = tempnam(sys_get_temp_dir(), 'env');
 
-        $parser = new class implements \Codemonster\Env\ParserInterface {
+        $parser = new class () implements \Codemonster\Env\ParserInterface {
             public function parseStringRaw(string $content, ?string $encoding = null): array
             {
                 return [['CUSTOM', 'ok', []]];
@@ -289,7 +289,7 @@ class EnvTest extends TestCase
     {
         $path = tempnam(sys_get_temp_dir(), 'env');
 
-        $parser = new class implements \Codemonster\Env\ParserInterface {
+        $parser = new class () implements \Codemonster\Env\ParserInterface {
             public function parseStringRaw(string $content, ?string $encoding = null): array
             {
                 return [['CUSTOM_DEFAULT', 'yes', []]];
@@ -344,7 +344,7 @@ class EnvTest extends TestCase
     {
         $this->assertSame(
             'https://example.test/one/https://example.test/two',
-            Env::get('MULTI_EXPAND')
+            Env::get('MULTI_EXPAND'),
         );
     }
 
@@ -618,7 +618,7 @@ class EnvTest extends TestCase
     public function testEnvParseStrictThrowsOnDuplicate(): void
     {
         $this->expectException(
-            \Codemonster\Env\Exceptions\InvalidFileException::class
+            \Codemonster\Env\Exceptions\InvalidFileException::class,
         );
 
         Env::parse("DUP=one\nDUP=two\n", null, true);
@@ -655,7 +655,7 @@ class EnvTest extends TestCase
     public function testEnvParseToArrayStrictThrowsOnDuplicate(): void
     {
         $this->expectException(
-            \Codemonster\Env\Exceptions\InvalidFileException::class
+            \Codemonster\Env\Exceptions\InvalidFileException::class,
         );
 
         Env::parseToArray("DUP=one\nDUP=two\n", null, true);
@@ -804,7 +804,6 @@ class EnvTest extends TestCase
         try {
             Env::setDefaultParser($parser);
 
-
             $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
             Env::loadString($badName);
         } finally {
@@ -931,7 +930,7 @@ class EnvTest extends TestCase
         $pattern = $dir . DIRECTORY_SEPARATOR . 'env_no_match_' . uniqid('', true) . '*';
 
         $this->expectException(
-            \Codemonster\Env\Exceptions\InvalidPathException::class
+            \Codemonster\Env\Exceptions\InvalidPathException::class,
         );
 
         Env::loadFiles([$pattern], null, null, false, false);

@@ -37,19 +37,30 @@ jobs:
             matrix:
                 php: [8.2, 8.3, 8.4]
                 package:
+                    - packages/api-resource
                     - packages/framework
                     - packages/support
                     - packages/http
+                    - packages/http-client
+                    - packages/logging
+                    - packages/mail
+                    - packages/queue
+                    - packages/scheduler
                     - packages/router
                     - packages/view
                     - packages/view-php
                     - packages/view-ssr
                     - packages/razor
+                    - packages/cache
                     - packages/config
                     - packages/env
+                    - packages/events
                     - packages/database
                     - packages/session
+                    - packages/auth
                     - packages/errors
+                    - packages/filesystem
+                    - packages/validation
                     - packages/security
                     - packages/dumper
                     - packages/ssr-bridge

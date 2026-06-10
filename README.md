@@ -6,18 +6,29 @@ Annabel is the official monorepo for the Codemonster PHP framework ecosystem.
 
 ```text
 packages/
+  api-resource/ codemonster-ru/api-resource
   framework/   codemonster-ru/annabel
   support/     codemonster-ru/support
   http/        codemonster-ru/http
+  http-client/ codemonster-ru/http-client
   router/      codemonster-ru/router
   view/        codemonster-ru/view
   view-php/    codemonster-ru/view-php
   view-ssr/    codemonster-ru/view-ssr
   razor/       codemonster-ru/razor
+  cache/       codemonster-ru/cache
   config/      codemonster-ru/config
   env/         codemonster-ru/env
+  events/      codemonster-ru/events
   database/    codemonster-ru/database
   session/     codemonster-ru/session
+  auth/        codemonster-ru/auth
+  filesystem/  codemonster-ru/filesystem
+  validation/  codemonster-ru/validation
+  logging/     codemonster-ru/logging
+  mail/        codemonster-ru/mail
+  queue/       codemonster-ru/queue
+  scheduler/   codemonster-ru/scheduler
   errors/      codemonster-ru/errors
   security/    codemonster-ru/security
   dumper/      codemonster-ru/dumper

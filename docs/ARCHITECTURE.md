@@ -7,9 +7,9 @@ usable without depending on `codemonster-ru/annabel`.
 ## Package Boundaries
 
 - `codemonster-ru/annabel` is the composition layer: application lifecycle,
-  container, providers, kernel, console, publishing, cache, validation, logging.
-- Domain packages (`http`, `router`, `view`, `session`, `security`, `database`,
-  `env`, `config`, `errors`, `dumper`, `razor`, `ssr-bridge`) own their runtime
+  container, providers, kernel, console, and publishing.
+- Domain packages (`api-resource`, `http`, `http-client`, `router`, `view`, `session`, `auth`, `security`, `filesystem`,
+  `cache`, `events`, `validation`, `logging`, `mail`, `queue`, `scheduler`, `database`, `env`, `config`, `errors`, `dumper`, `razor`, `ssr-bridge`) own their runtime
   behavior and must not depend on the framework package.
 - `codemonster-ru/support` contains convenience helpers. Helpers may resolve
   framework services, but package core code should prefer explicit dependencies.
@@ -30,10 +30,11 @@ their own configured repositories, normally Packagist.
 
 ## Security Boundary
 
-`security` is a framework-agnostic package. It exposes CSRF and rate-limiting
-services/middleware, while Annabel provides the framework service provider that
-binds those services into an application. This keeps the dependency direction
-honest: Annabel uses security; security does not know about Annabel.
+`auth` and `security` are framework-agnostic packages. Auth exposes guards,
+providers, hashing, and middleware contracts. Security exposes CSRF and
+rate-limiting services/middleware. Annabel may provide service providers that
+bind those services into an application. This keeps the dependency direction
+honest: Annabel uses auth/security; auth/security do not know about Annabel.
 
 ## Public API Policy
 

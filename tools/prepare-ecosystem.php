@@ -72,6 +72,7 @@ function removePath(string $path): void
 
     if (!is_dir($path)) {
         unlink($path);
+
         return;
     }
 

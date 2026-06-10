@@ -247,10 +247,34 @@ function parseClassConstants(array $tokens, int $start, int $end): array
 function parseClassProperties(array $tokens, int $start, int $end): array
 {
     $properties = [];
-    for ($index = $start, $depth = 0; $index < $end; $index++) {
+    for ($index = $start, $depth = 0, $parenDepth = 0, $bracketDepth = 0; $index < $end; $index++) {
         $token = $tokens[$index];
         $depth += depthDelta($token);
-        if ($depth !== 0 || !is_array($token) || $token[0] !== T_VARIABLE) {
+
+        if ($token === '(') {
+            $parenDepth++;
+            continue;
+        }
+        if ($token === ')') {
+            $parenDepth--;
+            continue;
+        }
+        if ($token === '[') {
+            $bracketDepth++;
+            continue;
+        }
+        if ($token === ']') {
+            $bracketDepth--;
+            continue;
+        }
+
+        if (
+            $depth !== 0
+            || $parenDepth !== 0
+            || $bracketDepth !== 0
+            || !is_array($token)
+            || $token[0] !== T_VARIABLE
+        ) {
             continue;
         }
 

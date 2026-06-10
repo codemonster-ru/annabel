@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.15.1] - 2026-06-10
+
+### Changed
+
+-   Added explicit Vite manifest strictness config so local installs can render before frontend assets are built.
+
 ## [Unreleased]
 
 ### Changed

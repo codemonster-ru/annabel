@@ -6,5 +6,6 @@ return [
         'manifest' => 'public/build/manifest.json',
         'build_url' => '/build',
         'dev_server' => env('VITE_DEV_SERVER', 'http://localhost:5173'),
+        'strict' => env('APP_ENV', 'production') === 'production',
     ],
 ];

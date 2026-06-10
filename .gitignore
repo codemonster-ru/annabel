@@ -37,14 +37,16 @@ phpunix.xml
 .php-cs-fixer.cache
 
 # Build / runtime output
-build/
-dist/
-coverage/
-storage/
-var/
+/build/
+/dist/
+/coverage/
+/storage/
+/var/
 **/bootstrap/cache/packages.php
 **/build/
 **/dist/
 **/coverage/
-**/storage/
+packages/*/storage/
+packages/*/tests/storage/
+skeleton/*/storage/
 **/var/

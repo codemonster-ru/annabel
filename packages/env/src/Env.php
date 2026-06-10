@@ -28,7 +28,7 @@ class Env
         string $path,
         ?string $encoding = null,
         ?int $maxBytes = null,
-        bool $strictResolve = false
+        bool $strictResolve = false,
     ): void {
         self::getDefaultLoaderInternal()->loadFile($path, $encoding, $maxBytes, $strictResolve);
     }
@@ -37,7 +37,7 @@ class Env
         string $content,
         ?string $encoding = null,
         bool $strictResolve = false,
-        ?int $maxBytes = null
+        ?int $maxBytes = null,
     ): void {
         self::getDefaultLoaderInternal()->loadString($content, $encoding, $strictResolve, $maxBytes);
     }
@@ -46,7 +46,7 @@ class Env
         string $path,
         ?string $encoding = null,
         ?int $maxBytes = null,
-        bool $strictResolve = false
+        bool $strictResolve = false,
     ): bool {
         return self::getDefaultLoaderInternal()->safeLoadFile($path, $encoding, $maxBytes, $strictResolve);
     }
@@ -55,13 +55,13 @@ class Env
         string $content,
         ?string $encoding = null,
         bool $strictResolve = false,
-        ?int $maxBytes = null
+        ?int $maxBytes = null,
     ): bool {
         return self::getDefaultLoaderInternal()->safeLoadString(
             $content,
             $encoding,
             $strictResolve,
-            $maxBytes
+            $maxBytes,
         );
     }
 
@@ -72,7 +72,7 @@ class Env
         ?int $maxBytes = null,
         bool $strictResolve = false,
         bool $shortCircuit = true,
-        ?int $globFlags = null
+        ?int $globFlags = null,
     ): void {
         self::getDefaultLoaderInternal()->loadFiles(
             $paths,
@@ -80,7 +80,7 @@ class Env
             $maxBytes,
             $strictResolve,
             $shortCircuit,
-            $globFlags
+            $globFlags,
         );
     }
 
@@ -91,7 +91,7 @@ class Env
         ?int $maxBytes = null,
         bool $strictResolve = false,
         bool $shortCircuit = true,
-        ?int $globFlags = null
+        ?int $globFlags = null,
     ): bool {
         return self::getDefaultLoaderInternal()->safeLoadFiles(
             $paths,
@@ -99,7 +99,7 @@ class Env
             $maxBytes,
             $strictResolve,
             $shortCircuit,
-            $globFlags
+            $globFlags,
         );
     }
 
@@ -141,7 +141,7 @@ class Env
     public static function parse(
         string $content,
         ?string $encoding = null,
-        bool $strict = false
+        bool $strict = false,
     ): array {
         $entries = EnvParser::parseStringRaw($content, $encoding);
 
@@ -166,7 +166,7 @@ class Env
     public static function parseToArray(
         string $content,
         ?string $encoding = null,
-        bool $strict = false
+        bool $strict = false,
     ): array {
         $entries = EnvParser::parseStringRaw($content, $encoding);
         $parsed = [];

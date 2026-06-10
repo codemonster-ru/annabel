@@ -22,7 +22,7 @@ class EnvLoader implements LoaderInterface
         string $path,
         ?string $encoding = null,
         ?int $maxBytes = null,
-        bool $strictResolve = false
+        bool $strictResolve = false,
     ): void {
         if (!is_file($path)) {
             throw new Exceptions\InvalidPathException("Env file not found: $path");
@@ -39,7 +39,7 @@ class EnvLoader implements LoaderInterface
         string $path,
         ?string $encoding = null,
         ?int $maxBytes = null,
-        bool $strictResolve = false
+        bool $strictResolve = false,
     ): bool {
         if (!is_file($path)) {
             return false;
@@ -58,7 +58,7 @@ class EnvLoader implements LoaderInterface
         string $content,
         ?string $encoding = null,
         bool $strictResolve = false,
-        ?int $maxBytes = null
+        ?int $maxBytes = null,
     ): void {
         if ($maxBytes !== null) {
             if ($maxBytes < 0) {
@@ -69,7 +69,7 @@ class EnvLoader implements LoaderInterface
 
             if ($length > $maxBytes) {
                 throw new Exceptions\InvalidFileException(
-                    "Env content size exceeds {$maxBytes} bytes."
+                    "Env content size exceeds {$maxBytes} bytes.",
                 );
             }
         }
@@ -83,7 +83,7 @@ class EnvLoader implements LoaderInterface
         string $content,
         ?string $encoding = null,
         bool $strictResolve = false,
-        ?int $maxBytes = null
+        ?int $maxBytes = null,
     ): bool {
         try {
             $this->loadString($content, $encoding, $strictResolve, $maxBytes);
@@ -101,7 +101,7 @@ class EnvLoader implements LoaderInterface
         ?int $maxBytes = null,
         bool $strictResolve = false,
         bool $shortCircuit = true,
-        ?int $globFlags = null
+        ?int $globFlags = null,
     ): void {
         $loadedAny = false;
 
@@ -128,7 +128,7 @@ class EnvLoader implements LoaderInterface
                         $maxBytes,
                         $strictResolve,
                         $shortCircuit,
-                        $globFlags
+                        $globFlags,
                     );
 
                     $loadedAny = true;
@@ -170,7 +170,7 @@ class EnvLoader implements LoaderInterface
         ?int $maxBytes = null,
         bool $strictResolve = false,
         bool $shortCircuit = true,
-        ?int $globFlags = null
+        ?int $globFlags = null,
     ): bool {
         try {
             $this->loadFiles($paths, $encoding, $maxBytes, $strictResolve, $shortCircuit, $globFlags);
@@ -220,7 +220,7 @@ class EnvLoader implements LoaderInterface
                     $missing = implode(', ', $unique);
 
                     throw new Exceptions\InvalidFileException(
-                        "Unresolved variable reference(s) [{$missing}] in value for {$name}."
+                        "Unresolved variable reference(s) [{$missing}] in value for {$name}.",
                     );
                 }
             } else {
@@ -251,7 +251,7 @@ class EnvLoader implements LoaderInterface
 
             if (is_int($size) && $size > $maxBytes) {
                 throw new Exceptions\InvalidFileException(
-                    "Env file size exceeds {$maxBytes} bytes: {$path}"
+                    "Env file size exceeds {$maxBytes} bytes: {$path}",
                 );
             }
         }
@@ -283,7 +283,7 @@ class EnvLoader implements LoaderInterface
                 fclose($handle);
 
                 throw new Exceptions\InvalidFileException(
-                    "Env file size exceeds {$maxBytes} bytes: {$path}"
+                    "Env file size exceeds {$maxBytes} bytes: {$path}",
                 );
             }
         }

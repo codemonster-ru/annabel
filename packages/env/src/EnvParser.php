@@ -29,7 +29,9 @@ class EnvParser
         '([^(\s\\\\\'"\\#\\$)]|\\(|\\)){1,1000}',
     ];
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     /** @return list<array{string, string|null, list<int>}> */
     public static function parseContent(string $content): array
@@ -53,7 +55,7 @@ class EnvParser
     public static function parseStringRawWithOptions(
         string $content,
         ?string $encoding = null,
-        bool $asciiNames = false
+        bool $asciiNames = false,
     ): array {
         $normalized = self::normalizeEncoding($content, $encoding, false);
 
@@ -86,7 +88,7 @@ class EnvParser
 
         if (!is_string($converted)) {
             throw new Exceptions\InvalidEncodingException(
-                sprintf('Conversion from encoding [%s] failed.', $encoding ?? 'NULL')
+                sprintf('Conversion from encoding [%s] failed.', $encoding ?? 'NULL'),
             );
         }
 
@@ -126,7 +128,6 @@ class EnvParser
 
         return [$value, $unresolved];
     }
-
 
     /**
      * @param list<string> $lines
@@ -365,7 +366,7 @@ class EnvParser
             if (!preg_match($regex, $input, $matches, 0, $offset)) {
                 self::raiseParseError(
                     sprintf('an unexpected character [%s]', $input[$offset]),
-                    $input
+                    $input,
                 );
             }
 
@@ -437,6 +438,7 @@ class EnvParser
                 }
 
                 self::raiseParseError('an unexpected escape sequence', $value);
+                // no break
             case self::STATE_SPACE:
                 if ($token === '#') {
                     return ['', false, self::STATE_COMMENT];
@@ -457,7 +459,7 @@ class EnvParser
     {
         $message = sprintf(
             'Failed to parse dotenv file. %s',
-            self::formatParseError($cause, $subject)
+            self::formatParseError($cause, $subject),
         );
 
         throw new Exceptions\InvalidFileException($message);

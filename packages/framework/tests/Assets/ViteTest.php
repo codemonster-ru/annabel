@@ -51,6 +51,23 @@ class ViteTest extends TestCase
         self::assertStringContainsString('http://localhost:5173/resources/js/app.js', $html);
     }
 
+    public function test_render_returns_empty_string_when_manifest_is_missing_and_strict_mode_is_disabled(): void
+    {
+        $html = (new Vite($this->directory(), ['strict' => false]))->render('resources/js/app.js');
+
+        self::assertSame('', $html);
+    }
+
+    public function test_render_throws_when_manifest_is_missing_and_strict_mode_is_enabled(): void
+    {
+        $basePath = $this->directory();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Vite manifest not found at [' . $basePath . '/public/build/manifest.json].');
+
+        (new Vite($basePath, ['strict' => true]))->render('resources/js/app.js');
+    }
+
     private function directory(?string $path = null): string
     {
         $path ??= sys_get_temp_dir() . '/annabel-vite-' . bin2hex(random_bytes(6));

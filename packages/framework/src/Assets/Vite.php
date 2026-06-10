@@ -67,6 +67,14 @@ class Vite
      */
     private function renderBuild(array $entries): string
     {
+        if (!$this->hasManifest()) {
+            if ($this->strictManifest()) {
+                throw new \RuntimeException("Vite manifest not found at [{$this->manifestPath()}].");
+            }
+
+            return '';
+        }
+
         $manifest = $this->manifest();
         $tags = [];
 
@@ -127,6 +135,28 @@ class Vite
         }
 
         return $normalized;
+    }
+
+    private function hasManifest(): bool
+    {
+        return is_file($this->manifestPath());
+    }
+
+    private function strictManifest(): bool
+    {
+        $strict = $this->config['strict'] ?? null;
+
+        if (is_bool($strict)) {
+            return $strict;
+        }
+
+        if (is_string($strict)) {
+            return in_array(strtolower($strict), ['1', 'true', 'yes', 'on'], true);
+        }
+
+        $environment = getenv('APP_ENV');
+
+        return $environment === false || $environment === '' || $environment === 'production';
     }
 
     private function manifestPath(): string

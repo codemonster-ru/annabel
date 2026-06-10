@@ -10,7 +10,7 @@ namespace {
 
     class TestApp
     {
-        private static ?TestConfigRepository $config = null;
+        private static ?\Codemonster\Config\Config $config = null;
 
         public static function make(?string $abstract): mixed
         {
@@ -19,62 +19,17 @@ namespace {
             }
 
             if (!self::$config) {
-                self::$config = new TestConfigRepository();
+                self::$config = new \Codemonster\Config\Config();
             }
 
             return self::$config;
-        }
-    }
-
-    class TestConfigRepository
-    {
-        private static array $data = [];
-
-        public function all(): array
-        {
-            return self::$data;
-        }
-
-        public function set(string $key, mixed $value): void
-        {
-            $parts = explode('.', $key);
-            $cursor = &self::$data;
-
-            foreach ($parts as $part) {
-                if (!isset($cursor[$part]) || !is_array($cursor[$part])) {
-                    $cursor[$part] = [];
-                }
-
-                $cursor = &$cursor[$part];
-            }
-
-            $cursor = $value;
-        }
-
-        public function get(string $key, mixed $default = null): mixed
-        {
-            $value = self::$data;
-
-            foreach (explode('.', $key) as $part) {
-                if (!is_array($value) || !array_key_exists($part, $value)) {
-                    return $default;
-                }
-
-                $value = $value[$part];
-            }
-
-            return $value;
-        }
-
-        public static function reset(): void
-        {
-            self::$data = [];
         }
     }
 }
 
 namespace Codemonster\Security\Tests\RateLimiting {
 
+    use Codemonster\Config\Config;
     use Codemonster\Http\Request;
     use Codemonster\Http\Response;
     use Codemonster\Security\RateLimiting\RateLimiter;
@@ -170,7 +125,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
 
             $this->assertSame([5, 60], $middleware->publicResolveLimits('login'));
 
-            \TestConfigRepository::reset();
+            Config::reset();
         }
 
         public function testLoginPresetAppliesAccountLimit(): void
@@ -197,7 +152,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $this->assertSame(200, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
             $this->assertSame(429, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
 
-            \TestConfigRepository::reset();
+            Config::reset();
         }
 
         public function testAddsRateLimitHeaders(): void
@@ -213,7 +168,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $this->assertArrayHasKey('RateLimit-Limit', $headers);
             $this->assertArrayHasKey('RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Reset', $headers);
-            $this->assertIsString($headers['RateLimit-Reset']);
+            $this->assertIsString($headers['RateLimit-Reset'][0] ?? null);
         }
 
         public function testAddsRateLimitHeadersOnThrottleResponse(): void
@@ -233,7 +188,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $this->assertArrayHasKey('RateLimit-Limit', $headers);
             $this->assertArrayHasKey('RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Reset', $headers);
-            $this->assertIsString($headers['RateLimit-Reset']);
+            $this->assertIsString($headers['RateLimit-Reset'][0] ?? null);
         }
     }
 

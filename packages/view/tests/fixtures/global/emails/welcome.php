@@ -1,1 +1,3 @@
-<?php echo "Welcome, <?= htmlspecialchars(\$user ?? 'User', ENT_QUOTES) ?>";
+<?php
+
+echo "Welcome, <?= htmlspecialchars(\$user ?? 'User', ENT_QUOTES) ?>";

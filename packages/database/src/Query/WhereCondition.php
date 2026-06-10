@@ -15,12 +15,12 @@ class WhereCondition
         string $operator,
         mixed $value,
         string $boolean = 'AND',
-        bool $isList = false
+        bool $isList = false,
     ) {
-        $this->column   = $column;
+        $this->column = $column;
         $this->operator = $operator;
-        $this->value    = $value;
-        $this->boolean  = strtoupper($boolean);
-        $this->isList   = $isList;
+        $this->value = $value;
+        $this->boolean = strtoupper($boolean);
+        $this->isList = $isList;
     }
 }

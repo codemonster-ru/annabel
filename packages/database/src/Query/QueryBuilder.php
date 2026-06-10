@@ -135,7 +135,7 @@ class QueryBuilder implements QueryBuilderInterface
             $column,
             $operator,
             $value,
-            strtoupper($boolean)
+            strtoupper($boolean),
         );
 
         $this->where->addCondition($condition);
@@ -159,7 +159,7 @@ class QueryBuilder implements QueryBuilderInterface
             'IN',
             $values,
             $boolean,
-            isList: true
+            isList: true,
         );
 
         $this->where->addCondition($condition);
@@ -183,7 +183,7 @@ class QueryBuilder implements QueryBuilderInterface
             'NOT IN',
             $values,
             $boolean,
-            isList: true
+            isList: true,
         );
 
         $this->where->addCondition($condition);
@@ -219,7 +219,7 @@ class QueryBuilder implements QueryBuilderInterface
 
         if (!in_array($behavior, $allowed, true)) {
             throw new \InvalidArgumentException(
-                sprintf('Invalid empty IN behavior "%s".', $behavior)
+                sprintf('Invalid empty IN behavior "%s".', $behavior),
             );
         }
     }
@@ -230,7 +230,7 @@ class QueryBuilder implements QueryBuilderInterface
             self::EMPTY_CONDITION_NONE => $this->whereRaw('0 = 1', [], $boolean),
             self::EMPTY_CONDITION_ALL => $this->whereRaw('1 = 1', [], $boolean),
             self::EMPTY_CONDITION_EXCEPTION => throw new \InvalidArgumentException(
-                'Empty values are not allowed for whereIn/whereNotIn.'
+                'Empty values are not allowed for whereIn/whereNotIn.',
             ),
             default => $this->whereRaw('0 = 1', [], $boolean),
         };
@@ -247,7 +247,7 @@ class QueryBuilder implements QueryBuilderInterface
             $column,
             'IS NULL',
             value: null,
-            boolean: $boolean
+            boolean: $boolean,
         );
 
         $this->where->addCondition($condition);
@@ -266,7 +266,7 @@ class QueryBuilder implements QueryBuilderInterface
             $column,
             'IS NOT NULL',
             value: null,
-            boolean: $boolean
+            boolean: $boolean,
         );
 
         $this->where->addCondition($condition);
@@ -285,7 +285,7 @@ class QueryBuilder implements QueryBuilderInterface
             $column,
             'BETWEEN',
             $range,
-            $boolean
+            $boolean,
         );
 
         $this->where->addCondition($condition);
@@ -304,7 +304,7 @@ class QueryBuilder implements QueryBuilderInterface
             $column,
             'NOT BETWEEN',
             $range,
-            $boolean
+            $boolean,
         );
 
         $this->where->addCondition($condition);
@@ -323,7 +323,7 @@ class QueryBuilder implements QueryBuilderInterface
             column: '',
             operator: 'RAW',
             value: [$expression, $bindings],
-            boolean: $boolean
+            boolean: $boolean,
         );
 
         $this->where->addCondition($condition);
@@ -396,7 +396,7 @@ class QueryBuilder implements QueryBuilderInterface
                         '%s %s %s',
                         $this->wrapColumn($cond['first']),
                         $cond['operator'],
-                        $this->wrapColumn($cond['second'])
+                        $this->wrapColumn($cond['second']),
                     );
                 }
 
@@ -404,7 +404,7 @@ class QueryBuilder implements QueryBuilderInterface
                     $conditions[] = sprintf(
                         '%s %s ?',
                         $this->wrapColumn($cond['column']),
-                        $cond['operator']
+                        $cond['operator'],
                     );
 
                     $bindings[] = $cond['value'];
@@ -480,7 +480,7 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->orders[] = [
             'raw' => $expression,
-            'type' => 'raw'
+            'type' => 'raw',
         ];
 
         return $this;
@@ -574,7 +574,7 @@ class QueryBuilder implements QueryBuilderInterface
             'INSERT INTO %s (%s) VALUES (%s)',
             $this->wrapTable($this->table),
             $wrapped,
-            $placeholders
+            $placeholders,
         );
 
         return [$sql, array_values($values)];
@@ -701,7 +701,7 @@ class QueryBuilder implements QueryBuilderInterface
                         '%s%s %s ?',
                         $boolean,
                         $this->wrapColumn($having['column']),
-                        $having['operator']
+                        $having['operator'],
                     );
                 }
             }
@@ -802,7 +802,7 @@ class QueryBuilder implements QueryBuilderInterface
                     $sqlParts[] = $boolean . sprintf(
                         '%s %s',
                         $this->wrapColumn($cond->column),
-                        $cond->operator
+                        $cond->operator,
                     );
 
                     continue;
@@ -821,7 +821,7 @@ class QueryBuilder implements QueryBuilderInterface
                     $sqlParts[] = $boolean . sprintf(
                         '%s %s ? AND ?',
                         $this->wrapColumn($cond->column),
-                        $cond->operator
+                        $cond->operator,
                     );
 
                     continue;
@@ -843,7 +843,7 @@ class QueryBuilder implements QueryBuilderInterface
                         '%s %s (%s)',
                         $this->wrapColumn($cond->column),
                         $cond->operator,
-                        $placeholders
+                        $placeholders,
                     );
 
                     continue;
@@ -855,7 +855,7 @@ class QueryBuilder implements QueryBuilderInterface
                 $sqlParts[] = $boolean . sprintf(
                     '%s %s ?',
                     $this->wrapColumn($cond->column),
-                    $cond->operator
+                    $cond->operator,
                 );
             }
 
@@ -883,7 +883,7 @@ class QueryBuilder implements QueryBuilderInterface
         $clone = clone $this;
 
         $clone->columns = [new RawExpression(
-            sprintf('%s(%s) as %s', $function, $clone->wrapColumn($column), $alias)
+            sprintf('%s(%s) as %s', $function, $clone->wrapColumn($column), $alias),
         )];
 
         $clone->orders = [];

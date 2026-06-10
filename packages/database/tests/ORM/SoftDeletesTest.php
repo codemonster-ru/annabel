@@ -16,7 +16,8 @@ class SoftDeletesTest extends TestCase
     {
         $this->conn = new FakeConnection();
 
-        Model::setConnectionResolver(fn() => $this->conn);
+        Model::setConnectionResolver(fn () => $this->conn);
+        SoftDeletingUser::flushModelEvents();
 
         $this->conn->tables['users'] = [
             ['id' => 1, 'name' => 'Active', 'deleted_at' => null],
@@ -69,6 +70,33 @@ class SoftDeletesTest extends TestCase
 
         $this->assertFalse($user->delete());
         $this->assertFalse($user->trashed());
+    }
+
+    public function test_soft_delete_and_restore_events_are_fired()
+    {
+        $events = [];
+
+        foreach (['deleting', 'deleted', 'restoring', 'restored'] as $event) {
+            SoftDeletingUser::on($event, function () use (&$events, $event) {
+                $events[] = $event;
+            });
+        }
+
+        SoftDeletingUser::find(1)->delete();
+        SoftDeletingUser::find(2)->restore();
+
+        $this->assertSame(['deleting', 'deleted', 'restoring', 'restored'], $events);
+    }
+
+    public function test_restore_event_can_cancel_restore()
+    {
+        SoftDeletingUser::on('restoring', fn () => false);
+
+        $user = SoftDeletingUser::find(2);
+
+        $this->assertFalse($user->restore());
+        $this->assertTrue($user->trashed());
+        $this->assertSame('2024-01-01 10:00:00', $this->conn->tables['users'][1]['deleted_at']);
     }
 }
 

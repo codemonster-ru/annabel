@@ -4,4 +4,6 @@ namespace Codemonster\Database\Exceptions;
 
 use RuntimeException;
 
-class DatabaseException extends RuntimeException {}
+class DatabaseException extends RuntimeException
+{
+}

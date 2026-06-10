@@ -11,8 +11,7 @@ abstract class TestCase extends BaseTestCase
 {
     protected function fakeConnection(): ConnectionInterface
     {
-        return new class implements ConnectionInterface {
-
+        return new class () implements ConnectionInterface {
             public array $log = [];
             public array $results = [];
             public array $executed = [];

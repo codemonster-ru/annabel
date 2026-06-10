@@ -23,8 +23,20 @@ trait SoftDeletes
         $time = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
 
         $this->setAttribute($this->deletedAtColumn, $time);
+        $this->touchTimestamps();
 
-        return $this->save();
+        $dirty = $this->getDirtyForPersistence();
+
+        if (!empty($dirty)) {
+            static::query()
+                ->getBuilder()
+                ->where($this->getKeyName(), $this->getKey())
+                ->update($dirty);
+        }
+
+        $this->syncOriginal();
+
+        return true;
     }
 
     public function restore(): bool
@@ -33,9 +45,26 @@ trait SoftDeletes
             return false;
         }
 
-        $this->setAttribute($this->deletedAtColumn, null);
+        if (!$this->fireModelEvent('restoring')) {
+            return false;
+        }
 
-        return $this->save();
+        $this->setAttribute($this->deletedAtColumn, null);
+        $this->touchTimestamps();
+
+        $dirty = $this->getDirtyForPersistence();
+
+        if (!empty($dirty)) {
+            static::query()
+                ->getBuilder()
+                ->where($this->getKeyName(), $this->getKey())
+                ->update($dirty);
+        }
+
+        $this->syncOriginal();
+        $this->fireModelEvent('restored', false);
+
+        return true;
     }
 
     public static function withTrashed(): ModelQuery

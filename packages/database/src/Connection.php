@@ -7,10 +7,10 @@ use Codemonster\Database\Contracts\QueryBuilderInterface;
 use Codemonster\Database\Exceptions\QueryException;
 use Codemonster\Database\Query\QueryBuilder;
 use Codemonster\Database\Schema\Schema;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
-use InvalidArgumentException;
 use Throwable;
 
 class Connection implements ConnectionInterface
@@ -27,9 +27,9 @@ class Connection implements ConnectionInterface
         }
 
         match ($driver) {
-            'mysql'  => $this->connectMySql($config),
+            'mysql' => $this->connectMySql($config),
             'sqlite' => $this->connectSqlite($config),
-            default  => throw new InvalidArgumentException("Unsupported driver [$driver].")
+            default => throw new InvalidArgumentException("Unsupported driver [$driver].")
         };
     }
 
@@ -37,8 +37,8 @@ class Connection implements ConnectionInterface
     protected function connectMySql(array $config): void
     {
         $defaults = [
-            'host'    => '127.0.0.1',
-            'port'    => 3306,
+            'host' => '127.0.0.1',
+            'port' => 3306,
             'charset' => 'utf8mb4',
             'options' => [],
         ];
@@ -48,7 +48,7 @@ class Connection implements ConnectionInterface
         foreach (['database', 'username', 'password'] as $key) {
             if (!array_key_exists($key, $config)) {
                 throw new InvalidArgumentException(
-                    sprintf('Database connection config is missing required key: "%s".', $key)
+                    sprintf('Database connection config is missing required key: "%s".', $key),
                 );
             }
         }
@@ -71,7 +71,7 @@ class Connection implements ConnectionInterface
             $host,
             $port,
             $database,
-            $charset
+            $charset,
         );
 
         $options = $config['options'] ?? [];
@@ -86,10 +86,10 @@ class Connection implements ConnectionInterface
                 $dsn,
                 $username,
                 $password,
-                $options
+                $options,
             );
         } catch (PDOException $e) {
-            throw new QueryException($e->getMessage(), $dsn, [], (int)$e->getCode(), $e);
+            throw new QueryException($e->getMessage(), $dsn, [], (int) $e->getCode(), $e);
         }
     }
 
@@ -107,7 +107,7 @@ class Connection implements ConnectionInterface
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new QueryException($e->getMessage(), $dsn, [], (int)$e->getCode(), $e);
+            throw new QueryException($e->getMessage(), $dsn, [], (int) $e->getCode(), $e);
         }
     }
 
@@ -200,14 +200,14 @@ class Connection implements ConnectionInterface
             $stmt = $this->pdo->prepare($query);
 
             if (!$stmt) {
-                throw new QueryException("Failed to prepare SQL statement.", $query, $params);
+                throw new QueryException('Failed to prepare SQL statement.', $query, $params);
             }
 
             $stmt->execute($params);
 
             return $stmt;
         } catch (PDOException $e) {
-            throw new QueryException($e->getMessage(), $query, $params, (int)$e->getCode(), $e);
+            throw new QueryException($e->getMessage(), $query, $params, (int) $e->getCode(), $e);
         }
     }
 

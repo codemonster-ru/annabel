@@ -2,9 +2,8 @@
 
 namespace Codemonster\Database\Contracts;
 
-use PDO;
 use Codemonster\Database\Schema\Schema;
-use Codemonster\Database\Contracts\QueryBuilderInterface;
+use PDO;
 
 /**
  * Database connection abstraction.

@@ -53,7 +53,7 @@ class Blueprint
         // Auto-increment columns must be indexed; default to primary key if none defined yet.
         $hasPrimary = array_filter(
             $this->indexes,
-            fn(array $index) => ($index['type'] ?? null) === 'primary'
+            fn (array $index) => ($index['type'] ?? null) === 'primary',
         );
 
         if (empty($hasPrimary)) {

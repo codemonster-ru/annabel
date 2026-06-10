@@ -22,14 +22,14 @@ class ConnectionTest extends TestCase
 
     public function test_select_queries_are_prepared()
     {
-        $pdo = new class {
+        $pdo = new class () {
             public array $executed = [];
 
             public function prepare($query)
             {
                 $this->executed[] = $query;
 
-                return new class extends \PDOStatement {
+                return new class () extends \PDOStatement {
                     public function execute(?array $params = null): bool
                     {
                         return true;
@@ -56,13 +56,13 @@ class ConnectionTest extends TestCase
 
         $this->assertEquals(
             ['SELECT * FROM users'],
-            $pdo->executed
+            $pdo->executed,
         );
     }
 
     public function test_transaction_commits_when_open()
     {
-        $pdo = new class {
+        $pdo = new class () {
             public bool $began = false;
             public bool $committed = false;
 
@@ -93,7 +93,7 @@ class ConnectionTest extends TestCase
 
         $connection = $this->makeConnectionWithPdo($pdo);
 
-        $result = $connection->transaction(fn() => 'ok');
+        $result = $connection->transaction(fn () => 'ok');
 
         $this->assertSame('ok', $result);
         $this->assertTrue($pdo->began);
@@ -102,7 +102,7 @@ class ConnectionTest extends TestCase
 
     public function test_transaction_skips_commit_when_closed()
     {
-        $pdo = new class {
+        $pdo = new class () {
             public bool $committed = false;
 
             public function beginTransaction(): bool
@@ -130,14 +130,14 @@ class ConnectionTest extends TestCase
 
         $connection = $this->makeConnectionWithPdo($pdo);
 
-        $connection->transaction(fn() => null);
+        $connection->transaction(fn () => null);
 
         $this->assertFalse($pdo->committed);
     }
 
     public function test_transaction_rolls_back_on_exception()
     {
-        $pdo = new class {
+        $pdo = new class () {
             public bool $rolledBack = false;
 
             public function beginTransaction(): bool

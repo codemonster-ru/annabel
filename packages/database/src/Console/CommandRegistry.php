@@ -60,7 +60,7 @@ class CommandRegistry
             echo sprintf(
                 "  %-20s %s\n",
                 $cmd->signature(),
-                $cmd->description()
+                $cmd->description(),
             );
         }
     }

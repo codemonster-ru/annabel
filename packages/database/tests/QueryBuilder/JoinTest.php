@@ -13,15 +13,15 @@ class JoinTest extends TestCase
 
         $qb->join(
             'posts',
-            fn($j) =>
-            $j->on('users.id', '=', 'posts.user_id')
+            fn ($j) =>
+            $j->on('users.id', '=', 'posts.user_id'),
         );
 
         $sql = $qb->toSql();
 
         $this->assertStringContainsString(
             'INNER JOIN `posts` ON `users`.`id` = `posts`.`user_id`',
-            $sql
+            $sql,
         );
     }
 
@@ -35,7 +35,7 @@ class JoinTest extends TestCase
 
         $this->assertStringContainsString(
             'INNER JOIN `metadata` ON `key` = `metadata`.`user_key`',
-            $sql
+            $sql,
         );
     }
 
@@ -52,7 +52,7 @@ class JoinTest extends TestCase
 
         $this->assertStringContainsString(
             'INNER JOIN `posts` ON `users`.`id` = `posts`.`user_id` AND `posts`.`published` = ?',
-            $sql
+            $sql,
         );
         $this->assertSame([1], $qb->getBindings());
     }
@@ -71,7 +71,7 @@ class JoinTest extends TestCase
 
         $this->assertStringContainsString(
             'INNER JOIN `posts` ON `users`.`id` = `posts`.`user_id` AND `posts`.`published` = ? AND `posts`.`archived` = ?',
-            $sql
+            $sql,
         );
         $this->assertSame([1, 0], $qb->getBindings());
     }

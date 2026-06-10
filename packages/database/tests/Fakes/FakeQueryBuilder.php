@@ -37,11 +37,11 @@ class FakeQueryBuilder extends QueryBuilder
         }
 
         $this->wheres[] = [
-            'column'  => $column,
+            'column' => $column,
             'operator' => $operator,
-            'value'   => $value,
+            'value' => $value,
             'boolean' => strtoupper($boolean),
-            'type'    => 'basic',
+            'type' => 'basic',
         ];
 
         return $this;
@@ -54,6 +54,19 @@ class FakeQueryBuilder extends QueryBuilder
             'operator' => 'NULL',
             'boolean' => strtoupper($boolean),
             'type' => 'null',
+        ];
+
+        return $this;
+    }
+
+    public function whereIn(string $column, array $values, string $boolean = 'AND'): static
+    {
+        $this->wheres[] = [
+            'column' => $column,
+            'operator' => 'IN',
+            'value' => $values,
+            'boolean' => strtoupper($boolean),
+            'type' => 'in',
         ];
 
         return $this;
@@ -90,13 +103,15 @@ class FakeQueryBuilder extends QueryBuilder
 
     public function get(): array
     {
+        $this->fake->tableReads[] = $this->table;
+
         if (!empty($this->joins)) {
             return $this->runJoinQuery();
         }
 
         $rows = $this->fake->tables[$this->table] ?? [];
 
-        $rows = array_values(array_filter($rows, fn($row) => $this->matchesWhere($row)));
+        $rows = array_values(array_filter($rows, fn ($row) => $this->matchesWhere($row)));
 
         if ($this->offset !== null) {
             $rows = array_slice($rows, $this->offset);
@@ -106,7 +121,7 @@ class FakeQueryBuilder extends QueryBuilder
             $rows = array_slice($rows, 0, $this->limit);
         }
 
-        return array_map(fn($row) => (array) $row, $rows);
+        return array_map(fn ($row) => (array) $row, $rows);
     }
 
     public function first(): ?array
@@ -126,7 +141,7 @@ class FakeQueryBuilder extends QueryBuilder
     public function insertGetId(array $values, $sequence = null): int
     {
         $current = $this->fake->tables[$this->table] ?? [];
-        $last    = empty($current) ? 0 : ((int) ($current[array_key_last($current)]['id'] ?? count($current)));
+        $last = empty($current) ? 0 : ((int) ($current[array_key_last($current)]['id'] ?? count($current)));
 
         $values['id'] = $last + 1;
 
@@ -202,6 +217,7 @@ class FakeQueryBuilder extends QueryBuilder
             $current = match ($where['type']) {
                 'null' => !array_key_exists($column, $row) || $row[$column] === null,
                 'not_null' => array_key_exists($column, $row) && $row[$column] !== null,
+                'in' => in_array($row[$column] ?? null, $where['value'], true),
                 default => ($row[$column] ?? null) == $where['value'],
             };
 
@@ -226,11 +242,11 @@ class FakeQueryBuilder extends QueryBuilder
         $join = $this->joins[0];
 
         $pivotTable = $join['table'];
-        $pivotRows  = $this->fake->tables[$pivotTable] ?? [];
+        $pivotRows = $this->fake->tables[$pivotTable] ?? [];
 
         $filter = array_values(array_filter(
             $this->wheres,
-            fn($w) => str_starts_with($w['column'], $pivotTable . '.')
+            fn ($w) => str_starts_with($w['column'], $pivotTable . '.'),
         ));
 
         $relatedIds = [];
@@ -250,7 +266,7 @@ class FakeQueryBuilder extends QueryBuilder
         }
 
         $relatedTable = $this->table;
-        $relatedRows  = $this->fake->tables[$relatedTable] ?? [];
+        $relatedRows = $this->fake->tables[$relatedTable] ?? [];
 
         $relatedKey = str_contains($join['second'], '.')
             ? explode('.', $join['second'])[1]
@@ -258,9 +274,9 @@ class FakeQueryBuilder extends QueryBuilder
 
         $filtered = array_filter(
             $relatedRows,
-            fn($row) => in_array($row[$relatedKey] ?? null, $relatedIds, true)
+            fn ($row) => in_array($row[$relatedKey] ?? null, $relatedIds, true),
         );
 
-        return array_map(fn($row) => (array) $row, array_values($filtered));
+        return array_map(fn ($row) => (array) $row, array_values($filtered));
     }
 }

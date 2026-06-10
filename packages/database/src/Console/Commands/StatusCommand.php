@@ -43,7 +43,7 @@ class StatusCommand implements CommandInterface
             echo sprintf(
                 "%-8s  %-60s\n",
                 $batch,
-                $item['migration']
+                $item['migration'],
             );
         }
 

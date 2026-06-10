@@ -17,7 +17,7 @@ class WhereGroup
         $this->items[] = [
             'type' => 'condition',
             'boolean' => $cond->boolean,
-            'condition' => $cond
+            'condition' => $cond,
         ];
     }
 
@@ -26,7 +26,7 @@ class WhereGroup
         $this->items[] = [
             'type' => 'group',
             'boolean' => strtoupper($boolean),
-            'group' => $group
+            'group' => $group,
         ];
     }
 

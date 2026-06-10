@@ -98,15 +98,15 @@ class TruncateCommand implements CommandInterface
     {
         if ($driver === 'sqlite') {
             $rows = $this->connection->select(
-                "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
             );
 
             return $this->pluckTableNames($rows, 'name');
         }
 
         $rows = $this->connection->select(
-            "SELECT table_name AS name FROM information_schema.tables " .
-            "WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'"
+            'SELECT table_name AS name FROM information_schema.tables ' .
+            "WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'",
         );
 
         return $this->pluckTableNames($rows, 'name');

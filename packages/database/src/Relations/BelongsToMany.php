@@ -31,15 +31,15 @@ class BelongsToMany extends Relation
         string $foreignPivotKey,
         string $relatedPivotKey,
         string $parentKey,
-        string $relatedKey
+        string $relatedKey,
     ) {
         parent::__construct($builder, $parent, $related);
 
-        $this->pivotTable     = $pivotTable;
+        $this->pivotTable = $pivotTable;
         $this->foreignPivotKey = $foreignPivotKey;
         $this->relatedPivotKey = $relatedPivotKey;
-        $this->parentKey      = $parentKey;
-        $this->relatedKey     = $relatedKey;
+        $this->parentKey = $parentKey;
+        $this->relatedKey = $relatedKey;
     }
 
     /**
@@ -47,7 +47,7 @@ class BelongsToMany extends Relation
      */
     public function getResults(): ModelCollection
     {
-        $parentId    = $this->parent->{$this->parentKey};
+        $parentId = $this->parent->{$this->parentKey};
         $relatedTable = $this->related->getTable();
 
         $rows = $this->builder
@@ -55,7 +55,7 @@ class BelongsToMany extends Relation
                 $this->pivotTable,
                 $this->pivotTable . '.' . $this->relatedPivotKey,
                 '=',
-                $relatedTable . '.' . $this->relatedKey
+                $relatedTable . '.' . $this->relatedKey,
             )
             ->where($this->pivotTable . '.' . $this->foreignPivotKey, $parentId)
             ->select($relatedTable . '.*')

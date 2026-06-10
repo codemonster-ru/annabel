@@ -29,7 +29,7 @@ class RepositoryTest extends TestCase
 
     public function test_repository_uses_sqlite_ddl_when_driver_is_sqlite()
     {
-        $conn = new class implements ConnectionInterface {
+        $conn = new class () implements ConnectionInterface {
             public array $statements = [];
             private PDO $pdo;
 

@@ -27,10 +27,15 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
     /** @param string|list<string> $relations */
     public function load(string|array $relations): static
     {
-        $relations = is_array($relations) ? $relations : [$relations];
+        /** @var array<class-string<Model>, list<Model>> $modelsByClass */
+        $modelsByClass = [];
 
         foreach ($this->items as $item) {
-            $item->load($relations);
+            $modelsByClass[get_class($item)][] = $item;
+        }
+
+        foreach ($modelsByClass as $class => $models) {
+            $class::eagerLoadRelations($models, $relations);
         }
 
         return $this;
@@ -40,8 +45,8 @@ class ModelCollection implements \ArrayAccess, \IteratorAggregate, \Countable, \
     public function toArray(): array
     {
         return array_map(
-            static fn(Model $m) => $m->toArray(),
-            $this->items
+            static fn (Model $m) => $m->toArray(),
+            $this->items,
         );
     }
 

@@ -15,7 +15,7 @@ class Migrator
     public function __construct(
         MigrationRepository $repository,
         ConnectionInterface $connection,
-        MigrationPathResolver $paths
+        MigrationPathResolver $paths,
     ) {
         $this->repository = $repository;
         $this->connection = $connection;

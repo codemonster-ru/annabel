@@ -37,7 +37,7 @@ class MySqlGrammar extends Grammar
         $sql = sprintf(
             'CREATE TABLE `%s` (%s)',
             $blueprint->table,
-            implode(', ', $columnsSql)
+            implode(', ', $columnsSql),
         );
 
         return [$sql];
@@ -72,8 +72,8 @@ class MySqlGrammar extends Grammar
             sprintf(
                 'RENAME TABLE `%s` TO `%s`',
                 $blueprint->table,
-                $blueprint->renameTable
-            )
+                $blueprint->renameTable,
+            ),
         ];
     }
 
@@ -100,14 +100,14 @@ class MySqlGrammar extends Grammar
                 $statements[] = sprintf(
                     'ALTER TABLE `%s` MODIFY COLUMN %s',
                     $blueprint->table,
-                    $this->compileColumn($column)
+                    $this->compileColumn($column),
                 );
             } else {
                 // Add new column
                 $statements[] = sprintf(
                     'ALTER TABLE `%s` ADD COLUMN %s',
                     $blueprint->table,
-                    $this->compileColumn($column)
+                    $this->compileColumn($column),
                 );
             }
         }
@@ -120,7 +120,7 @@ class MySqlGrammar extends Grammar
                 'ALTER TABLE `%s` RENAME COLUMN `%s` TO `%s`',
                 $blueprint->table,
                 $rename['from'],
-                $rename['to']
+                $rename['to'],
             );
         }
 
@@ -131,7 +131,7 @@ class MySqlGrammar extends Grammar
             $statements[] = sprintf(
                 'ALTER TABLE `%s` DROP COLUMN `%s`',
                 $blueprint->table,
-                $column
+                $column,
             );
         }
 
@@ -156,7 +156,7 @@ class MySqlGrammar extends Grammar
             $statements[] = sprintf(
                 'ALTER TABLE `%s` DROP INDEX `%s`',
                 $blueprint->table,
-                $name
+                $name,
             );
         }
 
@@ -166,7 +166,7 @@ class MySqlGrammar extends Grammar
         foreach ($blueprint->dropPrimaryKeys as $name) {
             $statements[] = sprintf(
                 'ALTER TABLE `%s` DROP PRIMARY KEY',
-                $blueprint->table
+                $blueprint->table,
             );
         }
 
@@ -177,7 +177,7 @@ class MySqlGrammar extends Grammar
             $statements[] = sprintf(
                 'ALTER TABLE `%s` DROP FOREIGN KEY `%s`',
                 $blueprint->table,
-                $name
+                $name,
             );
         }
 
@@ -266,56 +266,56 @@ class MySqlGrammar extends Grammar
     {
         return match ($column->type) {
             // Default types
-            'id'        => 'INT UNSIGNED AUTO_INCREMENT',
-            'string'    => "VARCHAR(" . ($column->options['length'] ?? 255) . ")",
+            'id' => 'INT UNSIGNED AUTO_INCREMENT',
+            'string' => 'VARCHAR(' . ($column->options['length'] ?? 255) . ')',
 
             // Integer types
-            'integer'       => 'INT',
-            'bigInteger'    => 'BIGINT',
-            'smallInteger'  => 'SMALLINT',
+            'integer' => 'INT',
+            'bigInteger' => 'BIGINT',
+            'smallInteger' => 'SMALLINT',
             'mediumInteger' => 'MEDIUMINT',
-            'tinyInteger'   => 'TINYINT',
+            'tinyInteger' => 'TINYINT',
 
             // Decimal / float
-            'decimal'   => sprintf(
+            'decimal' => sprintf(
                 'DECIMAL(%d, %d)',
                 $column->options['precision'] ?? 8,
-                $column->options['scale'] ?? 2
+                $column->options['scale'] ?? 2,
             ),
-            'double'    => sprintf(
+            'double' => sprintf(
                 'DOUBLE(%d, %d)',
                 $column->options['precision'] ?? 8,
-                $column->options['scale'] ?? 2
+                $column->options['scale'] ?? 2,
             ),
-            'float'     => sprintf(
+            'float' => sprintf(
                 'FLOAT(%d, %d)',
                 $column->options['precision'] ?? 8,
-                $column->options['scale'] ?? 2
+                $column->options['scale'] ?? 2,
             ),
 
             // Text types
-            'text'        => 'TEXT',
-            'mediumText'  => 'MEDIUMTEXT',
-            'longText'    => 'LONGTEXT',
-            'char'        => "CHAR(" . ($column->options['length'] ?? 255) . ")",
+            'text' => 'TEXT',
+            'mediumText' => 'MEDIUMTEXT',
+            'longText' => 'LONGTEXT',
+            'char' => 'CHAR(' . ($column->options['length'] ?? 255) . ')',
 
             // JSON
-            'json'       => 'JSON',
+            'json' => 'JSON',
 
             // Boolean
-            'boolean'    => 'TINYINT(1)',
+            'boolean' => 'TINYINT(1)',
 
             // Date/Time types
-            'timestamp'  => 'TIMESTAMP',
-            'datetime'   => 'DATETIME',
-            'date'       => 'DATE',
-            'time'       => 'TIME',
-            'year'       => 'YEAR',
+            'timestamp' => 'TIMESTAMP',
+            'datetime' => 'DATETIME',
+            'date' => 'DATE',
+            'time' => 'TIME',
+            'year' => 'YEAR',
 
             // UUID
-            'uuid'       => 'CHAR(36)',
+            'uuid' => 'CHAR(36)',
 
-            default      => strtoupper($column->type),
+            default => strtoupper($column->type),
         };
     }
 
@@ -331,7 +331,7 @@ class MySqlGrammar extends Grammar
             $name,
             $fk->column,
             $fk->on,
-            $fk->references
+            $fk->references,
         );
 
         if ($fk->onDelete) {
@@ -358,7 +358,7 @@ class MySqlGrammar extends Grammar
             $name,
             $fk->column,
             $fk->on,
-            $fk->references
+            $fk->references,
         );
 
         if ($fk->onDelete) {
@@ -382,8 +382,8 @@ class MySqlGrammar extends Grammar
         $name = $index['name'] ?: $this->createIndexName($blueprint, $index);
 
         return match ($index['type']) {
-            'index'   => sprintf('INDEX `%s` (`%s`)', $name, $columns),
-            'unique'  => sprintf('UNIQUE `%s` (`%s`)', $name, $columns),
+            'index' => sprintf('INDEX `%s` (`%s`)', $name, $columns),
+            'unique' => sprintf('UNIQUE `%s` (`%s`)', $name, $columns),
             'primary' => sprintf('PRIMARY KEY (`%s`)', $columns),
             default => throw new \InvalidArgumentException('Unsupported index type.'),
         };
@@ -403,18 +403,18 @@ class MySqlGrammar extends Grammar
                 'ALTER TABLE `%s` ADD INDEX `%s` (`%s`)',
                 $blueprint->table,
                 $name,
-                $columns
+                $columns,
             ),
             'unique' => sprintf(
                 'ALTER TABLE `%s` ADD UNIQUE `%s` (`%s`)',
                 $blueprint->table,
                 $name,
-                $columns
+                $columns,
             ),
             'primary' => sprintf(
                 'ALTER TABLE `%s` ADD PRIMARY KEY (`%s`)',
                 $blueprint->table,
-                $columns
+                $columns,
             ),
             default => throw new \InvalidArgumentException('Unsupported index type.'),
         };

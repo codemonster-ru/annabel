@@ -33,7 +33,7 @@ class DatabaseManager
 
             if (!is_array($connectionConfig)) {
                 throw new InvalidArgumentException(
-                    sprintf('Database connection "%s" is not configured.', $name)
+                    sprintf('Database connection "%s" is not configured.', $name),
                 );
             }
 

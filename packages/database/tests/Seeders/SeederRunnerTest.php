@@ -2,8 +2,8 @@
 
 namespace Codemonster\Database\Tests\Seeders;
 
-use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Seeders\SeederRunner;
+use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
 use Codemonster\Database\Tests\TestCase;
 

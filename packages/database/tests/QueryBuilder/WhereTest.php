@@ -31,16 +31,16 @@ class WhereTest extends TestCase
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
         $qb->where(
-            fn($q) =>
+            fn ($q) =>
             $q->where('age', '>', 18)
-                ->orWhere('role', '=', 'admin')
+                ->orWhere('role', '=', 'admin'),
         );
 
         $sql = $qb->toSql();
 
         $this->assertStringContainsString(
-            "(`age` > ? OR `role` = ?)",
-            $sql
+            '(`age` > ? OR `role` = ?)',
+            $sql,
         );
     }
 

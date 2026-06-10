@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use App\Providers\SecurityServiceProvider as ApplicationSecurityServiceProvider;
 use Codemonster\Annabel\Application;
-use Codemonster\Annabel\Events\EventDispatcher;
-use Codemonster\Annabel\Validation\Validator;
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\Events\EventDispatcher;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Security\Csrf\CsrfTokenManager;
+use Codemonster\Validation\Validator;
 use Psr\SimpleCache\CacheInterface;
 
 $root = dirname(__DIR__);
@@ -22,7 +22,7 @@ $autoload = $skeleton . '/vendor/autoload.php';
 if (!is_file($autoload)) {
     fwrite(
         STDERR,
-            "Skeleton dependencies are missing. Run `composer install:ecosystem` first.\n"
+        "Skeleton dependencies are missing. Run `composer install:ecosystem` first.\n",
     );
 
     exit(1);
@@ -41,7 +41,7 @@ function assertSameValue(mixed $actual, mixed $expected, string $message): void
             '%s Expected %s, got %s.',
             $message,
             var_export($expected, true),
-            var_export($actual, true)
+            var_export($actual, true),
         ));
     }
 }
@@ -74,10 +74,10 @@ try {
     assertCondition(
         in_array(
             ApplicationSecurityServiceProvider::class,
-            array_map(static fn(object $provider): string => $provider::class, $app->getProviders()),
-            true
+            array_map(static fn (object $provider): string => $provider::class, $app->getProviders()),
+            true,
         ),
-        'The skeleton security provider was not discovered.'
+        'The skeleton security provider was not discovered.',
     );
 
     $home = $app->handle(new Request('GET', '/'));
@@ -85,7 +85,7 @@ try {
     assertSameValue($home->getStatusCode(), 200, 'The skeleton home route failed.');
     assertCondition(
         str_contains($home->getContent(), 'Hello, World!'),
-        'The controller and PHP view engine did not render the home page.'
+        'The controller and PHP view engine did not render the home page.',
     );
 
     $cache = $app->make(CacheInterface::class);
@@ -94,7 +94,7 @@ try {
 
     $eventReceived = false;
     $events = $app->make(EventDispatcher::class);
-    $event = new class {};
+    $event = new class () {};
     $events->listen($event::class, static function () use (&$eventReceived): void {
         $eventReceived = true;
     });
@@ -109,15 +109,15 @@ try {
     $database->statement('CREATE TABLE acceptance_checks (id INTEGER PRIMARY KEY, value TEXT)');
     $database->insert(
         'INSERT INTO acceptance_checks (value) VALUES (?)',
-        ['database-ready']
+        ['database-ready'],
     );
     assertSameValue(
         $database->selectOne('SELECT value FROM acceptance_checks WHERE id = 1')['value'] ?? null,
         'database-ready',
-        'The SQLite database provider failed.'
+        'The SQLite database provider failed.',
     );
 
-    $app->post('/acceptance/csrf', static fn(): array => ['accepted' => true]);
+    $app->post('/acceptance/csrf', static fn (): array => ['accepted' => true]);
 
     $rejected = $app->handle(new Request('POST', '/acceptance/csrf'));
     assertSameValue($rejected->getStatusCode(), 419, 'CSRF middleware did not reject an invalid request.');
@@ -126,14 +126,14 @@ try {
     $accepted = $app->handle(new Request(
         'POST',
         '/acceptance/csrf',
-        body: ['_token' => $token]
+        body: ['_token' => $token],
     ));
 
     assertSameValue($accepted->getStatusCode(), 200, 'CSRF middleware rejected a valid request.');
     assertSameValue(
         json_decode($accepted->getContent(), true, flags: JSON_THROW_ON_ERROR),
         ['accepted' => true],
-        'The accepted route response was not normalized to JSON.'
+        'The accepted route response was not normalized to JSON.',
     );
 
     $app->get('/acceptance/form', static function (): Response {
@@ -170,7 +170,7 @@ try {
         ],
         headers: [
             'Referer' => '/acceptance/form',
-        ]
+        ],
     ));
 
     assertSameValue($invalid->getStatusCode(), 302, 'Validation did not redirect back for a web request.');
@@ -184,7 +184,7 @@ try {
             'name' => 'Annabel',
             'email_errors' => ['The email field is required.'],
         ],
-        'Validation errors and old input were not flashed into the session.'
+        'Validation errors and old input were not flashed into the session.',
     );
 
     $valid = $app->handle(new Request(
@@ -197,7 +197,7 @@ try {
         ],
         headers: [
             'Accept' => 'application/json',
-        ]
+        ],
     ));
 
     assertSameValue($valid->getStatusCode(), 200, 'Valid form submission did not succeed.');
@@ -207,7 +207,7 @@ try {
             'accepted' => true,
             'name' => 'Annabel',
         ],
-        'Valid form submission was not normalized to JSON.'
+        'Valid form submission was not normalized to JSON.',
     );
 
     $missing = $app->handle(new Request('GET', '/missing'));
@@ -218,7 +218,7 @@ try {
     fwrite(STDERR, sprintf(
         "Annabel ecosystem acceptance suite failed: %s\n%s\n",
         $exception->getMessage(),
-        $exception->getTraceAsString()
+        $exception->getTraceAsString(),
     ));
 
     exit(1);

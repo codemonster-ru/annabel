@@ -37,9 +37,9 @@ abstract class Model implements \JsonSerializable
     /** @var array<string, mixed> */
     protected array $attributes = [];
     /** @var array<string, mixed> */
-    protected array $original   = [];
+    protected array $original = [];
     /** @var array<string, mixed> */
-    protected array $relations  = [];
+    protected array $relations = [];
 
     protected bool $exists = false;
     protected bool $wasRecentlyCreated = false;
@@ -48,6 +48,16 @@ abstract class Model implements \JsonSerializable
      * @var (callable(class-string<Model>): ConnectionInterface)|null
      */
     protected static $connectionResolver;
+
+    /**
+     * @var array<class-string<Model>, array<string, list<callable(static): mixed>>>
+     */
+    protected static array $modelEventListeners = [];
+
+    /**
+     * @var array<class-string<Model>, list<object|class-string>>
+     */
+    protected static array $modelObservers = [];
 
     /** @param array<string, mixed> $attributes */
     public function __construct(array $attributes = [], bool $exists = false)
@@ -132,17 +142,48 @@ abstract class Model implements \JsonSerializable
         return new ModelCollection($items);
     }
 
+    /**
+     * @param callable(static): mixed $listener
+     */
+    public static function on(string $event, callable $listener): void
+    {
+        static::$modelEventListeners[static::class][$event][] = $listener;
+    }
+
+    /**
+     * @param object|class-string $observer
+     */
+    public static function observe(object|string $observer): void
+    {
+        if (is_string($observer) && !class_exists($observer)) {
+            throw new \InvalidArgumentException(sprintf('Observer class [%s] does not exist.', $observer));
+        }
+
+        static::$modelObservers[static::class][] = $observer;
+    }
+
+    public static function flushModelEvents(): void
+    {
+        unset(static::$modelEventListeners[static::class], static::$modelObservers[static::class]);
+    }
+
     // ---------------------------------------------------------------------
     //  Life cycle
     // ---------------------------------------------------------------------
 
     public function save(): bool
     {
+        $isCreating = !$this->exists;
+
+        if (!$this->fireModelEvent('saving') || !$this->fireModelEvent($isCreating ? 'creating' : 'updating')) {
+            return false;
+        }
+
         $this->touchTimestamps();
 
         $dirty = $this->getDirtyForPersistence();
 
-        if (!$this->exists) {
+        if ($isCreating) {
             if (empty($dirty)) {
                 return true;
             }
@@ -162,6 +203,9 @@ abstract class Model implements \JsonSerializable
             $this->wasRecentlyCreated = true;
             $this->syncOriginal();
 
+            $this->fireModelEvent('created', false);
+            $this->fireModelEvent('saved', false);
+
             return true;
         }
 
@@ -174,7 +218,10 @@ abstract class Model implements \JsonSerializable
                 ->update($dirty);
 
             $this->syncOriginal();
+            $this->fireModelEvent('updated', false);
         }
+
+        $this->fireModelEvent('saved', false);
 
         return true;
     }
@@ -185,9 +232,19 @@ abstract class Model implements \JsonSerializable
             return false;
         }
 
+        if (!$this->fireModelEvent('deleting')) {
+            return false;
+        }
+
         // support for soft deletes (via trait)
         if (method_exists($this, 'runSoftDelete')) {
-            return $this->runSoftDelete();
+            $deleted = $this->runSoftDelete();
+
+            if ($deleted) {
+                $this->fireModelEvent('deleted', false);
+            }
+
+            return $deleted;
         }
 
         /** @var QueryBuilder $builder */
@@ -198,6 +255,34 @@ abstract class Model implements \JsonSerializable
             ->delete();
 
         $this->exists = false;
+        $this->fireModelEvent('deleted', false);
+
+        return true;
+    }
+
+    protected function fireModelEvent(string $event, bool $halt = true): bool
+    {
+        $class = static::class;
+
+        foreach (static::$modelEventListeners[$class][$event] ?? [] as $listener) {
+            if ($listener($this) === false && $halt) {
+                return false;
+            }
+        }
+
+        foreach (static::$modelObservers[$class] ?? [] as $observer) {
+            if (is_string($observer)) {
+                $observer = new $observer();
+            }
+
+            if (!method_exists($observer, $event)) {
+                continue;
+            }
+
+            if ($observer->{$event}($this) === false && $halt) {
+                return false;
+            }
+        }
 
         return true;
     }
@@ -236,10 +321,14 @@ abstract class Model implements \JsonSerializable
     /** @return array<string, mixed> */
     public function getAttributes(): array
     {
-        $attributes = $this->attributes;
+        $attributes = [];
 
-        foreach ($this->hidden as $key) {
-            unset($attributes[$key]);
+        foreach (array_keys($this->attributes) as $key) {
+            if (in_array($key, $this->hidden, true)) {
+                continue;
+            }
+
+            $attributes[$key] = $this->getAttribute($key);
         }
 
         foreach ($this->relations as $key => $value) {
@@ -256,7 +345,14 @@ abstract class Model implements \JsonSerializable
     public function getAttribute(string $key): mixed
     {
         if (array_key_exists($key, $this->attributes)) {
-            return $this->castAttribute($key, $this->attributes[$key]);
+            $value = $this->castAttribute($key, $this->attributes[$key]);
+            $accessor = $this->attributeMethodName('get', $key, 'Attribute');
+
+            if (method_exists($this, $accessor)) {
+                return $this->{$accessor}($value);
+            }
+
+            return $value;
         }
 
         if (array_key_exists($key, $this->relations)) {
@@ -272,7 +368,20 @@ abstract class Model implements \JsonSerializable
 
     public function setAttribute(string $key, mixed $value): void
     {
+        $mutator = $this->attributeMethodName('set', $key, 'Attribute');
+
+        if (method_exists($this, $mutator)) {
+            $value = $this->{$mutator}($value);
+        }
+
         $this->attributes[$key] = $value;
+    }
+
+    public function setRelation(string $key, mixed $value): static
+    {
+        $this->relations[$key] = $value;
+
+        return $this;
     }
 
     protected function castAttribute(string $key, mixed $value): mixed
@@ -302,21 +411,31 @@ abstract class Model implements \JsonSerializable
 
             case 'bool':
             case 'boolean':
-                return (bool) $value;
+                return self::booleanCast($value);
 
             case 'array':
-                return (array) $value;
+                return self::arrayCast($value);
 
             case 'json':
-                return is_string($value) ? json_decode($value, true) : $value;
+                return self::jsonCast($value);
+
+            case 'object':
+                return self::objectCast($value);
 
             case 'datetime':
+            case 'immutable_datetime':
                 return new \DateTimeImmutable(self::stringCast($value));
 
             case 'date':
                 return (new \DateTimeImmutable(self::stringCast($value)))->setTime(0, 0);
 
             default:
+                if (str_starts_with($cast, 'decimal:')) {
+                    $precision = (int) substr($cast, 8);
+
+                    return number_format(self::floatCast($value), $precision, '.', '');
+                }
+
                 return $value;
         }
     }
@@ -342,6 +461,73 @@ abstract class Model implements \JsonSerializable
         throw new \UnexpectedValueException('Model attribute cannot be cast to float.');
     }
 
+    private static function booleanCast(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $normalized = strtolower(trim($value));
+
+            if (in_array($normalized, ['false', '0', 'no', 'off', ''], true)) {
+                return false;
+            }
+
+            if (in_array($normalized, ['true', '1', 'yes', 'on'], true)) {
+                return true;
+            }
+        }
+
+        return (bool) $value;
+    }
+
+    /** @return array<mixed> */
+    private static function arrayCast(mixed $value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return (array) $value;
+    }
+
+    private static function jsonCast(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        $decoded = json_decode($value, true);
+
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : null;
+    }
+
+    private static function objectCast(mixed $value): object
+    {
+        if (is_object($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $decoded = json_decode($value);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_object($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return (object) $value;
+    }
+
     private static function stringCast(mixed $value): string
     {
         if (is_string($value)) {
@@ -352,6 +538,13 @@ abstract class Model implements \JsonSerializable
         }
 
         throw new \UnexpectedValueException('Model attribute cannot be cast to string.');
+    }
+
+    private function attributeMethodName(string $prefix, string $key, string $suffix): string
+    {
+        $studly = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $key)));
+
+        return $prefix . $studly . $suffix;
     }
 
     /** @return array<string, mixed> */
@@ -408,7 +601,7 @@ abstract class Model implements \JsonSerializable
 
         if (!$relation instanceof Relation) {
             throw new \RuntimeException(
-                sprintf('Relationship method %s must return instance of Relation', $method)
+                sprintf('Relationship method %s must return instance of Relation', $method),
             );
         }
 
@@ -430,14 +623,14 @@ abstract class Model implements \JsonSerializable
         $instance = new $related();
 
         $foreignKey = $foreignKey ?? $this->getForeignKey();
-        $localKey   = $localKey ?? $this->getKeyName();
+        $localKey = $localKey ?? $this->getKeyName();
 
         return new HasOne(
             $related::query()->getBuilder(),
             $this,
             $instance,
             $foreignKey,
-            $localKey
+            $localKey,
         );
     }
 
@@ -452,14 +645,14 @@ abstract class Model implements \JsonSerializable
         $instance = new $related();
 
         $foreignKey = $foreignKey ?? $this->getForeignKey();
-        $localKey   = $localKey ?? $this->getKeyName();
+        $localKey = $localKey ?? $this->getKeyName();
 
         return new HasMany(
             $related::query()->getBuilder(),
             $this,
             $instance,
             $foreignKey,
-            $localKey
+            $localKey,
         );
     }
 
@@ -475,14 +668,14 @@ abstract class Model implements \JsonSerializable
 
         // foreignKey on the CURRENT model, ownerKey on the linked one
         $foreignKey = $foreignKey ?? $instance->getForeignKey();
-        $ownerKey   = $ownerKey ?? $instance->getKeyName();
+        $ownerKey = $ownerKey ?? $instance->getKeyName();
 
         return new BelongsTo(
             $related::query()->getBuilder(),
             $this,
             $instance,
             $foreignKey,
-            $ownerKey
+            $ownerKey,
         );
     }
 
@@ -497,16 +690,16 @@ abstract class Model implements \JsonSerializable
         ?string $foreignPivotKey = null,
         ?string $relatedPivotKey = null,
         ?string $parentKey = null,
-        ?string $relatedKey = null
+        ?string $relatedKey = null,
     ): BelongsToMany {
         /** @var TRelated $instance */
         $instance = new $related();
 
-        $pivotTable     = $pivotTable     ?? $this->joiningTable($instance);
+        $pivotTable = $pivotTable ?? $this->joiningTable($instance);
         $foreignPivotKey = $foreignPivotKey ?? $this->getForeignKey();
         $relatedPivotKey = $relatedPivotKey ?? $instance->getForeignKey();
 
-        $parentKey  = $parentKey  ?? $this->getKeyName();
+        $parentKey = $parentKey ?? $this->getKeyName();
         $relatedKey = $relatedKey ?? $instance->getKeyName();
 
         return new BelongsToMany(
@@ -517,20 +710,76 @@ abstract class Model implements \JsonSerializable
             $foreignPivotKey,
             $relatedPivotKey,
             $parentKey,
-            $relatedKey
+            $relatedKey,
         );
     }
 
     /** @param string|list<string> $relations */
     public function load(string|array $relations): static
     {
-        $relations = is_array($relations) ? $relations : [$relations];
-
-        foreach ($relations as $name) {
-            $this->getRelationshipFromMethod($name);
-        }
+        static::eagerLoadRelations([$this], $relations);
 
         return $this;
+    }
+
+    /**
+     * @param list<static> $models
+     * @param string|list<string> $relations
+     */
+    public static function eagerLoadRelations(array $models, string|array $relations): void
+    {
+        if ($models === []) {
+            return;
+        }
+
+        foreach ((array) $relations as $name) {
+            static::eagerLoadRelationPath($models, $name);
+        }
+    }
+
+    /**
+     * @param list<static> $models
+     */
+    protected static function eagerLoadRelationPath(array $models, string $path): void
+    {
+        $segments = explode('.', $path, 2);
+        $relationName = $segments[0];
+        $nested = $segments[1] ?? null;
+
+        if (!method_exists($models[0], $relationName)) {
+            throw new \RuntimeException(sprintf('Relationship method %s does not exist.', $relationName));
+        }
+
+        $relation = $models[0]->{$relationName}();
+
+        if (!$relation instanceof Relation) {
+            throw new \RuntimeException(
+                sprintf('Relationship method %s must return instance of Relation', $relationName),
+            );
+        }
+
+        $relation->eagerLoad($models, $relationName, $nested);
+    }
+
+    protected function loadRelationPath(string $path): void
+    {
+        $segments = explode('.', $path, 2);
+        $relation = $segments[0];
+        $nested = $segments[1] ?? null;
+
+        if (!method_exists($this, $relation)) {
+            throw new \RuntimeException(sprintf('Relationship method %s does not exist.', $relation));
+        }
+
+        $related = $this->getRelationshipFromMethod($relation);
+
+        if ($nested === null) {
+            return;
+        }
+
+        if ($related instanceof Model || $related instanceof ModelCollection) {
+            $related->load($nested);
+        }
     }
 
     // ---------------------------------------------------------------------

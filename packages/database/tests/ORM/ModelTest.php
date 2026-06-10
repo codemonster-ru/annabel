@@ -2,10 +2,10 @@
 
 namespace Codemonster\Database\Tests\ORM;
 
-use PHPUnit\Framework\TestCase;
+use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
 use Codemonster\Database\Tests\Fakes\FakeModels\User;
-use Codemonster\Database\ORM\Model;
+use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase
 {
@@ -15,7 +15,8 @@ class ModelTest extends TestCase
     {
         $this->conn = new FakeConnection();
 
-        Model::setConnectionResolver(fn() => $this->conn);
+        Model::setConnectionResolver(fn () => $this->conn);
+        User::flushModelEvents();
 
         // seed some rows
         $this->conn->tables['users'] = [
@@ -35,7 +36,7 @@ class ModelTest extends TestCase
     {
         $user = User::create([
             'name' => 'Test',
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $this->assertNotNull($user->id);
@@ -56,22 +57,35 @@ class ModelTest extends TestCase
     {
         $model = new CastingUser([
             'id' => '5',
-            'active' => '1',
+            'active' => 'false',
             'rating' => '3.5',
-            'meta' => ['a' => 1],
+            'meta' => '{"a":1}',
             'data' => '{"a":1}',
+            'settings' => '{"enabled":true}',
+            'price' => '12.345',
             'joined_at' => '2024-01-01 12:00:00',
             'birth_date' => '2024-01-01',
         ]);
 
         $this->assertSame(5, $model->id);
-        $this->assertTrue($model->active);
+        $this->assertFalse($model->active);
         $this->assertSame(3.5, $model->rating);
         $this->assertSame(['a' => 1], $model->meta);
         $this->assertSame(['a' => 1], $model->data);
+        $this->assertIsObject($model->settings);
+        $this->assertTrue($model->settings->enabled);
+        $this->assertSame('12.35', $model->price);
         $this->assertInstanceOf(\DateTimeImmutable::class, $model->joined_at);
         $this->assertInstanceOf(\DateTimeImmutable::class, $model->birth_date);
         $this->assertSame('00:00:00', $model->birth_date->format('H:i:s'));
+    }
+
+    public function test_accessors_and_mutators_are_applied()
+    {
+        $model = new AccessorUser(['name' => '  vasya  ']);
+
+        $this->assertSame('VASYA', $model->name);
+        $this->assertSame(['name' => 'VASYA'], $model->getAttributes());
     }
 
     public function test_guarded_and_fillable_rules()
@@ -81,6 +95,81 @@ class ModelTest extends TestCase
 
         $this->assertSame([], $guarded->getAttributes());
         $this->assertSame(['name' => 'Ok'], $fillable->getAttributes());
+    }
+
+    public function test_model_events_are_fired_for_create_and_update()
+    {
+        $events = [];
+
+        foreach (['saving', 'creating', 'created', 'saved', 'updating', 'updated'] as $event) {
+            User::on($event, function () use (&$events, $event) {
+                $events[] = $event;
+            });
+        }
+
+        $user = User::create([
+            'name' => 'Created',
+            'email' => 'created@example.com',
+        ]);
+
+        $user->name = 'Updated';
+        $user->save();
+
+        $this->assertSame(
+            ['saving', 'creating', 'created', 'saved', 'saving', 'updating', 'updated', 'saved'],
+            $events,
+        );
+    }
+
+    public function test_model_event_can_cancel_save()
+    {
+        User::on('creating', fn () => false);
+
+        $user = new User([
+            'name' => 'Cancelled',
+            'email' => 'cancelled@example.com',
+        ]);
+
+        $this->assertFalse($user->save());
+        $this->assertCount(1, $this->conn->tables['users']);
+    }
+
+    public function test_observer_methods_are_called()
+    {
+        $observer = new class () {
+            public array $events = [];
+
+            public function creating(User $user): void
+            {
+                $this->events[] = 'creating:' . $user->name;
+            }
+
+            public function updated(User $user): void
+            {
+                $this->events[] = 'updated:' . $user->name;
+            }
+
+            public function deleted(User $user): void
+            {
+                $this->events[] = 'deleted:' . $user->name;
+            }
+        };
+
+        User::observe($observer);
+
+        $created = User::create([
+            'name' => 'Observed',
+            'email' => 'observed@example.com',
+        ]);
+
+        $created->name = 'Observed Updated';
+        $created->save();
+        $created->delete();
+
+        $this->assertSame(
+            ['creating:Observed', 'updated:Observed Updated', 'deleted:Observed Updated'],
+            $observer->events,
+        );
     }
 }
 
@@ -93,9 +182,26 @@ class CastingUser extends Model
         'rating' => 'float',
         'meta' => 'array',
         'data' => 'json',
+        'settings' => 'object',
+        'price' => 'decimal:2',
         'joined_at' => 'datetime',
         'birth_date' => 'date',
     ];
+}
+
+class AccessorUser extends Model
+{
+    protected array $guarded = [];
+
+    public function getNameAttribute(mixed $value): string
+    {
+        return strtoupper((string) $value);
+    }
+
+    public function setNameAttribute(mixed $value): string
+    {
+        return trim((string) $value);
+    }
 }
 
 class GuardedUser extends Model

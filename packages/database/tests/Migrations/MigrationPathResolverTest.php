@@ -23,4 +23,3 @@ class MigrationPathResolverTest extends TestCase
         $this->assertFalse(is_dir($path));
     }
 }
-

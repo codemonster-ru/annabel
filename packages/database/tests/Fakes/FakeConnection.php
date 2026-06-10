@@ -6,16 +6,16 @@ use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Contracts\QueryBuilderInterface;
 use Codemonster\Database\Schema\Schema;
 use PDO;
-use Codemonster\Database\Tests\Fakes\FakeQueryBuilder;
 
 class FakeConnection implements ConnectionInterface
 {
     public array $executed = [];
     public array $migrations = [];
     public array $tables = [];
+    public array $tableReads = [];
 
-    public bool $transactionStarted    = false;
-    public bool $transactionCommitted  = false;
+    public bool $transactionStarted = false;
+    public bool $transactionCommitted = false;
     public bool $transactionRolledBack = false;
 
     public function select(string $query, array $params = []): array
@@ -24,11 +24,11 @@ class FakeConnection implements ConnectionInterface
 
         if (str_contains($query, 'FROM `migrations`')) {
             return array_map(
-                fn(string $name) => [
+                fn (string $name) => [
                     'migration' => $name,
-                    'batch'     => 1,
+                    'batch' => 1,
                 ],
-                $this->migrations
+                $this->migrations,
             );
         }
 

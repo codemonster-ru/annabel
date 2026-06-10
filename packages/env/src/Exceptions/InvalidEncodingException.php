@@ -2,4 +2,6 @@
 
 namespace Codemonster\Env\Exceptions;
 
-class InvalidEncodingException extends \RuntimeException {}
+class InvalidEncodingException extends \RuntimeException
+{
+}

@@ -64,7 +64,7 @@ class MigrationRepository
     public function getRan(): array
     {
         $rows = $this->connection->select(
-            "SELECT `migration`, `batch` FROM `{$this->table}` ORDER BY `batch` ASC, `id` ASC"
+            "SELECT `migration`, `batch` FROM `{$this->table}` ORDER BY `batch` ASC, `id` ASC",
         );
 
         $migrations = [];
@@ -82,7 +82,7 @@ class MigrationRepository
     public function getLastBatchNumber(): int
     {
         $rows = $this->connection->select(
-            "SELECT MAX(`batch`) AS batch FROM `{$this->table}`"
+            "SELECT MAX(`batch`) AS batch FROM `{$this->table}`",
         );
 
         $batch = $rows[0]['batch'] ?? 0;
@@ -99,7 +99,7 @@ class MigrationRepository
     {
         $rows = $this->connection->select(
             "SELECT `migration` FROM `{$this->table}` WHERE `batch` = ? ORDER BY `id` DESC",
-            [$batch]
+            [$batch],
         );
 
         $migrations = [];
@@ -128,7 +128,7 @@ class MigrationRepository
     {
         $this->connection->statement(
             "INSERT INTO `{$this->table}` (`migration`, `batch`) VALUES (?, ?)",
-            [$migration, $batch]
+            [$migration, $batch],
         );
     }
 
@@ -136,7 +136,7 @@ class MigrationRepository
     {
         $this->connection->statement(
             "DELETE FROM `{$this->table}` WHERE `migration` = ?",
-            [$migration]
+            [$migration],
         );
     }
 
@@ -160,7 +160,7 @@ class MigrationRepository
         foreach ($allMigrationNames as $name) {
             $status[] = [
                 'migration' => $name,
-                'batch'     => $ranMap[$name] ?? null,
+                'batch' => $ranMap[$name] ?? null,
             ];
         }
 
@@ -168,7 +168,7 @@ class MigrationRepository
             if (!in_array($name, $allMigrationNames, true)) {
                 $status[] = [
                     'migration' => $name,
-                    'batch'     => $batch,
+                    'batch' => $batch,
                 ];
             }
         }

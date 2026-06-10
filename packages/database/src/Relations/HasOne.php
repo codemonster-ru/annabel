@@ -24,13 +24,12 @@ class HasOne extends Relation
         Model $parent,
         Model $related,
         string $foreignKey,
-        string $localKey
-    )
-    {
+        string $localKey,
+    ) {
         parent::__construct($builder, $parent, $related);
 
         $this->foreignKey = $foreignKey;
-        $this->localKey   = $localKey;
+        $this->localKey = $localKey;
     }
 
     /**
@@ -49,5 +48,41 @@ class HasOne extends Relation
         $class = get_class($this->related);
 
         return new $class((array) $row, true);
+    }
+
+    /**
+     * @param list<TParent> $models
+     */
+    public function eagerLoad(array $models, string $relationName, ?string $nested = null): void
+    {
+        $keys = $this->uniqueKeys(array_map(
+            fn (Model $model) => $model->{$this->localKey},
+            $models,
+        ));
+
+        /** @var class-string<TRelated> $class */
+        $class = get_class($this->related);
+        $related = $keys === []
+            ? []
+            : $class::query()->whereIn($this->foreignKey, $keys)->get();
+
+        /** @var array<string, TRelated> $matched */
+        $matched = [];
+
+        foreach ($related as $item) {
+            $key = $this->dictionaryKey($item->{$this->foreignKey});
+
+            if ($key !== null) {
+                $matched[$key] ??= $item;
+            }
+        }
+
+        foreach ($models as $model) {
+            $key = $this->dictionaryKey($model->{$this->localKey});
+            $item = $key === null ? null : ($matched[$key] ?? null);
+
+            $model->setRelation($relationName, $item);
+            $this->loadNested($item, $nested);
+        }
     }
 }

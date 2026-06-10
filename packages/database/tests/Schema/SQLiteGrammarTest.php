@@ -82,7 +82,7 @@ class SQLiteGrammarTest extends TestCase
 
         $this->assertStringContainsString(
             'FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE RESTRICT',
-            $sql[0]
+            $sql[0],
         );
     }
 

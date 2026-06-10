@@ -15,7 +15,7 @@ class BelongsToTest extends TestCase
     protected function setUp(): void
     {
         $this->conn = new FakeConnection();
-        Model::setConnectionResolver(fn() => $this->conn);
+        Model::setConnectionResolver(fn () => $this->conn);
 
         $this->conn->tables['users'] = [
             ['id' => 1, 'name' => 'Author'],

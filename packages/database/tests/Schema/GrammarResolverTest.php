@@ -5,8 +5,8 @@ namespace Codemonster\Database\Tests\Schema;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Query\QueryBuilder;
 use Codemonster\Database\Schema\GrammarResolver;
-use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
 use Codemonster\Database\Schema\Grammars\MySqlGrammar;
+use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
 use Codemonster\Database\Schema\Schema;
 use Codemonster\Database\Tests\TestCase;
 use PDO;
@@ -28,7 +28,7 @@ class GrammarResolverTest extends TestCase
     {
         $resolver = new GrammarResolver();
 
-        $conn = new class implements ConnectionInterface {
+        $conn = new class () implements ConnectionInterface {
             public function select(string $query, array $params = []): array
             {
                 return [];
@@ -115,7 +115,7 @@ class GrammarResolverTest extends TestCase
 
     private function makeConnection(PDO $pdo): ConnectionInterface
     {
-        return new class($pdo) implements ConnectionInterface {
+        return new class ($pdo) implements ConnectionInterface {
             private PDO $pdo;
 
             public function __construct(PDO $pdo)

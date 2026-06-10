@@ -2,20 +2,20 @@
 
 namespace Codemonster\Database\Console;
 
+use Codemonster\Database\Console\Commands\MakeMigrationCommand;
+use Codemonster\Database\Console\Commands\MakeSeedCommand;
+use Codemonster\Database\Console\Commands\MigrateCommand;
+use Codemonster\Database\Console\Commands\RollbackCommand;
+use Codemonster\Database\Console\Commands\SeedCommand;
+use Codemonster\Database\Console\Commands\StatusCommand;
+use Codemonster\Database\Console\Commands\TruncateCommand;
+use Codemonster\Database\Console\Commands\WipeCommand;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
-use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Seeders\SeederRunner;
-use Codemonster\Database\Console\Commands\MigrateCommand;
-use Codemonster\Database\Console\Commands\RollbackCommand;
-use Codemonster\Database\Console\Commands\StatusCommand;
-use Codemonster\Database\Console\Commands\MakeMigrationCommand;
-use Codemonster\Database\Console\Commands\SeedCommand;
-use Codemonster\Database\Console\Commands\MakeSeedCommand;
-use Codemonster\Database\Console\Commands\WipeCommand;
-use Codemonster\Database\Console\Commands\TruncateCommand;
+use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseConsoleKernel
 {
@@ -32,7 +32,7 @@ class DatabaseConsoleKernel
     public function __construct(
         ConnectionInterface $connection,
         ?MigrationPathResolver $paths = null,
-        ?SeedPathResolver $seedPaths = null
+        ?SeedPathResolver $seedPaths = null,
     ) {
         $this->paths = $paths ?? new MigrationPathResolver();
 

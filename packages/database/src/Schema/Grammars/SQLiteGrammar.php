@@ -24,7 +24,7 @@ class SQLiteGrammar extends Grammar
         $sql = sprintf(
             'CREATE TABLE "%s" (%s)',
             $blueprint->table,
-            implode(', ', $columns)
+            implode(', ', $columns),
         );
 
         return [$sql];
@@ -55,7 +55,7 @@ class SQLiteGrammar extends Grammar
                 'ALTER TABLE "%s" RENAME COLUMN "%s" TO "%s"',
                 $blueprint->table,
                 $rename['from'],
-                $rename['to']
+                $rename['to'],
             );
         }
 
@@ -65,7 +65,7 @@ class SQLiteGrammar extends Grammar
                 $statements[] = sprintf(
                     'ALTER TABLE "%s" ADD COLUMN %s',
                     $blueprint->table,
-                    $this->compileColumn($column)
+                    $this->compileColumn($column),
                 );
             }
         }
@@ -79,7 +79,7 @@ class SQLiteGrammar extends Grammar
             sprintf(
                 'ALTER TABLE "%s" RENAME TO "%s"',
                 $blueprint->table,
-                $blueprint->renameTable
+                $blueprint->renameTable,
             ),
         ];
     }
@@ -90,7 +90,7 @@ class SQLiteGrammar extends Grammar
             'FOREIGN KEY ("%s") REFERENCES "%s"("%s")',
             $fk->column,
             $fk->on,
-            $fk->references
+            $fk->references,
         );
 
         if ($fk->onDelete) {
@@ -178,13 +178,13 @@ class SQLiteGrammar extends Grammar
             'bigInteger',
             'mediumInteger',
             'smallInteger',
-            'tinyInteger'   => 'INTEGER',
+            'tinyInteger' => 'INTEGER',
 
-            'boolean'       => 'INTEGER',
+            'boolean' => 'INTEGER',
 
             'decimal',
             'double',
-            'float'         => 'REAL',
+            'float' => 'REAL',
 
             'string',
             'char',
@@ -197,9 +197,9 @@ class SQLiteGrammar extends Grammar
             'timestamp',
             'time',
             'year',
-            'uuid'          => 'TEXT',
+            'uuid' => 'TEXT',
 
-            default         => 'TEXT',
+            default => 'TEXT',
         };
     }
 }

@@ -2,6 +2,17 @@
 
 All significant changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-06-10
+
+### Added
+
+-   Added framework-consumable database console kernel and command registry.
+-   Added database CLI commands required by Annabel skeleton migrations.
+
+### Changed
+
+-   Refined database contracts, migration internals, schema builder, and ORM typing for Annabel 1.15 integration.
+
 ## [2.0.0] - 2025-12-22
 
 ### Added

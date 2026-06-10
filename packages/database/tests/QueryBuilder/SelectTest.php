@@ -69,7 +69,7 @@ class SelectTest extends TestCase
 
         $this->assertSame(
             'SELECT `users`.`name` AS `label`, COUNT(*) AS `total` FROM `users`',
-            $sql
+            $sql,
         );
     }
 

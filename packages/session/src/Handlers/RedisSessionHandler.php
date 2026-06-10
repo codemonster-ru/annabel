@@ -19,9 +19,8 @@ class RedisSessionHandler implements SessionHandlerInterface
         string $prefix = 'sess_',
         int $ttl = 0,
         int $retries = 1,
-        int $retryDelayMs = 50
-    )
-    {
+        int $retryDelayMs = 50,
+    ) {
         $this->redis = $redis;
         $this->prefix = $prefix;
         $this->ttl = $ttl;

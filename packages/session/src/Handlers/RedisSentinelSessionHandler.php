@@ -22,7 +22,7 @@ class RedisSentinelSessionHandler implements SessionHandlerInterface
         ?string $password = null,
         ?int $database = null,
         int $retries = 1,
-        int $retryDelayMs = 50
+        int $retryDelayMs = 50,
     ) {
         $address = $sentinel->getMasterAddrByName($service);
         if (!is_array($address) || count($address) < 2) {

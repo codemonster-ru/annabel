@@ -54,6 +54,9 @@ Session::destroy();
 ```php
 // Rotate ID after login or privilege change
 Session::regenerate();
+
+// Clear all data, rotate ID, and destroy the old session
+Session::invalidate();
 ```
 
 ### Regenerating on start
@@ -392,6 +395,7 @@ Security checklist:
 -   Set `SameSite` to `Strict` or `Lax` based on your flow.
 -   Use `httponly` to reduce XSS access to cookies.
 -   Rotate session IDs after login or privilege changes.
+-   Invalidate sessions on logout or privilege boundary changes.
 -   Consider payload encryption (`encryption.key`) for sensitive data.
 -   Keep session storage private and with proper file permissions.
 

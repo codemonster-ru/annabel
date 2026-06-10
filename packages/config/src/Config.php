@@ -22,6 +22,24 @@ class Config
         }
     }
 
+    public static function loadCached(string $file): void
+    {
+        $items = require $file;
+
+        if (!is_array($items)) {
+            throw new \RuntimeException("Config cache must return an array: {$file}");
+        }
+
+        static::$items = [];
+        foreach ($items as $key => $value) {
+            if (!is_string($key)) {
+                throw new \RuntimeException("Config cache keys must be strings: {$file}");
+            }
+
+            static::$items[$key] = $value;
+        }
+    }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         $segments = explode('.', $key);

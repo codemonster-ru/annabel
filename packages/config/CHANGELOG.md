@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-06-10
+
+### Added
+
+-   Added `Config::loadCached()` for framework configuration cache files.
+
+### Changed
+
+-   Tightened config loading validation for cached and file-based configuration.
+
 ## [2.0.1] - 2025-10-05
 
 ### Fixed

@@ -79,6 +79,7 @@ function inspectPackage(string $root, string $packageDirectory, array &$violatio
     $phpstanFile = $packageDirectory . '/phpstan.neon';
     if (!is_file($phpstanFile)) {
         $violations[] = "{$relativeDirectory}/phpstan.neon: package must have a PHPStan config";
+
         return;
     }
 
@@ -94,6 +95,7 @@ function inspectSkeleton(string $root, string $skeletonDirectory, array &$violat
 {
     if (!is_dir($skeletonDirectory)) {
         $violations[] = 'skeleton/annabel-skeleton: skeleton application is missing';
+
         return;
     }
 
@@ -129,11 +131,16 @@ function requiredSkeletonFiles(): array
         'config/app.php',
         'config/cache.php',
         'config/database.php',
+        'config/filesystem.php',
+        'config/http-client.php',
         'config/logging.php',
+        'config/mail.php',
+        'config/queue.php',
         'config/security.php',
         'config/session.php',
         'config/validation.php',
         'public/index.php',
+        'routes/schedule.php',
         'routes/web.php',
     ];
 }

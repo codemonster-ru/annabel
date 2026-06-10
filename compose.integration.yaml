@@ -1,0 +1,119 @@
+services:
+  php:
+    depends_on:
+      integration-mysql:
+        condition: service_healthy
+      integration-redis:
+        condition: service_healthy
+      integration-redis-sentinel:
+        condition: service_healthy
+      integration-redis-cluster-init:
+        condition: service_completed_successfully
+    environment:
+      REDIS_TESTS: "1"
+      REDIS_HOST: integration-redis
+      REDIS_PORT: "6379"
+      REDIS_SENTINEL_TESTS: "1"
+      REDIS_SENTINEL_HOST: integration-redis-sentinel
+      REDIS_SENTINEL_PORT: "26379"
+      REDIS_SENTINEL_SERVICE: mymaster
+      REDIS_CLUSTER_TESTS: "1"
+      REDIS_CLUSTER_SEEDS: integration-redis-cluster-0:6379,integration-redis-cluster-1:6379,integration-redis-cluster-2:6379
+      MYSQL_HOST: integration-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: annabel_integration
+      MYSQL_USERNAME: annabel
+      MYSQL_PASSWORD: annabel
+
+  integration-redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "no", "--protected-mode", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  integration-redis-sentinel:
+    image: redis:7.4-alpine
+    depends_on:
+      integration-redis:
+        condition: service_healthy
+    command:
+      - sh
+      - -lc
+      - |
+        cat > /tmp/sentinel.conf <<'EOF'
+        port 26379
+        sentinel resolve-hostnames yes
+        sentinel monitor mymaster integration-redis 6379 1
+        sentinel down-after-milliseconds mymaster 5000
+        sentinel failover-timeout mymaster 10000
+        sentinel parallel-syncs mymaster 1
+        EOF
+        exec redis-server /tmp/sentinel.conf --sentinel
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  integration-redis-cluster-0:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--cluster-node-timeout", "5000", "--appendonly", "no", "--protected-mode", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  integration-redis-cluster-1:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--cluster-node-timeout", "5000", "--appendonly", "no", "--protected-mode", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  integration-redis-cluster-2:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--cluster-enabled", "yes", "--cluster-config-file", "nodes.conf", "--cluster-node-timeout", "5000", "--appendonly", "no", "--protected-mode", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  integration-redis-cluster-init:
+    image: redis:7.4-alpine
+    depends_on:
+      integration-redis-cluster-0:
+        condition: service_healthy
+      integration-redis-cluster-1:
+        condition: service_healthy
+      integration-redis-cluster-2:
+        condition: service_healthy
+    command:
+      - sh
+      - -lc
+      - |
+        redis-cli --cluster create \
+          integration-redis-cluster-0:6379 \
+          integration-redis-cluster-1:6379 \
+          integration-redis-cluster-2:6379 \
+          --cluster-replicas 0 --cluster-yes
+        redis-cli -c -h integration-redis-cluster-0 ping
+
+  integration-mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: annabel_integration
+      MYSQL_USER: annabel
+      MYSQL_PASSWORD: annabel
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30

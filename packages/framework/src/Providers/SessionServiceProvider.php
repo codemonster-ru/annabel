@@ -11,7 +11,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
 {
     public function register(): void
     {
-        $this->app()->singleton('session', fn() => $this->startSession());
+        $this->app()->singleton('session', fn () => $this->startSession());
     }
 
     public function boot(): void
@@ -24,7 +24,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         $driver = $this->stringConfig('session.driver', 'file');
         $path = $this->stringConfig(
             'session.path',
-            $this->app()->getBasePath() . '/storage/sessions'
+            $this->app()->getBasePath() . '/storage/sessions',
         );
         $options = [
             'path' => $path,
@@ -35,7 +35,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         if ($driver === 'redis') {
             Session::start(
                 options: $options,
-                customHandler: $this->redisHandler()
+                customHandler: $this->redisHandler(),
             );
 
             return Session::store();
@@ -69,7 +69,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
 
         if (!is_writable($path)) {
             throw new \RuntimeException(
-                "The session directory is not writable by the PHP process: {$path}"
+                "The session directory is not writable by the PHP process: {$path}",
             );
         }
     }
@@ -78,7 +78,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
     {
         if (!class_exists(\Redis::class)) {
             throw new \RuntimeException(
-                'The redis session driver requires the PHP Redis extension.'
+                'The redis session driver requires the PHP Redis extension.',
             );
         }
 
@@ -86,7 +86,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         $connected = $redis->connect(
             $this->stringConfig('session.redis.host', '127.0.0.1'),
             $this->intConfig('session.redis.port', 6379),
-            $this->floatConfig('session.redis.timeout', 2.0)
+            $this->floatConfig('session.redis.timeout', 2.0),
         );
 
         if (!$connected) {
@@ -108,7 +108,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         return new RedisSessionHandler(
             $redis,
             $this->stringConfig('session.redis.prefix', 'session:'),
-            $this->intConfig('session.redis.ttl', 86400)
+            $this->intConfig('session.redis.ttl', 86400),
         );
     }
 

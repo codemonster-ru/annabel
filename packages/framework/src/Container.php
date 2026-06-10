@@ -2,9 +2,9 @@
 
 namespace Codemonster\Annabel;
 
+use Closure;
 use Codemonster\Annabel\Exceptions\ContainerException;
 use Codemonster\Annabel\Exceptions\NotFoundException;
-use Closure;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -22,7 +22,7 @@ class Container implements ContainerInterface
     public function bind(string $abstract, Closure|string $concrete, bool $singleton = false): void
     {
         if ($abstract === $concrete) {
-            $concrete = fn(self $container): object => $container->build($abstract);
+            $concrete = fn (self $container): object => $container->build($abstract);
         }
 
         $this->bindings[$abstract] = compact('concrete', 'singleton');
@@ -64,7 +64,7 @@ class Container implements ContainerInterface
         if (isset($this->instances[$abstract])) {
             if ($parameters !== []) {
                 throw new ContainerException(
-                    "Singleton [$abstract] is already resolved; parameters are ignored."
+                    "Singleton [$abstract] is already resolved; parameters are ignored.",
                 );
             }
 
@@ -113,7 +113,7 @@ class Container implements ContainerInterface
             $constructor = $reflector->getConstructor();
 
             if (!$constructor) {
-                return new $class;
+                return new $class();
             }
 
             $dependencies = [];
@@ -135,7 +135,7 @@ class Container implements ContainerInterface
                     $dependencies[] = $param->getDefaultValue();
                 } else {
                     throw new ContainerException(
-                        "Unresolvable dependency [{$param->getName()}] in [$class]"
+                        "Unresolvable dependency [{$param->getName()}] in [$class]",
                     );
                 }
             }

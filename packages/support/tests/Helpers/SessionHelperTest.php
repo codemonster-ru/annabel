@@ -2,14 +2,14 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
 use Codemonster\Session\Session;
+use PHPUnit\Framework\TestCase;
 
 class SessionHelperTest extends TestCase
 {
     protected function setUp(): void
     {
-        app()->singleton('session', fn() => new Session());
+        app()->singleton('session', fn () => new Session());
     }
 
     public function testSessionReturnsInstance()

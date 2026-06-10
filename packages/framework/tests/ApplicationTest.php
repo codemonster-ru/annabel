@@ -3,7 +3,9 @@
 namespace Codemonster\Annabel\Tests;
 
 use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Bootstrap\RouteCache;
 use Codemonster\Http\Request;
+use Codemonster\Router\Router;
 use Codemonster\View\View;
 use PHPUnit\Framework\TestCase;
 
@@ -33,11 +35,39 @@ class ApplicationTest extends TestCase
         Application::resetInstance();
 
         $app = new Application(__DIR__ . '/..', null, false);
-        $app->get('/hello', fn() => 'world');
+        $app->get('/hello', fn () => 'world');
 
         $response = $app->handle(new Request('GET', '/hello'));
 
         $this->assertSame('world', $response->getContent());
+    }
+
+    public function test_cached_routes_can_be_loaded(): void
+    {
+        Application::resetInstance();
+
+        $basePath = sys_get_temp_dir() . '/annabel-application-' . bin2hex(random_bytes(6));
+        mkdir($basePath . '/bootstrap/cache', 0770, true);
+
+        try {
+            $router = new Router();
+            $router->get('/cached', [CachedRouteController::class, 'show']);
+            RouteCache::write($basePath, $router);
+
+            $app = new Application(__DIR__ . '/..');
+            $app->loadCachedRoutes(RouteCache::path($basePath));
+
+            $route = $app->getKernel()->getRouter()->dispatch('GET', '/cached');
+
+            $this->assertNotNull($route);
+            $this->assertSame([CachedRouteController::class, 'show'], $route->handler);
+        } finally {
+            @unlink(RouteCache::path($basePath));
+            @rmdir($basePath . '/bootstrap/cache');
+            @rmdir($basePath . '/bootstrap');
+            @rmdir($basePath);
+            Application::resetInstance();
+        }
     }
 
     public function test_make_accepts_parameters()
@@ -67,8 +97,16 @@ class ApplicationTest extends TestCase
     }
 }
 
-
 class ApplicationMakeSubject
 {
-    public function __construct(public string $name) {}
+    public function __construct(public string $name)
+    {
+    }
+}
+
+class CachedRouteController
+{
+    public function show(): void
+    {
+    }
 }

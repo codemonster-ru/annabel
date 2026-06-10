@@ -9,7 +9,7 @@ class ValidationHelperTest extends TestCase
 {
     protected function setUp(): void
     {
-        app()->singleton('session', fn() => new Session());
+        app()->singleton('session', fn () => new Session());
     }
 
     public function test_old_returns_flashed_input()

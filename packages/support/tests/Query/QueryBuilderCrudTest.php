@@ -3,8 +3,8 @@
 namespace Codemonster\Support\Tests\Query;
 
 use Codemonster\Database\Query\QueryBuilder;
-use PHPUnit\Framework\TestCase;
 use Codemonster\Support\Tests\Fakes\FakeConnection;
+use PHPUnit\Framework\TestCase;
 
 class QueryBuilderCrudTest extends TestCase
 {
@@ -32,11 +32,11 @@ class QueryBuilderCrudTest extends TestCase
         $this->assertTrue($result);
         $this->assertSame(
             'INSERT INTO `users` (`name`, `email`) VALUES (?, ?)',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame(
             ['Vasya', 'k@example.com'],
-            $this->connection->lastBindings
+            $this->connection->lastBindings,
         );
     }
 
@@ -50,7 +50,7 @@ class QueryBuilderCrudTest extends TestCase
 
         $this->assertSame(
             'INSERT INTO `ideas` (`title`) VALUES (?)',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame(['New idea'], $this->connection->lastBindings);
         $this->assertTrue(is_int($id), 'insertGetId must return a number (ID)');
@@ -75,11 +75,11 @@ class QueryBuilderCrudTest extends TestCase
         $this->assertSame(1, $updated);
         $this->assertSame(
             'UPDATE `users` SET `name` = ?, `active` = ? WHERE `id` = ?',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame(
             ['Updated', 0, 10],
-            $this->connection->lastBindings
+            $this->connection->lastBindings,
         );
     }
 
@@ -99,7 +99,7 @@ class QueryBuilderCrudTest extends TestCase
         $this->assertSame(1, $deleted);
         $this->assertSame(
             'DELETE FROM `logs` WHERE `id` = ?',
-            $this->connection->lastSql
+            $this->connection->lastSql,
         );
         $this->assertSame([5], $this->connection->lastBindings);
     }

@@ -22,10 +22,82 @@ Create a new project using Composer:
 ```bash
 composer create-project codemonster-ru/annabel-skeleton myapp
 cd myapp
+cp .env.example .env
+composer install
 composer start
 ```
 
 Open [http://localhost:8000](http://localhost:8000) to see your first page rendered by **Annabel**.
+
+## Common Commands
+
+The skeleton exposes the most common framework commands as Composer scripts:
+
+```bash
+composer serve
+composer migrate
+composer optimize
+composer optimize:clear
+composer queue
+composer schedule
+```
+
+Use `composer annabel -- <command>` or `php vendor/bin/annabel <command>` for
+commands that do not have a dedicated script alias.
+
+## Database Setup
+
+Configure your database in `.env`, then run migrations:
+
+```bash
+composer migrate
+```
+
+For local SQLite development, create the database file before migrating:
+
+```bash
+touch database/database.sqlite
+```
+
+## Production
+
+Install optimized dependencies, cache framework metadata, and run migrations:
+
+```bash
+composer install --no-dev --prefer-dist --optimize-autoloader
+composer migrate
+composer optimize
+```
+
+Make sure `storage/`, `bootstrap/cache/`, and your SQLite database path if used
+are writable by the PHP process.
+
+Run queue workers under your process supervisor:
+
+```bash
+composer queue
+```
+
+Run the scheduler every minute from cron:
+
+```cron
+* * * * * cd /path/to/app && php vendor/bin/annabel schedule:run >> /dev/null 2>&1
+```
+
+## Frontend Assets
+
+The skeleton ships with Vite for CSS and JavaScript assets.
+
+```bash
+npm install
+npm run dev
+```
+
+Use `npm run build` for production assets. Views can include entries with:
+
+```php
+<?= vite('resources/js/app.js') ?>
+```
 
 ## Security Defaults
 

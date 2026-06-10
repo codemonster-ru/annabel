@@ -2,8 +2,8 @@
 
 namespace Codemonster\Support\Tests\Query;
 
-use PHPUnit\Framework\TestCase;
 use Codemonster\Support\Tests\Fakes\FakeConnection;
+use PHPUnit\Framework\TestCase;
 
 class TransactionTest extends TestCase
 {
@@ -20,7 +20,7 @@ class TransactionTest extends TestCase
         $this->assertSame(
             ['beginTransaction'],
             $this->connection->queries,
-            'beginTransaction() must be written to the queries array'
+            'beginTransaction() must be written to the queries array',
         );
     }
 
@@ -31,7 +31,7 @@ class TransactionTest extends TestCase
         $this->assertSame(
             ['commit'],
             $this->connection->queries,
-            'commit() must be written to the queries array'
+            'commit() must be written to the queries array',
         );
     }
 
@@ -42,7 +42,7 @@ class TransactionTest extends TestCase
         $this->assertSame(
             ['rollBack'],
             $this->connection->queries,
-            'rollBack() must be written to the queries array'
+            'rollBack() must be written to the queries array',
         );
     }
 
@@ -55,7 +55,7 @@ class TransactionTest extends TestCase
         $this->assertSame(
             ['beginTransaction', 'commit'],
             $this->connection->queries,
-            'transaction() must begin a transaction and complete the commit'
+            'transaction() must begin a transaction and complete the commit',
         );
 
         $this->assertSame(123, $result);
@@ -74,7 +74,7 @@ class TransactionTest extends TestCase
             $this->assertSame(
                 ['beginTransaction', 'rollBack'],
                 $this->connection->queries,
-                'transaction() should call rollBack on exception'
+                'transaction() should call rollBack on exception',
             );
         }
     }

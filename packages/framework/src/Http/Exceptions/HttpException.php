@@ -14,7 +14,7 @@ class HttpException extends RuntimeException
         protected int $statusCode,
         string $message = '',
         protected array $headers = [],
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         if ($statusCode < 400 || $statusCode > 599) {
             throw new \InvalidArgumentException('HTTP exception status must be between 400 and 599.');

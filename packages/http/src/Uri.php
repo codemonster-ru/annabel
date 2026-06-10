@@ -38,7 +38,10 @@ class Uri implements UriInterface
         }
     }
 
-    public function getScheme(): string { return $this->scheme; }
+    public function getScheme(): string
+    {
+        return $this->scheme;
+    }
     public function getAuthority(): string
     {
         $authority = $this->host;
@@ -53,12 +56,30 @@ class Uri implements UriInterface
 
         return $authority;
     }
-    public function getUserInfo(): string { return $this->userInfo; }
-    public function getHost(): string { return $this->host; }
-    public function getPort(): ?int { return $this->isDefaultPort() ? null : $this->port; }
-    public function getPath(): string { return $this->path; }
-    public function getQuery(): string { return $this->query; }
-    public function getFragment(): string { return $this->fragment; }
+    public function getUserInfo(): string
+    {
+        return $this->userInfo;
+    }
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+    public function getPort(): ?int
+    {
+        return $this->isDefaultPort() ? null : $this->port;
+    }
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+    public function getFragment(): string
+    {
+        return $this->fragment;
+    }
 
     public function withScheme(string $scheme): static
     {

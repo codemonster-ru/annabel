@@ -3,10 +3,11 @@
 namespace Codemonster\Annabel\Bootstrap;
 
 use Codemonster\Annabel\Application;
+use Codemonster\Annabel\Container\ServiceAttributeRegistrar;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
-use Codemonster\View\View;
 use Codemonster\Annabel\Http\Kernel;
-use Throwable;
+use Codemonster\Annabel\Routing\RouteAttributeRegistrar;
+use Codemonster\View\View;
 
 class Bootstrapper
 {
@@ -29,6 +30,7 @@ class Bootstrapper
         $this->initErrorHandler();
         $this->initView($customView);
         $this->initKernel();
+        $this->registerAttributeRoutes();
     }
 
     protected function loadEnv(): void
@@ -63,6 +65,8 @@ class Bootstrapper
             $this->registerProvider($providerClass);
         }
 
+        $this->registerDiscoveredServices();
+
         foreach ($this->registeredProviders as $provider) {
             $provider->boot();
         }
@@ -89,7 +93,7 @@ class Bootstrapper
         $disabled = $this->normalizeProviderList($config['disabled'] ?? []);
         $providers = array_values(array_filter(
             $this->normalizeProviderList($defaults),
-            fn(string $provider): bool => !in_array($provider, $disabled, true)
+            fn (string $provider): bool => !in_array($provider, $disabled, true),
         ));
 
         $extra = $this->normalizeProviderList($config['extra'] ?? $config['providers'] ?? []);
@@ -116,7 +120,7 @@ class Bootstrapper
             $providers = array_merge($providers, $this->packageManifest->providers(
                 $dontDiscover,
                 ($packages['cache'] ?? true) !== false,
-                $cachePath
+                $cachePath,
             ));
         }
 
@@ -130,7 +134,7 @@ class Bootstrapper
 
         return array_values(array_filter(
             array_unique($providers),
-            fn(string $provider): bool => !in_array($provider, $disabled, true)
+            fn (string $provider): bool => !in_array($provider, $disabled, true),
         ));
     }
 
@@ -141,9 +145,20 @@ class Bootstrapper
     {
         return [
             \Codemonster\Annabel\Providers\CoreServiceProvider::class,
+            \Codemonster\Annabel\Providers\AssetServiceProvider::class,
+            \Codemonster\Annabel\Providers\CacheServiceProvider::class,
+            \Codemonster\Annabel\Providers\EventServiceProvider::class,
+            \Codemonster\Annabel\Providers\HttpClientServiceProvider::class,
+            \Codemonster\Annabel\Providers\LoggingServiceProvider::class,
+            \Codemonster\Annabel\Providers\MailServiceProvider::class,
+            \Codemonster\Annabel\Providers\QueueServiceProvider::class,
+            \Codemonster\Annabel\Providers\ScheduleServiceProvider::class,
+            \Codemonster\Annabel\Providers\ValidationServiceProvider::class,
             \Codemonster\Annabel\Providers\DatabaseServiceProvider::class,
             \Codemonster\Annabel\Providers\ViewServiceProvider::class,
             \Codemonster\Annabel\Providers\SessionServiceProvider::class,
+            \Codemonster\Annabel\Providers\AuthServiceProvider::class,
+            \Codemonster\Annabel\Providers\FilesystemServiceProvider::class,
         ];
     }
 
@@ -152,18 +167,7 @@ class Bootstrapper
      */
     protected function providerConfig(): array
     {
-        $file = $this->app->getBasePath() . '/config/app.php';
-
-        if (!is_file($file)) {
-            return [];
-        }
-
-        $config = require $file;
-
-        if (!is_array($config)) {
-            throw new \RuntimeException("Application config [$file] must return an array.");
-        }
-
+        $config = $this->applicationConfig();
         $providers = $config['providers'] ?? [];
 
         if (!is_array($providers)) {
@@ -182,6 +186,44 @@ class Bootstrapper
 
         /** @var array<string, mixed> $providers */
         return $providers;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function applicationConfig(): array
+    {
+        $cache = ConfigCache::path($this->app->getBasePath());
+        $file = $this->app->getBasePath() . '/config/app.php';
+
+        if (is_file($cache)) {
+            $cached = require $cache;
+
+            if (!is_array($cached) || !is_array($cached['app'] ?? null)) {
+                throw new \RuntimeException("Application config cache [{$cache}] is invalid.");
+            }
+
+            $config = $cached['app'];
+        } else {
+            if (!is_file($file)) {
+                return [];
+            }
+
+            $config = require $file;
+        }
+
+        if (!is_array($config)) {
+            throw new \RuntimeException("Application config [$file] must return an array.");
+        }
+
+        foreach ($config as $key => $_) {
+            if (!is_string($key)) {
+                throw new \RuntimeException('Application config keys must be strings.');
+            }
+        }
+
+        /** @var array<string, mixed> $config */
+        return $config;
     }
 
     /**
@@ -241,7 +283,7 @@ class Bootstrapper
     {
         if (!is_subclass_of($providerClass, ServiceProviderInterface::class)) {
             throw new \RuntimeException(
-                "Service provider [$providerClass] must implement " . ServiceProviderInterface::class
+                "Service provider [$providerClass] must implement " . ServiceProviderInterface::class,
             );
         }
 
@@ -328,6 +370,45 @@ class Bootstrapper
         $this->app->setKernel($this->app->make(Kernel::class));
     }
 
+    protected function registerDiscoveredServices(): void
+    {
+        $config = $this->applicationConfig()['services'] ?? [];
+
+        if (!is_array($config)) {
+            throw new \RuntimeException('Application service discovery config must be an array.');
+        }
+
+        /** @var array<string, mixed> $config */
+        (new ServiceAttributeRegistrar($this->app->getContainer()))->register($config);
+    }
+
+    protected function registerAttributeRoutes(): void
+    {
+        if ($this->shouldSkipAttributeRoutes()) {
+            return;
+        }
+
+        $routing = $this->applicationConfig()['routing'] ?? [];
+
+        if (!is_array($routing)) {
+            throw new \RuntimeException('Application routing config must be an array.');
+        }
+
+        $config = $routing['attributes'] ?? [];
+
+        if (!is_array($config)) {
+            throw new \RuntimeException('Application attribute routing config must be an array.');
+        }
+
+        /** @var array<string, mixed> $config */
+        (new RouteAttributeRegistrar($this->app->getKernel()->getRouter()))->register($config);
+    }
+
+    protected function shouldSkipAttributeRoutes(): bool
+    {
+        return PHP_SAPI !== 'cli' && is_file(RouteCache::path($this->app->getBasePath()));
+    }
+
     protected function initErrorHandler(): void
     {
         if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
@@ -343,11 +424,11 @@ class Bootstrapper
                 if ($response instanceof \Codemonster\Http\Response) {
                     $response->send();
                 } else {
-                    echo (string)$response;
+                    echo (string) $response;
                 }
             });
         } catch (\Throwable $e) {
-            $message = "Fatal: " . $e->getMessage() . PHP_EOL;
+            $message = 'Fatal: ' . $e->getMessage() . PHP_EOL;
 
             if (defined('STDERR') && is_resource(\STDERR)) {
                 fwrite(\STDERR, $message);

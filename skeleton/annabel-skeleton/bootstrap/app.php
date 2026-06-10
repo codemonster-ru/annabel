@@ -6,6 +6,12 @@ $baseDir = __DIR__ . '/..';
 
 $app = new Application($baseDir);
 
-require "$baseDir/routes/web.php";
+$routeCache = "$baseDir/bootstrap/cache/routes.php";
+
+if (PHP_SAPI !== 'cli' && is_file($routeCache)) {
+    $app->loadCachedRoutes($routeCache);
+} else {
+    require "$baseDir/routes/web.php";
+}
 
 return $app;

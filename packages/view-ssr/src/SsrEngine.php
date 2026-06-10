@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Codemonster\View\Engines;
@@ -15,7 +16,7 @@ final class SsrEngine implements EngineInterface
 
         if (!\is_callable($render)) {
             throw new \InvalidArgumentException(
-                'SSR bridge must have a render(string $view, array $data = []): string method.'
+                'SSR bridge must have a render(string $view, array $data = []): string method.',
             );
         }
 

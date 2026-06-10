@@ -6,9 +6,7 @@ namespace Codemonster\View\Tests\Locator;
 
 use Codemonster\View\Locator\DefaultLocator;
 use Codemonster\View\Locator\LocatorInterface;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 final class DefaultLocatorTest extends TestCase
 {

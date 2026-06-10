@@ -30,5 +30,7 @@ class AppHelperTest extends TestCase
 
 class AppHelperSubject
 {
-    public function __construct(public string $name) {}
+    public function __construct(public string $name)
+    {
+    }
 }

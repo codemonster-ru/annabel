@@ -2,9 +2,9 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
-use Codemonster\Database\Schema\Schema;
 use Codemonster\Database\DatabaseManager;
+use Codemonster\Database\Schema\Schema;
+use PHPUnit\Framework\TestCase;
 
 class SchemaHelperTest extends TestCase
 {
@@ -24,7 +24,7 @@ class SchemaHelperTest extends TestCase
 
         $this->assertInstanceOf(
             Schema::class,
-            schema()
+            schema(),
         );
     }
 }

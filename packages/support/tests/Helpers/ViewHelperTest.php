@@ -2,11 +2,11 @@
 
 namespace Codemonster\Support\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
-use Codemonster\View\View;
 use Codemonster\Http\Response;
-use Codemonster\View\Locator\DefaultLocator;
 use Codemonster\View\Engines\PhpEngine;
+use Codemonster\View\Locator\DefaultLocator;
+use Codemonster\View\View;
+use PHPUnit\Framework\TestCase;
 
 class ViewHelperTest extends TestCase
 {
@@ -21,10 +21,10 @@ class ViewHelperTest extends TestCase
         file_put_contents($this->tempViewPath . '/home.php', '<h1>Hello <?= $user ?></h1>');
 
         $locator = new DefaultLocator([$this->tempViewPath]);
-        $engine  = new PhpEngine($locator);
-        $view    = new View(['php' => $engine], 'php');
+        $engine = new PhpEngine($locator);
+        $view = new View(['php' => $engine], 'php');
 
-        app()->singleton('view', fn() => $view);
+        app()->singleton('view', fn () => $view);
     }
 
     protected function tearDown(): void

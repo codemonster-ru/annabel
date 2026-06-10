@@ -2,8 +2,8 @@
 
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
-use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class ResponseTest extends TestCase
 {
@@ -68,7 +68,7 @@ class ResponseTest extends TestCase
 
     public function testSendThrowsWhenHeadersAlreadySent(): void
     {
-        $response = new class('Hello') extends Response {
+        $response = new class ('Hello') extends Response {
             protected function isCli(): bool
             {
                 return false;
@@ -212,7 +212,7 @@ class ResponseTest extends TestCase
 
     public function testSetCookieHeaderArrayDoesNotReplace(): void
     {
-        $response = new class('Hello') extends Response {
+        $response = new class ('Hello') extends Response {
             public array $sent = [];
 
             protected function isCli(): bool
@@ -245,7 +245,7 @@ class ResponseTest extends TestCase
             ],
             array_values(array_filter($response->sent, static function (array $item): bool {
                 return $item[0] === 'Set-Cookie';
-            }))
+            })),
         );
     }
 
@@ -286,7 +286,7 @@ class ResponseTest extends TestCase
     {
         $response = new Response('OK');
 
-        $this->assertSame('OK', (string)$response);
+        $this->assertSame('OK', (string) $response);
     }
 
     private function getCookies(Response $response): array

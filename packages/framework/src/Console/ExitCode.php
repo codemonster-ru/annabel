@@ -8,5 +8,7 @@ final class ExitCode
     public const FAILURE = 1;
     public const INVALID = 2;
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 }

@@ -2,20 +2,20 @@
 
 namespace Codemonster\Annabel\Tests\Http;
 
-use Codemonster\Annabel\Http\Kernel;
-use Codemonster\Annabel\Http\Exceptions\MethodNotAllowedHttpException;
-use Codemonster\Http\Request;
 use Codemonster\Annabel\Application;
-use Codemonster\Router\Router;
+use Codemonster\Annabel\Http\Exceptions\MethodNotAllowedHttpException;
+use Codemonster\Annabel\Http\Kernel;
+use Codemonster\Http\Request;
 use Codemonster\Http\Response;
-use Codemonster\Annabel\Validation\ValidationException;
-use Codemonster\Annabel\Validation\ValidationResult;
+use Codemonster\Router\Router;
+use Codemonster\Validation\ValidationException;
+use Codemonster\Validation\ValidationResult;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\AbstractLogger;
-use PHPUnit\Framework\TestCase;
 
 class TestMiddlewareA
 {
@@ -47,7 +47,9 @@ class TestMiddlewareRole
     }
 }
 
-class TestMissingController {}
+class TestMissingController
+{
+}
 
 class TestPsrMiddleware implements MiddlewareInterface
 {
@@ -79,6 +81,14 @@ class TestValidatingController
     }
 }
 
+class TestRouteParameterController
+{
+    public function show(Request $request, string $id): string
+    {
+        return $request->method() . ':' . $id;
+    }
+}
+
 class KernelTest extends TestCase
 {
     public function test_kernel_dispatches_route()
@@ -86,7 +96,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->get('/hello', fn() => 'world');
+        $router->get('/hello', fn () => 'world');
         $app = new Application(__DIR__ . '/..');
 
         $kernel = new Kernel($app, $router);
@@ -95,6 +105,34 @@ class KernelTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $res);
         $this->assertEquals('world', $res->getContent());
+    }
+
+    public function test_kernel_passes_route_parameters_to_closures()
+    {
+        Application::resetInstance();
+
+        $router = new Router();
+        $router->get('/users/{id}', fn (Request $request, string $id) => $request->method() . ':' . $id);
+        $app = new Application(__DIR__ . '/..');
+
+        $kernel = new Kernel($app, $router);
+        $res = $kernel->handle(new Request('GET', '/users/42'));
+
+        $this->assertEquals('GET:42', $res->getContent());
+    }
+
+    public function test_kernel_passes_route_parameters_to_controllers()
+    {
+        Application::resetInstance();
+
+        $router = new Router();
+        $router->get('/users/{id}', [TestRouteParameterController::class, 'show']);
+        $app = new Application(__DIR__ . '/..');
+
+        $kernel = new Kernel($app, $router);
+        $res = $kernel->handle(new Request('GET', '/users/42'));
+
+        $this->assertEquals('GET:42', $res->getContent());
     }
 
     public function test_kernel_returns_404()
@@ -115,7 +153,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->get('/hello', fn() => 'world')->middleware(TestMiddlewareA::class, TestMiddlewareB::class);
+        $router->get('/hello', fn () => 'world')->middleware(TestMiddlewareA::class, TestMiddlewareB::class);
         $app = new Application(__DIR__ . '/..');
         $kernel = new Kernel($app, $router);
 
@@ -129,13 +167,46 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->get('/hello', fn() => 'world')->middleware([TestMiddlewareRole::class, 'admin']);
+        $router->get('/hello', fn () => 'world')->middleware([TestMiddlewareRole::class, 'admin']);
         $app = new Application(__DIR__ . '/..');
         $kernel = new Kernel($app, $router);
 
         $res = $kernel->handle(new Request('GET', '/hello'));
 
         $this->assertEquals('admin:world', $res->getContent());
+    }
+
+    public function test_kernel_resolves_middleware_aliases_with_arguments()
+    {
+        Application::resetInstance();
+
+        $router = new Router();
+        $router->get('/hello', fn () => 'world')->middleware('role:admin');
+        $app = new Application(__DIR__ . '/..');
+        $kernel = new Kernel($app, $router);
+        $kernel->aliasMiddleware('role', TestMiddlewareRole::class);
+
+        $res = $kernel->handle(new Request('GET', '/hello'));
+
+        $this->assertEquals('admin:world', $res->getContent());
+    }
+
+    public function test_kernel_resolves_middleware_groups()
+    {
+        Application::resetInstance();
+
+        $router = new Router();
+        $router->get('/hello', fn () => 'world')->middleware('web');
+        $app = new Application(__DIR__ . '/..');
+        $kernel = new Kernel($app, $router);
+        $kernel->middlewareGroup('web', [
+            TestMiddlewareA::class,
+            [TestMiddlewareRole::class, 'member'],
+        ]);
+
+        $res = $kernel->handle(new Request('GET', '/hello'));
+
+        $this->assertEquals('A(member:world)', $res->getContent());
     }
 
     public function test_kernel_handles_missing_controller_method()
@@ -157,7 +228,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->get('/hello', fn() => 'world')->middleware(TestPsrMiddleware::class);
+        $router->get('/hello', fn () => 'world')->middleware(TestPsrMiddleware::class);
         $app = new Application(__DIR__ . '/..');
         $kernel = new Kernel($app, $router);
 
@@ -173,7 +244,7 @@ class KernelTest extends TestCase
 
         $logger = new TestArrayLogger();
         $router = new Router();
-        $router->get('/boom', fn() => throw new \RuntimeException('Boom'));
+        $router->get('/boom', fn () => throw new \RuntimeException('Boom'));
         $app = new Application(__DIR__ . '/..');
         $app->getContainer()->instance(\Psr\Log\LoggerInterface::class, $logger);
         $kernel = new Kernel($app, $router);
@@ -191,7 +262,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new ValidationException(new ValidationResult([
+        $router->post('/users', fn () => throw new ValidationException(new ValidationResult([
             'email' => ['The email field is required.'],
         ], [])));
         $app = new Application(__DIR__ . '/..');
@@ -211,7 +282,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new ValidationException(new ValidationResult([
+        $router->post('/users', fn () => throw new ValidationException(new ValidationResult([
             'email' => ['The email field is required.'],
         ], [])));
         $app = new Application(__DIR__ . '/..');
@@ -227,7 +298,7 @@ class KernelTest extends TestCase
         $this->assertSame(['/users/create'], $res->getHeader('Location'));
         $this->assertSame(
             ['email' => ['The email field is required.']],
-            $app->make('session')->get('errors')
+            $app->make('session')->get('errors'),
         );
         $this->assertSame(['name' => 'Annabel'], $app->make('session')->get('_old_input'));
     }
@@ -237,7 +308,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new ValidationException(new ValidationResult([
+        $router->post('/users', fn () => throw new ValidationException(new ValidationResult([
             'email' => ['The email field is required.'],
         ], [])));
         $app = new Application(__DIR__ . '/..');
@@ -258,7 +329,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new ValidationException(new ValidationResult([
+        $router->post('/users', fn () => throw new ValidationException(new ValidationResult([
             'email' => ['The email field is required.'],
         ], [])));
         $app = new Application(__DIR__ . '/..');
@@ -279,7 +350,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new ValidationException(new ValidationResult([
+        $router->post('/users', fn () => throw new ValidationException(new ValidationResult([
             'email' => ['The email field is required.'],
         ], [])));
         $app = new Application(__DIR__ . '/..');
@@ -307,7 +378,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new MethodNotAllowedHttpException(['GET', 'HEAD']));
+        $router->post('/users', fn () => throw new MethodNotAllowedHttpException(['GET', 'HEAD']));
         $app = new Application(__DIR__ . '/..');
         $kernel = new Kernel($app, $router);
 
@@ -322,7 +393,7 @@ class KernelTest extends TestCase
         Application::resetInstance();
 
         $router = new Router();
-        $router->post('/users', fn() => throw new MethodNotAllowedHttpException(['GET']));
+        $router->post('/users', fn () => throw new MethodNotAllowedHttpException(['GET']));
         $app = new Application(__DIR__ . '/..');
         $kernel = new Kernel($app, $router);
 

@@ -3,20 +3,20 @@
 namespace Codemonster\Annabel\Database;
 
 use Codemonster\Database\Console\CommandRegistry;
-use Codemonster\Database\Console\DatabaseConsoleKernel;
 use Codemonster\Database\Console\Commands\MakeMigrationCommand;
+use Codemonster\Database\Console\Commands\MakeSeedCommand;
 use Codemonster\Database\Console\Commands\MigrateCommand;
 use Codemonster\Database\Console\Commands\RollbackCommand;
-use Codemonster\Database\Console\Commands\StatusCommand;
-use Codemonster\Database\Console\Commands\MakeSeedCommand;
 use Codemonster\Database\Console\Commands\SeedCommand;
+use Codemonster\Database\Console\Commands\StatusCommand;
 use Codemonster\Database\Console\Commands\TruncateCommand;
 use Codemonster\Database\Console\Commands\WipeCommand;
+use Codemonster\Database\Console\DatabaseConsoleKernel;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\Migrator;
-use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Seeders\SeederRunner;
+use Codemonster\Database\Seeders\SeedPathResolver;
 
 /**
  * Custom kernel that avoids touching the database until a command executes.
@@ -26,7 +26,7 @@ class LazyDatabaseConsoleKernel extends DatabaseConsoleKernel
     public function __construct(
         ConnectionInterface $connection,
         ?MigrationPathResolver $paths = null,
-        ?SeedPathResolver $seedPaths = null
+        ?SeedPathResolver $seedPaths = null,
     ) {
         $this->paths = $paths ?? new MigrationPathResolver();
 

@@ -1,7 +1,7 @@
 <?php
 
-use Codemonster\Annabel\Validation\ValidationResult;
-use Codemonster\Annabel\Validation\Validator;
+use Codemonster\Validation\ValidationResult;
+use Codemonster\Validation\Validator;
 
 if (!function_exists('validator')) {
     /**

@@ -44,7 +44,7 @@ class PublishRegistry
                 ) {
                     $this->resources[$index]['tags'] = array_values(array_unique(array_merge(
                         $resource['tags'],
-                        $tags
+                        $tags,
                     )));
 
                     continue 2;
@@ -75,9 +75,9 @@ class PublishRegistry
     {
         return array_values(array_filter(
             $this->resources,
-            static fn(array $resource): bool =>
+            static fn (array $resource): bool =>
                 ($provider === null || $resource['provider'] === $provider)
-                && ($tag === null || in_array($tag, $resource['tags'], true))
+                && ($tag === null || in_array($tag, $resource['tags'], true)),
         ));
     }
 }

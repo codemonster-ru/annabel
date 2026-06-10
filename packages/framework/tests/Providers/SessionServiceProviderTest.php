@@ -3,9 +3,9 @@
 namespace Codemonster\Annabel\Tests\Providers;
 
 use Codemonster\Annabel\Application;
-use Codemonster\Config\Config;
 use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\SessionServiceProvider;
+use Codemonster\Config\Config;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
 

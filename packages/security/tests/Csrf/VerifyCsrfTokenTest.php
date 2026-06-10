@@ -24,7 +24,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('GET', '/');
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertInstanceOf(Response::class, $result);
         $this->assertSame(200, $result->getStatusCode());
@@ -38,7 +38,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/submit', [], ['_token' => $token], ['Accept' => 'text/html']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(200, $result->getStatusCode());
     }
@@ -50,7 +50,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/submit', [], [], ['X-CSRF-TOKEN' => $token, 'Accept' => 'text/html']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(200, $result->getStatusCode());
     }
@@ -63,7 +63,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/submit', [], ['_token' => 'bad'], ['Accept' => 'text/html']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(419, $result->getStatusCode());
     }
@@ -76,7 +76,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/api/submit', [], [], ['Accept' => 'application/json']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(200, $result->getStatusCode());
     }
@@ -89,7 +89,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/api/submit', [], [], ['Accept' => 'text/html']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(200, $result->getStatusCode());
     }
@@ -102,7 +102,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $request = new Request('POST', '/api/submit', [], [], ['Accept' => 'application/json']);
 
-        $result = $middleware->handle($request, fn() => new Response('ok'));
+        $result = $middleware->handle($request, fn () => new Response('ok'));
 
         $this->assertSame(419, $result->getStatusCode());
     }

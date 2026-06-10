@@ -9,4 +9,3 @@ interface RateLimiterInterface
     public function availableIn(string $key): int;
     public function clear(string $key): void;
 }
-

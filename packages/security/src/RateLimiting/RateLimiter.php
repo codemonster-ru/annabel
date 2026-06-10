@@ -15,7 +15,7 @@ class RateLimiter implements AttemptRateLimiterInterface
     public function __construct(ThrottleStorageInterface $storage, ?callable $now = null)
     {
         $this->storage = $storage;
-        $this->now = $now ?? static fn() => time();
+        $this->now = $now ?? static fn () => time();
     }
 
     public function tooManyAttempts(string $key, int $maxAttempts): bool

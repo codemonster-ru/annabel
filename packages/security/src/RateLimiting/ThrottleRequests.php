@@ -27,7 +27,7 @@ class ThrottleRequests
         int $maxAttempts = 60,
         int $decaySeconds = 60,
         array $exceptPaths = [],
-        array $trustedProxies = []
+        array $trustedProxies = [],
     ) {
         $this->limiter = $limiter ?? new RateLimiter(new SessionThrottleStorage());
         $this->maxAttempts = $maxAttempts;

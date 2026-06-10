@@ -24,7 +24,7 @@ class VerifyCsrfToken
         array $exceptPaths = [],
         array $exceptMethods = ['GET', 'HEAD', 'OPTIONS'],
         bool $verifyJsonRequests = false,
-        string $inputKey = '_token'
+        string $inputKey = '_token',
     ) {
         $this->tokens = $tokens ?? new CsrfTokenManager();
         $this->exceptPaths = $exceptPaths;

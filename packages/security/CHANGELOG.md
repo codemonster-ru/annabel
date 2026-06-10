@@ -6,6 +6,7 @@ All notable changes to this package will be documented in this file.
 
 ### Changed
 
+-   Documented Annabel security config publishing and route-level throttle presets.
 -   Moved Annabel integration provider to `codemonster-ru/annabel` as `Codemonster\Annabel\Providers\SecurityServiceProvider`.
 
 ### Removed

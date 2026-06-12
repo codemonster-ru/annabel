@@ -6,25 +6,29 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Added a browser demo page that exercises the framework and bundled ecosystem services.
+- Added a browser demo page that exercises the framework and bundled ecosystem
+  services.
 - Added local package symlink checks to the Docker skeleton serve helper.
 
 ### Changed
 
-- Updated the skeleton home page and README to point users to the unified documentation.
+- Updated the skeleton home page and README to point users to the unified
+  documentation.
 - Updated `composer.dev.json` aliases for the current local package versions.
 
 ## [1.15.1] - 2026-06-10
 
 ### Changed
 
-- Added explicit Vite manifest strictness config so local installs can render before frontend assets are built.
+- Added explicit Vite manifest strictness config so local installs can render
+  before frontend assets are built.
 
 ## [Unreleased]
 
 ### Changed
 
-- Updated the security provider base class to `Codemonster\Annabel\Providers\SecurityServiceProvider`.
+- Updated the security provider base class to
+  `Codemonster\Annabel\Providers\SecurityServiceProvider`.
 - Bumped `codemonster-ru/annabel` constraint to `^1.15`.
 
 ### Added
@@ -33,7 +37,8 @@ All notable changes to this project will be documented in this file.
 - Added `config/logging.php` with file logging defaults.
 - Added `config/cache.php` with file and array cache stores.
 - Added `config/validation.php` with sensitive old-input filtering defaults.
-- Added package provider discovery and manifest cache settings to `config/app.php`.
+- Added package provider discovery and manifest cache settings to
+  `config/app.php`.
 - Documented package resource publishing through `vendor:publish`.
 - Added PSR-14 event dispatcher support through the framework.
 
@@ -41,7 +46,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Enabled throttle middleware auto-registration by default and synced `.env.example` default.
+- Enabled throttle middleware auto-registration by default and synced
+  `.env.example` default.
 - Bumped `codemonster-ru/security` to `v1.1.0`.
 
 ## [1.2.0] - 2025-12-17
@@ -49,9 +55,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Integrated `codemonster-ru/security` (CSRF + rate limiting).
-- Added `bootstrap/providers/SecurityServiceProvider.php` to auto-register security middleware in Annabel.
+- Added `bootstrap/providers/SecurityServiceProvider.php` to auto-register
+  security middleware in Annabel.
 - Added `config/security.php` with default CSRF/throttle settings.
-- Added `SECURITY_*` environment variables to `.env.example` for toggling security features per environment.
+- Added `SECURITY_*` environment variables to `.env.example` for toggling
+  security features per environment.
 
 ### Dependencies
 
@@ -62,15 +70,21 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Added `config/database.php` with default MySQL/SQLite connections and migrations path.
-- Implemented users migration (`database/migrations/2025_12_10_213456_create_users_table.php`) with standard auth columns.
+- Added `config/database.php` with default MySQL/SQLite connections and
+  migrations path.
+- Implemented users migration
+  (`database/migrations/2025_12_10_213456_create_users_table.php`) with
+  standard auth columns.
 
 ## [1.0.1] - 2025-11-10
 
 ### Changed
 
-- Updated Response import to `Codemonster\Http\Response` (`app/Controllers/HomeController.php`).
-- Removed `declare(strict_types=1)` from `public/index.php`, `bootstrap/app.php`, `routes/web.php`, `app/Controllers/HomeController.php`.
+- Updated Response import to `Codemonster\Http\Response`
+  (`app/Controllers/HomeController.php`).
+- Removed `declare(strict_types=1)` from `public/index.php`,
+  `bootstrap/app.php`, `routes/web.php`, and
+  `app/Controllers/HomeController.php`.
 - Removed redundant file-level docblocks in the same files.
 
 ### Dependencies
@@ -81,10 +95,11 @@ All notable changes to this project will be documented in this file.
 
 ### Initial Release
 
-- Introduced the **Annabel Skeleton** - starter project for the [Annabel PHP framework](https://github.com/codemonster-ru/annabel)
+- Introduced the **Annabel Skeleton** - starter project for the
+  [Annabel PHP framework](https://github.com/codemonster-ru/annabel).
 - Included minimal but complete structure:
-    - `app/Controllers/HomeController.php`
-    - `bootstrap/app.php`, `public/index.php`
-    - `routes/web.php`, `resources/views/home.php`
+  - `app/Controllers/HomeController.php`
+  - `bootstrap/app.php`, `public/index.php`
+  - `routes/web.php`, `resources/views/home.php`
 - Integrated example controller and default view template
 - Added built-in dev server command `composer start`

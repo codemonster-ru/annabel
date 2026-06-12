@@ -2,9 +2,51 @@
 set -eu
 
 APP_DIR="/workspace/skeleton/annabel-skeleton"
+LOCAL_PACKAGES="
+annabel
+api-resource
+auth
+cache
+config
+database
+dumper
+env
+errors
+events
+filesystem
+http
+http-client
+logging
+mail
+queue
+razor
+router
+scheduler
+security
+session
+support
+validation
+view
+view-php
+"
+
+needs_update=0
 
 if [ ! -f "$APP_DIR/vendor/autoload.php" ]; then
+    needs_update=1
+else
+    for package in $LOCAL_PACKAGES; do
+        if [ ! -L "$APP_DIR/vendor/codemonster-ru/$package" ]; then
+            needs_update=1
+            break
+        fi
+    done
+fi
+
+if [ "$needs_update" -eq 1 ]; then
     COMPOSER=composer.dev.json composer --working-dir="$APP_DIR" update --prefer-dist --no-progress --no-interaction
 fi
 
-exec php -S 0.0.0.0:8000 -t "$APP_DIR/public"
+cd "$APP_DIR"
+
+exec php vendor/bin/annabel serve 0.0.0.0:8000

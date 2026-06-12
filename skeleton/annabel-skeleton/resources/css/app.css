@@ -13,6 +13,16 @@ header {
     text-align: center;
 }
 
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+nav a {
+    color: white;
+}
+
 main {
     max-width: 800px;
     margin: 2rem auto;
@@ -36,4 +46,95 @@ footer {
 a {
     color: #4c51bf;
     text-decoration: none;
+}
+
+.demo-shell {
+    max-width: 1080px;
+}
+
+.demo-intro {
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.demo-grid article {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.demo-grid h3 {
+    margin-top: 0;
+}
+
+.notice {
+    background: #ebf8ff;
+    border: 1px solid #90cdf4;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.stacked {
+    display: grid;
+    gap: 0.75rem;
+}
+
+label {
+    display: grid;
+    gap: 0.25rem;
+}
+
+input {
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font: inherit;
+    padding: 0.55rem 0.65rem;
+}
+
+button {
+    background: #2b6cb0;
+    border: 0;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    margin-top: 0.75rem;
+    padding: 0.65rem 0.8rem;
+}
+
+button:hover {
+    background: #2c5282;
+}
+
+.button-link {
+    background: #2b6cb0;
+    border-radius: 6px;
+    color: white;
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.65rem 0.8rem;
+}
+
+.button-link:hover {
+    background: #2c5282;
+}
+
+code {
+    background: #edf2f7;
+    border-radius: 6px;
+    display: block;
+    overflow-wrap: anywhere;
+    padding: 0.5rem;
+}
+
+.errors {
+    color: #c53030;
+    padding-left: 1.25rem;
 }

@@ -6,9 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
--   Initial release of `codemonster-ru/dumper`
--   Added `Dumper::dump()` with optional `$mode` argument (`cli` | `html`)
--   Added `Dumper::dd()` for dump-and-die behavior
--   Supports CLI color output and HTML formatted output
--   Added `terminate()` method for test-safe exit handling
--   Added PHPUnit test suite for CLI, HTML, and `dd()` behavior
+- Initial release of `codemonster-ru/dumper`
+- Added `Dumper::dump()` with optional `$mode` argument (`cli` | `html`)
+- Added `Dumper::dd()` for dump-and-die behavior
+- Supports CLI color output and HTML formatted output
+- Added `terminate()` method for test-safe exit handling
+- Added PHPUnit test suite for CLI, HTML, and `dd()` behavior

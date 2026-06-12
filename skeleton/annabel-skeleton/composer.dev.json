@@ -7,7 +7,7 @@
         {
             "type": "path",
             "url": "../../packages/*",
-            "canonical": false,
+            "canonical": true,
             "options": {
                 "symlink": true
             }
@@ -18,8 +18,8 @@
         "codemonster-ru/annabel": "dev-main as 1.15.99",
         "codemonster-ru/api-resource": "dev-main as 1.0.99",
         "codemonster-ru/cache": "dev-main as 1.0.99",
-        "codemonster-ru/config": "dev-main as 2.0.99",
-        "codemonster-ru/database": "dev-main as 2.0.99",
+        "codemonster-ru/config": "dev-main as 2.1.99",
+        "codemonster-ru/database": "dev-main as 2.1.99",
         "codemonster-ru/dumper": "dev-main as 1.0.99",
         "codemonster-ru/env": "dev-main as 2.3.99",
         "codemonster-ru/errors": "dev-main as 1.2.99",
@@ -31,7 +31,7 @@
         "codemonster-ru/mail": "dev-main as 1.0.99",
         "codemonster-ru/queue": "dev-main as 1.0.99",
         "codemonster-ru/razor": "dev-main as 1.1.99",
-        "codemonster-ru/router": "dev-main as 2.5.99",
+        "codemonster-ru/router": "dev-main as 2.6.99",
         "codemonster-ru/scheduler": "dev-main as 1.0.99",
         "codemonster-ru/security": "dev-main as 1.1.99",
         "codemonster-ru/session": "dev-main as 2.0.99",

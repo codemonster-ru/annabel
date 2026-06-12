@@ -1,23 +1,22 @@
-# Codemonster Events
+# codemonster-ru/events
 
-PSR-14 event dispatcher primitives for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-## Usage
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/events.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/events)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/events.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/events)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/events.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/events)
 
-```php
-use Codemonster\Events\EventDispatcher;
-use Codemonster\Events\ListenerProvider;
+PSR-14 event dispatcher and listener provider for PHP applications.
 
-$listeners = new ListenerProvider();
-$dispatcher = new EventDispatcher($listeners);
+## Documentation
 
-$listeners->listen(UserRegistered::class, function (UserRegistered $event): void {
-    // Send a welcome email, write an audit log, or trigger domain work.
-});
+Standalone package documentation:
+[docs.codemonster.net/events](https://docs.codemonster.net/events/)
 
-$dispatcher->dispatch(new UserRegistered());
-```
-
-Listeners registered for a parent class or interface also receive matching
-events. Stoppable events implementing `Psr\EventDispatcher\StoppableEventInterface`
-stop propagation according to PSR-14.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

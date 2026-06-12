@@ -52,7 +52,7 @@ The public/internal classification is enforced by `composer api:contract`.
 Every class, interface, or trait under `packages/*/src` must be covered by that
 contract, and public API must not reference another package's internal classes.
 The public API surface is captured by `composer api:snapshot`; intentional
-public signature changes must update `docs/api-snapshot.json`.
+public signature changes must update `maintenance/api-snapshot.json`.
 
 ## Release Gates
 

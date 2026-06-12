@@ -1,29 +1,22 @@
-# Codemonster Logging
+# codemonster-ru/logging
 
-PSR-3 logging primitives for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-## Usage
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/logging.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/logging)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/logging.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/logging)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/logging.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/logging)
 
-```php
-use Codemonster\Logging\LoggerManager;
+PSR-3 file logging primitives and logger manager for PHP applications.
 
-$manager = new LoggerManager([
-    'default' => 'file',
-    'channels' => [
-        'file' => [
-            'driver' => 'file',
-            'path' => __DIR__ . '/storage/logs/app.log',
-        ],
-        'null' => [
-            'driver' => 'null',
-        ],
-    ],
-]);
+## Documentation
 
-$manager->channel()->info('User registered', [
-    'user_id' => 42,
-]);
-```
+Standalone package documentation:
+[docs.codemonster.net/logging](https://docs.codemonster.net/logging/)
 
-The package ships with `file` and `null` channels and implements PSR-3 through
-`Psr\Log\LoggerInterface`.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

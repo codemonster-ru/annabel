@@ -21,6 +21,9 @@ public function store(Request $request): mixed
 
 ## Current request helper
 
+Use the helper outside injected controller arguments when access to the current
+request is required.
+
 ```php
 $request = request();
 ```

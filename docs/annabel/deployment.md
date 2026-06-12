@@ -11,6 +11,9 @@ environment, build assets, run migrations, warm caches, and restart workers.
 
 ## Install dependencies
 
+Install locked production dependencies and compile frontend assets when the
+application uses them.
+
 ```bash
 composer install --no-dev --prefer-dist --optimize-autoloader
 npm ci
@@ -53,6 +56,8 @@ The PHP process must be able to write to:
 
 ## Migrate and optimize
 
+Apply pending schema changes before building the production caches.
+
 ```bash
 php vendor/bin/annabel migrate
 php vendor/bin/annabel optimize
@@ -90,7 +95,7 @@ php vendor/bin/annabel migrate
 Run the scheduler every minute:
 
 ```cron
-* * * * * cd /path/to/app && php vendor/bin/annabel schedule:run >> /dev/null 2>&1
+* * * * * cd /app && php vendor/bin/annabel schedule:run >> /dev/null 2>&1
 ```
 
 Inspect tasks with:
@@ -105,6 +110,8 @@ Set the document root to `public/`. Static files should be served directly and
 all other requests should fall through to `public/index.php`.
 
 ## Release checklist
+
+Verify each deployment step before directing production traffic to the release.
 
 1. Install optimized Composer dependencies.
 2. Build frontend assets when used.

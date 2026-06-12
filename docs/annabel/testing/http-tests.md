@@ -21,6 +21,9 @@ Assertions are provided by the framework test response wrapper.
 
 ## JSON requests
 
+Use the JSON helper to encode request data and set the appropriate request
+headers.
+
 ```php
 $this->json('POST', '/api/users', [
     'email' => 'hello@example.com',
@@ -31,6 +34,9 @@ JSON requests automatically send `Accept: application/json` and
 `Content-Type: application/json`.
 
 ## Available assertions
+
+Test responses provide assertions for status codes, headers, content, and JSON
+data.
 
 ```php
 $this->get('/')
@@ -64,6 +70,9 @@ Available response helpers include:
 - `assertJsonPath()`
 
 ## Acting as a user
+
+Authenticate the test client when exercising routes protected by auth
+middleware.
 
 ```php
 $this->actingAs($user)

@@ -11,6 +11,8 @@ and SMTP transports.
 
 ## Basic usage
 
+Configure a transport and send a message through the mailer.
+
 ```php
 use Codemonster\Mail\Mailer;
 use Codemonster\Mail\Message;

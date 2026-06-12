@@ -11,6 +11,8 @@ and Redis-backed cache.
 
 ## Basic usage
 
+Create a cache store and use it to persist values for a bounded lifetime.
+
 ```php
 use Codemonster\Cache\FileCache;
 

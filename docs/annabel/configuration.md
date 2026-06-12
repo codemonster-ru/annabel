@@ -26,9 +26,9 @@ The skeleton ships with these application config files:
 
 | File | Purpose |
 | --- | --- |
-| `config/app.php` | Providers, package discovery, attribute routes, service autoconfiguration. |
+| `config/app.php` | Providers, discovery, routes, and autoconfiguration. |
 | `config/assets.php` | Vite and asset configuration. |
-| `config/auth.php` | Auth provider, credential key, database user provider, abilities, policies. |
+| `config/auth.php` | Auth providers, credentials, abilities, and policies. |
 | `config/cache.php` | Default cache store and store definitions. |
 | `config/database.php` | Database connections and migration paths. |
 | `config/filesystem.php` | Filesystem disks. |
@@ -37,10 +37,13 @@ The skeleton ships with these application config files:
 | `config/mail.php` | Mailers and transports. |
 | `config/queue.php` | Queue connections, retries, backoff, and timeout. |
 | `config/security.php` | CSRF, throttling, trusted proxies, and presets. |
-| `config/session.php` | Session driver, cookie, encryption, and Redis settings. |
+| `config/session.php` | Session storage, cookies, encryption, and Redis. |
 | `config/validation.php` | Sensitive fields excluded from flashed old input. |
 
 ## Reading config
+
+Read configuration values by dot-separated key, with an optional default for
+missing values.
 
 ```php
 $name = config('app.name');
@@ -50,6 +53,8 @@ $debug = config('app.debug', false);
 Dot notation reads nested values.
 
 ## Writing config at runtime
+
+Use runtime writes for values that should change only in the current process.
 
 ```php
 config([
@@ -101,6 +106,8 @@ Use `disabled` for explicit opt-outs from default providers. Use `extra` or
 `bootstrap/providers/*.php` for application providers.
 
 ## Inspecting configuration
+
+The CLI can print resolved configuration while protecting sensitive values.
 
 ```bash
 php vendor/bin/annabel config:get app.providers.defaults

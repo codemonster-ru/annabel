@@ -12,6 +12,9 @@ deployment environment.
 
 ## Application
 
+These variables define the application identity, environment, and debug
+behavior.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `APP_ENV` | `local` | Application environment name. |
@@ -19,12 +22,16 @@ deployment environment.
 
 ## Logging
 
+Logging variables select the default channel and minimum recorded level.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `LOG_CHANNEL` | `file` | Default log channel. |
 | `LOG_FILE` | empty | Optional log file override. |
 
 ## Database
+
+Database variables configure the default connection used by the application.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -36,6 +43,9 @@ deployment environment.
 | `DB_PASSWORD` | empty | Database password. |
 
 ## Cache and Redis
+
+These variables configure cache storage and the Redis connection shared by
+Redis-backed services.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -51,6 +61,9 @@ deployment environment.
 
 ## Sessions
 
+Session variables control the storage driver, cookie behavior, and session
+lifetime.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `SESSION_DRIVER` | `file` | Session driver. |
@@ -60,7 +73,7 @@ deployment environment.
 | `SESSION_COOKIE_LIFETIME` | `86400` | Cookie lifetime in seconds. |
 | `SESSION_ENCRYPTION_KEY` | empty | Enables encrypted session payloads. |
 | `SESSION_PREVIOUS_ENCRYPTION_KEY` | empty | Previous key for rotation. |
-| `SESSION_ALLOW_PLAINTEXT` | `true` | Allows reading old plaintext sessions during migration. |
+| `SESSION_ALLOW_PLAINTEXT` | `true` | Read old plaintext sessions. |
 | `SESSION_REDIS_HOST` | `127.0.0.1` | Redis session host. |
 | `SESSION_REDIS_PORT` | `6379` | Redis session port. |
 | `SESSION_REDIS_DATABASE` | `0` | Redis session database. |
@@ -68,6 +81,8 @@ deployment environment.
 | `SESSION_REDIS_TTL` | `86400` | Redis session TTL. |
 
 ## Queue
+
+Queue variables select the backend and worker defaults.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -82,6 +97,8 @@ deployment environment.
 
 ## Mail
 
+Mail variables configure the default transport and sender identity.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `MAIL_MAILER` | `log` | Default mailer. |
@@ -92,12 +109,16 @@ deployment environment.
 
 ## HTTP client
 
+HTTP client variables define request defaults such as timeouts and redirects.
+
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `HTTP_CLIENT_BASE_URL` | empty | Optional default base URL. |
 | `HTTP_CLIENT_TIMEOUT` | `30` | Request timeout. |
 
 ## Security
+
+Security variables provide application secrets and security-related defaults.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -106,7 +127,7 @@ deployment environment.
 | `SECURITY_CSRF_VERIFY_JSON` | `false` | Verifies JSON requests. |
 | `SECURITY_CSRF_INPUT_KEY` | `_token` | CSRF form input key. |
 | `SECURITY_THROTTLE_ENABLED` | `true` | Enables throttling. |
-| `SECURITY_THROTTLE_ADD_TO_KERNEL` | `true` | Adds throttling middleware globally. |
+| `SECURITY_THROTTLE_ADD_TO_KERNEL` | `true` | Add global throttling. |
 | `SECURITY_THROTTLE_MAX_ATTEMPTS` | `60` | Default max attempts. |
 | `SECURITY_THROTTLE_DECAY_SECONDS` | `60` | Default decay window. |
 | `SECURITY_THROTTLE_STORAGE` | `session` | Throttle storage driver. |

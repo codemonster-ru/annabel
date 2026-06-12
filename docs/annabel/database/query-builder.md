@@ -10,6 +10,8 @@ The query builder provides a fluent interface for SQL operations.
 
 ## Select
 
+Build a select query from a table and retrieve its matching rows.
+
 ```php
 $users = db()->table('users')
     ->select('id', 'email')
@@ -27,6 +29,8 @@ $user = db()->table('users')
 ```
 
 ## Where clauses
+
+Add constraints to limit which rows a query reads or modifies.
 
 ```php
 db()->table('users')
@@ -50,6 +54,9 @@ db()->table('posts')
 
 ## Joins and grouping
 
+Combine related tables and aggregate rows when a query spans multiple records
+or sources.
+
 ```php
 db()->table('posts')
     ->join('users', 'users.id', '=', 'posts.user_id')
@@ -62,6 +69,8 @@ Use `leftJoin()`, `rightJoin()`, and `crossJoin()` when needed.
 
 ## Insert
 
+Insert one or more rows using associative column data.
+
 ```php
 db()->table('users')->insert([
     'email' => 'hello@example.com',
@@ -69,6 +78,8 @@ db()->table('users')->insert([
 ```
 
 ## Update
+
+Apply new values to every row matched by the query constraints.
 
 ```php
 db()->table('users')
@@ -78,6 +89,8 @@ db()->table('users')
 
 ## Delete
 
+Delete every row matched by the query constraints.
+
 ```php
 db()->table('users')
     ->where('id', 1)
@@ -85,6 +98,8 @@ db()->table('users')
 ```
 
 ## Aggregates
+
+Calculate counts and scalar aggregates without loading full result rows.
 
 ```php
 $count = db()->table('users')->count();
@@ -97,6 +112,8 @@ Available helpers include `count()`, `sum()`, `avg()`, `min()`, `max()`,
 
 ## Pagination
 
+Paginate a query when results should be returned in bounded pages.
+
 ```php
 $page = db()->table('users')
     ->orderBy('id')
@@ -106,6 +123,8 @@ $page = db()->table('users')
 `simplePaginate()` returns data and simple previous/next pagination metadata.
 
 ## Debugging SQL
+
+Inspect the generated SQL and bindings before executing a query.
 
 ```php
 $query = db()->table('users')->where('active', 1);

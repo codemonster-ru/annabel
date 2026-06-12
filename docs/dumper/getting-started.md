@@ -11,6 +11,8 @@ and web environments.
 
 ## Basic usage
 
+Use the dump helpers to inspect values while developing an application.
+
 ```php
 use Codemonster\Dumper\Dumper;
 

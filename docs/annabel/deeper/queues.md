@@ -10,6 +10,8 @@ Annabel exposes queues through `queue()` and `dispatch()`.
 
 ## Job
 
+Queue jobs encapsulate serializable data and the work performed by a worker.
+
 ```php
 use Codemonster\Queue\Contracts\JobInterface;
 
@@ -39,6 +41,8 @@ Configure queues in `config/queue.php`:
 Database and Redis connections support `retry_after` and `max_attempts`.
 
 ## Worker
+
+Start a worker to consume jobs from the configured queue connection.
 
 ```bash
 php vendor/bin/annabel queue:work

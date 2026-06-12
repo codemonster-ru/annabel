@@ -33,6 +33,8 @@ connection.
 
 ## Query
 
+Use the database manager to build and execute queries on the default connection.
+
 ```php
 $users = db()
     ->table('users')
@@ -41,6 +43,8 @@ $users = db()
 ```
 
 ## Transactions
+
+Wrap related writes in a transaction so they commit or roll back together.
 
 ```php
 transaction(function () {

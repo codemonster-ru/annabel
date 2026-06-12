@@ -11,6 +11,8 @@ delegates rendering to `codemonster-ru/ssr-bridge`.
 
 ## Basic usage
 
+Configure the SSR renderer and pass component data when rendering a response.
+
 ```php
 use Codemonster\Ssr\SsrBridge;
 use Codemonster\View\Engines\SsrEngine;

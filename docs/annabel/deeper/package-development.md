@@ -22,6 +22,9 @@ only for the integration layer:
 
 ## Provider discovery
 
+Declare package providers in Composer metadata so Annabel can discover them
+automatically.
+
 ```json
 {
   "extra": {
@@ -38,6 +41,8 @@ Only declare providers owned by the package. Applications can opt out of
 package discovery from `config/app.php`.
 
 ## Service provider
+
+The provider registers package services, commands, and publishable resources.
 
 ```php
 use Codemonster\Annabel\Providers\ServiceProvider;
@@ -58,13 +63,17 @@ final class PackageServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/package.php' => base_path('config/package.php'),
+            __DIR__ . '/../config/package.php' => base_path(
+                'config/package.php',
+            ),
         ], ['config', 'package']);
     }
 }
 ```
 
 ## Publishable resources
+
+Declare source and destination paths for files the application may publish.
 
 ```php
 $this->publishes([

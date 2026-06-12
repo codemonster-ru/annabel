@@ -10,6 +10,8 @@ Annabel supports PSR-15 middleware.
 
 ## Route middleware
 
+Attach middleware to a route when processing applies only to that endpoint.
+
 ```php
 router()->get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth');

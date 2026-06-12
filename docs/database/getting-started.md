@@ -12,6 +12,8 @@ active-record style models.
 
 ## Basic usage
 
+Create a database connection and execute queries through the connection API.
+
 ```php
 use Codemonster\Database\DatabaseManager;
 

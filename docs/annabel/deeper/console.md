@@ -10,6 +10,8 @@ Annabel ships with a lightweight CLI.
 
 ## List commands
 
+Inspect the registered command set through the application CLI.
+
 ```bash
 php vendor/bin/annabel list
 php vendor/bin/annabel help
@@ -20,6 +22,8 @@ Common commands include `about`, `route:list`, `config:get`, `config:list`,
 `schedule:run`.
 
 ## Application commands
+
+These commands inspect application state and manage generated caches.
 
 | Command | Purpose |
 | --- | --- |
@@ -38,6 +42,8 @@ Common commands include `about`, `route:list`, `config:get`, `config:list`,
 | `optimize:clear` | Clear generated framework caches. |
 
 ## Generators
+
+Generator commands create application classes in their conventional locations.
 
 | Command | Purpose |
 | --- | --- |
@@ -62,6 +68,9 @@ php vendor/bin/annabel seed
 
 ## Custom command
 
+Implement a command class when application-specific work should be available
+from the CLI.
+
 ```php
 use Codemonster\Annabel\Console\Command;
 use Codemonster\Annabel\Console\Contracts\InputInterface;
@@ -85,6 +94,9 @@ final class SyncCommand extends Command
 Register commands from a service provider with `$this->commands([...])`.
 
 ## Publishing resources
+
+Publish provider resources when a package exposes configuration, migrations,
+or other application-owned files.
 
 ```bash
 php vendor/bin/annabel vendor:publish --provider="Vendor\\Package\\Provider"

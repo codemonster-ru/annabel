@@ -10,6 +10,8 @@ Annabel binds `Psr\Log\LoggerInterface` in the container.
 
 ## Write logs
 
+Write structured messages at a level that reflects their operational severity.
+
 ```php
 app(Psr\Log\LoggerInterface::class)->info('User registered', [
     'user_id' => 42,

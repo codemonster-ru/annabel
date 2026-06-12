@@ -10,6 +10,9 @@ CSRF protection verifies that state-changing web requests include a valid token.
 
 ## Form token
 
+Include a token in every state-changing HTML form handled by CSRF-protected
+routes.
+
 ```php
 <?= csrf_field() ?>
 ```

@@ -11,6 +11,9 @@ packages.
 
 ## Register bindings
 
+Use `register()` to declare container bindings without resolving application
+services.
+
 ```php
 use Codemonster\Annabel\Providers\ServiceProvider;
 
@@ -31,12 +34,16 @@ Use `boot()` for work that needs all providers to be registered:
 public function boot(): void
 {
     $this->publishes([
-        __DIR__ . '/../../config/package.php' => base_path('config/package.php'),
+        __DIR__ . '/../../config/package.php' => base_path(
+            'config/package.php',
+        ),
     ], ['config']);
 }
 ```
 
 ## Commands
+
+Providers may expose package or application commands to the framework CLI.
 
 ```php
 $this->commands([

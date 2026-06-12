@@ -11,6 +11,8 @@ stream transport and response helpers.
 
 ## Basic usage
 
+Create a client and use its request methods to retrieve or send HTTP data.
+
 ```php
 use Codemonster\HttpClient\HttpClient;
 

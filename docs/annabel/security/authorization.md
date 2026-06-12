@@ -11,6 +11,9 @@ perform an action.
 
 ## Route middleware
 
+Protect a route with an ability check when access depends on the authenticated
+user.
+
 ```php
 router()->get('/posts/{post}', [PostController::class, 'show'])
     ->middleware('can:posts.view,post');

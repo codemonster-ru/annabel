@@ -1,24 +1,22 @@
-# Codemonster Validation
+# codemonster-ru/validation
 
-Small validation primitives for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-## Usage
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/validation.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/validation)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/validation.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/validation)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/validation.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/validation)
 
-```php
-use Codemonster\Validation\Validator;
+Small array validation primitives for PHP applications.
 
-$validator = new Validator();
+## Documentation
 
-$result = $validator->validate([
-    'email' => 'hello@example.com',
-], [
-    'email' => 'required|email',
-]);
+Standalone package documentation:
+[docs.codemonster.net/validation](https://docs.codemonster.net/validation/)
 
-if ($result->fails()) {
-    $errors = $result->errors();
-}
-```
-
-The validator supports scalar rules, nested fields through dot notation,
-validated data, `validateOrFail()`, and custom rules through `extend()`.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

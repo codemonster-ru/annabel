@@ -17,10 +17,10 @@
         <h2>Hello, <?= htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></h2>
         <p>You are running your first page with <strong>Annabel</strong>.</p>
         <p>Edit this file at <code>resources/views/home.php</code> to get started.</p>
+        <p><a class="button-link" href="/demo">Open framework demo</a></p>
     </main>
     <footer>
-        &copy; <?= date('Y') ?> Annabel Framework<br>
-        Created by <a href="https://github.com/codemonster-ru" target="_blank" rel="noopener noreferrer">Codemonster</a>
+        &copy; <?= date('Y') ?> <a href="https://github.com/KolesnikovKirill" target="_blank" rel="noopener noreferrer">Kirill Kolesnikov</a>
     </footer>
 </body>
 

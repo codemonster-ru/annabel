@@ -1,37 +1,22 @@
-# Codemonster Cache
+# codemonster-ru/cache
 
-PSR-16 cache stores for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-## Usage
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/cache.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/cache)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/cache.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/cache)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/cache.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/cache)
 
-```php
-use Codemonster\Cache\CacheManager;
+PSR-16 array, file, and Redis cache stores for PHP applications.
 
-$cache = new CacheManager([
-    'default' => 'file',
-    'stores' => [
-        'file' => [
-            'driver' => 'file',
-            'path' => __DIR__ . '/storage/cache',
-        ],
-        'redis' => [
-            'driver' => 'redis',
-            'host' => '127.0.0.1',
-            'port' => 6379,
-            'database' => 0,
-            'prefix' => 'cache:',
-        ],
-        'array' => [
-            'driver' => 'array',
-        ],
-    ],
-]);
+## Documentation
 
-$cache->store()->set('name', 'annabel', 60);
+Standalone package documentation:
+[docs.codemonster.net/cache](https://docs.codemonster.net/cache/)
 
-echo $cache->store()->get('name');
-```
-
-The package ships with `array`, `file`, and `redis` stores and implements
-`Psr\SimpleCache\CacheInterface`. The Redis store uses the PHP Redis extension
-when no explicit client object is configured.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

@@ -11,5 +11,3 @@ Install the package with Composer:
 ```bash
 composer require codemonster-ru/ssr-bridge
 ```
-
-Read next: [Getting started](getting-started.md).

@@ -12,7 +12,7 @@ declare(strict_types=1);
 require __DIR__ . '/api-support.php';
 
 $root = dirname(__DIR__);
-$snapshotFile = $root . '/docs/api-snapshot.json';
+$snapshotFile = $root . '/maintenance/api-snapshot.json';
 $update = in_array('--update', $argv, true);
 $current = buildApiSnapshot($root);
 

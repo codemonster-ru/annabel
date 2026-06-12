@@ -1,123 +1,22 @@
+# codemonster-ru/support
+
 > [!IMPORTANT]
 > This repository is read-only.
 >
-> Development happens in the Annabel monorepo:
-> https://github.com/codemonster-ru/annabel
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
 >
 > Issues and pull requests should be opened there.
-
-# codemonster-ru/support
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/support.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/support)
 [![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/support.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/support)
 [![License](https://img.shields.io/packagist/l/codemonster-ru/support.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/support)
-[![Tests](https://github.com/codemonster-ru/support/actions/workflows/tests.yml/badge.svg)](https://github.com/codemonster-ru/support/actions/workflows/tests.yml)
 
-Global helper functions and meta package for `codemonster-ru/annabel`.
+Shared helper functions and support contracts for Codemonster PHP packages.
 
-This package aggregates core Codemonster packages and provides global helpers
-for the Annabel framework. Helpers rely on `app()` and the Annabel container.
+## Documentation
 
-## Installation
+Standalone package documentation:
+[docs.codemonster.net/support](https://docs.codemonster.net/support/)
 
-```bash
-composer require codemonster-ru/support
-```
-
-## Provided Helpers
-
-| Function               | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| `config()`             | Get or set configuration values              |
-| `env()`                | Read environment variables                   |
-| `view()` / `render()`  | Render or return a view instance             |
-| `router()`             | Access router instance or register a route   |
-| `route()`              | Generate a named route URI                   |
-| `request()`            | Get the current HTTP request                 |
-| `response()`           | Create a new HTTP response                   |
-| `json()`               | Return a JSON response                       |
-| `abort()`              | Throw an HTTP-like exception                 |
-| `session()`            | Read or write session data                   |
-| `old()`                | Read flashed old form input                  |
-| `errors()`             | Read flashed validation errors               |
-| `cache()`              | Read, write, or return PSR-16 cache store    |
-| `event()`              | Dispatch an object event through PSR-14      |
-| `deprecate()`          | Trigger a standard API deprecation notice    |
-| `db()`                 | Get a database connection                    |
-| `schema()`             | Schema builder                               |
-| `transaction()`        | Run a DB transaction                         |
-| `dump()` / `dd()`      | Debugging utilities                          |
-
-These helpers are intended for `codemonster-ru/annabel` and rely on its
-container (`app()`).
-
-## Usage
-
-```php
-<?php
-
-require __DIR__ . '/vendor/autoload.php';
-
-// ENV
-$env = env('APP_ENV', 'production');
-$debug = env('APP_DEBUG', false, true);
-
-// Config
-config(['app.name' => 'Codemonster']);
-echo config('app.name');
-
-// Requests & Responses
-$request = request();
-return response('Hello World', 200);
-
-// Router
-router()->get('/', fn() => response('Home'))->name('home');
-echo route('home');
-
-// Views
-echo render('emails.welcome', ['user' => 'Vasya']);
-
-// Debug
-dump($request);
-dd('Bye!');
-
-// Cache
-cache('key', 'value', 60);
-echo cache('key');
-
-// Events
-event(new UserRegistered());
-
-// Deprecations
-deprecate('vendor/package', '1.2', 'The "%s" helper is deprecated, use "%s".', 'old', 'new');
-```
-
-## Database Helpers
-
-```php
-$conn = db();         // default connection
-$conn = db('mysql');  // named connection
-
-schema()->create('users', function ($table) {
-    $table->id();
-    $table->string('name');
-});
-
-transaction(function ($db) {
-    $db->table('logs')->insert(['msg' => 'ok']);
-});
-```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Author
-
-[**Kirill Kolesnikov**](https://github.com/KolesnikovKirill)
-
-## License
-
-[MIT](https://github.com/codemonster-ru/support/blob/main/LICENSE)
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

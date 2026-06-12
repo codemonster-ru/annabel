@@ -1,26 +1,22 @@
-# Codemonster Scheduler
+# codemonster-ru/scheduler
 
-Task scheduling primitives for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-## Usage
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/scheduler.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/scheduler)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/scheduler.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/scheduler)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/scheduler.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/scheduler)
 
-```php
-use Codemonster\Scheduler\Schedule;
+Task scheduling primitives with cron expressions and overlap locks for PHP applications.
 
-$schedule = new Schedule();
+## Documentation
 
-$schedule->call(fn () => cleanup(), 'cleanup')->dailyAt('03:00');
-$schedule->call(fn () => syncFeed(), 'sync-feed')
-    ->everyFiveMinutes()
-    ->withoutOverlapping();
+Standalone package documentation:
+[docs.codemonster.net/scheduler](https://docs.codemonster.net/scheduler/)
 
-$results = $schedule->runDue(new DateTimeImmutable());
-```
-
-Run `schedule:run` every minute from cron in a framework application.
-
-Use `withoutOverlapping()` for tasks that must not run concurrently. Annabel
-uses the configured cache store for scheduler locks when the framework cache
-provider is registered.
-
-Framework applications can inspect registered tasks with `schedule:list`.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

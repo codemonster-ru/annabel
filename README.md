@@ -49,8 +49,8 @@ published as independent Composer packages.
 
 Architecture and release rules:
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Release policy](docs/RELEASE.md)
+- [Architecture](maintenance/ARCHITECTURE.md)
+- [Release policy](maintenance/RELEASE.md)
 
 Run the full release gate before tagging or splitting packages:
 
@@ -98,19 +98,33 @@ Build the PHP development image:
 docker compose build php
 ```
 
-Start the demo application and database:
+Start the skeleton application and database:
 
 ```bash
-docker compose up -d web phpmyadmin
+docker compose up -d web
 ```
 
 The web service installs the skeleton with `skeleton/annabel-skeleton/composer.dev.json`,
-which points Composer at the local packages in this monorepo.
+which points Composer at the local packages in this monorepo. Development
+dependencies are symlinked from `packages/*`, so changes in packages are visible
+in the browser without publishing them first.
 
 Open the skeleton application:
 
 ```text
 http://localhost:8000
+```
+
+Run Vite for skeleton assets in a second terminal:
+
+```bash
+docker compose run --rm -p 5173:5173 php sh -lc 'cd skeleton/annabel-skeleton && npm install && npm run dev'
+```
+
+Start phpMyAdmin when you need the database UI:
+
+```bash
+docker compose up -d phpmyadmin
 ```
 
 Open phpMyAdmin for the MySQL database:
@@ -131,7 +145,13 @@ password: annabel
 Install and test a package from inside the container:
 
 ```bash
-docker compose run --rm php composer --working-dir=packages/framework config repositories.monorepo '{"type":"path","url":"../*","canonical":false,"options":{"symlink":true}}'
+docker compose run --rm php composer --working-dir=packages/framework config repositories.monorepo '{"type":"path","url":"../*","canonical":true,"options":{"symlink":true}}'
 docker compose run --rm php composer --working-dir=packages/framework update --prefer-dist
 docker compose run --rm php composer --working-dir=packages/framework test
+```
+
+Stop the development services:
+
+```bash
+docker compose down
 ```

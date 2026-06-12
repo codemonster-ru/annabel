@@ -1,35 +1,22 @@
-# Codemonster API Resource
+# codemonster-ru/api-resource
 
-JSON resource and simple pagination primitives for Annabel applications.
+> [!IMPORTANT]
+> This repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel).
+>
+> Issues and pull requests should be opened there.
 
-```php
-use Codemonster\ApiResource\JsonResource;
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/api-resource.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/api-resource)
+[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/api-resource.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/api-resource)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/api-resource.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/api-resource)
 
-final class UserResource extends JsonResource
-{
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->resource->getKey(),
-            'name' => $this->resource->name,
-        ];
-    }
-}
+JSON resource and pagination response primitives for PHP APIs.
 
-return (new UserResource($user))->response();
-```
+## Documentation
 
-Collections and existing database pagination results use the same resource:
+Standalone package documentation:
+[docs.codemonster.net/api-resource](https://docs.codemonster.net/api-resource/)
 
-```php
-return UserResource::collection(User::all())->response();
-
-return UserResource::paginated(
-    User::query()->simplePaginate(20, $page),
-    '/api/users',
-    ['filter' => 'active'],
-)->response();
-```
-
-Paginated responses contain `data`, `links.prev`, `links.next`, and
-`meta.current_page` / `meta.per_page`.
+Annabel framework documentation:
+[docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/)

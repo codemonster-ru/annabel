@@ -10,6 +10,9 @@ Annabel provides lightweight HTTP testing helpers for application tests.
 
 ## Feature test
 
+Create a feature test that boots the application and makes requests through the
+HTTP test client.
+
 ```php
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Testing\InteractsWithApplication;

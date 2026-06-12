@@ -10,6 +10,8 @@ order: 1
 
 ## Basic usage
 
+Compile a Razor template and render it with the required data.
+
 ```php
 use Codemonster\Razor\RazorEngine;
 use Codemonster\View\Locator\DefaultLocator;

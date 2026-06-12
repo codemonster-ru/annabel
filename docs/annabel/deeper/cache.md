@@ -10,6 +10,9 @@ Annabel exposes PSR-16 cache stores through `cache()`.
 
 ## Usage
 
+Use the default cache store through the helper for common read and write
+operations.
+
 ```php
 cache()->set('name', 'annabel', 60);
 

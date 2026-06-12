@@ -10,6 +10,9 @@ order: 1
 
 ## Basic usage
 
+Create a logger with one or more handlers, then write messages at the
+appropriate level.
+
 ```php
 use Codemonster\Logging\FileLogger;
 

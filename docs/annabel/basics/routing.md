@@ -10,6 +10,8 @@ Define application routes in `routes/web.php`.
 
 ## Basic routes
 
+Register routes by HTTP method and provide a callback or controller handler.
+
 ```php
 router()->get('/', [HomeController::class, 'index']);
 router()->post('/posts', [PostController::class, 'store']);
@@ -19,10 +21,16 @@ router()->any('/webhook', [WebhookController::class, 'handle']);
 Use `router()->add()` when registering several methods explicitly:
 
 ```php
-router()->add(['PUT', 'PATCH'], '/profile', [ProfileController::class, 'update']);
+router()->add(
+    ['PUT', 'PATCH'],
+    '/profile',
+    [ProfileController::class, 'update'],
+);
 ```
 
 ## Parameters
+
+Declare path parameters in braces and receive their values in the route handler.
 
 ```php
 router()->get('/users/{id}', [UserController::class, 'show'])
@@ -38,6 +46,8 @@ router()->get('/users/{id}', function (string $id) {
 ```
 
 ## Named routes
+
+Name routes that must be referenced when generating URLs or redirects.
 
 ```php
 router()->get('/users/{id}', [UserController::class, 'show'])
@@ -58,6 +68,8 @@ router()->group('/admin', function () {
 ```
 
 ## Listing routes
+
+Inspect registered routes to verify their methods, paths, names, and middleware.
 
 ```bash
 php vendor/bin/annabel route:list

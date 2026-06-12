@@ -10,6 +10,8 @@ Annabel exposes sessions through the `session()` helper.
 
 ## Store values
 
+Use the session store to persist values across requests for the same client.
+
 ```php
 session()->put('user_id', 42);
 
@@ -17,6 +19,8 @@ $userId = session()->get('user_id');
 ```
 
 ## Flash data
+
+Flash values when they should remain available only for the next request.
 
 ```php
 session()->flash('status', 'Saved.');
@@ -75,6 +79,9 @@ Keep `SESSION_ALLOW_PLAINTEXT=true` during a migration from plaintext sessions,
 then disable it after old sessions expire.
 
 ## Redis sessions
+
+Configure Redis sessions when multiple application instances need shared
+session state.
 
 ```dotenv
 SESSION_DRIVER=redis

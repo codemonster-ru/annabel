@@ -10,6 +10,9 @@ order: 1
 
 ## Basic usage
 
+Create a filesystem instance for a root directory, then perform operations
+relative to that root.
+
 ```php
 use Codemonster\Filesystem\LocalFilesystem;
 

@@ -11,6 +11,8 @@ limiting, and throttle middleware.
 
 ## Basic usage
 
+Use the security helpers to hash credentials and verify submitted values.
+
 ```php
 use Codemonster\Security\Csrf\CsrfTokenManager;
 

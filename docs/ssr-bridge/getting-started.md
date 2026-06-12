@@ -11,6 +11,8 @@ PHP and returns rendered HTML.
 
 ## Basic usage
 
+Connect the bridge to an SSR process and use it to render component payloads.
+
 ```php
 use Codemonster\Ssr\SsrBridge;
 

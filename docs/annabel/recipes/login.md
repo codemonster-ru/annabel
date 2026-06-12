@@ -24,6 +24,9 @@ The `users` table must contain the credential column and password hash column.
 
 ## Routes
 
+Expose the login form and session actions, then protect the dashboard with auth
+middleware.
+
 ```php
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
@@ -37,6 +40,9 @@ router()->get('/dashboard', [DashboardController::class, 'index'])
 ```
 
 ## Controller
+
+The controller validates credentials, starts or ends the authenticated session,
+and redirects the user.
 
 ```php
 namespace App\Controllers;
@@ -78,11 +84,21 @@ final class AuthController
 
 ## Form
 
+Submit the credentials with a CSRF token and preserve only safe validation
+input.
+
 ```php
 <form method="post" action="/login">
     <?= csrf_field() ?>
 
-    <input name="email" value="<?= htmlspecialchars((string) old('email'), ENT_QUOTES, 'UTF-8') ?>">
+    <input
+        name="email"
+        value="<?= htmlspecialchars(
+            (string) old('email'),
+            ENT_QUOTES,
+            'UTF-8',
+        ) ?>"
+    >
     <input name="password" type="password">
 
     <button type="submit">Sign in</button>

@@ -10,6 +10,9 @@ order: 1
 
 ## Basic usage
 
+Point the renderer at the template directory, then render a PHP template with
+data.
+
 ```php
 use Codemonster\View\Locator\DefaultLocator;
 use Codemonster\View\Engines\PhpEngine;

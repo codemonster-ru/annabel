@@ -11,6 +11,8 @@ dot notation.
 
 ## Basic usage
 
+Load configuration values into a repository, then retrieve them by key.
+
 ```php
 use Codemonster\Config\Config;
 

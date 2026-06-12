@@ -18,7 +18,7 @@ $schedule->call(fn () => cleanup(), 'cleanup')
 Run the scheduler every minute:
 
 ```cron
-* * * * * cd /path/to/app && php vendor/bin/annabel schedule:run >> /dev/null 2>&1
+* * * * * cd /app && php vendor/bin/annabel schedule:run >> /dev/null 2>&1
 ```
 
 Inspect tasks:

@@ -11,6 +11,8 @@ failed job storage, and workers.
 
 ## Basic usage
 
+Create a queue connection, dispatch a job, and run a worker to process it.
+
 ```php
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\SyncQueue;

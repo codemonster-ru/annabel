@@ -10,6 +10,9 @@ Every HTTP request enters the application through `public/index.php`.
 
 ## Front controller
 
+The front controller boots the application and sends the response produced for
+the incoming request.
+
 ```php
 require __DIR__ . '/../vendor/autoload.php';
 

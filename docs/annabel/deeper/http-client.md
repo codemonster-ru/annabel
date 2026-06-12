@@ -10,6 +10,8 @@ Annabel exposes a lightweight HTTP client through `http_client()`.
 
 ## Usage
 
+Resolve the configured client through the helper for application HTTP requests.
+
 ```php
 $response = http_client()
     ->baseUrl('https://api.example.com')
@@ -23,6 +25,9 @@ The default transport uses PHP streams. Custom transports are useful for tests
 or advanced integrations.
 
 ## Requests
+
+Use the convenience methods for common verbs or build a request with explicit
+options.
 
 ```php
 $client = http_client()
@@ -42,6 +47,8 @@ Array request bodies are JSON-encoded and receive `Content-Type:
 application/json` unless a content type header is already set.
 
 ## Responses
+
+Inspect the response status, headers, raw body, or decoded JSON data.
 
 ```php
 $response = http_client()->get('https://api.example.com/users/1');

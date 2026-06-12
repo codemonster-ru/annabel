@@ -11,6 +11,8 @@ and optional overlap locks.
 
 ## Basic usage
 
+Register scheduled callbacks and run the scheduler when tasks become due.
+
 ```php
 use Codemonster\Scheduler\Schedule;
 

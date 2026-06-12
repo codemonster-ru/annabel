@@ -10,6 +10,8 @@ Annabel rate limiting is provided by the security integration.
 
 ## Throttle middleware
 
+Attach a named throttling preset to routes that need request limits.
+
 ```php
 router()->post('/login', [LoginController::class, 'store'])
     ->middleware('throttle:login');

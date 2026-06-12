@@ -16,6 +16,8 @@ The skeleton also exposes common commands through Composer scripts.
 
 ## Application
 
+These commands inspect the application and support local development.
+
 | Command | Purpose |
 | --- | --- |
 | `about` | Show framework information, base path, and loaded providers. |
@@ -24,6 +26,9 @@ The skeleton also exposes common commands through Composer scripts.
 | `list` | List available commands. |
 
 ## Configuration and routes
+
+Use these commands to inspect or rebuild framework configuration, routes, and
+container state.
 
 | Command | Purpose |
 | --- | --- |
@@ -39,6 +44,8 @@ The skeleton also exposes common commands through Composer scripts.
 | `optimize:clear` | Clear generated caches. |
 
 ## Generators
+
+Generators create application classes in the conventional directories.
 
 | Command | Purpose |
 | --- | --- |
@@ -57,6 +64,9 @@ php vendor/bin/annabel make:controller Admin/UserController
 
 ## Database
 
+The database commands create migration artifacts and manage schema and seed
+state.
+
 | Command | Purpose |
 | --- | --- |
 | `make:migration <name>` | Create a migration file. |
@@ -68,12 +78,17 @@ php vendor/bin/annabel make:controller Admin/UserController
 
 ## Queues
 
+Use the queue commands to process jobs and manage failed job records.
+
 | Command | Purpose |
 | --- | --- |
-| `queue:work [queue] [--once] [--stop-when-empty] [--sleep=3] [--max-jobs=0]` | Process queued jobs. |
+| `queue:work [queue] [options]` | Process queued jobs. |
 | `queue:failed` | List failed jobs. |
-| `queue:retry <id|all>` | Retry failed jobs. |
+| `queue:retry <id-or-all>` | Retry failed jobs. |
 | `queue:flush` | Clear failed jobs. |
+
+Worker options include `--once`, `--stop-when-empty`, `--sleep=3`, and
+`--max-jobs=0`.
 
 Use finite worker modes in tests and one-off maintenance runs:
 
@@ -84,6 +99,8 @@ php vendor/bin/annabel queue:work --stop-when-empty
 
 ## Scheduler
 
+Scheduler commands run due tasks or show the current schedule.
+
 | Command | Purpose |
 | --- | --- |
 | `schedule:run` | Run due scheduled tasks. |
@@ -91,12 +108,14 @@ php vendor/bin/annabel queue:work --stop-when-empty
 
 ## Publishing
 
+Publishing commands copy package resources into the application.
+
 | Command | Purpose |
 | --- | --- |
-| `vendor:publish --provider="Provider\\Class"` | Publish resources from one provider. |
+| `vendor:publish --provider="Provider\\Class"` | Publish by provider. |
 | `vendor:publish --tag=config` | Publish resources by tag. |
 | `vendor:publish --all` | Publish all registered resources. |
-| `vendor:publish --all --force` | Publish all resources and overwrite existing files. |
+| `vendor:publish --all --force` | Publish all and overwrite files. |
 
 Publishing is explicit and does not overwrite existing files unless `--force`
 is passed.

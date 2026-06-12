@@ -11,6 +11,9 @@ route names, constraints, and matches requests by method and URI.
 
 ## Basic usage
 
+The following example creates a router, registers a route, and dispatches a
+request.
+
 ```php
 use Codemonster\Router\Router;
 

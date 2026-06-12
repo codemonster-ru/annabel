@@ -10,6 +10,8 @@ This recipe creates a small JSON endpoint with validation and throttling.
 
 ## Route
 
+Register an API route for the controller action that creates the resource.
+
 ```php
 use App\Controllers\ApiUserController;
 
@@ -18,6 +20,8 @@ router()->post('/api/users', [ApiUserController::class, 'store'])
 ```
 
 ## Controller
+
+Validate the request and return the stored model in a JSON response.
 
 ```php
 namespace App\Controllers;
@@ -49,6 +53,8 @@ final class ApiUserController
 Validation failures for JSON requests return JSON `422` responses.
 
 ## Test
+
+Exercise the endpoint as JSON and assert the response status and payload.
 
 ```php
 $this->json('POST', '/api/users', [

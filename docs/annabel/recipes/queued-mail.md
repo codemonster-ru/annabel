@@ -27,6 +27,8 @@ MAILER_DSN=smtp://user:pass@smtp.example.com:587
 
 ## Job
 
+Generate a job that captures the recipient and sends the message when processed.
+
 ```bash
 php vendor/bin/annabel make:job SendWelcomeEmailJob
 ```
@@ -59,11 +61,15 @@ final class SendWelcomeEmailJob implements JobInterface
 
 ## Dispatch
 
+Dispatch the job after the application has accepted the mail request.
+
 ```php
 dispatch(new SendWelcomeEmailJob($user->email));
 ```
 
 ## Worker
+
+Run a worker for the connection that receives the queued mail jobs.
 
 ```bash
 php vendor/bin/annabel queue:work

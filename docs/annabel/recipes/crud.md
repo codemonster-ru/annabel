@@ -11,6 +11,8 @@ controller, routes, validation, and PHP views.
 
 ## Migration
 
+Generate a migration, define the resource table, and apply it to the database.
+
 ```bash
 php vendor/bin/annabel make:migration create_posts_table
 ```
@@ -44,6 +46,8 @@ php vendor/bin/annabel migrate
 
 ## Model
 
+Generate the model and declare the attributes that may be filled from input.
+
 ```bash
 php vendor/bin/annabel make:model Post
 ```
@@ -60,6 +64,9 @@ final class Post extends Model
 ```
 
 ## Controller
+
+Generate a controller that implements the resource operations and validates
+writes.
 
 ```bash
 php vendor/bin/annabel make:controller PostController
@@ -110,6 +117,8 @@ final class PostController
 ```
 
 ## Routes
+
+Connect each HTTP operation to its corresponding controller method.
 
 ```php
 use App\Controllers\PostController;

@@ -10,6 +10,9 @@ Annabel binds PSR-14 event dispatcher services.
 
 ## Dispatch events
 
+Register listeners by event class, then dispatch event objects through the
+shared dispatcher.
+
 ```php
 event(new UserRegistered($user));
 ```
@@ -23,9 +26,12 @@ Register listeners through the listener provider or dispatcher binding:
 ```php
 use Codemonster\Events\EventDispatcher;
 
-app(EventDispatcher::class)->listen(UserRegistered::class, function (UserRegistered $event): void {
-    // Send mail, write an audit log, or dispatch a job.
-});
+app(EventDispatcher::class)->listen(
+    UserRegistered::class,
+    function (UserRegistered $event): void {
+        // Send mail, write an audit log, or dispatch a job.
+    },
+);
 ```
 
 Listeners can also be registered during service provider boot.
@@ -36,6 +42,9 @@ Listeners registered for a parent class or interface receive matching events.
 Stoppable events follow PSR-14 propagation rules.
 
 ## Stoppable events
+
+Use a stoppable event when one listener must be able to prevent later listeners
+from running.
 
 ```php
 use Psr\EventDispatcher\StoppableEventInterface;

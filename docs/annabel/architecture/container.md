@@ -11,6 +11,9 @@ The Annabel application is also the service container and implements
 
 ## Bind services
 
+Register bindings when the container needs instructions for constructing a
+service.
+
 ```php
 app()->bind(Service::class, fn () => new Service());
 
@@ -18,6 +21,9 @@ app()->singleton(Client::class, fn () => new Client());
 ```
 
 ## Resolve services
+
+Resolve services directly when no framework-managed injection point is
+available.
 
 ```php
 $service = app(Service::class);

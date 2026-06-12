@@ -11,6 +11,8 @@ results into consistent JSON API responses.
 
 ## Basic usage
 
+Wrap domain data in a resource to produce a consistent API representation.
+
 ```php
 use Codemonster\ApiResource\JsonResource;
 

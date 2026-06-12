@@ -10,6 +10,8 @@ Annabel includes a small validation layer for request and configuration data.
 
 ## Validate data
 
+Create a validator from input data and the rules each field must satisfy.
+
 ```php
 $result = validator([
     'email' => 'hello@example.com',
@@ -23,6 +25,9 @@ if ($result->fails()) {
 ```
 
 ## Controller validation
+
+Use the controller trait to validate request data and return standard failure
+responses.
 
 ```php
 use Codemonster\Annabel\Http\ValidatesRequests;
@@ -47,6 +52,8 @@ Validation failures return JSON `422` responses for API requests or redirect
 back with flashed errors for web forms.
 
 ## Available rules
+
+Rules can be combined to express presence, type, format, and size constraints.
 
 | Rule | Behavior |
 | --- | --- |
@@ -79,6 +86,8 @@ $result = validator([
 
 ## Validated data
 
+Read only fields that passed validation before persisting or processing input.
+
 ```php
 $data = validator($input, [
     'email' => 'required|email',
@@ -95,8 +104,13 @@ $data = validator()->validateOrFail($input, [
 
 ## Custom rules
 
+Register a custom rule when validation cannot be expressed by the built-in set.
+
 ```php
-validator()->extend('lowercase', function (string $field, mixed $value): ?string {
+validator()->extend('lowercase', function (
+    string $field,
+    mixed $value,
+): ?string {
     return is_string($value) && $value === strtolower($value)
         ? null
         : "The {$field} field must be lowercase.";

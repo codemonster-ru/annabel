@@ -11,6 +11,9 @@ validation result object.
 
 ## Basic usage
 
+Create a validator with the input data and the rules that each field must
+satisfy.
+
 ```php
 use Codemonster\Validation\Validator;
 

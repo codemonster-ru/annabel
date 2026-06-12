@@ -11,6 +11,8 @@ HTTP applications.
 
 ## Basic usage
 
+Create requests and responses through the package APIs shown below.
+
 ```php
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;

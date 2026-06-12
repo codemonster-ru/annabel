@@ -10,6 +10,8 @@ Annabel exposes mailers through `mailer()`.
 
 ## Send a message
 
+Build a message and send it through the default configured mailer.
+
 ```php
 use Codemonster\Mail\Message;
 
@@ -44,13 +46,18 @@ return [
         ],
         'sendmail' => [
             'transport' => 'sendmail',
-            'command' => env('MAIL_SENDMAIL_COMMAND', '/usr/sbin/sendmail -t -i'),
+            'command' => env(
+                'MAIL_SENDMAIL_COMMAND',
+                '/usr/sbin/sendmail -t -i',
+            ),
         ],
     ],
 ];
 ```
 
 ## Choose a mailer
+
+Select a named mailer when the message should use a non-default transport.
 
 ```php
 mailer('log')->send($message);
@@ -61,6 +68,8 @@ To use the configured default mailer through the manager, call
 `mailer()->mailer()->send($message)`.
 
 ## Message API
+
+Messages support sender, recipient, content, and attachment configuration.
 
 ```php
 Message::make()

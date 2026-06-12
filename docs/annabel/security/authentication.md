@@ -16,8 +16,8 @@ Important options:
 
 | Option | Purpose |
 | --- | --- |
-| `provider` | User provider name, such as `database`, or `null` for custom binding. |
-| `credential_key` | Credential field used during `attempt()`, default `email`. |
+| `provider` | Provider name, or `null` for a custom binding. |
+| `credential_key` | Credential field for `attempt()`; defaults to `email`. |
 | `database.table` | User table for the database provider. |
 | `database.identifier_column` | User identifier column. |
 | `database.password_column` | Password hash column. |
@@ -26,6 +26,9 @@ Important options:
 
 ## Login
 
+Attempt authentication with the credential fields configured for the active
+provider.
+
 ```php
 if (auth()->attempt(['email' => $email, 'password' => $password])) {
     return response()->redirect('/dashboard');
@@ -33,6 +36,8 @@ if (auth()->attempt(['email' => $email, 'password' => $password])) {
 ```
 
 ## Current user
+
+Read the authenticated user through the auth service or convenience helper.
 
 ```php
 $user = user();
@@ -48,6 +53,8 @@ if (auth()->check()) {
 
 ## Middleware
 
+Apply auth middleware to routes that require an authenticated session.
+
 ```php
 router()->get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth');
@@ -56,6 +63,8 @@ router()->get('/dashboard', [DashboardController::class, 'index'])
 Production applications should bind a database-backed user provider.
 
 ## Logout
+
+End the authenticated session when the user signs out.
 
 ```php
 auth()->logout();

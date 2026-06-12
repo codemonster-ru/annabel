@@ -10,6 +10,8 @@ Annabel exposes filesystem disks through `storage()`.
 
 ## Usage
 
+Resolve a configured disk and perform operations relative to its root.
+
 ```php
 storage('public')->put('avatars/user-1.txt', 'avatar');
 
@@ -48,6 +50,9 @@ The currently supported filesystem driver is `local`.
 
 ## File operations
 
+The filesystem API supports reading, writing, copying, moving, and deleting
+files.
+
 ```php
 $disk = storage('public');
 
@@ -62,6 +67,8 @@ $disk->delete('old.txt');
 
 ## Metadata
 
+Inspect file metadata without exposing the disk's underlying storage path.
+
 ```php
 $size = storage('public')->size('avatars/user-1.txt');
 $modified = storage('public')->lastModified('avatars/user-1.txt');
@@ -71,6 +78,8 @@ $path = storage('public')->path('avatars/user-1.txt');
 ```
 
 ## Directories
+
+Create, inspect, and remove directories through the same disk abstraction.
 
 ```php
 storage('local')->makeDirectory('exports');

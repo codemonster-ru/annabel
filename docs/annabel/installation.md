@@ -12,6 +12,9 @@ migrations, providers, Vite setup, and Composer script aliases.
 
 ## Requirements
 
+The application and any enabled drivers require the following runtime
+dependencies.
+
 - PHP `8.2` or higher.
 - Composer 2.
 - PDO when using `codemonster-ru/database`.
@@ -25,6 +28,8 @@ Optional runtime extensions depend on enabled drivers:
 - `ext-pdo_sqlite`: SQLite database connections.
 
 ## Create an application
+
+Create a project from the application skeleton and install its dependencies.
 
 ```bash
 composer create-project codemonster-ru/annabel-skeleton myapp
@@ -56,6 +61,8 @@ Views can include Vite entries through the helper:
 ```
 
 ## Run framework commands
+
+Use the project-local framework binary to inspect and manage the application.
 
 ```bash
 php vendor/bin/annabel list

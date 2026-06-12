@@ -11,6 +11,9 @@ exception handler for HTTP and CLI applications.
 
 ## Basic usage
 
+Register the error handler before application code runs so failures are
+rendered consistently.
+
 ```php
 use Codemonster\Errors\Handlers\SmartExceptionHandler;
 

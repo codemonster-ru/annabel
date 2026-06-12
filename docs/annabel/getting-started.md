@@ -17,6 +17,8 @@ and deployment.
 
 ## Create your first application
 
+Create a project from the skeleton and start its local development server.
+
 ```bash
 composer create-project codemonster-ru/annabel-skeleton myapp
 cd myapp
@@ -28,6 +30,9 @@ composer serve
 Open `http://localhost:8000`.
 
 ## Directory overview
+
+The generated project separates application code, configuration, routes,
+resources, and runtime data.
 
 - `app/`: application controllers and models.
 - `bootstrap/app.php`: application bootstrap.
@@ -41,6 +46,8 @@ Open `http://localhost:8000`.
 
 ## First route
 
+Register a route that delegates the home page request to a controller.
+
 ```php
 use App\Controllers\HomeController;
 
@@ -48,6 +55,8 @@ $app->get('/', [HomeController::class, 'index']);
 ```
 
 ## First controller
+
+The controller prepares the data passed to the corresponding view.
 
 ```php
 namespace App\Controllers;

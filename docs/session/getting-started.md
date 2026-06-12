@@ -12,6 +12,8 @@ Redis Sentinel, and Redis Cluster handlers.
 
 ## Basic usage
 
+The following example starts a session and reads and writes session data.
+
 ```php
 use Codemonster\Session\Session;
 

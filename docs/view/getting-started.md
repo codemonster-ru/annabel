@@ -11,6 +11,8 @@ contract used by concrete view engines.
 
 ## Basic usage
 
+Configure the view manager, then render templates with the data they need.
+
 ```php
 use Codemonster\View\View;
 

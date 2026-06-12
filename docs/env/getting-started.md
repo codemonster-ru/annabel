@@ -11,6 +11,8 @@ optional casting.
 
 ## Basic usage
 
+Load environment variables before reading them through the package API.
+
 ```php
 use Codemonster\Env\Env;
 

@@ -139,6 +139,45 @@ jobs:
             - name: Run ecosystem acceptance suite
               run: composer test:ecosystem
 
+    cms:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [8.2, 8.3, 8.4]
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v5
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  coverage: none
+                  extensions: pdo_sqlite
+                  tools: composer:v2
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+                  cache-dependency-path: applications/annabel-cms/package-lock.json
+
+            - name: Install CMS dependencies
+              run: composer install:cms
+
+            - name: Run CMS tests
+              run: composer test:cms
+
+            - name: Run CMS static analysis
+              run: composer analyse:cms
+
+            - name: Audit CMS dependencies
+              run: composer audit:cms
+
     integration-mysql:
         runs-on: ubuntu-latest
 

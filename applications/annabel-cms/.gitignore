@@ -6,11 +6,15 @@
 !.env.example
 
 # Dependencies
+node_modules/
 vendor/
+.phpunit.cache/
 
-# Local Composer overrides
-composer.local.json
-composer.local.lock
+# Monorepo development lock
+composer.dev.lock
+
+# Machine-local Docker and Dev Container overrides
+docker-compose.local.yml
 
 # OS/editor files
 .DS_Store

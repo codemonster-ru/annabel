@@ -1,7 +1,9 @@
 <?php
 
-namespace Codemonster\Xen\Providers;
+namespace Codemonster\Cms\Providers;
 
-use Codemonster\Security\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
+use Codemonster\Annabel\Providers\SecurityServiceProvider as BaseSecurityServiceProvider;
 
-class SecurityServiceProvider extends BaseSecurityServiceProvider {}
+class SecurityServiceProvider extends BaseSecurityServiceProvider
+{
+}

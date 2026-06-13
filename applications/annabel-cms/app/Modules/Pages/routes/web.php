@@ -1,5 +1,5 @@
 <?php
 
-use Codemonster\Xen\Modules\Pages\Controllers\PageController;
+use Codemonster\Cms\Modules\Pages\Controllers\PageController;
 
-route('/', [PageController::class, 'index']);
+router()->get('/', [PageController::class, 'index']);

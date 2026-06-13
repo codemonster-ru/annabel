@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.0] - 2026-06-13
+
+### Changed
+
+-   Renamed Xen CMS to Annabel CMS.
+-   Moved canonical development into the Annabel monorepo.
+-   Renamed the Composer package to `codemonster-ru/annabel-cms`.
+-   Renamed the PHP namespace to `Codemonster\Cms`.
+-   Added a monorepo development manifest backed by local Annabel packages.
+-   Added compiled admin assets to the release artifact.
+-   Updated Docker and Dev Container startup to install and build frontend dependencies.
+
+### Removed
+
+-   Removed the `Codemonster\Xen` namespace and Xen-specific configuration names.
+
 ## [0.4.0] – 2026-01-22
 
 ### Changed

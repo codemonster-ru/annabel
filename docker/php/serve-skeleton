@@ -45,6 +45,7 @@ fi
 
 if [ "$needs_update" -eq 1 ]; then
     COMPOSER=composer.dev.json composer --working-dir="$APP_DIR" update --prefer-dist --no-progress --no-interaction
+    rm -f "$APP_DIR/composer.dev.lock"
 fi
 
 cd "$APP_DIR"

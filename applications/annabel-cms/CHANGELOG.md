@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed admin asset output paths to avoid nested `/admin/assets/assets/...` URLs.
+- Added an SVG favicon for the admin shell.
+
 ## [1.0.0] - 2026-06-13
 
 ### Changed

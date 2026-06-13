@@ -1,11 +1,11 @@
 {
   "resources/js/main.js": {
-    "file": "assets/admin-3oU7Buu7.js",
+    "file": "admin-6oNHkzyk.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "css": [
-      "assets/main-BTtV5MUZ.css"
+      "main-BTtV5MUZ.css"
     ]
   }
 }

@@ -40,15 +40,23 @@ class ServeCommand extends Command
         $console->writeln($console->color("Starting server at http://{$host}:{$port}", 'label'));
         $console->writeln($console->color('Press Ctrl+C to stop', 'muted'));
 
+        $router = $this->createRouterScript($publicDir, $index);
+
         $command = sprintf(
             'php -S %s:%s -t %s %s',
             escapeshellarg($host),
             escapeshellarg((string) $port),
             escapeshellarg($publicDir),
-            escapeshellarg($index),
+            escapeshellarg($router),
         );
 
-        passthru($command, $exitCode);
+        try {
+            passthru($command, $exitCode);
+        } finally {
+            if (is_file($router)) {
+                @unlink($router);
+            }
+        }
 
         return (int) $exitCode;
     }
@@ -74,5 +82,49 @@ class ServeCommand extends Command
         }
 
         return [$host, $port];
+    }
+
+    protected function createRouterScript(string $publicDir, string $index): string
+    {
+        $router = tempnam(sys_get_temp_dir(), 'annabel-serve-');
+
+        if ($router === false) {
+            throw new \RuntimeException('Unable to create temporary server router.');
+        }
+
+        $publicRoot = realpath($publicDir);
+
+        if ($publicRoot === false) {
+            throw new \RuntimeException("Public directory not found: {$publicDir}");
+        }
+
+        file_put_contents($router, $this->routerScript($publicRoot, $index));
+
+        return $router;
+    }
+
+    protected function routerScript(string $publicRoot, string $index): string
+    {
+        $publicRoot = var_export($publicRoot, true);
+        $index = var_export($index, true);
+
+        return <<<PHP
+<?php
+
+\$publicRoot = {$publicRoot};
+\$index = {$index};
+\$path = parse_url(\$_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+
+if (is_string(\$path)) {
+    \$file = realpath(\$publicRoot . '/' . ltrim(rawurldecode(\$path), '/'));
+
+    if (is_string(\$file) && str_starts_with(\$file, \$publicRoot . DIRECTORY_SEPARATOR) && is_file(\$file)) {
+        return false;
+    }
+}
+
+return require \$index;
+PHP
+            . PHP_EOL;
     }
 }

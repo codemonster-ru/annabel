@@ -2,6 +2,12 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed `annabel serve` static file handling so existing public assets are served directly instead of being routed through `public/index.php`.
+
 ## [1.15.2] - 2026-06-10
 
 ### Changed

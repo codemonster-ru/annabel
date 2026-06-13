@@ -1,9 +1,9 @@
 <?php
 
-use Codemonster\Database\Schema\Blueprint;
 use Codemonster\Database\Migrations\Migration;
+use Codemonster\Database\Schema\Blueprint;
 
-return new class extends Migration {
+return new class () extends Migration {
     public function up(): void
     {
         schema()->create('users', function (Blueprint $table) {

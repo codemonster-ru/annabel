@@ -11,7 +11,10 @@ $violations = [];
 
 $publicManifests = array_merge(
     packageComposerFiles($root),
-    [$root . '/skeleton/annabel-skeleton/composer.json'],
+    [
+        $root . '/skeleton/annabel-skeleton/composer.json',
+        $root . '/applications/annabel-cms/composer.json',
+    ],
 );
 
 foreach ($publicManifests as $composerFile) {
@@ -20,6 +23,7 @@ foreach ($publicManifests as $composerFile) {
 }
 
 inspectSplitWorkflow($root, $violations);
+inspectCmsAssets($root, $violations);
 
 if ($violations !== []) {
     fwrite(STDERR, "Release packaging violations:\n\n");
@@ -114,6 +118,52 @@ function inspectChangelog(string $root, string $composerFile, array &$violations
 
     if (!str_starts_with($releaseVersion, $aliasMatches[1] . '.')) {
         $violations[] = "{$relativeFile}: release {$releaseVersion} does not match branch alias {$branchAlias}";
+    }
+}
+
+/**
+ * @param list<string> $violations
+ */
+function inspectCmsAssets(string $root, array &$violations): void
+{
+    $assetsDirectory = $root . '/applications/annabel-cms/public/admin/assets';
+    $manifestFile = $assetsDirectory . '/.vite/manifest.json';
+
+    if (!is_file($manifestFile)) {
+        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: compiled admin assets must be shipped';
+
+        return;
+    }
+
+    $manifest = json_decode((string) file_get_contents($manifestFile), true);
+    $entry = is_array($manifest) ? ($manifest['resources/js/main.js'] ?? null) : null;
+
+    if (!is_array($entry) || !is_string($entry['file'] ?? null)) {
+        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: admin entrypoint is missing';
+
+        return;
+    }
+
+    $stylesheets = $entry['css'] ?? [];
+
+    if (!is_array($stylesheets)) {
+        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: admin stylesheets must be an array';
+
+        return;
+    }
+
+    $files = [$entry['file']];
+
+    foreach ($stylesheets as $stylesheet) {
+        if (is_string($stylesheet)) {
+            $files[] = $stylesheet;
+        }
+    }
+
+    foreach ($files as $file) {
+        if (!is_file($assetsDirectory . '/' . ltrim($file, '/'))) {
+            $violations[] = "applications/annabel-cms/public/admin/assets/{$file}: manifest target is missing";
+        }
     }
 }
 

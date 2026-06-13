@@ -35,18 +35,9 @@
 </head>
 
 <body>
-    <?php
-    $token = session()->get('_csrf_token');
-
-    if (!is_string($token) || $token === '') {
-        $token = bin2hex(random_bytes(32));
-        session()->put('_csrf_token', $token);
-    }
-    ?>
-
     <form method="post" action="/login">
-        <input type="hidden" name="_token" value="<?= htmlspecialchars($token) ?>">
-        <h2>Login to Xen</h2>
+        <?= csrf_field() ?>
+        <h2>Login to Annabel CMS</h2>
 
         <?php if (!empty($error)): ?>
             <p style="color: red"><?= htmlspecialchars($error) ?></p>

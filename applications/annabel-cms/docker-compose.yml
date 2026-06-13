@@ -1,31 +1,52 @@
 services:
-  app:
+  workspace:
     build:
       context: .
-    ports:
-      - "8001:8000"
+    # Codex uses bubblewrap, which needs to create a nested user namespace.
+    # Keep this development-only; production containers should retain seccomp.
+    security_opt:
+      - seccomp=unconfined
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_DATABASE: xen
-      DB_USERNAME: xen
-      DB_PASSWORD: xen
+      DB_DATABASE: annabel_cms
+      DB_USERNAME: annabel_cms
+      DB_PASSWORD: annabel_cms
     volumes:
-      - .:/app
+      - .:/app:cached
+      - app_vendor:/app/vendor
+      - app_node_modules:/app/node_modules
     depends_on:
       - db
+      - redis
+
+  nginx:
+    image: nginx:1.28-alpine
+    ports:
+      - "8001:80"
+    volumes:
+      - ./public:/app/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - workspace
 
   db:
     image: mariadb:11
     environment:
-      MARIADB_DATABASE: xen
-      MARIADB_USER: xen
-      MARIADB_PASSWORD: xen
+      MARIADB_DATABASE: annabel_cms
+      MARIADB_USER: annabel_cms
+      MARIADB_PASSWORD: annabel_cms
       MARIADB_ROOT_PASSWORD: root
     ports:
       - "3308:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  redis:
+    image: redis:8-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -34,10 +55,17 @@ services:
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      PMA_USER: xen
-      PMA_PASSWORD: xen
+      PMA_USER: annabel_cms
+      PMA_PASSWORD: annabel_cms
     depends_on:
       - db
 
 volumes:
   db_data:
+    name: annabel_cms_db_data
+  app_vendor:
+    name: annabel_cms_app_vendor
+  app_node_modules:
+    name: annabel_cms_app_node_modules
+  redis_data:
+    name: annabel_cms_redis_data

@@ -2,7 +2,7 @@
 
 use Codemonster\Database\Seeders\Seeder;
 
-return new class extends Seeder {
+return new class () extends Seeder {
     public function run(): void
     {
         $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');

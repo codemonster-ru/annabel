@@ -18,7 +18,7 @@ services:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
       COMPOSER_MEMORY_LIMIT: -1
 
-  web:
+  skeleton:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
@@ -33,6 +33,7 @@ services:
       - "${APP_PORT:-8000}:8000"
     volumes:
       - .:/workspace
+      - skeleton-vendor:/workspace/skeleton/annabel-skeleton/vendor
       - composer-cache:/tmp/composer-cache
     environment:
       APP_ENV: local
@@ -46,14 +47,22 @@ services:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
       COMPOSER_MEMORY_LIMIT: -1
 
-  nginx:
-    image: nginx:1.28-alpine
-    ports:
-      - "${NGINX_PORT:-8002}:80"
-    volumes:
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  skeleton-assets:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+    working_dir: /workspace/skeleton/annabel-skeleton
+    command: sh -lc "npm ci && printf '%s\n' 'http://localhost:5173' > public/hot && trap 'rm -f public/hot' EXIT; npm run dev"
     depends_on:
-      - web
+      - skeleton
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/workspace
+      - skeleton-vendor:/workspace/skeleton/annabel-skeleton/vendor
+      - skeleton-node-modules:/workspace/skeleton/annabel-skeleton/node_modules
 
   db:
     image: mysql:8.4
@@ -64,8 +73,10 @@ services:
       MYSQL_USER: ${MYSQL_USER:-annabel}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-annabel}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      CMS_DATABASE: ${CMS_DATABASE:-annabel_cms}
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init-databases.sh:/docker-entrypoint-initdb.d/10-cms-database.sh:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-root}"]
       interval: 5s
@@ -86,6 +97,68 @@ services:
     ports:
       - "${PHPMYADMIN_PORT:-8080}:80"
 
+  cms:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+    working_dir: /workspace/applications/annabel-cms
+    command: serve-cms
+    depends_on:
+      db:
+        condition: service_healthy
+      cms-redis:
+        condition: service_started
+    volumes:
+      - .:/workspace
+      - cms-vendor:/workspace/applications/annabel-cms/vendor
+      - cms-node-modules:/workspace/applications/annabel-cms/node_modules
+      - composer-cache:/tmp/composer-cache
+    ports:
+      - "${CMS_APP_PORT:-8001}:8001"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${CMS_DATABASE:-annabel_cms}
+      DB_USERNAME: ${MYSQL_USER:-annabel}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-annabel}
+      SESSION_DRIVER: redis
+      SESSION_REDIS_HOST: cms-redis
+      SESSION_REDIS_PORT: 6379
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      COMPOSER_MEMORY_LIMIT: -1
+
+  cms-assets:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+    working_dir: /workspace/applications/annabel-cms
+    command: sh -lc "npm ci && npm run build:admin -- --watch"
+    volumes:
+      - .:/workspace
+      - cms-node-modules:/workspace/applications/annabel-cms/node_modules
+    depends_on:
+      - cms
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+
+  cms-redis:
+    image: redis:8-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - cms-redis-data:/data
+
 volumes:
   composer-cache:
   mysql-data:
+  skeleton-vendor:
+  skeleton-node-modules:
+  cms-vendor:
+  cms-node-modules:
+  cms-redis-data:

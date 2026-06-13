@@ -1,0 +1,11 @@
+{
+  "resources/js/main.js": {
+    "file": "assets/admin-3oU7Buu7.js",
+    "name": "main",
+    "src": "resources/js/main.js",
+    "isEntry": true,
+    "css": [
+      "assets/main-BTtV5MUZ.css"
+    ]
+  }
+}

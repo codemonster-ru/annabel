@@ -8,17 +8,8 @@
 
 <body>
 
-    <?php
-    $token = session()->get('_csrf_token');
-
-    if (!is_string($token) || $token === '') {
-        $token = bin2hex(random_bytes(32));
-        session()->put('_csrf_token', $token);
-    }
-    ?>
-
     <form method="post" action="/register">
-        <input type="hidden" name="_token" value="<?= htmlspecialchars($token) ?>">
+        <?= csrf_field() ?>
         <h2>Register</h2>
 
         <?php if (!empty($error)): ?>

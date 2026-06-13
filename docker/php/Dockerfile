@@ -36,6 +36,7 @@ RUN npm install -g @openai/codex
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY docker/php/serve-skeleton /usr/local/bin/serve-skeleton
+COPY docker/php/serve-cms /usr/local/bin/serve-cms
 
 WORKDIR /workspace
 

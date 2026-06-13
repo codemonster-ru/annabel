@@ -1,21 +1,21 @@
 {
-  "name": "Xen CMS",
+  "name": "Annabel CMS",
   "dockerComposeFile": "../docker-compose.yml",
-  "service": "app",
+  "service": "workspace",
   "workspaceFolder": "/app",
   "runServices": [
-    "app",
+    "workspace",
+    "nginx",
     "db",
     "phpmyadmin"
   ],
   "shutdownAction": "none",
-  "overrideCommand": true,
+  "overrideCommand": false,
   "forwardPorts": [
-    8000,
+    8001,
     8081
   ],
-  "postCreateCommand": "composer install && if [ -f package.json ]; then npm install; fi",
-  "postStartCommand": "if [ ! -f /tmp/xen-server.pid ] || ! kill -0 $(cat /tmp/xen-server.pid) 2>/dev/null; then nohup php -S 0.0.0.0:8000 -t public >/tmp/xen-server.log 2>&1 & echo $! >/tmp/xen-server.pid; fi",
+  "postCreateCommand": "composer install && npm ci && npm run build",
   "customizations": {
     "vscode": {
       "extensions": [

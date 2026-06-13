@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($title ?? 'Xen CMS') ?></title>
+    <title><?= htmlspecialchars($title ?? 'Annabel CMS') ?></title>
     <style>
         body {
             font-family: sans-serif;
@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    <h1>🧘 Welcome to <?= htmlspecialchars($title ?? 'Xen CMS') ?></h1>
+    <h1>🧘 Welcome to <?= htmlspecialchars($title ?? 'Annabel CMS') ?></h1>
     <p>View loaded from: <code>app/Modules/Pages/views/home.php</code></p>
 </body>
 

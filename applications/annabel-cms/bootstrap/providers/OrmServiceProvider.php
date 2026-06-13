@@ -1,6 +1,6 @@
 <?php
 
-namespace Codemonster\Xen\Providers;
+namespace Codemonster\Cms\Providers;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
@@ -9,7 +9,9 @@ use Codemonster\Database\ORM\Model;
 
 class OrmServiceProvider implements ServiceProviderInterface
 {
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app)
+    {
+    }
 
     public function register(): void
     {
@@ -18,5 +20,7 @@ class OrmServiceProvider implements ServiceProviderInterface
         });
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+    }
 }

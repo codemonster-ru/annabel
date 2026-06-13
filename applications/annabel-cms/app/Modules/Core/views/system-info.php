@@ -29,7 +29,7 @@
         <li>Locale: <code><?= $locale ?></code></li>
         <li>Timezone: <code><?= $timezone ?></code></li>
     </ul>
-    <p>Config: <code>config/xen.php</code></p>
+    <p>Config: <code>config/cms.php</code></p>
 </body>
 
 </html>

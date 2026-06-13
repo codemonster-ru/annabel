@@ -1,0 +1,17 @@
+<?php
+
+namespace Codemonster\Database\ORM;
+
+/**
+ * @template TModel
+ * @method self<TModel> where(string|callable $column, mixed $operator = null, mixed $value = null, string $boolean = 'AND')
+ */
+class ModelQuery
+{
+    /**
+     * @return TModel|null
+     */
+    public function first(): mixed
+    {
+    }
+}

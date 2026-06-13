@@ -1,0 +1,47 @@
+{
+    "name": "codemonster-ru/annabel-cms-dev",
+    "description": "Local development manifest for Annabel CMS inside the monorepo",
+    "type": "project",
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/*",
+            "canonical": true,
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/annabel": "dev-main as 1.15.99",
+        "codemonster-ru/database": "dev-main as 2.1.99",
+        "codemonster-ru/http": "dev-main as 2.1.99",
+        "codemonster-ru/security": "dev-main as 1.1.99",
+        "codemonster-ru/session": "dev-main as 2.0.99",
+        "codemonster-ru/view": "dev-main as 2.3.99"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Cms\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Codemonster\\Cms\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "scripts": {
+        "test": "npm run build:admin && phpunit",
+        "test:unit": "phpunit --testsuite unit",
+        "test:integration": "phpunit --testsuite integration",
+        "analyse": "@php -d memory_limit=512M vendor/bin/phpstan analyse --debug --no-progress"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

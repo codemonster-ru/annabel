@@ -1,0 +1,20 @@
+parameters:
+    level: 6
+    paths:
+        - app/Modules/Admin/Controllers
+        - app/Modules/Admin/Middleware
+        - app/Modules/Admin/Services
+        - app/Modules/Auth/Contracts
+        - app/Modules/Auth/Controllers
+        - app/Modules/Auth/Middleware
+        - app/Modules/Auth/Models
+        - app/Modules/Auth/Services
+        - app/Modules/Core
+        - app/Modules/Pages/Controllers
+        - bootstrap/providers
+    excludePaths:
+        analyse:
+            - app/Modules/Core/views
+    tmpDir: /tmp/annabel-cms-phpstan
+    stubFiles:
+        - stubs/ModelQuery.stub

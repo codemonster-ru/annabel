@@ -1,67 +1,90 @@
-# Xen CMS
+# Annabel CMS
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/xen.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/xen)
-[![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/xen.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/xen)
-[![License](https://img.shields.io/packagist/l/codemonster-ru/xen.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/xen)
+> [!IMPORTANT]
+> This split repository is read-only.
+>
+> Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel)
+> under `applications/annabel-cms`. Issues and pull requests should be opened there.
 
-**Xen** is a modern modular CMS based on the [Annabel](https://github.com/codemonster-ru/annabel) framework,
-designed for clean architecture, simple code, and extensibility through independent modules.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/annabel-cms.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel-cms)
+[![License](https://img.shields.io/packagist/l/codemonster-ru/annabel-cms.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel-cms)
+
+Annabel CMS is the official modular content management system built on the
+[Annabel framework](https://github.com/codemonster-ru/annabel).
 
 ## Installation
 
 ```bash
-composer require codemonster-ru/xen
+composer create-project codemonster-ru/annabel-cms
 ```
+
+The release contains the compiled admin assets, so Node.js is not required to
+install or run the CMS.
 
 ## Features
 
--   **Modular structure**: Each CMS component is a separate module (`Pages`, `Users`, `Admin`, etc.).
--   **Automatic module loading**: `ModuleManager` finds and boots `ModuleServiceProvider` in `app/Modules`.
--   **Minimal bootstrap**: `bootstrap/app.php` only creates the `Application` instance.
--   **Templates within modules**: Each module can have its own templates (`Views/`) and call `view('pages::home')`.
--   **Annabel compatibility**: Uses core features (service providers, container, view engine, router, etc.).
+- Modular structure with explicit manifests, dependencies, routes, views, providers, and assets.
+- Automatic module discovery and deterministic lifecycle management.
+- Module-owned PHP, database, templates, Vue source, and build configuration.
+- Authentication, role-based admin access, CSRF protection, and configurable sessions.
+- Shared HTTP and console configuration for migrations and seeders.
 
-## Database Migrations
+## Module Structure
 
-Global (project) migrations live in `database/migrations`.
-Module migrations live beside their code under `app/Modules/<Module>/database/migrations`.
+```text
+app/Modules/Example/
+├── Controllers/
+├── Models/
+├── database/
+├── resources/
+├── routes/
+├── views/
+├── module.php
+└── ModuleServiceProvider.php
+```
 
-`bootstrap/migrationPaths.php` collects migration paths, with `database/migrations` used as the default location.
+See [docs/architecture.md](docs/architecture.md) for module lifecycle,
+dependency rules, authentication contracts, and scaling guidance.
 
-Run everything through the bundled wrapper:
+## Development
+
+Inside the Annabel monorepo:
+
+```bash
+COMPOSER=composer.dev.json composer update
+npm ci
+npm run build
+COMPOSER=composer.dev.json composer test
+COMPOSER=composer.dev.json composer analyse
+```
+
+The development manifest symlinks Annabel packages from `../../packages/*`.
+The public `composer.json` contains stable Packagist constraints and is used by
+the split repository. Rebuild and commit `public/admin/assets` whenever the
+admin frontend changes.
+
+The bundled Dev Container is a standalone CMS environment that uses the public
+Composer manifest. Use the root monorepo quality commands when changing Annabel
+packages together with the CMS.
+
+## Database
+
+Global migrations and seeders live under `database/`. Modules may own their
+database files under `app/Modules/<Module>/database/`.
 
 ```bash
 php bin/database migrate
 php bin/database migrate:rollback
-php bin/database make:migration CreatePostsTable
-php bin/database make:migration CreatePostsTable --module=Pages
-```
-
-The CLI reads the same `config/database.php` as the application, so the migrations table, database connections,
-and module paths stay synchronized between HTTP and console work.
-
-## Database Seeders
-
-Global (project) seeders live in `database/seeds`.
-Module seeders live beside their code under `app/Modules/<Module>/database/seeds`.
-
-```bash
 php bin/database seed
-php bin/database make:seed RolesSeeder
+php bin/database make:migration CreatePostsTable --module=Pages
 php bin/database make:seed RolesSeeder --module=Auth
 ```
 
-Auth module routes:
+## Deployment
 
-- `GET /login`, `POST /login` (guest only, CSRF protected)
-- `GET /register`, `POST /register` (guest only, CSRF protected)
-- `GET /profile` (auth only)
-- `POST /logout` (auth only, CSRF protected)
-
-## Author
-
-[**Kirill Kolesnikov**](https://github.com/KolesnikovKirill)
+Use `SESSION_DRIVER=redis` for horizontally scaled deployments. The default
+file driver is appropriate for single-node development.
 
 ## License
 
-[MIT](https://github.com/codemonster-ru/xen/blob/main/LICENSE)
+[MIT](https://github.com/codemonster-ru/annabel-cms/blob/main/LICENSE)

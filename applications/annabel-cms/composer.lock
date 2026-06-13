@@ -1,0 +1,965 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "a4397086a89aef86556adcddb3c43549",
+    "packages": [
+        {
+            "name": "codemonster-ru/annabel",
+            "version": "v1.14.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/annabel.git",
+                "reference": "538e7a8268b9b853ef071330a19139f19729f99d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/annabel/zipball/538e7a8268b9b853ef071330a19139f19729f99d",
+                "reference": "538e7a8268b9b853ef071330a19139f19729f99d",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/errors": "^1.2",
+                "codemonster-ru/razor": "^1.1",
+                "codemonster-ru/support": "^1.4",
+                "codemonster-ru/view-php": "^2.1",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "suggest": {
+                "codemonster-ru/ssr-bridge": "Enable Vue/React/Svelte SSR rendering bridge"
+            },
+            "bin": [
+                "bin/annabel"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Annabel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Elegant and lightweight PHP framework for modern web applications",
+            "homepage": "https://github.com/codemonster-ru/annabel",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "container",
+                "framework",
+                "mvc",
+                "php",
+                "router",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/annabel/issues",
+                "source": "https://github.com/codemonster-ru/annabel"
+            },
+            "time": "2026-01-02T19:53:04+00:00"
+        },
+        {
+            "name": "codemonster-ru/config",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/config.git",
+                "reference": "701b8b18bdf0ec7505729be7acb0cb69f9027a3e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/config/zipball/701b8b18bdf0ec7505729be7acb0cb69f9027a3e",
+                "reference": "701b8b18bdf0ec7505729be7acb0cb69f9027a3e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Config\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight configuration loader for PHP applications",
+            "homepage": "https://github.com/codemonster-ru/config",
+            "keywords": [
+                "Settings",
+                "config",
+                "configuration",
+                "env",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/config/issues",
+                "source": "https://github.com/codemonster-ru/config"
+            },
+            "time": "2025-10-05T10:45:06+00:00"
+        },
+        {
+            "name": "codemonster-ru/database",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/database.git",
+                "reference": "9aaef71e8954d7a8f6dd50e49a65da9f79846a5a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/database/zipball/9aaef71e8954d7a8f6dd50e49a65da9f79846a5a",
+                "reference": "9aaef71e8954d7a8f6dd50e49a65da9f79846a5a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "bin": [
+                "bin/database"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight, framework-agnostic database layer with PDO connections, fluent Query Builder, Schema Builder, and full migration system.",
+            "homepage": "https://github.com/codemonster-ru/database",
+            "keywords": [
+                "codemonster",
+                "database",
+                "database-manager",
+                "db-layer",
+                "framework-agnostic",
+                "migration-runner",
+                "migrations",
+                "mysql",
+                "orm-like",
+                "pdo",
+                "php-database",
+                "query",
+                "query-builder",
+                "schema",
+                "sql"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/database/issues",
+                "source": "https://github.com/codemonster-ru/database"
+            },
+            "time": "2025-12-22T15:42:00+00:00"
+        },
+        {
+            "name": "codemonster-ru/dumper",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/dumper.git",
+                "reference": "de5bf8188b8ce3e7cda8aa11006197e0adfeb708"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/dumper/zipball/de5bf8188b8ce3e7cda8aa11006197e0adfeb708",
+                "reference": "de5bf8188b8ce3e7cda8aa11006197e0adfeb708",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Dumper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Simple and elegant PHP variable dumper for CLI and web environments",
+            "homepage": "https://github.com/codemonster-ru/dumper",
+            "keywords": [
+                "cli",
+                "dd",
+                "debug",
+                "dump",
+                "dumper",
+                "html",
+                "php",
+                "var-dump"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/dumper/issues",
+                "source": "https://github.com/codemonster-ru/dumper"
+            },
+            "time": "2025-10-07T15:42:10+00:00"
+        },
+        {
+            "name": "codemonster-ru/env",
+            "version": "v2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/env.git",
+                "reference": "9479eef31bed90526baba2d8256f13eae33aca36"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/env/zipball/9479eef31bed90526baba2d8256f13eae33aca36",
+                "reference": "9479eef31bed90526baba2d8256f13eae33aca36",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "suggest": {
+                "ext-mbstring": "Required for non-UTF-8 .env encodings."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Env\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight .env loader for PHP projects",
+            "homepage": "https://github.com/codemonster-ru/env",
+            "keywords": [
+                "Settings",
+                "configuration",
+                "dotenv",
+                "env",
+                "environment",
+                "loader",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/env/issues",
+                "source": "https://github.com/codemonster-ru/env"
+            },
+            "time": "2026-01-02T19:19:49+00:00"
+        },
+        {
+            "name": "codemonster-ru/errors",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/errors.git",
+                "reference": "0ffd14876d7dac309c62a3e90c76890b090c5dc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/errors/zipball/0ffd14876d7dac309c62a3e90c76890b090c5dc3",
+                "reference": "0ffd14876d7dac309c62a3e90c76890b090c5dc3",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/http": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Errors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Universal exception and HTTP error handling package for PHP applications. Developed for the Codemonster ecosystem (Annabel framework).",
+            "homepage": "https://github.com/codemonster-ru/errors",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "errors",
+                "exceptions",
+                "framework",
+                "handler",
+                "http",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/errors/issues",
+                "source": "https://github.com/codemonster-ru/errors"
+            },
+            "time": "2026-01-02T17:04:54+00:00"
+        },
+        {
+            "name": "codemonster-ru/http",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/http.git",
+                "reference": "b64003db19118c197632360584841d7b76db380d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/http/zipball/b64003db19118c197632360584841d7b76db380d",
+                "reference": "b64003db19118c197632360584841d7b76db380d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Http\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight object-oriented HTTP foundation for PHP.",
+            "homepage": "https://github.com/codemonster-ru/http",
+            "keywords": [
+                "framework",
+                "http",
+                "json",
+                "php",
+                "redirect",
+                "request",
+                "response"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/http/issues",
+                "source": "https://github.com/codemonster-ru/http"
+            },
+            "time": "2025-12-24T16:16:19+00:00"
+        },
+        {
+            "name": "codemonster-ru/razor",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/razor.git",
+                "reference": "85b15a6d053338c34a53269d9590abf29b03db8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/razor/zipball/85b15a6d053338c34a53269d9590abf29b03db8a",
+                "reference": "85b15a6d053338c34a53269d9590abf29b03db8a",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/view": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "999.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Razor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Template engine for PHP",
+            "homepage": "https://github.com/codemonster-ru/razor",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "engine",
+                "php",
+                "razor",
+                "template",
+                "templating",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/razor/issues",
+                "source": "https://github.com/codemonster-ru/razor"
+            },
+            "time": "2025-10-14T14:33:03+00:00"
+        },
+        {
+            "name": "codemonster-ru/router",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/router.git",
+                "reference": "32bef189adcc1f24498a7cfdac2c666fd8ea3cd1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/router/zipball/32bef189adcc1f24498a7cfdac2c666fd8ea3cd1",
+                "reference": "32bef189adcc1f24498a7cfdac2c666fd8ea3cd1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Router\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight router for PHP applications",
+            "homepage": "https://github.com/codemonster-ru/router",
+            "keywords": [
+                "framework",
+                "http",
+                "lightweight",
+                "php",
+                "router",
+                "routing"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/router/issues",
+                "source": "https://github.com/codemonster-ru/router"
+            },
+            "time": "2025-11-15T21:59:06+00:00"
+        },
+        {
+            "name": "codemonster-ru/security",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/security.git",
+                "reference": "5d2b0cb5da5af17516ccc955b658ae0ffde35cb7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/security/zipball/5d2b0cb5da5af17516ccc955b658ae0ffde35cb7",
+                "reference": "5d2b0cb5da5af17516ccc955b658ae0ffde35cb7",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/http": "^2.0",
+                "codemonster-ru/session": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "codemonster-ru/support": "^1.0",
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "suggest": {
+                "codemonster-ru/annabel": "Registers SecurityServiceProvider to enable middleware integration",
+                "codemonster-ru/database": "Database storage for throttling (MySQL)",
+                "ext-redis": "Redis storage for throttling (optional)",
+                "predis/predis": "Redis storage for throttling (optional)"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers/csrf.php"
+                ],
+                "psr-4": {
+                    "Codemonster\\Security\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Security components for Annabel ecosystem: CSRF protection and rate limiting.",
+            "homepage": "https://github.com/codemonster-ru/security",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "csrf",
+                "php",
+                "rate-limiting",
+                "security",
+                "throttle"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/security/issues",
+                "source": "https://github.com/codemonster-ru/security"
+            },
+            "time": "2026-01-02T09:19:43+00:00"
+        },
+        {
+            "name": "codemonster-ru/session",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/session.git",
+                "reference": "87eb51528413201fb680f5b73090041170dc4e1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/session/zipball/87eb51528413201fb680f5b73090041170dc4e1d",
+                "reference": "87eb51528413201fb680f5b73090041170dc4e1d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "psr/simple-cache": "^3.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0",
+                "vimeo/psalm": "^6.0"
+            },
+            "suggest": {
+                "ext-redis": "Required for RedisSessionHandler",
+                "ext-sodium": "Required for session payload encryption",
+                "predis/predis": "Required for PredisSessionHandler"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\Session\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Lightweight session management library for PHP with pluggable handlers",
+            "homepage": "https://github.com/codemonster-ru/session",
+            "keywords": [
+                "codemonster",
+                "framework",
+                "handler",
+                "php",
+                "session"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/session/issues",
+                "source": "https://github.com/codemonster-ru/session"
+            },
+            "time": "2025-12-29T17:05:57+00:00"
+        },
+        {
+            "name": "codemonster-ru/support",
+            "version": "v1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/support.git",
+                "reference": "a8736bf4a3b09c76938db03991fa0f0a195c3d2e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/support/zipball/a8736bf4a3b09c76938db03991fa0f0a195c3d2e",
+                "reference": "a8736bf4a3b09c76938db03991fa0f0a195c3d2e",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/config": "^2.0",
+                "codemonster-ru/database": "^2.0",
+                "codemonster-ru/dumper": "^1.0",
+                "codemonster-ru/env": "^2.0",
+                "codemonster-ru/http": "^2.0",
+                "codemonster-ru/router": "^2.0",
+                "codemonster-ru/session": "^2.0",
+                "codemonster-ru/view": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "codemonster-ru/view-php": "^2.0",
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers/config.php",
+                    "src/helpers/db.php",
+                    "src/helpers/env.php",
+                    "src/helpers/view.php",
+                    "src/helpers/router.php",
+                    "src/helpers/request.php",
+                    "src/helpers/response.php",
+                    "src/helpers/session.php",
+                    "src/helpers/dump.php"
+                ],
+                "psr-4": {
+                    "Codemonster\\Support\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.net",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Global helper functions and meta package for codemonster-ru/annabel.",
+            "homepage": "https://github.com/codemonster-ru/support",
+            "keywords": [
+                "annabel",
+                "codemonster",
+                "framework",
+                "helpers",
+                "meta-package",
+                "php",
+                "support",
+                "utilities"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/support/issues",
+                "source": "https://github.com/codemonster-ru/support"
+            },
+            "time": "2026-01-02T19:33:39+00:00"
+        },
+        {
+            "name": "codemonster-ru/view",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/view.git",
+                "reference": "6da45e93109c51c594f3ef9c48403e9148831df5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/view/zipball/6da45e93109c51c594f3ef9c48403e9148831df5",
+                "reference": "6da45e93109c51c594f3ef9c48403e9148831df5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\View\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "View rendering core for PHP applications",
+            "homepage": "https://github.com/codemonster-ru/view",
+            "keywords": [
+                "engine",
+                "php",
+                "renderer",
+                "templating",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/view/issues",
+                "source": "https://github.com/codemonster-ru/view"
+            },
+            "time": "2025-12-27T02:26:13+00:00"
+        },
+        {
+            "name": "codemonster-ru/view-php",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codemonster-ru/view-php.git",
+                "reference": "dc4f990b06d2c430988ad4b3058470f0c78ea788"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codemonster-ru/view-php/zipball/dc4f990b06d2c430988ad4b3058470f0c78ea788",
+                "reference": "dc4f990b06d2c430988ad4b3058470f0c78ea788",
+                "shasum": ""
+            },
+            "require": {
+                "codemonster-ru/view": "^2.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "999.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Codemonster\\View\\Engines\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Kolesnikov",
+                    "email": "admin@codemonster.ru",
+                    "homepage": "https://github.com/KolesnikovKirill",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "PHP template engine for codemonster-ru/view",
+            "homepage": "https://github.com/codemonster-ru/view-php",
+            "keywords": [
+                "codemonster-ru",
+                "engine",
+                "php",
+                "renderer",
+                "templating",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/codemonster-ru/view-php/issues",
+                "source": "https://github.com/codemonster-ru/view-php"
+            },
+            "time": "2025-10-14T14:22:08+00:00"
+        },
+        {
+            "name": "psr/simple-cache",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/simple-cache.git",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\SimpleCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for simple caching",
+            "keywords": [
+                "cache",
+                "caching",
+                "psr",
+                "psr-16",
+                "simple-cache"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
+            },
+            "time": "2021-10-29T13:26:27+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.2"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
+}

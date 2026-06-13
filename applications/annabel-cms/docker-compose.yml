@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8001:8000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: xen
+      DB_USERNAME: xen
+      DB_PASSWORD: xen
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: xen
+      MARIADB_USER: xen
+      MARIADB_PASSWORD: xen
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: xen
+      PMA_PASSWORD: xen
+    depends_on:
+      - db
+
+volumes:
+  db_data:

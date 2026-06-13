@@ -1,0 +1,27 @@
+{
+    "name": "codemonster-ru/xen",
+    "description": "Modular CMS built on top of Codemonster Annabel framework",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "codemonster-ru/annabel": "^1.14",
+        "codemonster-ru/security": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codemonster\\Xen\\": "app/"
+        }
+    },
+    "scripts": {
+        "start": "@php -S localhost:8000 -t public"
+    },
+    "authors": [
+        {
+            "name": "Kirill Kolesnikov",
+            "email": "admin@codemonster.net",
+            "homepage": "https://codemonster.net",
+            "role": "Lead Developer"
+        }
+    ]
+}

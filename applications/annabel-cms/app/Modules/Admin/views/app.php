@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Annabel CMS Admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <?php foreach ($assets['styles'] ?? [] as $stylesheet): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($stylesheet, ENT_QUOTES, 'UTF-8') ?>">
     <?php endforeach; ?>

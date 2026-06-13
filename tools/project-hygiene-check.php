@@ -15,6 +15,7 @@ foreach (packageDirectories($root) as $packageDirectory) {
 }
 
 inspectSkeleton($root, $root . '/skeleton/annabel-skeleton', $violations);
+inspectApplication($root, $root . '/applications/annabel-cms', $violations);
 
 if ($violations !== []) {
     fwrite(STDERR, "Project hygiene violations:\n\n");
@@ -26,7 +27,7 @@ if ($violations !== []) {
     exit(1);
 }
 
-printf("Project hygiene is valid (%d packages, skeleton checked).\n", count(packageDirectories($root)));
+printf("Project hygiene is valid (%d packages, skeleton and CMS checked).\n", count(packageDirectories($root)));
 
 /**
  * @return list<string>
@@ -106,14 +107,49 @@ function inspectSkeleton(string $root, string $skeletonDirectory, array &$violat
     }
 
     foreach (forbiddenSkeletonPaths() as $path) {
-        if (file_exists($skeletonDirectory . '/' . $path)) {
+        if (isTracked($root, 'skeleton/annabel-skeleton/' . $path)) {
             $violations[] = "skeleton/annabel-skeleton/{$path}: generated artifact must not be shipped";
         }
     }
 
     foreach (forbiddenRepositoryPaths() as $path) {
-        if (file_exists($root . '/' . $path)) {
+        if (isTracked($root, $path)) {
             $violations[] = "{$path}: generated artifact must not be kept in the repository root";
+        }
+    }
+}
+
+/**
+ * @param list<string> $violations
+ */
+function inspectApplication(string $root, string $applicationDirectory, array &$violations): void
+{
+    $relativeDirectory = relativePath($root, $applicationDirectory);
+
+    if (!is_dir($applicationDirectory)) {
+        $violations[] = "{$relativeDirectory}: application is missing";
+
+        return;
+    }
+
+    $composerFile = $applicationDirectory . '/composer.json';
+    if (!is_file($composerFile)) {
+        $violations[] = "{$relativeDirectory}/composer.json: application manifest is missing";
+    } else {
+        $composer = json_decode((string) file_get_contents($composerFile), true, flags: JSON_THROW_ON_ERROR);
+
+        if (($composer['name'] ?? null) !== 'codemonster-ru/annabel-cms') {
+            $violations[] = "{$relativeDirectory}/composer.json: package name must be codemonster-ru/annabel-cms";
+        }
+
+        if (($composer['type'] ?? null) !== 'project') {
+            $violations[] = "{$relativeDirectory}/composer.json: application type must be project";
+        }
+    }
+
+    foreach (requiredApplicationFiles() as $file) {
+        if (!is_file($applicationDirectory . '/' . $file)) {
+            $violations[] = "{$relativeDirectory}/{$file}: required application file is missing";
         }
     }
 }
@@ -162,6 +198,28 @@ function forbiddenSkeletonPaths(): array
 /**
  * @return list<string>
  */
+function requiredApplicationFiles(): array
+{
+    return [
+        '.env.example',
+        'CHANGELOG.md',
+        'README.md',
+        'bootstrap/app.php',
+        'composer.dev.json',
+        'composer.json',
+        'config/cms.php',
+        'package-lock.json',
+        'package.json',
+        'phpstan.neon.dist',
+        'phpunit.xml.dist',
+        'public/admin/assets/.vite/manifest.json',
+        'public/index.php',
+    ];
+}
+
+/**
+ * @return list<string>
+ */
 function forbiddenRepositoryPaths(): array
 {
     return [
@@ -176,4 +234,17 @@ function forbiddenRepositoryPaths(): array
 function relativePath(string $root, string $path): string
 {
     return ltrim(str_replace($root, '', $path), DIRECTORY_SEPARATOR);
+}
+
+function isTracked(string $root, string $path): bool
+{
+    $command = sprintf(
+        'git -C %s ls-files --error-unmatch -- %s 2>/dev/null',
+        escapeshellarg($root),
+        escapeshellarg($path),
+    );
+
+    exec($command, $output, $exitCode);
+
+    return $exitCode === 0;
 }

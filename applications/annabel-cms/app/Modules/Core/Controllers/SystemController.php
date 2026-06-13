@@ -1,18 +1,26 @@
 <?php
 
-namespace Codemonster\Xen\Modules\Core\Controllers;
+namespace Codemonster\Cms\Modules\Core\Controllers;
+
+use Codemonster\Annabel\Application;
+use Codemonster\Http\Response;
+use Codemonster\View\View;
 
 class SystemController
 {
-    public function info(): string
-    {
-        view()->addNamespace('core', __DIR__ . '/../views');
+    public function __construct(
+        private Application $app,
+        private View $view,
+    ) {
+    }
 
-        return view('core::system-info', [
-            'site'     => config('xen.site_name', 'Xen CMS'),
-            'base'     => base_path(),
-            'locale'   => config('xen.locale', 'en'),
-            'timezone' => config('xen.timezone', 'UTC'),
-        ]);
+    public function info(): Response
+    {
+        return new Response($this->view->render('core::system-info', [
+            'site' => config('cms.site_name', 'Annabel CMS'),
+            'base' => $this->app->getBasePath(),
+            'locale' => config('cms.locale', 'en'),
+            'timezone' => config('cms.timezone', 'UTC'),
+        ]));
     }
 }

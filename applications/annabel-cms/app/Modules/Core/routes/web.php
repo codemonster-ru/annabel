@@ -1,5 +1,5 @@
 <?php
 
-use Codemonster\Xen\Modules\Core\Controllers\SystemController;
+use Codemonster\Cms\Modules\Core\Controllers\SystemController;
 
-route('/system/info', [SystemController::class, 'info']);
+router()->get('/system/info', [SystemController::class, 'info']);

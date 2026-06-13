@@ -4,6 +4,7 @@ $finder = PhpCsFixer\Finder::create()
     ->in([
         __DIR__ . '/packages',
         __DIR__ . '/skeleton/annabel-skeleton',
+        __DIR__ . '/applications/annabel-cms',
         __DIR__ . '/tools',
     ])
     ->exclude([
@@ -13,6 +14,7 @@ $finder = PhpCsFixer\Finder::create()
         'cache',
     ])
     ->notPath([
+        'applications/annabel-cms/bootstrap/cache/packages.php',
         'packages/framework/tests/Bootstrap/cache/packages.php',
     ])
     ->name('*.php');

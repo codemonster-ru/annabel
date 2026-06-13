@@ -1,14 +1,20 @@
 <?php
 
-namespace Codemonster\Xen\Modules\Auth\Models;
+namespace Codemonster\Cms\Modules\Auth\Models;
 
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Relations\BelongsToMany;
 
+/**
+ * @property int|string $id
+ * @property string $email
+ * @property string $password
+ */
 class User extends Model
 {
     protected string $table = 'users';
 
+    /** @var list<string> */
     protected array $fillable = [
         'id',
         'name',
@@ -16,26 +22,36 @@ class User extends Model
         'password',
     ];
 
+    /** @var list<string> */
     protected array $hidden = [
         'password',
     ];
 
+    /** @var array<string, string> */
     protected array $casts = [
         'email_verified_at' => 'datetime',
     ];
 
     public static function findByEmail(string $email): ?self
     {
-        return static::query()
+        $user = static::query()
             ->where('email', $email)
             ->first();
+
+        return $user instanceof self ? $user : null;
     }
 
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function roleNames(): array
     {
         $roles = db()
@@ -48,9 +64,7 @@ class User extends Model
         $names = [];
 
         foreach ($roles as $role) {
-            $name = is_array($role)
-                ? ($role['name'] ?? null)
-                : ($role->name ?? null);
+            $name = $role['name'] ?? null;
 
             if (is_string($name) && $name !== '') {
                 $names[] = $name;

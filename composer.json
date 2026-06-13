@@ -29,9 +29,19 @@
         "format:check": "php-cs-fixer fix --dry-run --diff --verbose",
         "project:hygiene": "php tools/project-hygiene-check.php",
         "release:packaging": "php tools/release-packaging-check.php",
-        "validate:packages": "composer validate --strict && for dir in packages/* skeleton/annabel-skeleton; do if [ -f \"$dir/composer.json\" ]; then composer validate --strict --no-check-lock --working-dir=\"$dir\"; fi; done",
+        "validate:packages": "composer validate --strict && for dir in packages/* skeleton/annabel-skeleton applications/annabel-cms; do if [ -f \"$dir/composer.json\" ]; then composer validate --strict --no-check-lock --working-dir=\"$dir\"; fi; done",
         "test:framework": "composer test --working-dir=packages/framework",
         "test:packages": "set -e; for dir in packages/*; do if [ -f \"$dir/phpunit.xml.dist\" ]; then composer test --working-dir=\"$dir\"; fi; done",
+        "install:cms": "COMPOSER=composer.dev.json composer update --working-dir=applications/annabel-cms --no-interaction --prefer-dist --no-progress && npm ci --prefix applications/annabel-cms",
+        "test:cms": "COMPOSER=composer.dev.json composer test --working-dir=applications/annabel-cms",
+        "analyse:cms": "COMPOSER=composer.dev.json composer analyse --working-dir=applications/annabel-cms",
+        "audit:cms": "COMPOSER=composer.dev.json composer audit --working-dir=applications/annabel-cms --no-interaction",
+        "quality:cms": [
+            "@install:cms",
+            "@test:cms",
+            "@analyse:cms",
+            "@audit:cms"
+        ],
         "install:ecosystem": "php tools/prepare-ecosystem.php && COMPOSER=composer.dev.json composer update --working-dir=/tmp/annabel-skeleton-acceptance --no-interaction --prefer-dist --no-progress",
         "test:ecosystem": [
             "@install:ecosystem",
@@ -51,7 +61,8 @@
             "@test:packages",
             "@test:ecosystem",
             "@analyse:packages",
-            "@audit:packages"
+            "@audit:packages",
+            "@quality:cms"
         ],
         "test": "@test:packages"
     },

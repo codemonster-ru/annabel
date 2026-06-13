@@ -1,6 +1,7 @@
 .git
 vendor
 node_modules
+composer.dev.lock
 dist
 build
 coverage

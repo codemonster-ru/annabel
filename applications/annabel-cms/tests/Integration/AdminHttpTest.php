@@ -23,7 +23,7 @@ class AdminHttpTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('id="admin-app"', (string) $response->getContent());
         self::assertMatchesRegularExpression(
-            '#/admin/assets/assets/admin-[^"]+\.js#',
+            '#/admin/assets/admin-[^"]+\.js#',
             (string) $response->getContent(),
         );
     }

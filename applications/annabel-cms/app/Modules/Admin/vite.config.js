@@ -30,9 +30,9 @@ export default defineConfig({
     rollupOptions: {
       input: `${moduleRoot}/resources/js/main.js`,
       output: {
-        entryFileNames: 'assets/admin-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
+        entryFileNames: 'admin-[hash].js',
+        chunkFileNames: '[name]-[hash].js',
+        assetFileNames: '[name]-[hash][extname]',
       },
     },
   },

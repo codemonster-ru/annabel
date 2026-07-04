@@ -18,7 +18,7 @@ Annabel CMS is the official modular content management system built on the
 composer create-project codemonster-ru/annabel-cms
 ```
 
-The release contains the compiled admin assets, so Node.js is not required to
+The release contains the compiled CMS assets, so Node.js is not required to
 install or run the CMS.
 
 ## Features
@@ -58,8 +58,8 @@ COMPOSER=composer.dev.json composer analyse
 
 The development manifest symlinks Annabel packages from `../../packages/*`.
 The public `composer.json` contains stable Packagist constraints and is used by
-the split repository. Rebuild and commit `public/admin/assets` whenever the
-admin frontend changes.
+the split repository. Rebuild and commit `public/admin/assets` and
+`public/setup/assets` whenever the CMS frontend changes.
 
 Use the root monorepo Docker environment and quality commands when changing
 Annabel packages together with the CMS.

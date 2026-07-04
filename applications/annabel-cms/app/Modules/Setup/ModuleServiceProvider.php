@@ -4,9 +4,9 @@ namespace Codemonster\Cms\Modules\Setup;
 
 use Codemonster\Annabel\Providers\ServiceProvider;
 use Codemonster\Cms\Modules\Setup\Services\EnvironmentFile;
-use Codemonster\Cms\Modules\Setup\Services\InstallationState;
 use Codemonster\Cms\Modules\Setup\Services\SetupAssetManager;
 use Codemonster\Cms\Modules\Setup\Services\SystemRequirements;
+use Codemonster\Cms\Support\Installation\InstallationState;
 
 class ModuleServiceProvider extends ServiceProvider
 {

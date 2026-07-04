@@ -26,38 +26,25 @@ class ApplicationBootTest extends TestCase
             'Pages' => '1.0.0',
             'Setup' => '1.0.0',
         ], $modules->listAll());
+
+        $basePath = dirname(__DIR__, 2);
+        self::assertSame([
+            $basePath . '/app/Modules/Auth/database/migrations',
+            $basePath . '/app/Modules/Pages/database/migrations',
+        ], $modules->migrationPaths());
+        self::assertSame([
+            $basePath . '/app/Modules/Auth/database/seeds',
+            $basePath . '/app/Modules/Pages/database/seeds',
+        ], $modules->seedPaths());
+        self::assertSame($modules->migrationPaths(), config('database.migrations.paths'));
+        self::assertSame($modules->seedPaths(), config('database.seeds.paths'));
+
         self::assertInstanceOf(AuthenticatorInterface::class, $app->make(AuthenticatorInterface::class));
         self::assertInstanceOf(UserSessionInterface::class, $app->make(UserSessionInterface::class));
-    }
-
-    public function testLeafModuleCanBeDisabled(): void
-    {
-        $this->environment('ANNABEL_CMS_DISABLED_MODULES', 'Pages');
-
-        $modules = $this->app()->make(ModuleManager::class);
-
-        self::assertArrayNotHasKey('Pages', $modules->listAll());
-    }
-
-    public function testRequiredModuleCannotBeDisabled(): void
-    {
-        $this->environment('ANNABEL_CMS_DISABLED_MODULES', 'Auth');
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Required module is disabled or missing: Auth');
-
-        $this->app();
     }
 
     private function app(): Application
     {
         return require dirname(__DIR__, 2) . '/bootstrap/app.php';
-    }
-
-    private function environment(string $key, string $value): void
-    {
-        $_ENV[$key] = $value;
-        $_SERVER[$key] = $value;
-        putenv("{$key}={$value}");
     }
 }

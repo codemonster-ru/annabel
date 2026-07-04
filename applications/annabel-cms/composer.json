@@ -12,8 +12,9 @@
     ],
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/annabel": "^1.15",
-        "codemonster-ru/database": "^2.1",
+        "codemonster-ru/annabel": "^1.17",
+        "codemonster-ru/database": "^2.1.1",
+        "codemonster-ru/env": "^2.4",
         "codemonster-ru/http": "^2.1",
         "codemonster-ru/security": "^1.1",
         "codemonster-ru/session": "^2.0",
@@ -38,7 +39,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "1.0.x-dev"
+            "dev-main": "1.1.x-dev"
         }
     },
     "archive": {

@@ -285,6 +285,60 @@ class EnvTest extends TestCase
         }
     }
 
+    public function testEnvWritesFilePreservingCommentsOrderAndBlankLines(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'env');
+
+        file_put_contents($path, "# App\nAPP_NAME=Old\n\nDB_HOST=localhost\n");
+
+        try {
+            Env::write($path, [
+                'APP_NAME' => 'Annabel CMS',
+                'DB_PASSWORD' => 'pa ss#word',
+            ], false);
+
+            $this->assertSame(
+                "# App\nAPP_NAME=\"Annabel CMS\"\n\nDB_HOST=localhost\nDB_PASSWORD=\"pa ss#word\"\n",
+                file_get_contents($path),
+            );
+        } finally {
+            unlink($path);
+        }
+    }
+
+    public function testEnvWriteUpdatesProcessEnvironment(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'env');
+
+        file_put_contents($path, "WRITER_VALUE=old\n");
+        unset($_ENV['WRITER_VALUE'], $_SERVER['WRITER_VALUE']);
+        putenv('WRITER_VALUE');
+
+        try {
+            Env::write($path, ['WRITER_VALUE' => 'new value']);
+
+            $this->assertSame('new value', Env::get('WRITER_VALUE'));
+            $this->assertSame('WRITER_VALUE="new value"' . PHP_EOL, file_get_contents($path));
+        } finally {
+            unset($_ENV['WRITER_VALUE'], $_SERVER['WRITER_VALUE']);
+            putenv('WRITER_VALUE');
+            unlink($path);
+        }
+    }
+
+    public function testEnvWriteRejectsInvalidNames(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'env');
+
+        try {
+            $this->expectException(\Codemonster\Env\Exceptions\InvalidFileException::class);
+
+            Env::write($path, ['BAD-NAME' => 'value']);
+        } finally {
+            unlink($path);
+        }
+    }
+
     public function testEnvSetDefaultParser(): void
     {
         $path = tempnam(sys_get_temp_dir(), 'env');

@@ -184,6 +184,14 @@ class Env
         return $parsed;
     }
 
+    /**
+     * @param array<string, scalar|null> $values
+     */
+    public static function write(string $path, array $values, bool $updateProcess = true): void
+    {
+        (new EnvFileWriter())->write($path, $values, $updateProcess);
+    }
+
     public static function getDefaultLoader(): LoaderInterface
     {
         return self::getDefaultLoaderInternal();

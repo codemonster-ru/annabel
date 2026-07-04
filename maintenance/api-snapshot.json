@@ -7736,6 +7736,27 @@
                 }
             }
         },
+        "Codemonster\\Env\\EnvFileWriter": {
+            "package": "codemonster-ru/env",
+            "file": "src/EnvFileWriter.php",
+            "kind": "class",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "write": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,array$param,bool$param=true",
+                    "return": "void"
+                }
+            }
+        },
         "Codemonster\\Env\\EnvLoader": {
             "package": "codemonster-ru/env",
             "file": "src/EnvLoader.php",

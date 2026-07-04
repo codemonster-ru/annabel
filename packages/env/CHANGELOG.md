@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## [2.4.0] - 2026-07-05
+
+### Added
+
+- Added `EnvFileWriter` and `Env::write()` for atomic `.env` updates that preserve comments, ordering, and process environment values.
+
 ## [2.3.0] - 2026-01-03
 
 ### Added

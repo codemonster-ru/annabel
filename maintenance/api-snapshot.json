@@ -1104,7 +1104,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "Request$param,array$param",
+                    "parameters": "Request$param,array$param,array$param=[]",
                     "return": "array"
                 }
             }
@@ -14259,7 +14259,8 @@
             "constants": [],
             "properties": {
                 "$extensions": "protected",
-                "$field": "public"
+                "$parameters": "public",
+                "$this": "public"
             },
             "methods": {
                 "extend": {
@@ -14291,7 +14292,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "array$param,array$param",
+                    "parameters": "array$param,array$param,array$param=[]",
                     "return": "ValidationResult"
                 },
                 "validateOrFail": {
@@ -14299,7 +14300,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "array$param,array$param",
+                    "parameters": "array$param,array$param,array$param=[]",
                     "return": "array"
                 },
                 "validateRule": {

@@ -66,6 +66,25 @@ class ValidatorTest extends TestCase
         self::assertSame([], $result->validated());
     }
 
+    public function test_it_uses_attribute_labels_in_messages(): void
+    {
+        $result = (new Validator())->validate([
+            'db_port' => 'mysql',
+        ], [
+            'db_database' => 'required|string',
+            'db_port' => 'required|integer',
+        ], [
+            'db_database' => 'database',
+            'db_port' => 'port',
+        ]);
+
+        self::assertTrue($result->fails());
+        self::assertSame('The database field is required.', $result->first('db_database'));
+        self::assertSame('The port field must be an integer.', $result->first('db_port'));
+        self::assertArrayHasKey('db_database', $result->errors());
+        self::assertArrayHasKey('db_port', $result->errors());
+    }
+
     public function test_custom_rules_can_be_registered(): void
     {
         $validator = new Validator();

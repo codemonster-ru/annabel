@@ -160,9 +160,6 @@ class Validator
         };
     }
 
-    /**
-     * @return non-empty-string
-     */
     private function attribute(string $field): string
     {
         return $this->attributes[$field] ?? $field;

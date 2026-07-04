@@ -34,11 +34,17 @@ class AuthController
         $email = trim($request->input('email'));
         $password = trim($request->input('password'));
         $passwordConfirmation = trim($request->input('password_confirmation'));
-        $name = trim($request->input('name'));
+        $username = trim($request->input('username'));
 
-        if (!$email || !$password || !$name) {
+        if (!$email || !$password || !$username) {
             return new Response($this->view->render('auth::register', [
                 'error' => 'All fields are required',
+            ]), 422);
+        }
+
+        if (!User::validUsername($username)) {
+            return new Response($this->view->render('auth::register', [
+                'error' => 'Username must be 3-60 characters and contain only letters, numbers, underscores, or hyphens',
             ]), 422);
         }
 
@@ -66,10 +72,16 @@ class AuthController
             ]), 409);
         }
 
+        if (User::findByUsername($username)) {
+            return new Response($this->view->render('auth::register', [
+                'error' => 'Username already in use',
+            ]), 409);
+        }
+
         try {
-            $user = transaction(function () use ($name, $email, $password) {
+            $user = transaction(function () use ($username, $email, $password) {
                 $user = User::create([
-                    'name' => $name,
+                    'username' => $username,
                     'email' => $email,
                     'password' => password_hash($password, PASSWORD_BCRYPT),
                 ]);
@@ -103,17 +115,17 @@ class AuthController
 
     public function login(Request $request): Response
     {
-        $email = trim($request->input('email'));
+        $login = trim($request->input('login'));
         $password = trim($request->input('password'));
 
-        if (!$email || !$password) {
+        if (!$login || !$password) {
             return new Response(
-                $this->view->render('auth::login', ['error' => 'Email and password are required']),
+                $this->view->render('auth::login', ['error' => 'Login and password are required']),
                 422,
             );
         }
 
-        $user = $this->auth->attempt($email, $password);
+        $user = $this->auth->attempt($login, $password);
 
         if (!$user) {
             return new Response(
@@ -140,10 +152,27 @@ class AuthController
         ]));
     }
 
-    public function logout(): Response
+    public function logout(Request $request): Response
     {
+        $user = $this->users->current(true);
+
+        if ($user !== null) {
+            $this->users->forgetRememberToken($user->id);
+        }
+
         $this->users->logout();
 
-        return Response::redirect('/login');
+        return Response::redirect('/login')->withCookie(
+            $this->users->rememberCookieName(),
+            '',
+            [
+                'expires' => time() - 3600,
+                'max_age' => 0,
+                'path' => '/',
+                'secure' => (bool) config('session.cookie.secure', false),
+                'httponly' => (bool) config('session.cookie.httponly', true),
+                'samesite' => (string) config('session.cookie.samesite', 'Lax'),
+            ],
+        );
     }
 }

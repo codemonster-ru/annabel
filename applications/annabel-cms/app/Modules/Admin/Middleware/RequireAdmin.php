@@ -20,7 +20,7 @@ class RequireAdmin
         if (!$user) {
             return $request->wantsJson()
                 ? Response::json(['message' => 'Unauthenticated'], 401)
-                : Response::redirect('/admin');
+                : Response::redirect('/admin/login');
         }
 
         if (!$user->hasRole('admin')) {

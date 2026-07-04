@@ -43,8 +43,8 @@
             <p style="color: red"><?= htmlspecialchars($error) ?></p>
         <?php endif; ?>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" autocomplete="email" required><br><br>
+        <label>Username or email:</label><br>
+        <input type="text" name="login" autocomplete="username" required><br><br>
 
         <label>Password:</label><br>
         <input type="password" name="password" autocomplete="current-password" required><br><br>

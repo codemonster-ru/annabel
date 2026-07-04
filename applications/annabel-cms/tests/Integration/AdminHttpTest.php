@@ -6,6 +6,7 @@ use Codemonster\Annabel\Application;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Setup\Services\InstallationState;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
@@ -18,7 +19,7 @@ class AdminHttpTest extends TestCase
 {
     public function testGuestReceivesVueShell(): void
     {
-        $response = $this->app()->handle(new Request('GET', '/admin'));
+        $response = $this->app()->handle(new Request('GET', '/admin/login'));
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('id="admin-app"', (string) $response->getContent());
@@ -34,7 +35,7 @@ class AdminHttpTest extends TestCase
             'POST',
             '/admin/login',
             [],
-            ['email' => 'admin@example.com', 'password' => 'secret'],
+            ['login' => 'admin@example.com', 'password' => 'secret'],
             ['Accept' => 'application/json'],
         ));
 
@@ -64,7 +65,7 @@ class AdminHttpTest extends TestCase
             [],
             [
                 '_token' => $token,
-                'email' => 'admin@example.com',
+                'login' => 'admin@example.com',
                 'password' => 'secret',
             ],
             ['Accept' => 'application/json'],
@@ -95,7 +96,7 @@ class AdminHttpTest extends TestCase
             [],
             [
                 '_token' => $token,
-                'email' => 'user@example.com',
+                'login' => 'user@example.com',
                 'password' => 'secret',
             ],
             ['Accept' => 'application/json'],
@@ -121,7 +122,23 @@ class AdminHttpTest extends TestCase
 
     private function app(): Application
     {
-        return require dirname(__DIR__, 2) . '/bootstrap/app.php';
+        $app = require dirname(__DIR__, 2) . '/bootstrap/app.php';
+        $app->getContainer()->instance(InstallationState::class, new InstalledInstallationState());
+
+        return $app;
+    }
+}
+
+final class InstalledInstallationState extends InstallationState
+{
+    public function __construct()
+    {
+        parent::__construct(sys_get_temp_dir() . '/annabel-cms-test-installed.json');
+    }
+
+    public function isInstalled(): bool
+    {
+        return true;
     }
 }
 
@@ -132,7 +149,7 @@ final class FixedAuthenticator implements AuthenticatorInterface
     ) {
     }
 
-    public function attempt(string $email, string $password): ?AuthenticatedUser
+    public function attempt(string $login, string $password): ?AuthenticatedUser
     {
         return $this->user;
     }
@@ -147,14 +164,30 @@ final class InMemoryUserSession implements UserSessionInterface
         return $this->user;
     }
 
-    public function login(AuthenticatedUser $user): void
+    public function login(AuthenticatedUser $user, bool $remember = false): ?string
     {
         $this->user = $user;
+
+        return null;
     }
 
     public function logout(): void
     {
         $this->user = null;
+    }
+
+    public function forgetRememberToken(int|string $userId): void
+    {
+    }
+
+    public function rememberCookieName(): string
+    {
+        return 'annabel_remember';
+    }
+
+    public function rememberCookieLifetime(): int
+    {
+        return 2592000;
     }
 
     public function hasRole(string $role, bool $strict = false): bool

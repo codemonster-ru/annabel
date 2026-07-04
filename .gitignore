@@ -43,7 +43,8 @@ phpunix.xml
 /coverage/
 /storage/
 /var/
-**/bootstrap/cache/packages.php
+**/bootstrap/cache/*
+!**/bootstrap/cache/.gitkeep
 **/build/
 **/dist/
 **/coverage/

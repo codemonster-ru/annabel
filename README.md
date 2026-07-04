@@ -148,9 +148,7 @@ automatically; refresh `/admin` to load the rebuilt bundle.
 The `cms` service uses `applications/annabel-cms/composer.dev.json`, so its
 Annabel dependencies are also symlinked from `packages/*`.
 
-`applications/annabel-cms/docker-compose.yml` remains the standalone Docker
-entrypoint shipped to the split `codemonster-ru/annabel-cms` repository. The
-root Compose file is the monorepo orchestration layer.
+The root Compose file is the monorepo orchestration layer.
 
 Database credentials:
 

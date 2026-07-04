@@ -226,6 +226,7 @@ function forbiddenRepositoryPaths(): array
     return [
         '.DS_Store',
         '.phpunit.result.cache',
+        'applications/annabel-cms/composer.lock',
         'docker/.DS_Store',
         'packages/framework/tests/Bootstrap/cache/packages.php',
         'packages/.DS_Store',

@@ -25,7 +25,6 @@ composer.dev.lock
 **/composer.local.json
 **/composer.local.lock
 **/composer.dev.lock
-!applications/annabel-cms/composer.lock
 
 # PHPUnit
 .phpunit.result.cache

@@ -2,7 +2,11 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [Unreleased]
+## [1.16.0] - 2026-07-04
+
+### Added
+
+- Added request validation attribute labels through `ValidatesRequests::validate()`.
 
 ### Fixed
 

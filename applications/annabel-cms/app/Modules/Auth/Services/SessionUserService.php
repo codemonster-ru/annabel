@@ -5,11 +5,14 @@ namespace Codemonster\Cms\Modules\Auth\Services;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\User;
+use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 
 class SessionUserService implements UserSessionInterface
 {
     private const USER_CHECK_TTL_SECONDS = 300;
+    private const REMEMBER_COOKIE = 'annabel_remember';
+    private const REMEMBER_TTL_SECONDS = 2592000;
 
     public function __construct(
         private CsrfTokenManager $csrf,
@@ -22,7 +25,7 @@ class SessionUserService implements UserSessionInterface
         $user = $session->get('user');
 
         if (!is_array($user)) {
-            return null;
+            return $this->restoreFromRememberCookie();
         }
 
         $lastCheck = (int) $session->get('user_checked_at', 0);
@@ -44,7 +47,7 @@ class SessionUserService implements UserSessionInterface
         if (!$dbUser) {
             $this->logout();
 
-            return null;
+            return $this->restoreFromRememberCookie();
         }
 
         $identity = $this->identity($dbUser);
@@ -53,9 +56,21 @@ class SessionUserService implements UserSessionInterface
         return $identity;
     }
 
-    public function login(AuthenticatedUser $user): void
+    public function login(AuthenticatedUser $user, bool $remember = false): ?string
     {
         $this->store($user, true);
+
+        if (!$remember) {
+            return null;
+        }
+
+        $model = User::find($user->id);
+
+        if (!$model instanceof User) {
+            return null;
+        }
+
+        return $this->issueRememberToken($model);
     }
 
     public function logout(): void
@@ -82,6 +97,28 @@ class SessionUserService implements UserSessionInterface
         return $user->hasRole($role);
     }
 
+    public function forgetRememberToken(int|string $userId): void
+    {
+        $user = User::find($userId);
+
+        if (!$user instanceof User) {
+            return;
+        }
+
+        $user->remember_token = null;
+        $user->save();
+    }
+
+    public function rememberCookieName(): string
+    {
+        return self::REMEMBER_COOKIE;
+    }
+
+    public function rememberCookieLifetime(): int
+    {
+        return self::REMEMBER_TTL_SECONDS;
+    }
+
     private function store(AuthenticatedUser $user, bool $regenerateSession): void
     {
         $session = session();
@@ -96,6 +133,52 @@ class SessionUserService implements UserSessionInterface
         if ($regenerateSession) {
             $this->csrf->regenerateToken();
         }
+    }
+
+    private function issueRememberToken(User $user): string
+    {
+        $token = bin2hex(random_bytes(32));
+        $user->remember_token = hash('sha256', $token);
+        $user->save();
+
+        return $user->id . '|' . $token;
+    }
+
+    private function restoreFromRememberCookie(): ?AuthenticatedUser
+    {
+        $request = app(Request::class);
+
+        if (!$request instanceof Request) {
+            return null;
+        }
+
+        $cookie = $request->getCookieParams()[self::REMEMBER_COOKIE] ?? null;
+
+        if (!is_string($cookie) || $cookie === '') {
+            return null;
+        }
+
+        [$userId, $token] = array_pad(explode('|', $cookie, 2), 2, null);
+
+        if ((!is_string($userId) && !is_int($userId)) || !is_string($token) || $token === '') {
+            return null;
+        }
+
+        $user = User::find($userId);
+
+        if (
+            !$user instanceof User
+            || !is_string($user->remember_token)
+            || $user->remember_token === ''
+            || !hash_equals($user->remember_token, hash('sha256', $token))
+        ) {
+            return null;
+        }
+
+        $identity = $this->identity($user);
+        $this->store($identity, true);
+
+        return $identity;
     }
 
     /**

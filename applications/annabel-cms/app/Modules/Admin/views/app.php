@@ -1,11 +1,22 @@
+<?php
+$title = match ($boot['screen'] ?? null) {
+    'login' => 'Sign in | Annabel CMS',
+    'forgot-password' => 'Reset password | Annabel CMS',
+    'reset-password' => 'Choose new password | Annabel CMS',
+    'dashboard' => 'Dashboard | Annabel CMS',
+    default => 'Annabel CMS',
+};
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annabel CMS Admin</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
+    <?php if (!empty($assets['favicon']) && is_string($assets['favicon'])): ?>
+        <link rel="icon" href="<?= htmlspecialchars($assets['favicon'], ENT_QUOTES, 'UTF-8') ?>" type="image/svg+xml">
+    <?php endif; ?>
     <?php foreach ($assets['styles'] ?? [] as $stylesheet): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($stylesheet, ENT_QUOTES, 'UTF-8') ?>">
     <?php endforeach; ?>

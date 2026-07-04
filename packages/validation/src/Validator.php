@@ -12,6 +12,9 @@ class Validator
      */
     protected array $extensions = [];
 
+    /** @var array<string, string> */
+    private array $attributes = [];
+
     public function extend(string $rule, Closure $validator): void
     {
         if ($rule === '') {
@@ -28,51 +31,56 @@ class Validator
      */
     public function validate(array $data, array $rules, array $attributes = []): ValidationResult
     {
+        $previousAttributes = $this->attributes;
+        $this->attributes = $attributes;
         $errors = [];
         $validated = [];
 
-        foreach ($rules as $field => $definition) {
-            $fieldRules = $this->normalizeRules($definition);
-            $exists = $this->hasValue($data, $field);
-            $value = $this->value($data, $field);
+        try {
+            foreach ($rules as $field => $definition) {
+                $fieldRules = $this->normalizeRules($definition);
+                $exists = $this->hasValue($data, $field);
+                $value = $this->value($data, $field);
 
-            if (!$exists && !in_array('required', $fieldRules, true)) {
-                continue;
-            }
-
-            if (in_array('nullable', $fieldRules, true) && ($value === null || $value === '')) {
-                if ($exists) {
-                    $validated[$field] = $value;
-                }
-
-                continue;
-            }
-
-            foreach ($fieldRules as $rule) {
-                [$name, $parameters] = $this->parseRule($rule);
-
-                if ($name === 'nullable') {
+                if (!$exists && !in_array('required', $fieldRules, true)) {
                     continue;
                 }
 
-                $message = $this->validateRule(
-                    $name,
-                    $field,
-                    $this->attribute($field, $attributes),
-                    $value,
-                    $data,
-                    $parameters,
-                    $exists,
-                );
+                if (in_array('nullable', $fieldRules, true) && ($value === null || $value === '')) {
+                    if ($exists) {
+                        $validated[$field] = $value;
+                    }
 
-                if ($message !== null) {
-                    $errors[$field][] = $message;
+                    continue;
+                }
+
+                foreach ($fieldRules as $rule) {
+                    [$name, $parameters] = $this->parseRule($rule);
+
+                    if ($name === 'nullable') {
+                        continue;
+                    }
+
+                    $message = $this->validateRule(
+                        $name,
+                        $field,
+                        $value,
+                        $data,
+                        $parameters,
+                        $exists,
+                    );
+
+                    if ($message !== null) {
+                        $errors[$field][] = $message;
+                    }
+                }
+
+                if (!isset($errors[$field]) && $exists) {
+                    $validated[$field] = $value;
                 }
             }
-
-            if (!isset($errors[$field]) && $exists) {
-                $validated[$field] = $value;
-            }
+        } finally {
+            $this->attributes = $previousAttributes;
         }
 
         return new ValidationResult($errors, $validated);
@@ -125,7 +133,6 @@ class Validator
     protected function validateRule(
         string $rule,
         string $field,
-        string $attribute,
         mixed $value,
         array $data,
         array $parameters,
@@ -136,29 +143,29 @@ class Validator
         }
 
         return match ($rule) {
-            'required' => $this->present($value, $exists) ? null : "The {$attribute} field is required.",
-            'string' => (!$exists || is_string($value)) ? null : "The {$attribute} field must be a string.",
-            'integer' => (!$exists || filter_var($value, FILTER_VALIDATE_INT) !== false) ? null : "The {$attribute} field must be an integer.",
-            'numeric' => (!$exists || is_numeric($value)) ? null : "The {$attribute} field must be numeric.",
-            'boolean' => (!$exists || is_bool($value) || in_array($value, [0, 1, '0', '1'], true)) ? null : "The {$attribute} field must be true or false.",
-            'array' => (!$exists || is_array($value)) ? null : "The {$attribute} field must be an array.",
-            'email' => (!$exists || filter_var($value, FILTER_VALIDATE_EMAIL) !== false) ? null : "The {$attribute} field must be a valid email address.",
-            'url' => (!$exists || filter_var($value, FILTER_VALIDATE_URL) !== false) ? null : "The {$attribute} field must be a valid URL.",
-            'confirmed' => $value === $this->value($data, "{$field}_confirmation") ? null : "The {$attribute} confirmation does not match.",
-            'same' => $value === $this->value($data, $this->parameter($rule, $parameters)) ? null : "The {$attribute} field must match {$parameters[0]}.",
-            'in' => $this->parameters($rule, $parameters) && is_scalar($value) && in_array((string) $value, $parameters, true) ? null : "The {$attribute} field must be one of: " . implode(', ', $parameters) . '.',
-            'min' => $this->compareSize($value, $parameters[0] ?? null, 'min') ? null : "The {$attribute} field must be at least {$parameters[0]}.",
-            'max' => $this->compareSize($value, $parameters[0] ?? null, 'max') ? null : "The {$attribute} field must not be greater than {$parameters[0]}.",
+            'required' => $this->present($value, $exists) ? null : 'The ' . $this->attribute($field) . ' field is required.',
+            'string' => (!$exists || is_string($value)) ? null : 'The ' . $this->attribute($field) . ' field must be a string.',
+            'integer' => (!$exists || filter_var($value, FILTER_VALIDATE_INT) !== false) ? null : 'The ' . $this->attribute($field) . ' field must be an integer.',
+            'numeric' => (!$exists || is_numeric($value)) ? null : 'The ' . $this->attribute($field) . ' field must be numeric.',
+            'boolean' => (!$exists || is_bool($value) || in_array($value, [0, 1, '0', '1'], true)) ? null : 'The ' . $this->attribute($field) . ' field must be true or false.',
+            'array' => (!$exists || is_array($value)) ? null : 'The ' . $this->attribute($field) . ' field must be an array.',
+            'email' => (!$exists || filter_var($value, FILTER_VALIDATE_EMAIL) !== false) ? null : 'The ' . $this->attribute($field) . ' field must be a valid email address.',
+            'url' => (!$exists || filter_var($value, FILTER_VALIDATE_URL) !== false) ? null : 'The ' . $this->attribute($field) . ' field must be a valid URL.',
+            'confirmed' => $value === $this->value($data, "{$field}_confirmation") ? null : 'The ' . $this->attribute($field) . ' confirmation does not match.',
+            'same' => $value === $this->value($data, $this->parameter($rule, $parameters)) ? null : 'The ' . $this->attribute($field) . " field must match {$parameters[0]}.",
+            'in' => $this->parameters($rule, $parameters) && is_scalar($value) && in_array((string) $value, $parameters, true) ? null : 'The ' . $this->attribute($field) . ' field must be one of: ' . implode(', ', $parameters) . '.',
+            'min' => $this->compareSize($value, $parameters[0] ?? null, 'min') ? null : 'The ' . $this->attribute($field) . " field must be at least {$parameters[0]}.",
+            'max' => $this->compareSize($value, $parameters[0] ?? null, 'max') ? null : 'The ' . $this->attribute($field) . " field must not be greater than {$parameters[0]}.",
             default => throw new InvalidArgumentException("Unknown validation rule [{$rule}]."),
         };
     }
 
     /**
-     * @param array<string, string> $attributes
+     * @return non-empty-string
      */
-    protected function attribute(string $field, array $attributes): string
+    private function attribute(string $field): string
     {
-        return $attributes[$field] ?? $field;
+        return $this->attributes[$field] ?? $field;
     }
 
     protected function present(mixed $value, bool $exists): bool

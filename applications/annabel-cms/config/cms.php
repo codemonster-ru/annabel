@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'site_name' => 'Annabel CMS',
-    'locale' => 'en',
-    'timezone' => 'UTC',
-    'mode' => 'classic', // classic | headless | hybrid
+    'name' => (string) env('CMS_NAME', 'Annabel CMS'),
+    'locale' => (string) env('CMS_LOCALE', 'en'),
+    'timezone' => (string) env('CMS_TIMEZONE', 'UTC'),
 ];

@@ -2,6 +2,12 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed HTTP kernel middleware group type narrowing for static analysis.
+
 ## [1.16.0] - 2026-07-04
 
 ### Added

@@ -14,6 +14,7 @@ use Codemonster\Database\DatabaseManager;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
+use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Seeders\SeedPathResolver;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
@@ -49,6 +50,10 @@ class DatabaseServiceProvider implements ServiceProviderInterface
 
             return new LazyConnection(fn () => $manager->connection());
         });
+
+        Model::setConnectionResolver(
+            fn (string $modelClass): ConnectionInterface => $this->app->make(ConnectionInterface::class),
+        );
 
         $this->app->singleton(MigrationPathResolver::class, function () {
             $resolver = new MigrationPathResolver();

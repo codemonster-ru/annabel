@@ -16,6 +16,8 @@ final class ModuleDefinition
         public readonly ?string $provider = null,
         public readonly ?string $routes = null,
         public readonly ?string $views = null,
+        public readonly ?string $migrations = null,
+        public readonly ?string $seeds = null,
         public readonly array $assets = [],
     ) {
     }
@@ -24,6 +26,12 @@ final class ModuleDefinition
     {
         if ($relativePath === null || $relativePath === '') {
             return null;
+        }
+
+        $relativePath = str_replace('\\', '/', $relativePath);
+
+        if (str_starts_with($relativePath, '/') || preg_match('#(^|/)\.\.(/|$)#', $relativePath)) {
+            throw new \RuntimeException("Module path must stay inside module [{$this->name}]: {$relativePath}");
         }
 
         return $this->path . '/' . ltrim($relativePath, '/');

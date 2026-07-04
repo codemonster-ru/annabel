@@ -56,9 +56,7 @@ class AdminAssetManager
         }
 
         $favicon = null;
-        $faviconFile = is_array($manifest)
-            ? ($manifest['resources/images/codemonster-icon.svg']['file'] ?? null)
-            : null;
+        $faviconFile = $manifest['resources/images/codemonster-icon.svg']['file'] ?? null;
 
         if (is_string($faviconFile) && $faviconFile !== '') {
             $favicon = '/admin/assets/' . ltrim($faviconFile, '/');

@@ -23,7 +23,8 @@ install or run the CMS.
 
 ## Features
 
-- Modular structure with explicit manifests, dependencies, routes, views, providers, and assets.
+- Modular structure with explicit manifests, dependencies, routes, views,
+  providers, and assets.
 - Automatic module discovery and deterministic lifecycle management.
 - Module-owned PHP, database, templates, Vue source, and build configuration.
 - Authentication, role-based admin access, CSRF protection, and configurable sessions.
@@ -43,9 +44,6 @@ app/Modules/Example/
 └── ModuleServiceProvider.php
 ```
 
-See [docs/architecture.md](docs/architecture.md) for module lifecycle,
-dependency rules, authentication contracts, and scaling guidance.
-
 ## Development
 
 Inside the Annabel monorepo:
@@ -63,22 +61,18 @@ The public `composer.json` contains stable Packagist constraints and is used by
 the split repository. Rebuild and commit `public/admin/assets` whenever the
 admin frontend changes.
 
-The bundled Dev Container is a standalone CMS environment that uses the public
-Composer manifest. Use the root monorepo quality commands when changing Annabel
-packages together with the CMS.
+Use the root monorepo Docker environment and quality commands when changing
+Annabel packages together with the CMS.
 
 ## Database
 
-Global migrations and seeders live under `database/`. Modules may own their
-database files under `app/Modules/<Module>/database/`.
+Migrations and seeders belong to the module that owns the schema. Module
+database files live under `app/Modules/<Module>/database/`.
 
-```bash
-php bin/database migrate
-php bin/database migrate:rollback
-php bin/database seed
-php bin/database make:migration CreatePostsTable --module=Pages
-php bin/database make:seed RolesSeeder --module=Auth
-```
+CMS installation runs the required migrations automatically. Module migrations
+belong to the module installation and update lifecycle, not to a separate
+manual user step. Use the framework console only for development, CI, or
+maintenance tasks.
 
 ## Deployment
 

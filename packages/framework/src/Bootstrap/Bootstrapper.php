@@ -157,6 +157,7 @@ class Bootstrapper
             \Codemonster\Annabel\Providers\DatabaseServiceProvider::class,
             \Codemonster\Annabel\Providers\ViewServiceProvider::class,
             \Codemonster\Annabel\Providers\SessionServiceProvider::class,
+            \Codemonster\Annabel\Providers\SecurityServiceProvider::class,
             \Codemonster\Annabel\Providers\AuthServiceProvider::class,
             \Codemonster\Annabel\Providers\FilesystemServiceProvider::class,
         ];

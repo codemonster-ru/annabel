@@ -24,6 +24,7 @@ class SessionServiceProviderTest extends TestCase
         ]);
 
         self::assertInstanceOf(Store::class, $app->make('session'));
+        self::assertSame($app->make('session'), $app->make(Store::class));
     }
 
     public function test_file_driver_creates_configured_directory(): void
@@ -40,6 +41,34 @@ class SessionServiceProviderTest extends TestCase
         } finally {
             @rmdir($path);
         }
+    }
+
+    public function test_empty_encryption_key_disables_session_encryption(): void
+    {
+        $app = $this->app([
+            'session.driver' => 'array',
+            'session.encryption' => [
+                'key' => '',
+                'previous_keys' => [null],
+                'allow_plaintext' => false,
+            ],
+        ]);
+
+        self::assertInstanceOf(Store::class, $app->make('session'));
+    }
+
+    public function test_empty_previous_encryption_keys_are_ignored(): void
+    {
+        $app = $this->app([
+            'session.driver' => 'array',
+            'session.encryption' => [
+                'key' => base64_encode(random_bytes(32)),
+                'previous_keys' => ['', null],
+                'allow_plaintext' => false,
+            ],
+        ]);
+
+        self::assertInstanceOf(Store::class, $app->make('session'));
     }
 
     public function test_unknown_driver_is_rejected(): void

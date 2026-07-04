@@ -4,6 +4,7 @@ namespace Codemonster\Annabel\Tests\Providers;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Http\Kernel;
+use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\SecurityServiceProvider;
 use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Config\Config;
@@ -27,10 +28,6 @@ class SecurityServiceProviderTest extends TestCase
         Application::resetInstance();
 
         $app = new Application(__DIR__ . '/../../');
-        $provider = new SecurityServiceProvider($app);
-
-        $provider->register();
-        $provider->boot();
 
         $container = $app->getContainer();
 
@@ -78,7 +75,10 @@ class SecurityServiceProviderTest extends TestCase
         Application::resetInstance();
         Config::reset();
 
-        $app = new Application(__DIR__ . '/../../');
+        $app = new Application(__DIR__ . '/../../', null, false);
+        $core = new CoreServiceProvider($app);
+        $core->register();
+
         config([
             'security.csrf.enabled' => false,
             'security.throttle.enabled' => true,
@@ -90,10 +90,7 @@ class SecurityServiceProviderTest extends TestCase
                 ],
             ],
         ]);
-
-        $provider = new SecurityServiceProvider($app);
-        $provider->register();
-        $provider->boot();
+        $app->bootstrap();
 
         $app->getKernel()->getRouter()->post('/login', fn () => 'ok')->middleware('throttle:login');
 

@@ -27,8 +27,8 @@ class AggregateTest extends TestCase
         $connection = $this->fakeConnection();
         $qb = new QueryBuilder($connection, 'users');
 
-        $expectedSql = 'SELECT 1 FROM `users` LIMIT 1';
-        $connection->results[$expectedSql] = [['1' => 1]];
+        $expectedSql = 'SELECT 1 AS `_exists` FROM `users` LIMIT 1';
+        $connection->results[$expectedSql] = [['_exists' => 1]];
 
         $this->assertTrue($qb->exists());
         $this->assertSame('SELECT * FROM `users`', $qb->toSql());

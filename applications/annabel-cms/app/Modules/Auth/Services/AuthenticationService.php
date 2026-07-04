@@ -8,9 +8,9 @@ use Codemonster\Cms\Modules\Auth\Models\User;
 
 class AuthenticationService implements AuthenticatorInterface
 {
-    public function attempt(string $email, string $password): ?AuthenticatedUser
+    public function attempt(string $login, string $password): ?AuthenticatedUser
     {
-        $user = User::findByEmail(trim($email));
+        $user = User::findByLogin(trim($login));
 
         if (!$user || !password_verify($password, (string) $user->password)) {
             return null;

@@ -24,6 +24,7 @@ class ApplicationBootTest extends TestCase
             'Auth' => '1.0.0',
             'Admin' => '1.0.0',
             'Pages' => '1.0.0',
+            'Setup' => '1.0.0',
         ], $modules->listAll());
         self::assertInstanceOf(AuthenticatorInterface::class, $app->make(AuthenticatorInterface::class));
         self::assertInstanceOf(UserSessionInterface::class, $app->make(UserSessionInterface::class));

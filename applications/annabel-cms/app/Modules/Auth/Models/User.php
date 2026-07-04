@@ -7,8 +7,10 @@ use Codemonster\Database\Relations\BelongsToMany;
 
 /**
  * @property int|string $id
+ * @property string $username
  * @property string $email
  * @property string $password
+ * @property string|null $remember_token
  */
 class User extends Model
 {
@@ -17,14 +19,16 @@ class User extends Model
     /** @var list<string> */
     protected array $fillable = [
         'id',
-        'name',
+        'username',
         'email',
         'password',
+        'remember_token',
     ];
 
     /** @var list<string> */
     protected array $hidden = [
         'password',
+        'remember_token',
     ];
 
     /** @var array<string, string> */
@@ -39,6 +43,27 @@ class User extends Model
             ->first();
 
         return $user instanceof self ? $user : null;
+    }
+
+    public static function findByUsername(string $username): ?self
+    {
+        $user = static::query()
+            ->where('username', $username)
+            ->first();
+
+        return $user instanceof self ? $user : null;
+    }
+
+    public static function findByLogin(string $login): ?self
+    {
+        return str_contains($login, '@')
+            ? static::findByEmail($login)
+            : static::findByUsername($login);
+    }
+
+    public static function validUsername(string $username): bool
+    {
+        return preg_match('/^[A-Za-z0-9][A-Za-z0-9_-]{2,59}$/', $username) === 1;
     }
 
     /**

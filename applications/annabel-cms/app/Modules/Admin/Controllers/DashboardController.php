@@ -186,7 +186,7 @@ class DashboardController
             ], 422);
         }
 
-        $user = User::query()->find($record['user_id']);
+        $user = User::find($record['user_id']);
 
         if (!$user instanceof User || !$user->hasRole('admin')) {
             $this->deletePasswordResetTokensForUser((int) ($record['user_id'] ?? 0));
@@ -239,6 +239,7 @@ class DashboardController
      *     modules: array<string, string>,
      *     resetToken: string|null
      * }
+     * @param array<string, mixed> $extra
      */
     private function adminPayload(bool $isAuthenticated, string $screen = 'login', array $extra = []): array
     {
@@ -252,6 +253,9 @@ class DashboardController
         ], $extra);
     }
 
+    /**
+     * @param array<string, mixed> $extra
+     */
     private function renderAdmin(bool $isAuthenticated, string $screen, array $extra = []): Response
     {
         return new Response($this->view->render('admin::app', [

@@ -160,7 +160,7 @@ class SessionUserService implements UserSessionInterface
 
         [$userId, $token] = array_pad(explode('|', $cookie, 2), 2, null);
 
-        if ((!is_string($userId) && !is_int($userId)) || !is_string($token) || $token === '') {
+        if (!is_string($userId) || !is_string($token) || $token === '') {
             return null;
         }
 

@@ -1,5 +1,8 @@
 parameters:
     level: 6
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    treatPhpDocTypesAsCertain: false
     paths:
         - app/Modules/Admin/Controllers
         - app/Modules/Admin/Middleware
@@ -16,5 +19,3 @@ parameters:
         analyse:
             - app/Modules/Core/views
     tmpDir: /tmp/annabel-cms-phpstan
-    stubFiles:
-        - stubs/ModelQuery.stub

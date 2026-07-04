@@ -1,9 +1,10 @@
-# Xen Architecture
+# Annabel CMS Architecture
 
 ## Module Lifecycle
 
-Every directory under `app/Modules` must contain a `module.php` manifest.
-The module manager performs the following deterministic lifecycle:
+Every directory under `applications/annabel-cms/app/Modules` must contain a
+`module.php` manifest. The module manager performs the following deterministic
+lifecycle:
 
 1. Discover and validate manifests.
 2. Remove explicitly disabled modules.
@@ -43,20 +44,20 @@ verification, and session persistence.
 
 Frontend source and Vite configuration belong to the module. Built assets are
 published to the shared `public` directory and resolved through Vite's hashed
-manifest. A missing build produces an explicit operational error instead of
-PHP warnings or stale filenames.
+manifest. A missing build produces an explicit operational error instead of PHP
+warnings or stale filenames.
 
 ## Horizontal Scaling
 
 File sessions are suitable for one application node. Multi-node deployments
-must use `SESSION_DRIVER=redis` so authentication and CSRF state are shared.
-The application remains stateless apart from the configured database and
-session backend.
+must use `SESSION_DRIVER=redis` so authentication and CSRF state are shared. The
+application remains stateless apart from the configured database and session
+backend.
 
 The default file driver stores data in `storage/sessions`. The container
 entrypoint creates this directory for the PHP-FPM user. Do not share a global
 `/tmp` session directory between root CLI processes and PHP-FPM workers.
 
 Moving a module to an independent service additionally requires a versioned
-network API and service discovery. Filesystem modularity alone does not create
-a distributed system.
+network API and service discovery. Filesystem modularity alone does not create a
+distributed system.

@@ -1,1 +1,8 @@
 * text=auto eol=lf
+
+/composer.dev.json export-ignore
+/phpstan.neon.dist export-ignore
+/phpstan-bootstrap.php export-ignore
+/phpunit.xml.dist export-ignore
+/stubs export-ignore
+/tests export-ignore

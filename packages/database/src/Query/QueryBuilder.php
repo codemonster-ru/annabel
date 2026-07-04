@@ -944,7 +944,7 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $clone = clone $this;
 
-        $clone->columns = [new RawExpression('1')];
+        $clone->columns = [new RawExpression('1 AS `_exists`')];
         $clone->limit = 1;
 
         [$sql, $bindings] = $clone->compileSelect();

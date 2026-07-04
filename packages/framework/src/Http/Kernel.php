@@ -728,6 +728,9 @@ class Kernel
             }
         }
 
+        /** @var list<string> $middleware */
+        $middleware = array_values($middleware);
+
         if ($count > 2) {
             return true;
         }
@@ -735,9 +738,7 @@ class Kernel
         $first = $middleware[0];
         $second = $middleware[1];
 
-        return is_string($first)
-            && is_string($second)
-            && class_exists($first)
+        return class_exists($first)
             && class_exists($second);
     }
 

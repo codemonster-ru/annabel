@@ -16,6 +16,7 @@ class SessionUserService implements UserSessionInterface
 
     public function __construct(
         private CsrfTokenManager $csrf,
+        private RememberMeService $remember,
     ) {
     }
 
@@ -70,7 +71,7 @@ class SessionUserService implements UserSessionInterface
             return null;
         }
 
-        return $this->issueRememberToken($model);
+        return $this->remember->issue($model);
     }
 
     public function logout(): void
@@ -99,14 +100,7 @@ class SessionUserService implements UserSessionInterface
 
     public function forgetRememberToken(int|string $userId): void
     {
-        $user = User::find($userId);
-
-        if (!$user instanceof User) {
-            return;
-        }
-
-        $user->remember_token = null;
-        $user->save();
+        $this->remember->forget($userId);
     }
 
     public function rememberCookieName(): string
@@ -135,15 +129,6 @@ class SessionUserService implements UserSessionInterface
         }
     }
 
-    private function issueRememberToken(User $user): string
-    {
-        $token = bin2hex(random_bytes(32));
-        $user->remember_token = hash('sha256', $token);
-        $user->save();
-
-        return $user->id . '|' . $token;
-    }
-
     private function restoreFromRememberCookie(): ?AuthenticatedUser
     {
         $request = app(Request::class);
@@ -152,26 +137,9 @@ class SessionUserService implements UserSessionInterface
             return null;
         }
 
-        $cookie = $request->getCookieParams()[self::REMEMBER_COOKIE] ?? null;
+        $user = $this->remember->consume($request->getCookieParams()[self::REMEMBER_COOKIE] ?? null);
 
-        if (!is_string($cookie) || $cookie === '') {
-            return null;
-        }
-
-        [$userId, $token] = array_pad(explode('|', $cookie, 2), 2, null);
-
-        if (!is_string($userId) || !is_string($token) || $token === '') {
-            return null;
-        }
-
-        $user = User::find($userId);
-
-        if (
-            !$user instanceof User
-            || !is_string($user->remember_token)
-            || $user->remember_token === ''
-            || !hash_equals($user->remember_token, hash('sha256', $token))
-        ) {
+        if (!$user instanceof User) {
             return null;
         }
 

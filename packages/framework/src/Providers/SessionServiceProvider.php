@@ -12,6 +12,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
     public function register(): void
     {
         $this->app()->singleton('session', fn () => $this->startSession());
+        $this->app()->singleton(Store::class, fn () => $this->app()->make('session'));
     }
 
     public function boot(): void
@@ -29,7 +30,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         $options = [
             'path' => $path,
             'cookie' => $this->arrayConfig('session.cookie'),
-            'encryption' => $this->arrayConfig('session.encryption'),
+            'encryption' => $this->encryptionConfig(),
         ];
 
         if ($driver === 'redis') {
@@ -131,6 +132,24 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         $value = config($key, $default);
 
         return is_float($value) || is_int($value) ? (float) $value : $default;
+    }
+
+    /** @return array<string, mixed> */
+    private function encryptionConfig(): array
+    {
+        $options = $this->arrayConfig('session.encryption');
+        $key = $options['key'] ?? null;
+
+        if (!is_string($key) || $key === '') {
+            return [];
+        }
+
+        $previous = $options['previous_keys'] ?? [];
+        $options['previous_keys'] = is_array($previous)
+            ? array_values(array_filter($previous, static fn ($value) => is_string($value) && $value !== ''))
+            : [];
+
+        return $options;
     }
 
     /** @return array<string, mixed> */

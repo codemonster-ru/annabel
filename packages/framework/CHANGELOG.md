@@ -2,11 +2,21 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [Unreleased]
+## [1.17.0] - 2026-07-05
+
+### Added
+
+- Registered `SecurityServiceProvider` in the default bootstrap provider set.
+- Bound the session `Store` class to the configured session singleton.
 
 ### Fixed
 
 - Fixed HTTP kernel middleware group type narrowing for static analysis.
+- Fixed empty session encryption keys so they disable encryption instead of creating invalid encryption configuration.
+
+### Changed
+
+- Moved ORM model connection resolver registration into `DatabaseServiceProvider`.
 
 ## [1.16.0] - 2026-07-04
 

@@ -2,18 +2,11 @@
 
 namespace Codemonster\Cms\Modules\Setup\Controllers;
 
-use Codemonster\Annabel\Application;
-use Codemonster\Cms\Modules\Auth\Models\User;
+use Codemonster\Cms\Modules\Setup\Services\CmsInstaller;
+use Codemonster\Cms\Modules\Setup\Services\DatabaseProbe;
 use Codemonster\Cms\Modules\Setup\Services\SetupAssetManager;
-use Codemonster\Cms\Modules\Setup\Services\EnvironmentFile;
-use Codemonster\Cms\Modules\Setup\Services\InstallationState;
 use Codemonster\Cms\Modules\Setup\Services\SystemRequirements;
-use Codemonster\Database\Connection;
-use Codemonster\Database\Contracts\ConnectionInterface;
-use Codemonster\Database\DatabaseManager;
-use Codemonster\Database\Migrations\MigrationPathResolver;
-use Codemonster\Database\Migrations\MigrationRepository;
-use Codemonster\Database\Migrations\Migrator;
+use Codemonster\Cms\Support\Installation\InstallationState;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
@@ -23,11 +16,11 @@ use Throwable;
 class SetupController
 {
     public function __construct(
-        private Application $app,
         private InstallationState $state,
         private SetupAssetManager $assets,
-        private EnvironmentFile $env,
         private SystemRequirements $requirements,
+        private DatabaseProbe $database,
+        private CmsInstaller $installer,
         private Validator $validator,
         private View $view,
     ) {
@@ -56,7 +49,7 @@ class SetupController
             'admin_password_confirmation' => 'required|string',
         ], $this->validationAttributes());
 
-        if (!User::validUsername((string) $validated['admin_username'])) {
+        if (!$this->validAdminUsername((string) $validated['admin_username'])) {
             return $this->fieldErrorResponse(
                 $request,
                 'admin_username',
@@ -67,33 +60,25 @@ class SetupController
         $dbConfig = $this->databaseConfig($validated);
 
         try {
-            $this->assertDatabaseReady($dbConfig);
+            $this->database->assertReady($dbConfig);
         } catch (Throwable $e) {
             return $this->errorResponse(
                 $request,
-                $this->databaseAccessErrorMessage($e, $dbConfig),
+                $this->database->errorMessage($e, $dbConfig),
             );
         }
 
         try {
-            $this->env->write([
-                'DB_HOST' => $dbConfig['host'],
-                'DB_PORT' => $dbConfig['port'],
-                'DB_DATABASE' => $dbConfig['database'],
-                'DB_USERNAME' => $dbConfig['username'],
-                'DB_PASSWORD' => $dbConfig['password'],
+            $this->installer->install($dbConfig, [
+                'username' => (string) $validated['admin_username'],
+                'email' => (string) $validated['admin_email'],
+                'password' => (string) $validated['admin_password'],
             ]);
-
-            $this->installCms($dbConfig, $validated);
         } catch (Throwable $e) {
             return $this->errorResponse($request, env('APP_DEBUG', false, true)
                 ? $e->getMessage()
                 : 'Installation failed. Please verify the entered data and try again.');
         }
-
-        $this->state->markInstalled([
-            'admin_email' => $validated['admin_email'],
-        ]);
 
         if ($request->wantsJson()) {
             return Response::json([
@@ -115,11 +100,11 @@ class SetupController
 
         try {
             $dbConfig = $this->databaseConfig($validated);
-            $this->assertDatabaseReady($dbConfig);
+            $this->database->assertReady($dbConfig);
         } catch (Throwable $e) {
             return $this->errorResponse(
                 $request,
-                $this->databaseAccessErrorMessage($e, $dbConfig),
+                $this->database->errorMessage($e, $dbConfig),
             );
         }
 
@@ -215,152 +200,9 @@ class SetupController
         ];
     }
 
-    /**
-     * @param array<string, mixed> $dbConfig
-     */
-    private function assertDatabaseReady(array $dbConfig): void
+    private function validAdminUsername(string $username): bool
     {
-        $connection = new Connection($dbConfig);
-        $table = 'annabel_setup_permission_check_' . bin2hex(random_bytes(6));
-        $identifier = $this->quoteIdentifier($table);
-        $created = false;
-
-        $connection->select('SELECT 1');
-
-        try {
-            $connection->statement("CREATE TABLE {$identifier} (id INT NOT NULL PRIMARY KEY)");
-            $created = true;
-            $connection->statement("ALTER TABLE {$identifier} ADD COLUMN value VARCHAR(16) NULL");
-        } finally {
-            if ($created) {
-                $connection->statement("DROP TABLE {$identifier}");
-            }
-        }
-
-        $this->assertDatabaseEmpty($connection);
-    }
-
-    private function assertDatabaseEmpty(Connection $connection): void
-    {
-        if ($connection->select('SHOW TABLES') !== []) {
-            throw new \RuntimeException(
-                'The selected database is not empty. Use an empty database before continuing.',
-            );
-        }
-    }
-
-    private function quoteIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
-    }
-
-    /**
-     * @param array<string, mixed> $dbConfig
-     */
-    private function databaseAccessErrorMessage(Throwable $e, array $dbConfig): string
-    {
-        $message = $e->getMessage();
-        $debug = env('APP_DEBUG', false, true);
-        $host = (string) ($dbConfig['host'] ?? '');
-
-        if (str_contains($message, '[2002] No such file or directory')) {
-            $friendly = $host === 'localhost'
-                ? 'Unable to connect to MySQL through the local socket. Use 127.0.0.1 instead of localhost, or check the database host.'
-                : 'Unable to connect to MySQL through the local socket. Check the database host or socket configuration.';
-
-            return $friendly;
-        }
-
-        return $debug
-            ? 'Unable to verify database access: ' . $message
-            : 'Unable to verify database access. Check the host, port, database name, username, and password.';
-    }
-
-    /**
-     * @param array<string, mixed> $dbConfig
-     * @param array<string, mixed> $validated
-     */
-    private function installCms(array $dbConfig, array $validated): void
-    {
-        $this->withRuntimeDatabase($dbConfig, function () use ($validated): void {
-            $connection = app(ConnectionInterface::class);
-
-            $this->runMigrations($connection);
-            $this->createAdmin($validated);
-        });
-    }
-
-    /**
-     * @param array<string, mixed> $dbConfig
-     */
-    private function withRuntimeDatabase(array $dbConfig, callable $callback): void
-    {
-        $container = $this->app->getContainer();
-        $originalManager = $container->make(DatabaseManager::class);
-        $originalConnection = $container->make(ConnectionInterface::class);
-
-        config([
-            'database.default' => 'mysql',
-            'database.connections.mysql' => $dbConfig,
-        ]);
-
-        $manager = new DatabaseManager((array) config('database'));
-        $connection = $manager->connection('mysql');
-
-        $container->instance(DatabaseManager::class, $manager);
-        $container->instance(ConnectionInterface::class, $connection);
-
-        try {
-            $callback();
-        } finally {
-            $container->instance(DatabaseManager::class, $originalManager);
-            $container->instance(ConnectionInterface::class, $originalConnection);
-        }
-    }
-
-    private function runMigrations(ConnectionInterface $connection): void
-    {
-        $paths = new MigrationPathResolver();
-
-        foreach ((array) config('database.migrations.paths', []) as $path) {
-            if (is_string($path) && $path !== '') {
-                $paths->addPath($path);
-            }
-        }
-
-        $repository = new MigrationRepository(
-            $connection,
-            (string) config('database.migrations.table', 'migrations'),
-        );
-
-        (new Migrator($repository, $connection, $paths))->migrate();
-    }
-
-    /**
-     * @param array<string, mixed> $validated
-     */
-    private function createAdmin(array $validated): void
-    {
-        $email = (string) $validated['admin_email'];
-        $username = (string) $validated['admin_username'];
-
-        if (User::findByUsername($username) instanceof User) {
-            throw new \RuntimeException('Admin username is already in use.');
-        }
-
-        if (User::findByEmail($email) instanceof User) {
-            throw new \RuntimeException('Admin email is already in use.');
-        }
-
-        transaction(function () use ($validated, $email, $username): void {
-            $user = User::create([
-                'username' => $username,
-                'email' => $email,
-                'password' => password_hash((string) $validated['admin_password'], PASSWORD_BCRYPT),
-            ]);
-
-            $user->assignRole('admin');
-        });
+        return preg_match('/^[A-Za-z0-9][A-Za-z0-9_-]{2,59}$/', $username) === 1;
     }
 
     private function errorResponse(Request $request, string $message): Response

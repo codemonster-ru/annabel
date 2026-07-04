@@ -213,6 +213,7 @@ function requiredApplicationFiles(): array
         'phpstan.neon.dist',
         'phpunit.xml.dist',
         'public/admin/assets/.vite/manifest.json',
+        'public/setup/assets/.vite/manifest.json',
         'public/index.php',
     ];
 }
@@ -226,6 +227,7 @@ function forbiddenRepositoryPaths(): array
         '.DS_Store',
         '.phpunit.result.cache',
         'docker/.DS_Store',
+        'packages/framework/tests/Bootstrap/cache/packages.php',
         'packages/.DS_Store',
         'skeleton/.DS_Store',
     ];

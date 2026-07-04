@@ -126,20 +126,48 @@ function inspectChangelog(string $root, string $composerFile, array &$violations
  */
 function inspectCmsAssets(string $root, array &$violations): void
 {
-    $assetsDirectory = $root . '/applications/annabel-cms/public/admin/assets';
-    $manifestFile = $assetsDirectory . '/.vite/manifest.json';
+    inspectCmsAssetBundle(
+        $root,
+        'admin',
+        'applications/annabel-cms/public/admin/assets',
+        'resources/js/main.js',
+        $violations,
+    );
+
+    inspectCmsAssetBundle(
+        $root,
+        'setup',
+        'applications/annabel-cms/public/setup/assets',
+        'resources/js/main.js',
+        $violations,
+    );
+}
+
+/**
+ * @param list<string> $violations
+ */
+function inspectCmsAssetBundle(
+    string $root,
+    string $name,
+    string $relativeAssetsDirectory,
+    string $entrypoint,
+    array &$violations,
+): void {
+    $assetsDirectory = $root . '/' . $relativeAssetsDirectory;
+    $manifestPath = $relativeAssetsDirectory . '/.vite/manifest.json';
+    $manifestFile = $root . '/' . $manifestPath;
 
     if (!is_file($manifestFile)) {
-        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: compiled admin assets must be shipped';
+        $violations[] = "{$manifestPath}: compiled {$name} assets must be shipped";
 
         return;
     }
 
     $manifest = json_decode((string) file_get_contents($manifestFile), true);
-    $entry = is_array($manifest) ? ($manifest['resources/js/main.js'] ?? null) : null;
+    $entry = is_array($manifest) ? ($manifest[$entrypoint] ?? null) : null;
 
     if (!is_array($entry) || !is_string($entry['file'] ?? null)) {
-        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: admin entrypoint is missing';
+        $violations[] = "{$manifestPath}: {$name} entrypoint is missing";
 
         return;
     }
@@ -147,7 +175,7 @@ function inspectCmsAssets(string $root, array &$violations): void
     $stylesheets = $entry['css'] ?? [];
 
     if (!is_array($stylesheets)) {
-        $violations[] = 'applications/annabel-cms/public/admin/assets/.vite/manifest.json: admin stylesheets must be an array';
+        $violations[] = "{$manifestPath}: {$name} stylesheets must be an array";
 
         return;
     }
@@ -162,7 +190,7 @@ function inspectCmsAssets(string $root, array &$violations): void
 
     foreach ($files as $file) {
         if (!is_file($assetsDirectory . '/' . ltrim($file, '/'))) {
-            $violations[] = "applications/annabel-cms/public/admin/assets/{$file}: manifest target is missing";
+            $violations[] = "{$relativeAssetsDirectory}/{$file}: manifest target is missing";
         }
     }
 }

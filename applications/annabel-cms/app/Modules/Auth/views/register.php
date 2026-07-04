@@ -16,8 +16,8 @@
             <p style="color: red"><?= htmlspecialchars($error) ?></p>
         <?php endif; ?>
 
-        <label>Name:</label>
-        <input type="text" name="name" autocomplete="name" required>
+        <label>Username:</label>
+        <input type="text" name="username" autocomplete="username" required>
 
         <label>Email:</label>
         <input type="email" name="email" autocomplete="email" required>

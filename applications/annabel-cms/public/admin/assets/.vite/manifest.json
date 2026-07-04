@@ -1,11 +1,15 @@
 {
+  "resources/images/codemonster-icon.svg": {
+    "file": "codemonster-icon-CdswbS-j.svg",
+    "src": "resources/images/codemonster-icon.svg"
+  },
   "resources/js/main.js": {
-    "file": "admin-6oNHkzyk.js",
+    "file": "admin-DxJZwpWz.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "css": [
-      "main-BTtV5MUZ.css"
+      "main-DUCqSdhq.css"
     ]
   }
 }

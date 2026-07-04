@@ -1,13 +1,26 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] - 2026-07-05
+
+### Added
+
+- Added a real Pages module with page model, resolver, migration, home-page seeder, and public page rendering.
+- Added CMS installer services for database probing, migrations, module seeders, environment writing, and admin account creation.
+- Added shared CMS support services for Vite asset manifests and installation state.
+- Added setup frontend API/composable structure and rebuilt setup assets.
+- Added split admin controllers, admin shell rendering, password reset handling, remember-me cookies, and rebuilt admin assets.
+- Added `bootstrap/cache/.gitkeep` so the cache directory exists without committing runtime cache files.
 
 ### Changed
 
+- Polished Core, Auth, Admin, Pages, and Setup module boundaries around explicit module manifests and module-owned assets.
 - Treat CMS database migrations as part of the installation/module lifecycle
   instead of a manual user setup step.
 - Discover CMS migrations and seeders from module-owned database directories
   only.
+- Simplified CMS configuration by removing obsolete `modules.php`, bootstrap database path files, and local provider wrappers.
+- Moved installation state and installed middleware into shared CMS support infrastructure.
+- Replaced the setup-local environment writer with `codemonster-ru/env`.
 - Moved CMS architecture notes to the monorepo documentation.
 - Kept the public CMS Composer manifest runtime-only and moved development
   tooling to the monorepo development manifest.
@@ -20,9 +33,12 @@
   URLs.
 - Added an SVG favicon for the admin shell.
 - Fixed CMS PHPStan analysis without relying on a local `ModelQuery` stub.
+- Fixed fresh CMS installs so module seeders run during installation and create the default home page.
 
 ### Removed
 
+- Removed obsolete Core system-info route and view.
+- Removed obsolete public Auth routes, controllers, middleware, and views from the headless Auth module.
 - Removed the CMS-local `bin/database` wrapper in favor of the framework
   database console for development and maintenance tasks.
 - Removed empty global CMS `database/migrations` and `database/seeds`

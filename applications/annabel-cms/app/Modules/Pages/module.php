@@ -6,4 +6,6 @@ return [
     'dependencies' => ['Core'],
     'routes' => 'routes/web.php',
     'views' => 'views',
+    'migrations' => 'database/migrations',
+    'seeds' => 'database/seeds',
 ];

@@ -2,7 +2,7 @@
 
 namespace Codemonster\Cms\Modules\Setup\Middleware;
 
-use Codemonster\Cms\Modules\Setup\Services\InstallationState;
+use Codemonster\Cms\Support\Installation\InstallationState;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 

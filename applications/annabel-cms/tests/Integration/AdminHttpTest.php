@@ -6,7 +6,7 @@ use Codemonster\Annabel\Application;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
-use Codemonster\Cms\Modules\Setup\Services\InstallationState;
+use Codemonster\Cms\Support\Installation\InstallationState;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;

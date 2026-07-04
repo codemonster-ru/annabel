@@ -20,7 +20,7 @@ final class AuthenticatedUser
     }
 
     /**
-     * @return array{id: int|string, email: string, roles: array<int, string>, role: string}
+     * @return array{id: int|string, email: string, roles: array<int, string>}
      */
     public function toArray(): array
     {
@@ -28,7 +28,6 @@ final class AuthenticatedUser
             'id' => $this->id,
             'email' => $this->email,
             'roles' => $this->roles,
-            'role' => $this->roles[0] ?? 'user',
         ];
     }
 }

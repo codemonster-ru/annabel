@@ -17,7 +17,6 @@ class AuthenticatedUserTest extends TestCase
             'id' => 42,
             'email' => 'admin@example.com',
             'roles' => ['admin', 'editor'],
-            'role' => 'admin',
         ], $user->toArray());
     }
 }

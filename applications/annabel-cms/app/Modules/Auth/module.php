@@ -7,6 +7,8 @@ return [
     'version' => '1.0.0',
     'dependencies' => ['Core'],
     'provider' => ModuleServiceProvider::class,
-    'routes' => 'routes/web.php',
-    'views' => 'views',
+    'routes' => null,
+    'views' => null,
+    'migrations' => 'database/migrations',
+    'seeds' => 'database/seeds',
 ];

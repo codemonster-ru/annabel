@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class AppHelperTest extends TestCase
 {
-    public function test_app_returns_instance()
+    public function test_app_returns_instance(): void
     {
         Application::resetInstance();
 
@@ -16,7 +16,7 @@ class AppHelperTest extends TestCase
         $this->assertInstanceOf(Application::class, app());
     }
 
-    public function test_app_resolves_with_parameters()
+    public function test_app_resolves_with_parameters(): void
     {
         Application::resetInstance();
 
@@ -24,6 +24,7 @@ class AppHelperTest extends TestCase
 
         $subject = app(AppHelperSubject::class, ['name' => 'annabel']);
 
+        $this->assertInstanceOf(AppHelperSubject::class, $subject);
         $this->assertSame('annabel', $subject->name);
     }
 }

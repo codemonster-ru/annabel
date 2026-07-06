@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-    public function test_bootstrap_initializes_view()
+    public function test_bootstrap_initializes_view(): void
     {
         Application::resetInstance();
 
@@ -20,7 +20,7 @@ class ApplicationTest extends TestCase
         $this->assertInstanceOf(View::class, $app->getView());
     }
 
-    public function test_singleton_is_accessible()
+    public function test_singleton_is_accessible(): void
     {
         Application::resetInstance();
 
@@ -30,7 +30,7 @@ class ApplicationTest extends TestCase
         $this->assertSame($app, $app->make(Application::class));
     }
 
-    public function test_routes_can_be_registered_before_bootstrap()
+    public function test_routes_can_be_registered_before_bootstrap(): void
     {
         Application::resetInstance();
 
@@ -70,7 +70,7 @@ class ApplicationTest extends TestCase
         }
     }
 
-    public function test_make_accepts_parameters()
+    public function test_make_accepts_parameters(): void
     {
         Application::resetInstance();
 
@@ -81,7 +81,7 @@ class ApplicationTest extends TestCase
         $this->assertSame('annabel', $subject->name);
     }
 
-    public function test_reinitialization_throws()
+    public function test_reinitialization_throws(): void
     {
         Application::resetInstance();
 

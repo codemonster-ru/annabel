@@ -26,7 +26,7 @@ trait InteractsWithApplication
     }
 
     /**
-     * @param array<string, mixed> $headers
+     * @param array<string, list<string>|string> $headers
      */
     protected function get(string $uri, array $headers = []): TestResponse
     {
@@ -35,7 +35,7 @@ trait InteractsWithApplication
 
     /**
      * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     * @param array<string, list<string>|string> $headers
      */
     protected function post(string $uri, array $data = [], array $headers = []): TestResponse
     {
@@ -44,7 +44,7 @@ trait InteractsWithApplication
 
     /**
      * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     * @param array<string, list<string>|string> $headers
      */
     protected function json(string $method, string $uri, array $data = [], array $headers = []): TestResponse
     {
@@ -63,7 +63,7 @@ trait InteractsWithApplication
 
     /**
      * @param array<string, mixed> $data
-     * @param array<string, mixed> $headers
+     * @param array<string, list<string>|string> $headers
      */
     protected function call(
         string $method,

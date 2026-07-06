@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ServiceAttributeRegistrarTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void
@@ -63,7 +64,10 @@ PHP);
 
         $app = new Application($basePath);
 
-        $this->assertSame('hello', $app->make('App\\Services\\Greeter')->greet());
+        $greeter = $app->make('App\\Services\\Greeter');
+        $this->assertIsObject($greeter);
+        $this->assertTrue(method_exists($greeter, 'greet'));
+        $this->assertSame('hello', $greeter->greet());
         $this->assertSame(
             $app->make('App\\Services\\GreetingService'),
             $app->make('App\\Services\\GreetingService'),
@@ -75,6 +79,7 @@ PHP);
         return $this->directory(sys_get_temp_dir() . '/annabel-services-' . bin2hex(random_bytes(6)));
     }
 
+    /** @param array<string, mixed> $config */
     private function writeAppConfig(string $basePath, array $config): void
     {
         $configPath = $this->directory($basePath . '/config');
@@ -123,6 +128,7 @@ PHP);
         );
 
         foreach ($iterator as $file) {
+            \assert($file instanceof \SplFileInfo);
             $file->isDir() ? @rmdir($file->getPathname()) : @unlink($file->getPathname());
         }
 

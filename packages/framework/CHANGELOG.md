@@ -1,5 +1,7 @@
 # Changelog
 
+<!-- markdownlint-disable MD013 -->
+
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
 ## [1.17.0] - 2026-07-05
@@ -130,20 +132,20 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 
 - **First-class database integration** with the `codemonster-ru/database` package:
 
-    - Added `DatabaseServiceProvider` with proper container bindings for:
-        - `DatabaseManager`
-        - automatic connection resolution
-        - runtime grammar selection (MySQL, SQLite, extensible structure)
-    - Added container binding for the Schema builder (`Schema`), enabling use of:
-        - `schema()->create()`
-        - `schema()->table()`
-        - `schema()->drop()`
-    - Automatic loading of DB configuration via `config('database')`.
+  - Added `DatabaseServiceProvider` with proper container bindings for:
+    - `DatabaseManager`
+    - automatic connection resolution
+    - runtime grammar selection (MySQL, SQLite, extensible structure)
+  - Added container binding for the Schema builder (`Schema`), enabling use of:
+    - `schema()->create()`
+    - `schema()->table()`
+    - `schema()->drop()`
+  - Automatic loading of DB configuration via `config('database')`.
 
 - **Support for global helpers from codemonster-ru/support**, including:
-    - `db()` — returns the current database connection
-    - `schema()` — returns schema builder for the selected connection
-    - `transaction()` — executes code inside a DB transaction
+  - `db()` — returns the current database connection
+  - `schema()` — returns schema builder for the selected connection
+  - `transaction()` — executes code inside a DB transaction
 
 ### Changed
 
@@ -317,8 +319,8 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 - Cleaned up `src/helpers/`:
     now only `app.php` and `basePath.php` remain inside the framework core.
 - Refactored `CoreServiceProvider`:
-    - added container aliases (`'config'`, `'router'`, `'request'`) for compatibility with new helpers;
-    - standardized container bindings for consistent resolution.
+  - added container aliases (`'config'`, `'router'`, `'request'`) for compatibility with new helpers;
+  - standardized container bindings for consistent resolution.
 - Improved modular consistency with other Codemonster packages.
 
 ### Added

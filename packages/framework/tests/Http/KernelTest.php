@@ -8,6 +8,7 @@ use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Router\Router;
+use Codemonster\Session\Store;
 use Codemonster\Validation\ValidationException;
 use Codemonster\Validation\ValidationResult;
 use PHPUnit\Framework\TestCase;
@@ -19,31 +20,31 @@ use Psr\Log\AbstractLogger;
 
 class TestMiddlewareA
 {
-    public function handle(Request $req, callable $next, $role = null): mixed
+    public function handle(Request $req, callable $next, ?string $role = null): mixed
     {
         $out = $next($req);
 
-        return 'A(' . $out . ')';
+        return 'A(' . (is_scalar($out) ? (string) $out : '') . ')';
     }
 }
 
 class TestMiddlewareB
 {
-    public function handle(Request $req, callable $next, $role = null): mixed
+    public function handle(Request $req, callable $next, ?string $role = null): mixed
     {
         $out = $next($req);
 
-        return 'B(' . $out . ')';
+        return 'B(' . (is_scalar($out) ? (string) $out : '') . ')';
     }
 }
 
 class TestMiddlewareRole
 {
-    public function handle(Request $req, callable $next, $role = null): mixed
+    public function handle(Request $req, callable $next, ?string $role = null): mixed
     {
         $out = $next($req);
 
-        return $role . ':' . $out;
+        return $role . ':' . (is_scalar($out) ? (string) $out : '');
     }
 }
 
@@ -61,6 +62,7 @@ class TestPsrMiddleware implements MiddlewareInterface
 
 class TestArrayLogger extends AbstractLogger
 {
+    /** @var list<array{level: mixed, message: string|\Stringable, context: array<mixed>}> */
     public array $records = [];
 
     public function log($level, string|\Stringable $message, array $context = []): void
@@ -73,6 +75,7 @@ class TestValidatingController
 {
     use \Codemonster\Annabel\Http\ValidatesRequests;
 
+    /** @return array<string, mixed> */
     public function store(Request $request): array
     {
         return $this->validate($request, [
@@ -91,7 +94,7 @@ class TestRouteParameterController
 
 class KernelTest extends TestCase
 {
-    public function test_kernel_dispatches_route()
+    public function test_kernel_dispatches_route(): void
     {
         Application::resetInstance();
 
@@ -107,7 +110,7 @@ class KernelTest extends TestCase
         $this->assertEquals('world', $res->getContent());
     }
 
-    public function test_kernel_passes_route_parameters_to_closures()
+    public function test_kernel_passes_route_parameters_to_closures(): void
     {
         Application::resetInstance();
 
@@ -121,7 +124,7 @@ class KernelTest extends TestCase
         $this->assertEquals('GET:42', $res->getContent());
     }
 
-    public function test_kernel_passes_route_parameters_to_controllers()
+    public function test_kernel_passes_route_parameters_to_controllers(): void
     {
         Application::resetInstance();
 
@@ -135,7 +138,7 @@ class KernelTest extends TestCase
         $this->assertEquals('GET:42', $res->getContent());
     }
 
-    public function test_kernel_returns_404()
+    public function test_kernel_returns_404(): void
     {
         Application::resetInstance();
 
@@ -148,7 +151,7 @@ class KernelTest extends TestCase
         $this->assertEquals(404, $res->getStatusCode());
     }
 
-    public function test_kernel_runs_multiple_middleware_from_single_call()
+    public function test_kernel_runs_multiple_middleware_from_single_call(): void
     {
         Application::resetInstance();
 
@@ -162,7 +165,7 @@ class KernelTest extends TestCase
         $this->assertEquals('A(B(world))', $res->getContent());
     }
 
-    public function test_kernel_treats_class_and_role_as_single_middleware()
+    public function test_kernel_treats_class_and_role_as_single_middleware(): void
     {
         Application::resetInstance();
 
@@ -176,7 +179,7 @@ class KernelTest extends TestCase
         $this->assertEquals('admin:world', $res->getContent());
     }
 
-    public function test_kernel_resolves_middleware_aliases_with_arguments()
+    public function test_kernel_resolves_middleware_aliases_with_arguments(): void
     {
         Application::resetInstance();
 
@@ -191,7 +194,7 @@ class KernelTest extends TestCase
         $this->assertEquals('admin:world', $res->getContent());
     }
 
-    public function test_kernel_resolves_middleware_groups()
+    public function test_kernel_resolves_middleware_groups(): void
     {
         Application::resetInstance();
 
@@ -209,7 +212,7 @@ class KernelTest extends TestCase
         $this->assertEquals('A(member:world)', $res->getContent());
     }
 
-    public function test_kernel_handles_missing_controller_method()
+    public function test_kernel_handles_missing_controller_method(): void
     {
         Application::resetInstance();
 
@@ -223,7 +226,7 @@ class KernelTest extends TestCase
         $this->assertEquals(500, $res->getStatusCode());
     }
 
-    public function test_kernel_runs_psr15_middleware()
+    public function test_kernel_runs_psr15_middleware(): void
     {
         Application::resetInstance();
 
@@ -238,7 +241,7 @@ class KernelTest extends TestCase
         $this->assertSame(['yes'], $res->getHeader('X-PSR-15'));
     }
 
-    public function test_kernel_reports_exceptions_to_psr_logger()
+    public function test_kernel_reports_exceptions_to_psr_logger(): void
     {
         Application::resetInstance();
 
@@ -257,7 +260,7 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(\RuntimeException::class, $logger->records[0]['context']['exception']);
     }
 
-    public function test_kernel_returns_json_422_for_validation_exceptions()
+    public function test_kernel_returns_json_422_for_validation_exceptions(): void
     {
         Application::resetInstance();
 
@@ -277,7 +280,7 @@ class KernelTest extends TestCase
         $this->assertStringContainsString('The email field is required.', $res->getContent());
     }
 
-    public function test_kernel_redirects_back_for_web_validation_exceptions()
+    public function test_kernel_redirects_back_for_web_validation_exceptions(): void
     {
         Application::resetInstance();
 
@@ -296,14 +299,17 @@ class KernelTest extends TestCase
 
         $this->assertEquals(302, $res->getStatusCode());
         $this->assertSame(['/users/create'], $res->getHeader('Location'));
+        $session = $app->make('session');
+        $this->assertInstanceOf(Store::class, $session);
+
         $this->assertSame(
             ['email' => ['The email field is required.']],
-            $app->make('session')->get('errors'),
+            $session->get('errors'),
         );
-        $this->assertSame(['name' => 'Annabel'], $app->make('session')->get('_old_input'));
+        $this->assertSame(['name' => 'Annabel'], $session->get('_old_input'));
     }
 
-    public function test_kernel_rejects_external_validation_redirects()
+    public function test_kernel_rejects_external_validation_redirects(): void
     {
         Application::resetInstance();
 
@@ -324,7 +330,7 @@ class KernelTest extends TestCase
         $this->assertSame([], $res->getHeader('Location'));
     }
 
-    public function test_kernel_normalizes_same_origin_validation_redirects()
+    public function test_kernel_normalizes_same_origin_validation_redirects(): void
     {
         Application::resetInstance();
 
@@ -345,7 +351,7 @@ class KernelTest extends TestCase
         $this->assertSame(['/users/create?plan=pro'], $res->getHeader('Location'));
     }
 
-    public function test_kernel_excludes_sensitive_fields_from_old_input()
+    public function test_kernel_excludes_sensitive_fields_from_old_input(): void
     {
         Application::resetInstance();
 
@@ -367,13 +373,16 @@ class KernelTest extends TestCase
             'Referer' => '/users/create',
         ]));
 
+        $session = $app->make('session');
+        $this->assertInstanceOf(Store::class, $session);
+
         $this->assertSame([
             'name' => 'Annabel',
             'profile' => ['city' => 'Novokuznetsk'],
-        ], $app->make('session')->get('_old_input'));
+        ], $session->get('_old_input'));
     }
 
-    public function test_kernel_preserves_http_exception_headers()
+    public function test_kernel_preserves_http_exception_headers(): void
     {
         Application::resetInstance();
 
@@ -388,7 +397,7 @@ class KernelTest extends TestCase
         $this->assertSame(['GET, HEAD'], $res->getHeader('Allow'));
     }
 
-    public function test_kernel_returns_json_for_http_exceptions_in_api_requests()
+    public function test_kernel_returns_json_for_http_exceptions_in_api_requests(): void
     {
         Application::resetInstance();
 
@@ -407,7 +416,7 @@ class KernelTest extends TestCase
         $this->assertStringContainsString('"status": 405', $res->getContent());
     }
 
-    public function test_validates_requests_trait_uses_request_input()
+    public function test_validates_requests_trait_uses_request_input(): void
     {
         Application::resetInstance();
 

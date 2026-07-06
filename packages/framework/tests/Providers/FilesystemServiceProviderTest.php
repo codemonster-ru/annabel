@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class FilesystemServiceProviderTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void

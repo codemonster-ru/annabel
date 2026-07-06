@@ -26,9 +26,10 @@ class HasOneTest extends TestCase
         ];
     }
 
-    public function test_has_one_returns_related_model()
+    public function test_has_one_returns_related_model(): void
     {
         $user = User::find(1);
+        $this->assertInstanceOf(User::class, $user);
 
         $profile = $user->profile;
 

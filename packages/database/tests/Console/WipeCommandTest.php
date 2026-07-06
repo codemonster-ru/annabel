@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Database\Tests\Console;
 
 use Codemonster\Database\Console\Commands\WipeCommand;
@@ -7,7 +9,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class WipeCommandTest extends TestCase
 {
-    public function test_wipe_command_drops_all_tables_for_sqlite()
+    public function test_wipe_command_drops_all_tables_for_sqlite(): void
     {
         $connection = $this->fakeConnection();
         $query = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'";
@@ -31,7 +33,7 @@ class WipeCommandTest extends TestCase
         ], $queries);
     }
 
-    public function test_wipe_command_reports_when_nothing_to_wipe()
+    public function test_wipe_command_reports_when_nothing_to_wipe(): void
     {
         $connection = $this->fakeConnection();
         $query = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'";
@@ -44,13 +46,17 @@ class WipeCommandTest extends TestCase
         $this->assertSame([], $this->statementQueries($connection->log));
     }
 
+    /**
+     * @param list<array{0: string, 1?: string, 2?: array<int|string, mixed>}> $log
+     * @return list<string>
+     */
     private function statementQueries(array $log): array
     {
         $queries = [];
 
         foreach ($log as $entry) {
             if ($entry[0] === 'statement') {
-                $queries[] = $entry[1];
+                $queries[] = $entry[1] ?? '';
             }
         }
 

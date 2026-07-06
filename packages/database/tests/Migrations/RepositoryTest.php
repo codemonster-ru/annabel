@@ -13,7 +13,7 @@ use PDO;
 
 class RepositoryTest extends TestCase
 {
-    public function test_repository_logs_migration()
+    public function test_repository_logs_migration(): void
     {
         $conn = new FakeConnection();
         $repo = new MigrationRepository($conn);
@@ -27,9 +27,10 @@ class RepositoryTest extends TestCase
         $this->assertSame(1, $ran[0]['batch']);
     }
 
-    public function test_repository_uses_sqlite_ddl_when_driver_is_sqlite()
+    public function test_repository_uses_sqlite_ddl_when_driver_is_sqlite(): void
     {
         $conn = new class () implements ConnectionInterface {
+            /** @var list<string> */
             public array $statements = [];
             private PDO $pdo;
 

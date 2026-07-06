@@ -12,5 +12,5 @@ parameters:
         - tests
     excludePaths:
         analyse:
-            - app/Modules/Core/views
+            - app/Modules/Core/views (?)
     tmpDir: /tmp/annabel-cms-phpstan

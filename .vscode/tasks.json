@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "annabel:diagnostics",
+      "type": "shell",
+      "command": "docker compose run --rm php php tools/vscode-diagnostics.php --strict",
+      "problemMatcher": [
+        {
+          "owner": "annabel",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.+?):(\\d+):(?:(error|warning):)?(.+)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "annabel:diagnostics:package-tests",
+      "type": "shell",
+      "command": "docker compose run --rm php php tools/vscode-diagnostics.php --strict --package-tests",
+      "problemMatcher": [
+        {
+          "owner": "annabel",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.+?):(\\d+):(?:(error|warning):)?(.+)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4
+          }
+        }
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}

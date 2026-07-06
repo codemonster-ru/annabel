@@ -1,13 +1,21 @@
 parameters:
     level: max
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    stubFiles:
+        - phpstan-stubs.php
     treatPhpDocTypesAsCertain: false
     paths:
         - src
-    tmpDir: ../../var/phpstan/framework
+        - config
+        - database
+        - routes
+        - tests
+    tmpDir: /tmp/annabel-phpstan-framework
     ignoreErrors:
         -
-            identifier: trait.unused
-            path: src/Http/ValidatesRequests.php
+            message: '#Cannot cast mixed to (int|float|string)\.#'
+            path: config/*.php
         -
-            identifier: trait.unused
-            path: src/Testing/InteractsWithApplication.php
+            message: '#Binary operation "\." between mixed and .+ results in an error\.#'
+            path: config/*.php

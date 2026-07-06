@@ -17,6 +17,13 @@ trait ValidatesRequests
         /** @var Validator $validator */
         $validator = app(Validator::class);
 
-        return $validator->validateOrFail($request->all(), $rules, $attributes);
+        $input = [];
+        foreach ($request->all() as $key => $value) {
+            if (is_string($key)) {
+                $input[$key] = $value;
+            }
+        }
+
+        return $validator->validateOrFail($input, $rules, $attributes);
     }
 }

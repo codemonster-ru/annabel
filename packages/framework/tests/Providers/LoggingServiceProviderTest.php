@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 
 class LoggingServiceProviderTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void

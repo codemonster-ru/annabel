@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class PackageManifestTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void
@@ -20,7 +21,7 @@ class PackageManifestTest extends TestCase
         }
     }
 
-    public function test_it_discovers_providers_from_package_metadata()
+    public function test_it_discovers_providers_from_package_metadata(): void
     {
         $basePath = $this->directory('annabel-manifest-app-');
         $packagePath = $this->package('vendor/example', [
@@ -35,7 +36,7 @@ class PackageManifestTest extends TestCase
         ], $manifest->providers(useCache: false));
     }
 
-    public function test_it_supports_package_opt_out()
+    public function test_it_supports_package_opt_out(): void
     {
         $basePath = $this->directory('annabel-manifest-app-');
         $packagePath = $this->package('vendor/example', [
@@ -49,7 +50,7 @@ class PackageManifestTest extends TestCase
         $this->assertSame([], $manifest->providers(['*'], false));
     }
 
-    public function test_cache_is_invalidated_when_package_metadata_changes()
+    public function test_cache_is_invalidated_when_package_metadata_changes(): void
     {
         $basePath = $this->directory('annabel-manifest-app-');
         $packagePath = $this->package('vendor/example', [
@@ -73,7 +74,7 @@ class PackageManifestTest extends TestCase
         $this->assertFileExists($basePath . '/bootstrap/cache/packages.php');
     }
 
-    public function test_invalid_provider_metadata_is_rejected()
+    public function test_invalid_provider_metadata_is_rejected(): void
     {
         $basePath = $this->directory('annabel-manifest-app-');
         $packagePath = $this->directory('annabel-package-');

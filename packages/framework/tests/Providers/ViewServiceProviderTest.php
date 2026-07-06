@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ViewServiceProviderTest extends TestCase
 {
-    public function test_view_service_is_registered()
+    public function test_view_service_is_registered(): void
     {
         Application::resetInstance();
 

@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 class OptimizationCacheTest extends TestCase
 {
     /** @var list<string> */
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void

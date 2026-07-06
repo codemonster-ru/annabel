@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var string $name
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 

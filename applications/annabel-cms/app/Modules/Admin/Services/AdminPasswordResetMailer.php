@@ -33,7 +33,7 @@ class AdminPasswordResetMailer
                 ->text(
                     "We received a request to reset your Annabel CMS admin password.\n\n"
                     . "Open this link to choose a new password:\n{$url}\n\n"
-                    . 'This link will expire in 60 minutes.'
+                    . 'This link will expire in 60 minutes.',
                 ),
         );
     }

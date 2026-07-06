@@ -1,0 +1,7 @@
+parameters:
+    level: 6
+    bootstrapFiles:
+        - tools/phpstan-bootstrap.php
+    paths:
+        - tools
+    tmpDir: /tmp/annabel-phpstan-tools

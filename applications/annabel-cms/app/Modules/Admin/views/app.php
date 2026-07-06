@@ -1,4 +1,9 @@
 <?php
+/**
+ * @var array{screen?: string} $boot
+ * @var array{script: string, styles: array<int, string>, favicon: string|null} $assets
+ */
+
 $title = match ($boot['screen'] ?? null) {
     'login' => 'Sign in | Annabel CMS',
     'forgot-password' => 'Reset password | Annabel CMS',

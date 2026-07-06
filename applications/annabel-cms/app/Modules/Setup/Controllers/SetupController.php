@@ -98,8 +98,9 @@ class SetupController
             $this->validationAttributes(),
         );
 
+        $dbConfig = $this->databaseConfig($validated);
+
         try {
-            $dbConfig = $this->databaseConfig($validated);
             $this->database->assertReady($dbConfig);
         } catch (Throwable $e) {
             return $this->errorResponse(

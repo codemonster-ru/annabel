@@ -1,0 +1,16 @@
+parameters:
+    level: 6
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    paths:
+        - app
+        - bootstrap/app.php
+        - bootstrap/providers
+        - config
+        - database
+        - public/index.php
+        - resources/views
+        - routes
+    excludePaths:
+        - bootstrap/cache
+    tmpDir: /tmp/annabel-phpstan-skeleton

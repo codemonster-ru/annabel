@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Support\Tests\Helpers;
 
 use PHPUnit\Framework\TestCase;
@@ -12,12 +14,12 @@ class CacheHelperTest extends TestCase
         app()->instance(CacheInterface::class, new FakeCache());
     }
 
-    public function testCacheReturnsInstance()
+    public function testCacheReturnsInstance(): void
     {
         $this->assertInstanceOf(CacheInterface::class, cache());
     }
 
-    public function testCacheCanStoreAndRetrieveValues()
+    public function testCacheCanStoreAndRetrieveValues(): void
     {
         cache('name', 'annabel');
 
@@ -27,6 +29,7 @@ class CacheHelperTest extends TestCase
 
 class FakeCache implements CacheInterface
 {
+    /** @var array<string, mixed> */
     public array $items = [];
 
     public function get(string $key, mixed $default = null): mixed
@@ -55,6 +58,7 @@ class FakeCache implements CacheInterface
     {
         return [];
     }
+    /** @param iterable<string, mixed> $values */
     public function setMultiple(iterable $values, \DateInterval|int|null $ttl = null): bool
     {
         return true;

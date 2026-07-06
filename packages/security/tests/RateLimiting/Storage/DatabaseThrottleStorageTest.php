@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Security\Tests\RateLimiting\Storage;
 
 use Codemonster\Database\Connection;
@@ -49,6 +51,7 @@ class DatabaseThrottleStorageTest extends TestCase
         }
     }
 
+    /** @return array{driver: 'mysql', host: string, port: int, database: string, username: string, password: string, charset: 'utf8mb4'}|null */
     private function mysqlConfig(): ?array
     {
         $host = getenv('MYSQL_HOST') ?: null;

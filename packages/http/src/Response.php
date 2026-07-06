@@ -252,6 +252,7 @@ class Response implements ResponseInterface
         return $this->reasonPhrase !== '' ? $this->reasonPhrase : self::reasonPhrase($this->status);
     }
 
+    /** @return array<string, list<string>> */
     public function getHeaders(): array
     {
         $headers = [];

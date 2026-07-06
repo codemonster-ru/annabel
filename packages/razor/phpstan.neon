@@ -3,4 +3,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+        - tests
+    excludePaths:
+        - tests/cache
     tmpDir: ../../var/phpstan/razor

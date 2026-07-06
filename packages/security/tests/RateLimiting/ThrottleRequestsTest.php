@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace {
     if (!function_exists('app')) {
+        /** @param array<string, mixed> $parameters */
         function app(?string $abstract = null, array $parameters = []): mixed
         {
             return TestApp::make($abstract);
@@ -106,6 +109,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $request = new Request('POST', '/api/login');
 
             $response = $middleware->handle($request, fn () => new Response('ok'));
+            $response = $this->assertResponse($response);
 
             $this->assertSame(200, $response->getStatusCode());
         }
@@ -149,8 +153,11 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $middleware = new ThrottleRequests(new RateLimiter(new SessionThrottleStorage()));
             $request = new Request('POST', '/login', [], ['email' => 'user@example.com']);
 
-            $this->assertSame(200, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
-            $this->assertSame(429, $middleware->handle($request, fn () => new Response('ok'), 'login')->getStatusCode());
+            $first = $this->assertResponse($middleware->handle($request, fn () => new Response('ok'), 'login'));
+            $second = $this->assertResponse($middleware->handle($request, fn () => new Response('ok'), 'login'));
+
+            $this->assertSame(200, $first->getStatusCode());
+            $this->assertSame(429, $second->getStatusCode());
 
             Config::reset();
         }
@@ -161,14 +168,15 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $request = new Request('POST', '/login');
 
             $response = $middleware->handle($request, fn () => new Response('ok'));
-            $headers = $response->getHeaders();
+            $response = $this->assertResponse($response);
+            $headers = $this->headers($response);
 
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
             $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Limit', $headers);
             $this->assertArrayHasKey('RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Reset', $headers);
-            $this->assertIsString($headers['RateLimit-Reset'][0] ?? null);
+            $this->assertNotSame('', $this->headerLine($headers, 'RateLimit-Reset'));
         }
 
         public function testAddsRateLimitHeadersOnThrottleResponse(): void
@@ -176,19 +184,64 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $middleware = new ThrottleRequests(new RateLimiter(new SessionThrottleStorage()), 1, 60);
             $request = new Request('POST', '/login');
 
-            $this->assertSame(200, $middleware->handle($request, fn () => new Response('ok'))->getStatusCode());
+            $first = $this->assertResponse($middleware->handle($request, fn () => new Response('ok')));
+            $this->assertSame(200, $first->getStatusCode());
 
             $response = $middleware->handle($request, fn () => new Response('ok'));
+            $response = $this->assertResponse($response);
             $this->assertSame(429, $response->getStatusCode());
 
-            $headers = $response->getHeaders();
+            $headers = $this->headers($response);
 
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
             $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Limit', $headers);
             $this->assertArrayHasKey('RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Reset', $headers);
-            $this->assertIsString($headers['RateLimit-Reset'][0] ?? null);
+            $this->assertNotSame('', $this->headerLine($headers, 'RateLimit-Reset'));
+        }
+
+        private function assertResponse(mixed $response): Response
+        {
+            $this->assertInstanceOf(Response::class, $response);
+
+            return $response;
+        }
+
+        /** @return array<string, list<string>> */
+        private function headers(Response $response): array
+        {
+            $headers = $response->getHeaders();
+            $typedHeaders = [];
+
+            foreach ($headers as $name => $values) {
+                $this->assertIsString($name);
+
+                if (is_string($values)) {
+                    $typedHeaders[$name] = [$values];
+
+                    continue;
+                }
+
+                if (is_array($values)) {
+                    $typedHeaders[$name] = [];
+                    foreach ($values as $value) {
+                        $this->assertIsString($value);
+                        $typedHeaders[$name][] = $value;
+                    }
+                }
+            }
+
+            return $typedHeaders;
+        }
+
+        /** @param array<string, list<string>> $headers */
+        private function headerLine(array $headers, string $name): string
+        {
+            $value = $headers[$name][0] ?? null;
+            $this->assertIsString($value);
+
+            return $value;
         }
     }
 
@@ -204,6 +257,7 @@ namespace Codemonster\Security\Tests\RateLimiting {
             return $this->resolveKey($request, $role);
         }
 
+        /** @return array{int, int} */
         public function publicResolveLimits(mixed $role): array
         {
             return $this->resolveLimits($role);

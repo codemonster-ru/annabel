@@ -1,4 +1,8 @@
 <?php
+/**
+ * @var int $status
+ */
+
 $defaultMessages = [
     400 => 'Bad Request',
     401 => 'Unauthorized',
@@ -24,8 +28,8 @@ $messageText = $defaultMessages[$code] ?? 'An unexpected error occurred';
 <head>
     <meta charset="UTF-8">
     <title>
-        <?= htmlspecialchars($status) ?>
-        — <?= htmlspecialchars($messageText) ?>
+        <?= htmlspecialchars((string) $status, ENT_QUOTES, 'UTF-8') ?>
+        — <?= htmlspecialchars($messageText, ENT_QUOTES, 'UTF-8') ?>
     </title>
     <style>
         :root {
@@ -100,8 +104,8 @@ $messageText = $defaultMessages[$code] ?? 'An unexpected error occurred';
 
 <body>
     <div class="container">
-        <h1><?= htmlspecialchars($code) ?></h1>
-        <h2><?= htmlspecialchars($messageText) ?></h2>
+        <h1><?= htmlspecialchars((string) $code, ENT_QUOTES, 'UTF-8') ?></h1>
+        <h2><?= htmlspecialchars($messageText, ENT_QUOTES, 'UTF-8') ?></h2>
         <p>Sorry, something went wrong while processing your request.</p>
         <footer>Codemonster Errors</footer>
     </div>

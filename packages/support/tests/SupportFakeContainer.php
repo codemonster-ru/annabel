@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Support\Tests;
 
 class SupportFakeContainer
 {
+    /** @var array<string, callable(self): mixed> */
     protected array $bindings = [];
+    /** @var array<string, mixed> */
     protected array $instances = [];
 
     /**
@@ -35,7 +39,6 @@ class SupportFakeContainer
      */
     public function singleton(string $abstract, callable $factory): void
     {
-        // Create immediately
         $this->instances[$abstract] = $factory($this);
     }
 
@@ -56,7 +59,9 @@ class SupportFakeContainer
 
         // Resolve lazy factory
         if (isset($this->bindings[$abstract])) {
-            return ($this->bindings[$abstract])($this);
+            $factory = $this->bindings[$abstract];
+
+            return $factory($this);
         }
 
         // Auto-resolve class names

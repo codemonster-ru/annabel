@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class DbHelperTest extends TestCase
 {
-    public function test_db_returns_connection()
+    public function test_db_returns_connection(): void
     {
         $manager = new DatabaseManager([
             'default' => 'fake',

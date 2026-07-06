@@ -3,6 +3,8 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+        - migrations
+        - tests
     tmpDir: ../../var/phpstan/security
     stubFiles:
         - stubs/PredisClient.stub

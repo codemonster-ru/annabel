@@ -12,12 +12,12 @@ class ResponseHelperTest extends TestCase
         app()->singleton('response', fn () => new Response());
     }
 
-    public function testResponseReturnsInstance()
+    public function testResponseReturnsInstance(): void
     {
         $this->assertInstanceOf(Response::class, response());
     }
 
-    public function testResponseSetsContent()
+    public function testResponseSetsContent(): void
     {
         $res = response('Hello', 200);
 
@@ -25,7 +25,7 @@ class ResponseHelperTest extends TestCase
         $this->assertSame('Hello', $res->getContent());
     }
 
-    public function testJsonResponse()
+    public function testJsonResponse(): void
     {
         $res = json(['ok' => true]);
 
@@ -34,7 +34,7 @@ class ResponseHelperTest extends TestCase
         $this->assertJsonStringEqualsJsonString('{"ok":true}', $res->getContent());
     }
 
-    public function testAbortThrowsHttpLikeException()
+    public function testAbortThrowsHttpLikeException(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -50,7 +50,7 @@ class ResponseHelperTest extends TestCase
         }
     }
 
-    public function testAbortGeneratesDefaultMessage()
+    public function testAbortGeneratesDefaultMessage(): void
     {
         $this->expectException(\RuntimeException::class);
 

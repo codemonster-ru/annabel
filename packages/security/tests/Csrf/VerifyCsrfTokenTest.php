@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Security\Tests\Csrf;
 
 use Codemonster\Http\Request;
@@ -26,9 +28,9 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
-        $this->assertInstanceOf(Response::class, $result);
+        $result = $this->assertResponse($result);
         $this->assertSame(200, $result->getStatusCode());
-        $this->assertIsString((new CsrfTokenManager())->token());
+        $this->assertNotSame('', (new CsrfTokenManager())->token());
     }
 
     public function testValidatesTokenFromPostField(): void
@@ -40,6 +42,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(200, $result->getStatusCode());
     }
 
@@ -52,6 +55,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(200, $result->getStatusCode());
     }
 
@@ -65,6 +69,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(419, $result->getStatusCode());
     }
 
@@ -78,6 +83,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(200, $result->getStatusCode());
     }
 
@@ -91,6 +97,7 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(200, $result->getStatusCode());
     }
 
@@ -104,6 +111,14 @@ class VerifyCsrfTokenTest extends TestCase
 
         $result = $middleware->handle($request, fn () => new Response('ok'));
 
+        $result = $this->assertResponse($result);
         $this->assertSame(419, $result->getStatusCode());
+    }
+
+    private function assertResponse(mixed $response): Response
+    {
+        $this->assertInstanceOf(Response::class, $response);
+
+        return $response;
     }
 }

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class DumpHelperTest extends TestCase
 {
-    public function testDumpReturnsValue()
+    public function testDumpReturnsValue(): void
     {
         ob_start();
         $value = dump('Codemonster');

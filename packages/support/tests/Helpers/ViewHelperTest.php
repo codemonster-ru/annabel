@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Support\Tests\Helpers;
 
 use Codemonster\Http\Response;
@@ -29,17 +31,18 @@ class ViewHelperTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->tempViewPath . '/*.php'));
+        $files = glob($this->tempViewPath . '/*.php') ?: [];
+        array_map('unlink', $files);
 
         rmdir($this->tempViewPath);
     }
 
-    public function testViewReturnsInstance()
+    public function testViewReturnsInstance(): void
     {
         $this->assertInstanceOf(View::class, view());
     }
 
-    public function testViewRendersResponse()
+    public function testViewRendersResponse(): void
     {
         $response = view('home', ['user' => 'Vasya']);
 
@@ -47,11 +50,10 @@ class ViewHelperTest extends TestCase
         $this->assertStringContainsString('Vasya', $response->getContent());
     }
 
-    public function testRenderReturnsHtmlString()
+    public function testRenderReturnsHtmlString(): void
     {
         $html = render('home', ['user' => 'Vasya']);
 
-        $this->assertIsString($html);
         $this->assertStringContainsString('<h1>', $html);
     }
 }

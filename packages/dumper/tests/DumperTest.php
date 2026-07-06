@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Dumper\Tests;
 
 use Codemonster\Dumper\Dumper;
@@ -13,7 +15,7 @@ class DumperTest extends TestCase
 
         Dumper::dump(['foo' => 'bar'], 'cli');
 
-        $output = ob_get_clean();
+        $output = $this->capturedOutput();
 
         $this->assertStringContainsString('foo', $output);
         $this->assertStringContainsString('bar', $output);
@@ -26,7 +28,7 @@ class DumperTest extends TestCase
 
         Dumper::dump(['baz' => 'qux'], 'html');
 
-        $output = ob_get_clean();
+        $output = $this->capturedOutput();
 
         $this->assertStringContainsString('<pre', $output);
         $this->assertStringContainsString('baz', $output);
@@ -58,9 +60,17 @@ class DumperTest extends TestCase
             $called = $e->getMessage() === 'terminate called';
         }
 
-        $output = ob_get_clean();
+        $output = $this->capturedOutput();
 
         $this->assertTrue($called, 'terminate() should be called');
         $this->assertStringContainsString('foo', $output);
+    }
+
+    private function capturedOutput(): string
+    {
+        $output = ob_get_clean();
+        $this->assertIsString($output);
+
+        return $output;
     }
 }

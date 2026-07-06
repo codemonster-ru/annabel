@@ -8,7 +8,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class SeedCommandTest extends TestCase
 {
-    public function test_seed_command_outputs_when_nothing_to_seed()
+    public function test_seed_command_outputs_when_nothing_to_seed(): void
     {
         $runner = $this->createStub(SeederRunner::class);
         $runner->method('seed')->willReturn([]);
@@ -19,7 +19,7 @@ class SeedCommandTest extends TestCase
         $this->assertSame(0, $command->handle([]));
     }
 
-    public function test_seed_command_outputs_executed_seeders()
+    public function test_seed_command_outputs_executed_seeders(): void
     {
         $runner = $this->createStub(SeederRunner::class);
         $runner->method('seed')->willReturn(['first_seed', 'second_seed']);

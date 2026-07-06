@@ -1,13 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Database\Tests\Fakes;
 
+use Codemonster\Database\Query\JoinClause;
 use Codemonster\Database\Query\QueryBuilder;
 
+/**
+ * @phpstan-type WhereClause array{
+ *     column: string,
+ *     operator: mixed,
+ *     value?: mixed,
+ *     boolean: string,
+ *     type: 'basic'|'null'|'in'|'not_null'
+ * }
+ */
 class FakeQueryBuilder extends QueryBuilder
 {
     public FakeConnection $fake;
+    /** @var list<WhereClause> */
     protected array $wheres = [];
+    /** @var list<JoinClause> */
     protected array $joins = [];
     protected ?int $limit = null;
     protected ?int $offset = null;
@@ -90,17 +104,14 @@ class FakeQueryBuilder extends QueryBuilder
             return $this;
         }
 
-        $this->joins[] = [
-            'table' => $table,
-            'first' => $first,
-            'operator' => $operator,
-            'second' => $second,
-            'type' => strtoupper($type),
-        ];
+        $join = new JoinClause($type, $table);
+        $join->on($first, $operator ?? '=', $second ?? '');
+        $this->joins[] = $join;
 
         return $this;
     }
 
+    /** @return list<array<string, mixed>> */
     public function get(): array
     {
         $this->fake->tableReads[] = $this->table;
@@ -109,9 +120,9 @@ class FakeQueryBuilder extends QueryBuilder
             return $this->runJoinQuery();
         }
 
-        $rows = $this->fake->tables[$this->table] ?? [];
+        $rows = $this->tableRows($this->table);
 
-        $rows = array_values(array_filter($rows, fn ($row) => $this->matchesWhere($row)));
+        $rows = array_values(array_filter($rows, fn (array $row): bool => $this->matchesWhere($row)));
 
         if ($this->offset !== null) {
             $rows = array_slice($rows, $this->offset);
@@ -121,9 +132,10 @@ class FakeQueryBuilder extends QueryBuilder
             $rows = array_slice($rows, 0, $this->limit);
         }
 
-        return array_map(fn ($row) => (array) $row, $rows);
+        return array_values($rows);
     }
 
+    /** @return array<string, mixed>|null */
     public function first(): ?array
     {
         $rows = $this->get();
@@ -131,6 +143,7 @@ class FakeQueryBuilder extends QueryBuilder
         return $rows[0] ?? null;
     }
 
+    /** @param array<string, mixed> $values */
     public function insert(array $values): bool
     {
         $this->fake->tables[$this->table][] = $values;
@@ -138,28 +151,36 @@ class FakeQueryBuilder extends QueryBuilder
         return true;
     }
 
-    public function insertGetId(array $values, $sequence = null): int
+    /** @param array<string, mixed> $values */
+    public function insertGetId(array $values, mixed $sequence = null): int
     {
-        $current = $this->fake->tables[$this->table] ?? [];
-        $last = empty($current) ? 0 : ((int) ($current[array_key_last($current)]['id'] ?? count($current)));
+        $current = $this->tableRows($this->table);
+        $lastId = $current[array_key_last($current)]['id'] ?? count($current);
+        $last = is_int($lastId) || is_string($lastId) ? (int) $lastId : 0;
 
-        $values['id'] = $last + 1;
+        $id = $last + 1;
+        $values['id'] = $id;
 
         $this->fake->tables[$this->table][] = $values;
 
-        return $values['id'];
+        return $id;
     }
 
+    /** @param array<string, mixed> $values */
     public function update(array $values): int
     {
         $updated = 0;
+        $rows = $this->tableRows($this->table);
 
-        foreach ($this->fake->tables[$this->table] as &$row) {
+        foreach ($rows as &$row) {
             if ($this->matchesWhere($row)) {
                 $row = array_merge($row, $values);
                 $updated++;
             }
         }
+        unset($row);
+
+        $this->fake->tables[$this->table] = $rows;
 
         return $updated;
     }
@@ -167,16 +188,19 @@ class FakeQueryBuilder extends QueryBuilder
     public function delete(): int
     {
         $deleted = 0;
+        $rows = $this->tableRows($this->table);
 
-        foreach ($this->fake->tables[$this->table] as $idx => $row) {
+        foreach ($rows as $idx => $row) {
             if ($this->matchesWhere($row)) {
-                unset($this->fake->tables[$this->table][$idx]);
+                unset($rows[$idx]);
 
                 $deleted++;
             }
         }
 
-        $this->fake->tables[$this->table] = array_values($this->fake->tables[$this->table] ?? []);
+        /** @var list<array<string, mixed>> $rows */
+        $rows = array_values($rows);
+        $this->fake->tables[$this->table] = $rows;
 
         return $deleted;
     }
@@ -205,6 +229,7 @@ class FakeQueryBuilder extends QueryBuilder
         return $this;
     }
 
+    /** @param array<string, mixed> $row */
     protected function matchesWhere(array $row): bool
     {
         $result = null;
@@ -217,8 +242,8 @@ class FakeQueryBuilder extends QueryBuilder
             $current = match ($where['type']) {
                 'null' => !array_key_exists($column, $row) || $row[$column] === null,
                 'not_null' => array_key_exists($column, $row) && $row[$column] !== null,
-                'in' => in_array($row[$column] ?? null, $where['value'], true),
-                default => ($row[$column] ?? null) == $where['value'],
+                'in' => in_array($row[$column] ?? null, is_array($where['value'] ?? null) ? $where['value'] : [], true),
+                default => ($row[$column] ?? null) == ($where['value'] ?? null),
             };
 
             if ($result === null) {
@@ -236,17 +261,18 @@ class FakeQueryBuilder extends QueryBuilder
         return $result ?? true;
     }
 
+    /** @return list<array<string, mixed>> */
     protected function runJoinQuery(): array
     {
         // Simplified join handling for belongsToMany (single pivot join).
         $join = $this->joins[0];
 
-        $pivotTable = $join['table'];
-        $pivotRows = $this->fake->tables[$pivotTable] ?? [];
+        $pivotTable = $join->table;
+        $pivotRows = $this->tableRows($pivotTable);
 
         $filter = array_values(array_filter(
             $this->wheres,
-            fn ($w) => str_starts_with($w['column'], $pivotTable . '.'),
+            fn (array $w): bool => str_starts_with($w['column'], $pivotTable . '.'),
         ));
 
         $relatedIds = [];
@@ -256,27 +282,37 @@ class FakeQueryBuilder extends QueryBuilder
                 $cond = $filter[0];
                 $pivotColumn = str_replace($pivotTable . '.', '', $cond['column']);
 
-                if (($pivot[$pivotColumn] ?? null) != $cond['value']) {
+                if (($pivot[$pivotColumn] ?? null) != ($cond['value'] ?? null)) {
                     continue;
                 }
             }
 
-            $pivotRelatedKey = str_replace($pivotTable . '.', '', $join['first']);
+            $condition = $join->conditions[0] ?? null;
+            $first = $condition['first'] ?? '';
+            $pivotRelatedKey = str_replace($pivotTable . '.', '', $first);
             $relatedIds[] = $pivot[$pivotRelatedKey] ?? null;
         }
 
         $relatedTable = $this->table;
-        $relatedRows = $this->fake->tables[$relatedTable] ?? [];
+        $relatedRows = $this->tableRows($relatedTable);
 
-        $relatedKey = str_contains($join['second'], '.')
-            ? explode('.', $join['second'])[1]
-            : $join['second'];
+        $condition = $join->conditions[0] ?? null;
+        $second = $condition['second'] ?? '';
+        $relatedKey = str_contains($second, '.')
+            ? explode('.', $second)[1]
+            : $second;
 
         $filtered = array_filter(
             $relatedRows,
-            fn ($row) => in_array($row[$relatedKey] ?? null, $relatedIds, true),
+            fn (array $row): bool => in_array($row[$relatedKey] ?? null, $relatedIds, true),
         );
 
-        return array_map(fn ($row) => (array) $row, array_values($filtered));
+        return array_values($filtered);
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function tableRows(string $table): array
+    {
+        return $this->fake->tables[$table] ?? [];
     }
 }

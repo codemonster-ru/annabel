@@ -6,6 +6,9 @@ use Codemonster\Database\Query\QueryBuilder;
 
 /**
  * @template TModel of Model
+ * @method list<mixed> pluck(string $column)
+ * @method mixed value(string $column)
+ * @method array<string, mixed> simplePaginate(int $perPage = 15, int $page = 1)
  */
 class ModelQuery
 {

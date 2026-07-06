@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class MigrationPathResolverTest extends TestCase
 {
-    public function test_adds_nonexistent_path_and_keeps_unique()
+    public function test_adds_nonexistent_path_and_keeps_unique(): void
     {
         $resolver = new MigrationPathResolver();
 

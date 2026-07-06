@@ -145,10 +145,8 @@ try {
         ]);
     });
     $app->post('/acceptance/form/submit', static function (Request $request) use ($app): array {
+        /** @var Validator $validator */
         $validator = $app->make(Validator::class);
-        if (!$validator instanceof Validator) {
-            throw new RuntimeException('The validator service did not resolve.');
-        }
 
         $validated = $validator->validateOrFail($request->all(), [
             'name' => 'required|string',

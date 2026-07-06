@@ -604,6 +604,9 @@ function indexInRanges(int $index, array $ranges): bool
     return false;
 }
 
+/**
+ * @param array{0: int, 1: string, 2: int}|string $token
+ */
 function depthDelta(array|string $token): int
 {
     if ($token === '{') {
@@ -629,6 +632,9 @@ function symbolKind(int $token): string
     };
 }
 
+/**
+ * @param array{0: int, 1: string, 2: int}|string $token
+ */
 function tokenText(array|string $token): string
 {
     return is_array($token) ? $token[1] : $token;

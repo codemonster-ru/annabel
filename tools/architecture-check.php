@@ -337,12 +337,12 @@ function nameTokens(): array
  */
 function classDeclarationTokens(): array
 {
-    return array_values(array_filter([
+    return array_filter([
         T_CLASS,
         T_INTERFACE,
         T_TRAIT,
         defined('T_ENUM') ? T_ENUM : null,
-    ], is_int(...)));
+    ], is_int(...));
 }
 
 function relativePath(string $root, string $path): string

@@ -45,7 +45,7 @@ function packageComposerFiles(string $root): array
     $files = glob($root . '/packages/*/composer.json') ?: [];
     sort($files);
 
-    return array_values($files);
+    return $files;
 }
 
 /**
@@ -227,7 +227,7 @@ function splitPackageIds(string $workflowContents): array
 {
     preg_match_all('/^\s+- id:\s*([a-z0-9-]+)\s*$/m', $workflowContents, $matches);
 
-    $packageIds = $matches[1] ?? [];
+    $packageIds = $matches[1];
     sort($packageIds);
 
     return array_values(array_unique($packageIds));

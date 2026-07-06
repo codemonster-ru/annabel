@@ -8,7 +8,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class SQLiteGrammarTest extends TestCase
 {
-    public function test_create_table_grammar()
+    public function test_create_table_grammar(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');
@@ -23,7 +23,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertStringContainsString('"active" INTEGER DEFAULT 1', $sql[0]);
     }
 
-    public function test_id_and_timestamps_columns()
+    public function test_id_and_timestamps_columns(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');
@@ -38,7 +38,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertStringContainsString('"updated_at" TEXT', $sql[0]);
     }
 
-    public function test_custom_id_name()
+    public function test_custom_id_name(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('widgets');
@@ -51,7 +51,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertStringNotContainsString('PRIMARY KEY ("widget_id")', $sql[0]);
     }
 
-    public function test_timestamps_are_nullable_by_default()
+    public function test_timestamps_are_nullable_by_default(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');
@@ -66,7 +66,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertStringNotContainsString('"updated_at" TEXT NOT NULL', $sql[0]);
     }
 
-    public function test_foreign_key_on_delete_and_update()
+    public function test_foreign_key_on_delete_and_update(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('posts');
@@ -86,7 +86,7 @@ class SQLiteGrammarTest extends TestCase
         );
     }
 
-    public function test_alter_table_grammar()
+    public function test_alter_table_grammar(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');
@@ -100,7 +100,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertStringContainsString('ALTER TABLE "users" ADD COLUMN', $sql[1]);
     }
 
-    public function test_rename_table_and_drop_statements()
+    public function test_rename_table_and_drop_statements(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');
@@ -116,7 +116,7 @@ class SQLiteGrammarTest extends TestCase
         $this->assertSame('DROP TABLE IF EXISTS "users"', $dropIfExists[0]);
     }
 
-    public function test_alter_ignores_drop_operations()
+    public function test_alter_ignores_drop_operations(): void
     {
         $grammar = new SQLiteGrammar();
         $blueprint = new Blueprint('users');

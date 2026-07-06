@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class SelectTest extends TestCase
 {
-    public function test_simple_select()
+    public function test_simple_select(): void
     {
         $connection = $this->fakeConnection();
 
@@ -18,7 +18,7 @@ class SelectTest extends TestCase
         $this->assertEquals('SELECT * FROM `users`', $sql);
     }
 
-    public function test_select_raw_and_distinct()
+    public function test_select_raw_and_distinct(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -28,7 +28,7 @@ class SelectTest extends TestCase
         $this->assertStringContainsString('`id`, COUNT(*) as total', $sql);
     }
 
-    public function test_order_by_raw()
+    public function test_order_by_raw(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -37,7 +37,7 @@ class SelectTest extends TestCase
         $this->assertStringContainsString('ORDER BY FIELD(status, "active", "pending", "disabled")', $sql);
     }
 
-    public function test_having_raw()
+    public function test_having_raw(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -46,7 +46,7 @@ class SelectTest extends TestCase
         $this->assertStringContainsString('HAVING COUNT(*) > 1', $sql);
     }
 
-    public function test_pluck_with_alias()
+    public function test_pluck_with_alias(): void
     {
         $conn = $this->fakeConnection();
         $qb = new QueryBuilder($conn, 'users');
@@ -61,7 +61,7 @@ class SelectTest extends TestCase
         $this->assertSame([1 => 'Alice'], $result);
     }
 
-    public function test_select_with_alias_and_expression()
+    public function test_select_with_alias_and_expression(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -73,7 +73,7 @@ class SelectTest extends TestCase
         );
     }
 
-    public function test_select_with_alias_without_as()
+    public function test_select_with_alias_without_as(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -82,7 +82,7 @@ class SelectTest extends TestCase
         $this->assertSame('SELECT `users`.`name` AS `label` FROM `users`', $sql);
     }
 
-    public function test_select_table_star()
+    public function test_select_table_star(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -91,7 +91,7 @@ class SelectTest extends TestCase
         $this->assertSame('SELECT `users`.* FROM `users`', $sql);
     }
 
-    public function test_pluck_with_table_column()
+    public function test_pluck_with_table_column(): void
     {
         $conn = $this->fakeConnection();
         $qb = new QueryBuilder($conn, 'users');
@@ -106,7 +106,7 @@ class SelectTest extends TestCase
         $this->assertSame([1 => 'Alice'], $result);
     }
 
-    public function test_value_with_alias_and_table_column()
+    public function test_value_with_alias_and_table_column(): void
     {
         $conn = $this->fakeConnection();
 
@@ -127,7 +127,7 @@ class SelectTest extends TestCase
         $this->assertSame('Bob', $tableValue);
     }
 
-    public function test_pluck_with_alias_without_as()
+    public function test_pluck_with_alias_without_as(): void
     {
         $conn = $this->fakeConnection();
         $qb = new QueryBuilder($conn, 'users');
@@ -142,7 +142,7 @@ class SelectTest extends TestCase
         $this->assertSame([1 => 'Alice'], $result);
     }
 
-    public function test_value_with_expression_alias_without_as()
+    public function test_value_with_expression_alias_without_as(): void
     {
         $conn = $this->fakeConnection();
         $qb = new QueryBuilder($conn, 'users');

@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class PaginationTest extends TestCase
 {
-    public function test_first_does_not_mutate_builder()
+    public function test_first_does_not_mutate_builder(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 

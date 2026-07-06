@@ -1,30 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Database\Tests\Fakes;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Contracts\QueryBuilderInterface;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Schema\Schema;
 use PDO;
 
 class FakeConnection implements ConnectionInterface
 {
+    /** @var list<array{0: string, 1: string, 2: array<int|string, mixed>}> */
     public array $executed = [];
+    /** @var list<string> */
     public array $migrations = [];
+    /** @var array<string, list<array<string, mixed>>> */
     public array $tables = [];
+    /** @var list<string> */
     public array $tableReads = [];
 
     public bool $transactionStarted = false;
     public bool $transactionCommitted = false;
     public bool $transactionRolledBack = false;
 
+    /**
+     * @param array<int|string, mixed> $params
+     * @return list<array<string, mixed>>
+     */
     public function select(string $query, array $params = []): array
     {
         $this->executed[] = ['select', $query, $params];
 
         if (str_contains($query, 'FROM `migrations`')) {
             return array_map(
-                fn (string $name) => [
+                static fn (string $name): array => [
                     'migration' => $name,
                     'batch' => 1,
                 ],
@@ -35,6 +46,7 @@ class FakeConnection implements ConnectionInterface
         return [];
     }
 
+    /** @param array<int|string, mixed> $params */
     public function selectOne(string $query, array $params = []): ?array
     {
         $rows = $this->select($query, $params);
@@ -42,6 +54,7 @@ class FakeConnection implements ConnectionInterface
         return $rows[0] ?? null;
     }
 
+    /** @param array<int|string, mixed> $params */
     public function insert(string $query, array $params = []): bool
     {
         $this->executed[] = ['insert', $query, $params];
@@ -49,6 +62,7 @@ class FakeConnection implements ConnectionInterface
         return true;
     }
 
+    /** @param array<int|string, mixed> $params */
     public function update(string $query, array $params = []): int
     {
         $this->executed[] = ['update', $query, $params];
@@ -56,6 +70,7 @@ class FakeConnection implements ConnectionInterface
         return 1;
     }
 
+    /** @param array<int|string, mixed> $params */
     public function delete(string $query, array $params = []): int
     {
         $this->executed[] = ['delete', $query, $params];
@@ -63,6 +78,7 @@ class FakeConnection implements ConnectionInterface
         return 1;
     }
 
+    /** @param array<int|string, mixed> $params */
     public function statement(string $query, array $params = []): bool
     {
         $this->executed[] = ['statement', $query, $params];
@@ -70,7 +86,7 @@ class FakeConnection implements ConnectionInterface
         if (str_starts_with($query, 'INSERT INTO') && str_contains($query, 'migrations')) {
             $migrationName = $params[0] ?? null;
 
-            if ($migrationName !== null) {
+            if (is_string($migrationName)) {
                 $this->migrations[] = $migrationName;
             }
         }
@@ -128,7 +144,7 @@ class FakeConnection implements ConnectionInterface
 
     public function schema(): Schema
     {
-        return new Schema($this, new \Codemonster\Database\Schema\Grammar());
+        return new Schema($this, new MySqlGrammar());
     }
 
     public function getPdo(): PDO

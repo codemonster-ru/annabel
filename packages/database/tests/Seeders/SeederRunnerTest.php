@@ -9,7 +9,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class SeederRunnerTest extends TestCase
 {
-    public function test_get_seed_files_returns_sorted_map()
+    public function test_get_seed_files_returns_sorted_map(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_seeds_' . uniqid('', true);
 
@@ -38,7 +38,7 @@ class SeederRunnerTest extends TestCase
         rmdir($dir);
     }
 
-    public function test_seeder_runner_runs_seeders_in_transaction()
+    public function test_seeder_runner_runs_seeders_in_transaction(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_seeds_' . uniqid('', true);
 

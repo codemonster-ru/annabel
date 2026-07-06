@@ -8,7 +8,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class AlterTableTest extends TestCase
 {
-    public function test_compile_alter_generates_statements()
+    public function test_compile_alter_generates_statements(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('users');
@@ -37,7 +37,7 @@ class AlterTableTest extends TestCase
         $this->assertStringContainsString('ALTER TABLE `users` ADD INDEX `users_name_age_index` (`name`, `age`)', $joined);
     }
 
-    public function test_compile_rename_table()
+    public function test_compile_rename_table(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('users');

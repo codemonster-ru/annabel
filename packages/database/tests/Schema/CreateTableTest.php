@@ -8,7 +8,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class CreateTableTest extends TestCase
 {
-    public function test_create_table_grammar()
+    public function test_create_table_grammar(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('users');
@@ -23,7 +23,7 @@ class CreateTableTest extends TestCase
         $this->assertStringContainsString('`id` INT UNSIGNED AUTO_INCREMENT NOT NULL', $sql[0]);
     }
 
-    public function test_id_and_timestamps_columns()
+    public function test_id_and_timestamps_columns(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('users');
@@ -38,7 +38,7 @@ class CreateTableTest extends TestCase
         $this->assertStringContainsString('`updated_at` TIMESTAMP', $sql[0]);
     }
 
-    public function test_custom_id_name()
+    public function test_custom_id_name(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('widgets');
@@ -51,7 +51,7 @@ class CreateTableTest extends TestCase
         $this->assertStringContainsString('PRIMARY KEY (`widget_id`)', $sql[0]);
     }
 
-    public function test_timestamps_nullable_by_default()
+    public function test_timestamps_nullable_by_default(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('users');
@@ -66,7 +66,7 @@ class CreateTableTest extends TestCase
         $this->assertStringNotContainsString('`updated_at` TIMESTAMP NOT NULL', $sql[0]);
     }
 
-    public function test_create_table_with_foreign_key_and_index()
+    public function test_create_table_with_foreign_key_and_index(): void
     {
         $grammar = new MySqlGrammar();
         $blueprint = new Blueprint('posts');

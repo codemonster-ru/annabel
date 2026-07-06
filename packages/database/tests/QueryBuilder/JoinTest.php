@@ -2,18 +2,19 @@
 
 namespace Codemonster\Database\Tests\QueryBuilder;
 
+use Codemonster\Database\Query\JoinClause;
 use Codemonster\Database\Query\QueryBuilder;
 use Codemonster\Database\Tests\TestCase;
 
 class JoinTest extends TestCase
 {
-    public function test_inner_join()
+    public function test_inner_join(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
         $qb->join(
             'posts',
-            fn ($j) =>
+            fn (JoinClause $j) =>
             $j->on('users.id', '=', 'posts.user_id'),
         );
 
@@ -25,7 +26,7 @@ class JoinTest extends TestCase
         );
     }
 
-    public function test_callable_function_name_is_treated_as_join_column()
+    public function test_callable_function_name_is_treated_as_join_column(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -39,11 +40,11 @@ class JoinTest extends TestCase
         );
     }
 
-    public function test_join_with_where_conditions()
+    public function test_join_with_where_conditions(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
-        $qb->join('posts', function ($j) {
+        $qb->join('posts', function (JoinClause $j): void {
             $j->on('users.id', '=', 'posts.user_id')
                 ->where('posts.published', '=', 1);
         });
@@ -57,11 +58,11 @@ class JoinTest extends TestCase
         $this->assertSame([1], $qb->getBindings());
     }
 
-    public function test_join_with_multiple_where_conditions()
+    public function test_join_with_multiple_where_conditions(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
-        $qb->join('posts', function ($j) {
+        $qb->join('posts', function (JoinClause $j): void {
             $j->on('users.id', '=', 'posts.user_id')
                 ->where('posts.published', '=', 1)
                 ->where('posts.archived', '=', 0);

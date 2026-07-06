@@ -13,7 +13,7 @@ use PDO;
 
 class GrammarResolverTest extends TestCase
 {
-    public function test_resolver_returns_sqlite_grammar()
+    public function test_resolver_returns_sqlite_grammar(): void
     {
         $resolver = new GrammarResolver();
 
@@ -24,7 +24,7 @@ class GrammarResolverTest extends TestCase
         $this->assertInstanceOf(SQLiteGrammar::class, $grammar);
     }
 
-    public function test_resolver_falls_back_to_mysql_on_error()
+    public function test_resolver_falls_back_to_mysql_on_error(): void
     {
         $resolver = new GrammarResolver();
 
@@ -100,7 +100,7 @@ class GrammarResolverTest extends TestCase
         $this->assertInstanceOf(MySqlGrammar::class, $grammar);
     }
 
-    public function test_schema_for_connection_uses_resolver()
+    public function test_schema_for_connection_uses_resolver(): void
     {
         $conn = $this->makeConnection(new PDO('sqlite::memory:'));
 

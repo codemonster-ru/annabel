@@ -4,6 +4,7 @@ namespace Codemonster\Database\Tests\Schema;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Query\QueryBuilder;
+use Codemonster\Database\Schema\Blueprint;
 use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
 use Codemonster\Database\Schema\Schema;
@@ -12,9 +13,10 @@ use PDO;
 
 class SchemaTest extends TestCase
 {
-    public function test_drop_and_drop_if_exists()
+    public function test_drop_and_drop_if_exists(): void
     {
         $conn = new class () implements ConnectionInterface {
+            /** @var list<string> */
             public array $statements = [];
 
             public function select(string $query, array $params = []): array
@@ -89,16 +91,19 @@ class SchemaTest extends TestCase
 
         $schema->drop('users');
         $schema->dropIfExists('posts');
-        $schema->table('users', fn ($table) => $table->string('name'));
+        $schema->table('users', function (Blueprint $table): void {
+            $table->string('name');
+        });
 
         $this->assertSame('DROP TABLE `users`', $conn->statements[0]);
         $this->assertSame('DROP TABLE IF EXISTS `posts`', $conn->statements[1]);
         $this->assertSame('ALTER TABLE `users` ADD COLUMN `name` VARCHAR(255) NOT NULL', $conn->statements[2]);
     }
 
-    public function test_sqlite_schema_rename_and_drop_if_exists()
+    public function test_sqlite_schema_rename_and_drop_if_exists(): void
     {
         $conn = new class () implements ConnectionInterface {
+            /** @var list<string> */
             public array $statements = [];
 
             public function select(string $query, array $params = []): array
@@ -172,7 +177,9 @@ class SchemaTest extends TestCase
         $schema = Schema::forConnection($conn);
 
         $schema->dropIfExists('users');
-        $schema->table('users', fn ($table) => $table->rename('accounts'));
+        $schema->table('users', function (Blueprint $table): void {
+            $table->rename('accounts');
+        });
 
         $this->assertSame('DROP TABLE IF EXISTS "users"', $conn->statements[0]);
         $this->assertSame('ALTER TABLE "users" RENAME TO "accounts"', $conn->statements[1]);

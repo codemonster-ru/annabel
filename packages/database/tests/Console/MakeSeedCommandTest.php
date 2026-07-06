@@ -8,7 +8,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class MakeSeedCommandTest extends TestCase
 {
-    public function test_make_seed_command_creates_file()
+    public function test_make_seed_command_creates_file(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_seeds_' . uniqid('', true);
 
@@ -35,7 +35,7 @@ class MakeSeedCommandTest extends TestCase
         rmdir($dir);
     }
 
-    public function test_make_seed_command_rejects_invalid_name()
+    public function test_make_seed_command_rejects_invalid_name(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_seeds_' . uniqid('', true);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Database\Tests;
 
 use Codemonster\Database\Connection;
@@ -8,7 +10,7 @@ use Codemonster\Database\Schema\Grammars\SQLiteGrammar;
 
 class ConnectionTest extends TestCase
 {
-    public function test_connection_throws_query_exception_on_bad_credentials()
+    public function test_connection_throws_query_exception_on_bad_credentials(): void
     {
         $this->expectException(QueryException::class);
 
@@ -20,21 +22,24 @@ class ConnectionTest extends TestCase
         ]);
     }
 
-    public function test_select_queries_are_prepared()
+    public function test_select_queries_are_prepared(): void
     {
         $pdo = new class () {
+            /** @var list<string> */
             public array $executed = [];
 
-            public function prepare($query)
+            public function prepare(string $query): \PDOStatement
             {
                 $this->executed[] = $query;
 
                 return new class () extends \PDOStatement {
+                    /** @param array<int|string, mixed>|null $params */
                     public function execute(?array $params = null): bool
                     {
                         return true;
                     }
 
+                    /** @return list<array<string, mixed>> */
                     public function fetchAll(int $mode = \PDO::ATTR_DEFAULT_FETCH_MODE, ...$args): array
                     {
                         return [];
@@ -60,7 +65,7 @@ class ConnectionTest extends TestCase
         );
     }
 
-    public function test_transaction_commits_when_open()
+    public function test_transaction_commits_when_open(): void
     {
         $pdo = new class () {
             public bool $began = false;
@@ -100,7 +105,7 @@ class ConnectionTest extends TestCase
         $this->assertTrue($pdo->committed);
     }
 
-    public function test_transaction_skips_commit_when_closed()
+    public function test_transaction_skips_commit_when_closed(): void
     {
         $pdo = new class () {
             public bool $committed = false;
@@ -135,7 +140,7 @@ class ConnectionTest extends TestCase
         $this->assertFalse($pdo->committed);
     }
 
-    public function test_transaction_rolls_back_on_exception()
+    public function test_transaction_rolls_back_on_exception(): void
     {
         $pdo = new class () {
             public bool $rolledBack = false;
@@ -175,7 +180,7 @@ class ConnectionTest extends TestCase
         $this->assertTrue($pdo->rolledBack);
     }
 
-    public function test_schema_uses_sqlite_grammar_for_sqlite_connection()
+    public function test_schema_uses_sqlite_grammar_for_sqlite_connection(): void
     {
         $conn = new Connection([
             'driver' => 'sqlite',

@@ -7,10 +7,11 @@ use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
 use Codemonster\Database\Tests\TestCase;
+use PHPUnit\Framework\MockObject\Stub;
 
 class MigratorTest extends TestCase
 {
-    public function test_migrator_runs_migrations_in_transaction()
+    public function test_migrator_runs_migrations_in_transaction(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_migrations_' . uniqid('', true);
 
@@ -33,7 +34,7 @@ class MigratorTest extends TestCase
         $conn = new FakeConnection();
         $repo = new MigrationRepository($conn);
 
-        /** @var MigrationPathResolver $paths */
+        /** @var MigrationPathResolver&Stub $paths */
         $paths = $this->createStub(MigrationPathResolver::class);
         $paths->method('getPaths')->willReturn([$dir]);
 
@@ -56,7 +57,7 @@ class MigratorTest extends TestCase
         rmdir($dir);
     }
 
-    public function test_migrator_skips_already_ran_migrations()
+    public function test_migrator_skips_already_ran_migrations(): void
     {
         $dir = sys_get_temp_dir() . '/cm_db_migrations_' . uniqid('', true);
 
@@ -83,7 +84,7 @@ class MigratorTest extends TestCase
 
         $repo = new MigrationRepository($conn);
 
-        /** @var MigrationPathResolver $paths */
+        /** @var MigrationPathResolver&Stub $paths */
         $paths = $this->createStub(MigrationPathResolver::class);
         $paths->method('getPaths')->willReturn([$dir]);
 

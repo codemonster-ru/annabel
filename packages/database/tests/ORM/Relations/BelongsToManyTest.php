@@ -31,9 +31,10 @@ class BelongsToManyTest extends TestCase
         ];
     }
 
-    public function test_belongs_to_many_returns_collection()
+    public function test_belongs_to_many_returns_collection(): void
     {
         $user = User::find(1);
+        $this->assertInstanceOf(User::class, $user);
 
         $roles = $user->roles;
 

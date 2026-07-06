@@ -26,9 +26,10 @@ class BelongsToTest extends TestCase
         ];
     }
 
-    public function test_belongs_to_returns_parent_model()
+    public function test_belongs_to_returns_parent_model(): void
     {
         $post = Post::find(1);
+        $this->assertInstanceOf(Post::class, $post);
 
         $author = $post->author;
 

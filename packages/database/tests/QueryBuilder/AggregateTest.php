@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class AggregateTest extends TestCase
 {
-    public function test_count_does_not_mutate_builder()
+    public function test_count_does_not_mutate_builder(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
         $qb->where('active', '=', 1);
@@ -22,7 +22,7 @@ class AggregateTest extends TestCase
         $this->assertStringNotContainsString('COUNT', $sql);
     }
 
-    public function test_exists_returns_true_and_does_not_mutate_builder()
+    public function test_exists_returns_true_and_does_not_mutate_builder(): void
     {
         $connection = $this->fakeConnection();
         $qb = new QueryBuilder($connection, 'users');

@@ -5,6 +5,7 @@ namespace Codemonster\Database\Traits;
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\ORM\ModelQuery;
 
+/** @phpstan-require-extends Model */
 trait SoftDeletes
 {
     protected string $deletedAtColumn = 'deleted_at';
@@ -67,33 +68,27 @@ trait SoftDeletes
         return true;
     }
 
+    /** @return ModelQuery<static> */
     public static function withTrashed(): ModelQuery
     {
-        /** @var class-string<Model> $class */
-        $class = static::class;
-
-        return $class::query();
+        return static::query();
     }
 
+    /** @return ModelQuery<static> */
     public static function withoutTrashed(): ModelQuery
     {
-        /** @var class-string<Model> $class */
-        $class = static::class;
-
         $instance = new static();
 
-        return $class::query()
+        return static::query()
             ->whereNull($instance->deletedAtColumn);
     }
 
+    /** @return ModelQuery<static> */
     public static function onlyTrashed(): ModelQuery
     {
-        /** @var class-string<Model> $class */
-        $class = static::class;
-
         $instance = new static();
 
-        return $class::query()
+        return static::query()
             ->whereNotNull($instance->deletedAtColumn);
     }
 }

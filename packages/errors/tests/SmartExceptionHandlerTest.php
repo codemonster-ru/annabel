@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Errors\Tests;
 
 use Codemonster\Errors\Handlers\SmartExceptionHandler;
 use Codemonster\Http\Response;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Throwable;
 
 class SmartExceptionHandlerTest extends TestCase
 {
     protected function makeRenderer(): callable
     {
-        return function (string $template, array $data) {
-            return "<html><body>Template: {$template}, Message: {$data['exception']->getMessage()}</body></html>";
+        return function (string $template, array $data): string {
+            $exception = $data['exception'] ?? null;
+            $this->assertInstanceOf(Throwable::class, $exception);
+
+            return "<html><body>Template: {$template}, Message: {$exception->getMessage()}</body></html>";
         };
     }
 

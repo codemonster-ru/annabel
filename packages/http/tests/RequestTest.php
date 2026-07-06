@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Codemonster\Http\Request;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
@@ -285,9 +287,7 @@ class RequestTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['REQUEST_URI'] = '/api';
         $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
-        $json = json_encode(['foo' => 'bar']);
-
-        file_put_contents('php://memory', $json);
+        $json = json_encode(['foo' => 'bar'], JSON_THROW_ON_ERROR);
 
         $request = new Request('POST', '/api', [], ['foo' => 'bar'], ['Content-Type' => 'application/json'], $json);
 

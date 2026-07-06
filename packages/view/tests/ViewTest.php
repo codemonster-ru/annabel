@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\View\Tests;
 
 use Codemonster\View\Contracts\SupportsInspectionInterface;
@@ -11,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class DummyEngine implements EngineInterface
 {
+    /** @param array<string, mixed> $data */
     public function render(string $view, array $data = []): string
     {
         return strtoupper($view) . ':' . json_encode($data);
@@ -19,6 +22,9 @@ class DummyEngine implements EngineInterface
 
 class InspectableEngine implements EngineInterface, SupportsInspectionInterface
 {
+    /**
+     * @param list<string> $extensions
+     */
     public function __construct(
         private LocatorInterface $locator,
         private array $extensions,
@@ -26,6 +32,7 @@ class InspectableEngine implements EngineInterface, SupportsInspectionInterface
     ) {
     }
 
+    /** @param array<string, mixed> $data */
     public function render(string $view, array $data = []): string
     {
         return $this->tag . ':' . $view;
@@ -36,6 +43,7 @@ class InspectableEngine implements EngineInterface, SupportsInspectionInterface
         return $this->locator;
     }
 
+    /** @return list<string> */
     public function getExtensions(): array
     {
         return $this->extensions;
@@ -44,12 +52,16 @@ class InspectableEngine implements EngineInterface, SupportsInspectionInterface
 
 class LocatorRenderingEngine implements EngineInterface, SupportsInspectionInterface
 {
+    /**
+     * @param list<string> $extensions
+     */
     public function __construct(
         private LocatorInterface $locator,
         private array $extensions,
     ) {
     }
 
+    /** @param array<string, mixed> $data */
     public function render(string $view, array $data = []): string
     {
         $path = $this->locator->resolve($view, $this->extensions);
@@ -62,6 +74,7 @@ class LocatorRenderingEngine implements EngineInterface, SupportsInspectionInter
         return $this->locator;
     }
 
+    /** @return list<string> */
     public function getExtensions(): array
     {
         return $this->extensions;
@@ -70,7 +83,7 @@ class LocatorRenderingEngine implements EngineInterface, SupportsInspectionInter
 
 class ViewTest extends TestCase
 {
-    public function testRenderWithDummyEngine()
+    public function testRenderWithDummyEngine(): void
     {
         $view = new View(['dummy' => new DummyEngine()], 'dummy');
 
@@ -137,7 +150,7 @@ class ViewTest extends TestCase
         $this->assertSame('show.php', $output);
     }
 
-    public function testThrowsWhenEngineNotFound()
+    public function testThrowsWhenEngineNotFound(): void
     {
         $this->expectException(\RuntimeException::class);
 

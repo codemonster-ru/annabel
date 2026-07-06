@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Security\Tests\RateLimiting\Storage;
 
 use Codemonster\Security\RateLimiting\Storage\RedisThrottleStorage;
@@ -20,18 +22,18 @@ class RedisThrottleStorageTest extends TestCase
         }
 
         $port = (int) (getenv('REDIS_PORT') ?: 6379);
-        $password = getenv('REDIS_PASSWORD') ?: null;
+        $password = getenv('REDIS_PASSWORD');
         $db = getenv('REDIS_DB');
 
         $redisClass = 'Redis';
         $redis = new $redisClass();
         $redis->connect($host, $port, 1.0);
 
-        if (is_string($password) && $password !== '') {
+        if ($password !== false && $password !== '') {
             $redis->auth($password);
         }
 
-        if ($db !== false && $db !== null && $db !== '') {
+        if ($db !== false && $db !== '') {
             $redis->select((int) $db);
         }
 

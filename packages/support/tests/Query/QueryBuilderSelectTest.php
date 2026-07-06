@@ -15,7 +15,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->connection = new FakeConnection();
     }
 
-    public function testSimpleSelectAll()
+    public function testSimpleSelectAll(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -26,7 +26,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->assertSame([], $bindings);
     }
 
-    public function testSelectWithWhere()
+    public function testSelectWithWhere(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -40,7 +40,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->assertSame([10], $bindings);
     }
 
-    public function testSelectWithWhereAndOrWhere()
+    public function testSelectWithWhereAndOrWhere(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -58,7 +58,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->assertSame([1, 'admin'], $bindings);
     }
 
-    public function testSelectWithOrderLimitOffset()
+    public function testSelectWithOrderLimitOffset(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -79,7 +79,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->assertSame([1], $bindings);
     }
 
-    public function testGetUsesConnectionSelect()
+    public function testGetUsesConnectionSelect(): void
     {
         $this->connection->selectResult = [
             ['id' => 1, 'name' => 'Test'],
@@ -99,7 +99,7 @@ class QueryBuilderSelectTest extends TestCase
         $this->assertSame($this->connection->selectResult, $result);
     }
 
-    public function testFirstUsesConnectionSelectOne()
+    public function testFirstUsesConnectionSelectOne(): void
     {
         $this->connection->selectOneResult = ['id' => 2, 'name' => 'Jane'];
 

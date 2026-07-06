@@ -12,12 +12,12 @@ class RequestHelperTest extends TestCase
         app()->singleton('request', fn () => Request::capture());
     }
 
-    public function testRequestReturnsInstance()
+    public function testRequestReturnsInstance(): void
     {
         $this->assertInstanceOf(Request::class, request());
     }
 
-    public function testRequestReturnsValue()
+    public function testRequestReturnsValue(): void
     {
         $_GET['key'] = 'value';
 
@@ -26,7 +26,7 @@ class RequestHelperTest extends TestCase
         $this->assertSame('value', request('key'));
     }
 
-    public function testRequestReturnsEmptyAndZeroValues()
+    public function testRequestReturnsEmptyAndZeroValues(): void
     {
         $_GET['empty'] = '';
         $_GET['zero'] = '0';

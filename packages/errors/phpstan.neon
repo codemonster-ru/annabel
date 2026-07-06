@@ -3,4 +3,6 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+        - resources/views
+        - tests
     tmpDir: ../../var/phpstan/errors

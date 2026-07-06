@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class WhereTest extends TestCase
 {
-    public function test_basic_where()
+    public function test_basic_where(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -16,7 +16,7 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE `id` = ?', $sql);
     }
 
-    public function test_callable_function_name_is_treated_as_column()
+    public function test_callable_function_name_is_treated_as_column(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -26,15 +26,14 @@ class WhereTest extends TestCase
         $this->assertSame(['account'], $qb->getBindings());
     }
 
-    public function test_nested_where_groups()
+    public function test_nested_where_groups(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
-        $qb->where(
-            fn ($q) =>
+        $qb->where(function (QueryBuilder $q): void {
             $q->where('age', '>', 18)
-                ->orWhere('role', '=', 'admin'),
-        );
+                ->orWhere('role', '=', 'admin');
+        });
 
         $sql = $qb->toSql();
 
@@ -44,7 +43,7 @@ class WhereTest extends TestCase
         );
     }
 
-    public function test_where_in_with_empty_values()
+    public function test_where_in_with_empty_values(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -53,7 +52,7 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE (0 = 1)', $sql);
     }
 
-    public function test_where_not_in_with_empty_values()
+    public function test_where_not_in_with_empty_values(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -62,7 +61,7 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE (1 = 1)', $sql);
     }
 
-    public function test_where_raw_preserves_expression_and_bindings()
+    public function test_where_raw_preserves_expression_and_bindings(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -72,7 +71,7 @@ class WhereTest extends TestCase
         $this->assertSame([18], $qb->getBindings());
     }
 
-    public function test_empty_where_in_behavior_can_return_all()
+    public function test_empty_where_in_behavior_can_return_all(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -84,7 +83,7 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE (1 = 1)', $sql);
     }
 
-    public function test_empty_where_not_in_behavior_can_return_none()
+    public function test_empty_where_not_in_behavior_can_return_none(): void
     {
         $qb = new QueryBuilder($this->fakeConnection(), 'users');
 
@@ -96,7 +95,7 @@ class WhereTest extends TestCase
         $this->assertStringContainsString('WHERE (0 = 1)', $sql);
     }
 
-    public function test_empty_where_in_behavior_can_throw()
+    public function test_empty_where_in_behavior_can_throw(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

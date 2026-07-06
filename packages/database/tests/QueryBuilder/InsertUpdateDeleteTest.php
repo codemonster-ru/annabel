@@ -7,7 +7,7 @@ use Codemonster\Database\Tests\TestCase;
 
 class InsertUpdateDeleteTest extends TestCase
 {
-    public function test_insert_sql()
+    public function test_insert_sql(): void
     {
         $connection = $this->fakeConnection();
 

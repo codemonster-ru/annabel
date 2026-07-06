@@ -3,8 +3,5 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+        - tests
     tmpDir: ../../var/phpstan/database
-    ignoreErrors:
-        -
-            identifier: trait.unused
-            path: src/Traits/SoftDeletes.php

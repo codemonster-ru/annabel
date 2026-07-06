@@ -4,6 +4,7 @@ namespace Codemonster\Database\Tests\ORM\Relations;
 
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
+use Codemonster\Database\Tests\Fakes\FakeModels\Post;
 use Codemonster\Database\Tests\Fakes\FakeModels\User;
 use PHPUnit\Framework\TestCase;
 
@@ -26,13 +27,16 @@ class HasManyTest extends TestCase
         ];
     }
 
-    public function test_has_many_returns_collection()
+    public function test_has_many_returns_collection(): void
     {
         $user = User::find(1);
+        $this->assertInstanceOf(User::class, $user);
 
         $posts = $user->posts;
 
         $this->assertCount(2, $posts);
+        $this->assertInstanceOf(Post::class, $posts[0]);
+        $this->assertInstanceOf(Post::class, $posts[1]);
         $this->assertEquals('First', $posts[0]->title);
         $this->assertEquals('Second', $posts[1]->title);
     }

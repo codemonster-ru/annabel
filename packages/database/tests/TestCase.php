@@ -1,127 +1,145 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Database\Tests;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\Query\QueryBuilder;
+use Codemonster\Database\Schema\Grammars\MySqlGrammar;
 use Codemonster\Database\Schema\Schema;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected function fakeConnection(): ConnectionInterface
+    protected function fakeConnection(): TestConnection
     {
-        return new class () implements ConnectionInterface {
-            public array $log = [];
-            public array $results = [];
-            public array $executed = [];
+        return new TestConnection();
+    }
+}
 
-            public bool $inTransaction = false;
+class TestConnection implements ConnectionInterface
+{
+    /** @var list<array{0: string, 1?: string, 2?: array<int|string, mixed>}> */
+    public array $log = [];
+    /** @var array<string, list<array<string, mixed>>> */
+    public array $results = [];
+    /** @var list<array{0: string, 1: array<int|string, mixed>}> */
+    public array $executed = [];
 
-            public function select(string $query, array $params = []): array
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['select', $query, $params];
+    public bool $inTransaction = false;
 
-                return $this->results[$query] ?? [];
-            }
+    /**
+     * @param array<int|string, mixed> $params
+     * @return list<array<string, mixed>>
+     */
+    public function select(string $query, array $params = []): array
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['select', $query, $params];
 
-            public function selectOne(string $query, array $params = []): ?array
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['selectOne', $query, $params];
+        return $this->results[$query] ?? [];
+    }
 
-                $rows = $this->results[$query] ?? [];
+    /** @param array<int|string, mixed> $params */
+    public function selectOne(string $query, array $params = []): ?array
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['selectOne', $query, $params];
 
-                return $rows[0] ?? null;
-            }
+        $rows = $this->results[$query] ?? [];
 
-            public function insert(string $query, array $params = []): bool
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['insert', $query, $params];
+        return $rows[0] ?? null;
+    }
 
-                return true;
-            }
+    /** @param array<int|string, mixed> $params */
+    public function insert(string $query, array $params = []): bool
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['insert', $query, $params];
 
-            public function update(string $query, array $params = []): int
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['update', $query, $params];
+        return true;
+    }
 
-                return 1;
-            }
+    /** @param array<int|string, mixed> $params */
+    public function update(string $query, array $params = []): int
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['update', $query, $params];
 
-            public function delete(string $query, array $params = []): int
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['delete', $query, $params];
+        return 1;
+    }
 
-                return 1;
-            }
+    /** @param array<int|string, mixed> $params */
+    public function delete(string $query, array $params = []): int
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['delete', $query, $params];
 
-            public function statement(string $query, array $params = []): bool
-            {
-                $this->executed[] = [$query, $params];
-                $this->log[] = ['statement', $query, $params];
+        return 1;
+    }
 
-                return true;
-            }
+    /** @param array<int|string, mixed> $params */
+    public function statement(string $query, array $params = []): bool
+    {
+        $this->executed[] = [$query, $params];
+        $this->log[] = ['statement', $query, $params];
 
-            public function table(string $table): QueryBuilder
-            {
-                return new QueryBuilder($this, $table);
-            }
+        return true;
+    }
 
-            public function beginTransaction(): bool
-            {
-                $this->inTransaction = true;
-                $this->log[] = ['begin'];
+    public function table(string $table): QueryBuilder
+    {
+        return new QueryBuilder($this, $table);
+    }
 
-                return true;
-            }
+    public function beginTransaction(): bool
+    {
+        $this->inTransaction = true;
+        $this->log[] = ['begin'];
 
-            public function commit(): bool
-            {
-                $this->inTransaction = false;
-                $this->log[] = ['commit'];
+        return true;
+    }
 
-                return true;
-            }
+    public function commit(): bool
+    {
+        $this->inTransaction = false;
+        $this->log[] = ['commit'];
 
-            public function rollBack(): bool
-            {
-                $this->inTransaction = false;
-                $this->log[] = ['rollback'];
+        return true;
+    }
 
-                return true;
-            }
+    public function rollBack(): bool
+    {
+        $this->inTransaction = false;
+        $this->log[] = ['rollback'];
 
-            /**
-             * @template T
-             * @param callable(self):T $callback
-             * @return T
-             */
-            public function transaction(callable $callback): mixed
-            {
-                $this->beginTransaction();
+        return true;
+    }
 
-                $result = $callback($this);
+    /**
+     * @template T
+     * @param callable(self):T $callback
+     * @return T
+     */
+    public function transaction(callable $callback): mixed
+    {
+        $this->beginTransaction();
 
-                $this->commit();
+        $result = $callback($this);
 
-                return $result;
-            }
+        $this->commit();
 
-            public function schema(): Schema
-            {
-                return new Schema($this, new \Codemonster\Database\Schema\Grammar());
-            }
+        return $result;
+    }
 
-            public function getPdo(): \PDO
-            {
-                return new \PDO('sqlite::memory:');
-            }
-        };
+    public function schema(): Schema
+    {
+        return new Schema($this, new MySqlGrammar());
+    }
+
+    public function getPdo(): \PDO
+    {
+        return new \PDO('sqlite::memory:');
     }
 }

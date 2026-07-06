@@ -23,7 +23,7 @@ class SecurityServiceProviderTest extends TestCase
         Application::resetInstance();
     }
 
-    public function test_security_services_are_registered_and_middleware_is_added()
+    public function test_security_services_are_registered_and_middleware_is_added(): void
     {
         Application::resetInstance();
 

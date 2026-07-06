@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ResourcePublisherTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function setUp(): void
@@ -26,7 +27,7 @@ class ResourcePublisherTest extends TestCase
         }
     }
 
-    public function test_provider_can_register_tagged_publishable_resources()
+    public function test_provider_can_register_tagged_publishable_resources(): void
     {
         $basePath = $this->directory('annabel-publish-app-');
         $app = new Application($basePath, null, false);
@@ -42,7 +43,7 @@ class ResourcePublisherTest extends TestCase
         $this->assertSame($basePath . '/config/package.php', $resources[0]['destination']);
     }
 
-    public function test_registry_merges_tags_for_duplicate_resources()
+    public function test_registry_merges_tags_for_duplicate_resources(): void
     {
         $registry = new PublishRegistry();
         $paths = ['/source' => '/destination'];
@@ -54,7 +55,7 @@ class ResourcePublisherTest extends TestCase
         $this->assertSame(['config', 'example'], $registry->all()[0]['tags']);
     }
 
-    public function test_it_publishes_files_without_overwriting_by_default()
+    public function test_it_publishes_files_without_overwriting_by_default(): void
     {
         $basePath = $this->directory('annabel-publish-app-');
         $source = $this->file('annabel-source-', 'first');
@@ -73,7 +74,7 @@ class ResourcePublisherTest extends TestCase
         $this->assertSame('second', file_get_contents($destination));
     }
 
-    public function test_it_publishes_directory_contents()
+    public function test_it_publishes_directory_contents(): void
     {
         $basePath = $this->directory('annabel-publish-app-');
         $source = $this->directory('annabel-publish-source-');
@@ -88,7 +89,7 @@ class ResourcePublisherTest extends TestCase
         $this->assertSame('view', file_get_contents($destination . '/nested/view.php'));
     }
 
-    public function test_destination_outside_application_is_rejected()
+    public function test_destination_outside_application_is_rejected(): void
     {
         $basePath = $this->directory('annabel-publish-app-');
         $source = $this->file('annabel-source-', 'content');
@@ -101,7 +102,7 @@ class ResourcePublisherTest extends TestCase
         ]);
     }
 
-    public function test_destination_symlink_escape_is_rejected()
+    public function test_destination_symlink_escape_is_rejected(): void
     {
         if (!function_exists('symlink')) {
             $this->markTestSkipped('Symbolic links are not supported.');
@@ -150,6 +151,7 @@ class ResourcePublisherTest extends TestCase
     private function file(string $prefix, string $contents): string
     {
         $path = tempnam(sys_get_temp_dir(), $prefix);
+        $this->assertIsString($path);
         file_put_contents($path, $contents);
         $this->paths[] = $path;
 

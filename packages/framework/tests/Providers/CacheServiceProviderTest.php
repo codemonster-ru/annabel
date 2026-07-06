@@ -14,6 +14,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class CacheServiceProviderTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void
@@ -42,10 +43,12 @@ class CacheServiceProviderTest extends TestCase
 
         $cache = $app->make(CacheInterface::class);
         $cache->set('name', 'annabel');
+        $defaultCache = $app->make('cache');
 
         self::assertInstanceOf(CacheManager::class, $app->make(CacheManager::class));
         self::assertInstanceOf(CacheStoreInterface::class, $app->make(CacheStoreInterface::class));
-        self::assertSame('annabel', $app->make('cache')->get('name'));
+        self::assertInstanceOf(CacheInterface::class, $defaultCache);
+        self::assertSame('annabel', $defaultCache->get('name'));
     }
 
     public function test_cache_config_is_publishable(): void

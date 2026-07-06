@@ -10,6 +10,7 @@ final class SsrEngineTest extends TestCase
     public function testRendersViaBridge(): void
     {
         $bridge = new class () {
+            /** @param array<string, mixed> $data */
             public function render(string $view, array $data = []): string
             {
                 return '<div data-view="' . $view . '">' . json_encode($data) . '</div>';
@@ -35,6 +36,10 @@ final class SsrEngineTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         $bridge = new class () {
+            /**
+             * @param array<string, mixed> $data
+             * @return list<mixed>
+             */
             public function render(string $view, array $data = []): array
             {
                 return [$view, $data];

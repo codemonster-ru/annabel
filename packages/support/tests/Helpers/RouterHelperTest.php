@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Support\Tests\Helpers;
 
 use Codemonster\Router\Route;
@@ -13,21 +15,23 @@ class RouterHelperTest extends TestCase
         app()->singleton('router', fn () => new Router());
     }
 
-    public function testRouterReturnsInstance()
+    public function testRouterReturnsInstance(): void
     {
         $this->assertInstanceOf(Router::class, router());
     }
 
-    public function testRouteRegistration()
+    public function testRouteRegistration(): void
     {
         $route = router('/test', fn () => 'ok', 'GET');
 
         $this->assertInstanceOf(Route::class, $route);
     }
 
-    public function testRouteGeneratesNamedRouteUri()
+    public function testRouteGeneratesNamedRouteUri(): void
     {
-        router()->get('/users/{id}', fn () => 'ok')->name('users.show');
+        $router = router();
+        $this->assertInstanceOf(Router::class, $router);
+        $router->get('/users/{id}', fn () => 'ok')->name('users.show');
 
         $this->assertSame('/users/42', route('users.show', ['id' => 42]));
     }

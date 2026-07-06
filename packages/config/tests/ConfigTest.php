@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Codemonster\Config\Config;
 use PHPUnit\Framework\TestCase;
 
@@ -35,31 +37,33 @@ class ConfigTest extends TestCase
         Config::load($this->configPath);
     }
 
-    public function test_can_load_config_files()
+    public function test_can_load_config_files(): void
     {
         $this->assertEquals('Codemonster', Config::get('app.name'));
         $this->assertEquals(3306, Config::get('database.port'));
     }
 
-    public function test_can_get_value_with_default()
+    public function test_can_get_value_with_default(): void
     {
         $this->assertEquals('default', Config::get('nonexistent.key', 'default'));
     }
 
-    public function test_can_set_new_value()
+    public function test_can_set_new_value(): void
     {
         Config::set('app.debug', true);
 
         $this->assertTrue(Config::get('app.debug'));
     }
 
-    public function test_can_get_all_configs()
+    public function test_can_get_all_configs(): void
     {
         $all = Config::all();
 
         $this->assertArrayHasKey('app', $all);
         $this->assertArrayHasKey('database', $all);
-        $this->assertEquals('Codemonster', $all['app']['name']);
+        $app = $all['app'];
+        $this->assertIsArray($app);
+        $this->assertEquals('Codemonster', $app['name'] ?? null);
     }
 
     public function test_can_load_cached_config(): void

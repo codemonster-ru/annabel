@@ -1,9 +1,17 @@
+<?php
+/**
+ * @var Throwable $exception
+ */
+
+$status = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
+$status = is_int($status) ? $status : 500;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($exception->getMessage()) ?></title>
+    <title><?= htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8') ?></title>
     <style>
         :root {
             color-scheme: light dark;
@@ -133,19 +141,16 @@
 
     <div class="wrapper">
         <div class="header">
-            <?php
-            $status = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
-    ?>
-            <h1><?= htmlspecialchars($exception->getMessage()) ?> <small>(HTTP <?= htmlspecialchars($status) ?>)</small></h1>
+            <h1><?= htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8') ?> <small>(HTTP <?= htmlspecialchars((string) $status, ENT_QUOTES, 'UTF-8') ?>)</small></h1>
         </div>
 
         <div class="meta">
-            <?= htmlspecialchars($exception->getFile()) ?> : <?= htmlspecialchars($exception->getLine()) ?>
+            <?= htmlspecialchars($exception->getFile(), ENT_QUOTES, 'UTF-8') ?> : <?= htmlspecialchars((string) $exception->getLine(), ENT_QUOTES, 'UTF-8') ?>
         </div>
 
         <div class="trace">
             <h2>Stack trace</h2>
-            <pre><?= htmlspecialchars($exception->getTraceAsString()) ?></pre>
+            <pre><?= htmlspecialchars($exception->getTraceAsString(), ENT_QUOTES, 'UTF-8') ?></pre>
         </div>
 
         <footer>Codemonster Errors — Debug Mode</footer>

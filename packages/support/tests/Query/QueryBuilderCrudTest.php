@@ -20,7 +20,7 @@ class QueryBuilderCrudTest extends TestCase
      | -----------------------------------------------------------------
      */
 
-    public function testInsertGeneratesCorrectSqlAndBindings()
+    public function testInsertGeneratesCorrectSqlAndBindings(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -40,7 +40,7 @@ class QueryBuilderCrudTest extends TestCase
         );
     }
 
-    public function testInsertGetIdReturnsId()
+    public function testInsertGetIdReturnsId(): void
     {
         $builder = new QueryBuilder($this->connection, 'ideas');
 
@@ -53,7 +53,7 @@ class QueryBuilderCrudTest extends TestCase
             $this->connection->lastSql,
         );
         $this->assertSame(['New idea'], $this->connection->lastBindings);
-        $this->assertTrue(is_int($id), 'insertGetId must return a number (ID)');
+        $this->assertGreaterThan(0, $id);
     }
 
     /* -----------------------------------------------------------------
@@ -61,7 +61,7 @@ class QueryBuilderCrudTest extends TestCase
      | -----------------------------------------------------------------
      */
 
-    public function testUpdateGeneratesSqlAndBindings()
+    public function testUpdateGeneratesSqlAndBindings(): void
     {
         $builder = new QueryBuilder($this->connection, 'users');
 
@@ -88,7 +88,7 @@ class QueryBuilderCrudTest extends TestCase
      | -----------------------------------------------------------------
      */
 
-    public function testDeleteGeneratesSqlAndBindings()
+    public function testDeleteGeneratesSqlAndBindings(): void
     {
         $builder = new QueryBuilder($this->connection, 'logs');
 

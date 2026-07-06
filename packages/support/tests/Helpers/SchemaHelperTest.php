@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class SchemaHelperTest extends TestCase
 {
-    public function test_schema_returns_schema_builder()
+    public function test_schema_returns_schema_builder(): void
     {
         $manager = new DatabaseManager([
             'default' => 'fake',

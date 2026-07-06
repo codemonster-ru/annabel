@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Filesystem\Tests;
 
 use Codemonster\Filesystem\Exceptions\FilesystemException;
@@ -9,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class LocalFilesystemTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void

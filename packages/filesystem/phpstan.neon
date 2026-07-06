@@ -3,4 +3,5 @@ parameters:
     treatPhpDocTypesAsCertain: false
     paths:
         - src
+        - tests
     tmpDir: ../../var/phpstan/filesystem

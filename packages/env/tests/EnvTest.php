@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Codemonster\Env\Env;
 use Codemonster\Env\EnvLoader;
 use PHPUnit\Framework\TestCase;
@@ -82,15 +84,13 @@ class EnvTest extends TestCase
 
     public function testEnvGetCastStripsWrappingQuotes(): void
     {
-        unset($_ENV['CAST_QUOTED'], $_SERVER['CAST_QUOTED']);
-        putenv('CAST_QUOTED');
+        $this->clearEnvVariable('CAST_QUOTED');
         putenv('CAST_QUOTED="hello"');
 
         try {
             $this->assertSame('hello', Env::getCast('CAST_QUOTED', null, true));
         } finally {
-            unset($_ENV['CAST_QUOTED'], $_SERVER['CAST_QUOTED']);
-            putenv('CAST_QUOTED');
+            $this->clearEnvVariable('CAST_QUOTED');
         }
     }
 
@@ -311,8 +311,7 @@ class EnvTest extends TestCase
         $path = tempnam(sys_get_temp_dir(), 'env');
 
         file_put_contents($path, "WRITER_VALUE=old\n");
-        unset($_ENV['WRITER_VALUE'], $_SERVER['WRITER_VALUE']);
-        putenv('WRITER_VALUE');
+        $this->clearEnvVariable('WRITER_VALUE');
 
         try {
             Env::write($path, ['WRITER_VALUE' => 'new value']);
@@ -320,8 +319,7 @@ class EnvTest extends TestCase
             $this->assertSame('new value', Env::get('WRITER_VALUE'));
             $this->assertSame('WRITER_VALUE="new value"' . PHP_EOL, file_get_contents($path));
         } finally {
-            unset($_ENV['WRITER_VALUE'], $_SERVER['WRITER_VALUE']);
-            putenv('WRITER_VALUE');
+            $this->clearEnvVariable('WRITER_VALUE');
             unlink($path);
         }
     }
@@ -988,5 +986,11 @@ class EnvTest extends TestCase
         );
 
         Env::loadFiles([$pattern], null, null, false, false);
+    }
+
+    private function clearEnvVariable(string $name): void
+    {
+        unset($_ENV[$name], $_SERVER[$name]);
+        putenv($name);
     }
 }

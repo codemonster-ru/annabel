@@ -12,7 +12,7 @@ class ValidationHelperTest extends TestCase
         app()->singleton('session', fn () => new Session());
     }
 
-    public function test_old_returns_flashed_input()
+    public function test_old_returns_flashed_input(): void
     {
         session('_old_input', [
             'name' => 'Annabel',
@@ -24,7 +24,7 @@ class ValidationHelperTest extends TestCase
         $this->assertSame('fallback', old('missing', 'fallback'));
     }
 
-    public function test_errors_returns_validation_errors()
+    public function test_errors_returns_validation_errors(): void
     {
         session('errors', [
             'email' => ['The email field is required.'],

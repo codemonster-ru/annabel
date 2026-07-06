@@ -13,7 +13,7 @@ class TransactionTest extends TestCase
         $this->connection = new FakeConnection();
     }
 
-    public function testBeginTransactionCallsPdoBegin()
+    public function testBeginTransactionCallsPdoBegin(): void
     {
         $this->connection->beginTransaction();
 
@@ -24,7 +24,7 @@ class TransactionTest extends TestCase
         );
     }
 
-    public function testCommitCallsPdoCommit()
+    public function testCommitCallsPdoCommit(): void
     {
         $this->connection->commit();
 
@@ -35,7 +35,7 @@ class TransactionTest extends TestCase
         );
     }
 
-    public function testRollbackCallsPdoRollback()
+    public function testRollbackCallsPdoRollback(): void
     {
         $this->connection->rollBack();
 
@@ -46,7 +46,7 @@ class TransactionTest extends TestCase
         );
     }
 
-    public function testTransactionCommitsOnSuccess()
+    public function testTransactionCommitsOnSuccess(): void
     {
         $result = $this->connection->transaction(function ($db) {
             return 123;
@@ -61,7 +61,7 @@ class TransactionTest extends TestCase
         $this->assertSame(123, $result);
     }
 
-    public function testTransactionRollsBackOnException()
+    public function testTransactionRollsBackOnException(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('fail');

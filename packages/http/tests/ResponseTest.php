@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use PHPUnit\Framework\TestCase;
@@ -69,6 +71,15 @@ class ResponseTest extends TestCase
     public function testSendThrowsWhenHeadersAlreadySent(): void
     {
         $response = new class ('Hello') extends Response {
+            private ?string $sentFile = null;
+            private ?int $sentLine = null;
+
+            public function setSentLocation(?string $file, ?int $line): void
+            {
+                $this->sentFile = $file;
+                $this->sentLine = $line;
+            }
+
             protected function isCli(): bool
             {
                 return false;
@@ -76,12 +87,13 @@ class ResponseTest extends TestCase
 
             protected function headersSent(?string &$file = null, ?int &$line = null): bool
             {
-                $file = 'test.php';
-                $line = 10;
+                $file = $this->sentFile;
+                $line = $this->sentLine;
 
                 return true;
             }
         };
+        $response->setSentLocation('test.php', 10);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('test.php:10');
@@ -213,6 +225,7 @@ class ResponseTest extends TestCase
     public function testSetCookieHeaderArrayDoesNotReplace(): void
     {
         $response = new class ('Hello') extends Response {
+            /** @var list<array{0: string, 1: string, 2: bool}> */
             public array $sent = [];
 
             protected function isCli(): bool
@@ -243,8 +256,8 @@ class ResponseTest extends TestCase
                 ['Set-Cookie', 'b=2', false],
                 ['Set-Cookie', 'c=3', false],
             ],
-            array_values(array_filter($response->sent, static function (array $item): bool {
-                return $item[0] === 'Set-Cookie';
+            array_values(array_filter($response->sent, static function (mixed $item): bool {
+                return is_array($item) && ($item[0] ?? null) === 'Set-Cookie';
             })),
         );
     }
@@ -274,6 +287,7 @@ class ResponseTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $response = new Response();
         $handle = fopen('php://memory', 'r');
+        $this->assertIsResource($handle);
 
         try {
             $response->setContent(['handle' => $handle]);
@@ -289,11 +303,22 @@ class ResponseTest extends TestCase
         $this->assertSame('OK', (string) $response);
     }
 
+    /** @return array<string, string> */
     private function getCookies(Response $response): array
     {
         $reflection = new ReflectionProperty($response, 'cookies');
         $reflection->setAccessible(true);
 
-        return $reflection->getValue($response);
+        $cookies = $reflection->getValue($response);
+        $this->assertIsArray($cookies);
+
+        $typedCookies = [];
+        foreach ($cookies as $name => $cookie) {
+            $this->assertIsString($name);
+            $this->assertIsString($cookie);
+            $typedCookies[$name] = $cookie;
+        }
+
+        return $typedCookies;
     }
 }

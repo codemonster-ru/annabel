@@ -13,12 +13,12 @@ class EnvHelperTest extends TestCase
         $_ENV['APP_NAME'] = 'Codemonster';
     }
 
-    public function testEnvReadsVariable()
+    public function testEnvReadsVariable(): void
     {
         $this->assertSame('Codemonster', env('APP_NAME'));
     }
 
-    public function testEnvReturnsDefaultWhenMissing()
+    public function testEnvReturnsDefaultWhenMissing(): void
     {
         $this->assertSame('default', env('MISSING_KEY', 'default'));
     }

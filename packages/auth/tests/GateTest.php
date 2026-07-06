@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Auth\Tests;
 
 use Codemonster\Auth\Authorization\AuthorizationException;
@@ -15,7 +17,12 @@ class GateTest extends TestCase
         $user = new TestUser(1, 'admin@example.com', 'hash');
         $gate = new Gate(new TestGuard($user));
 
-        $gate->define('posts.update', fn (?AuthenticatableInterface $current, PostSubject $post): bool => $current?->getAuthIdentifier() === $post->ownerId);
+        $gate->define('posts.update', static function (?AuthenticatableInterface $current, mixed ...$posts): bool {
+            $post = $posts[0] ?? null;
+            self::assertInstanceOf(PostSubject::class, $post);
+
+            return $current?->getAuthIdentifier() === $post->ownerId;
+        });
 
         self::assertTrue($gate->allows('posts.update', new PostSubject(1)));
         self::assertFalse($gate->allows('posts.update', new PostSubject(2)));

@@ -15,19 +15,19 @@ class ConfigHelperTest extends TestCase
         app()->singleton('config', fn () => $config);
     }
 
-    public function testGetsConfigValue()
+    public function testGetsConfigValue(): void
     {
         $this->assertSame('Codemonster', config('app.name'));
     }
 
-    public function testSetsConfigValue()
+    public function testSetsConfigValue(): void
     {
         config(['app.env' => 'local']);
 
         $this->assertSame('local', config('app.env'));
     }
 
-    public function testReturnsAllWhenNoKey()
+    public function testReturnsAllWhenNoKey(): void
     {
         $this->assertIsArray(config());
     }

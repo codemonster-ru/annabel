@@ -128,7 +128,7 @@ class EnvFileWriter
         }
 
         if (preg_match('/\s|#|=|"/', $string) === 1) {
-            return '"' . addcslashes($string, "\\\"") . '"';
+            return '"' . addcslashes($string, '\\"') . '"';
         }
 
         return $string;

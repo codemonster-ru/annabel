@@ -12,19 +12,19 @@ class SessionHelperTest extends TestCase
         app()->singleton('session', fn () => new Session());
     }
 
-    public function testSessionReturnsInstance()
+    public function testSessionReturnsInstance(): void
     {
         $this->assertInstanceOf(Session::class, session());
     }
 
-    public function testSessionCanStoreAndRetrieveValues()
+    public function testSessionCanStoreAndRetrieveValues(): void
     {
         session('user', 'Vasya');
 
         $this->assertSame('Vasya', session('user'));
     }
 
-    public function testSessionCanStoreNullValue()
+    public function testSessionCanStoreNullValue(): void
     {
         session('nullable', null);
 

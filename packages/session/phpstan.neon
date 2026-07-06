@@ -2,6 +2,7 @@ parameters:
     level: max
     paths:
         - src
+        - scripts
         - tests
     excludePaths:
         - tests/CacheSessionHandlerTest.php

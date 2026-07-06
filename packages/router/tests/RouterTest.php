@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Router\Tests;
 
 use Codemonster\Router\Route;
@@ -8,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase
 {
-    public function testGetRouteMatches()
+    public function testGetRouteMatches(): void
     {
         $router = new Router();
         $route = $router->get('/hello', fn () => 'Hello World');
@@ -18,11 +20,12 @@ class RouterTest extends TestCase
         $this->assertInstanceOf(Route::class, $matched);
         $this->assertSame($route, $matched);
 
+        /** @var callable(): string $handler */
         $handler = $matched->handler;
         $this->assertEquals('Hello World', $handler());
     }
 
-    public function testRouteNotFound()
+    public function testRouteNotFound(): void
     {
         $router = new Router();
         $result = $router->dispatch('GET', '/missing');
@@ -30,7 +33,7 @@ class RouterTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testPostRouteMatches()
+    public function testPostRouteMatches(): void
     {
         $router = new Router();
         $route = $router->post('/submit', fn () => 'Submitted');
@@ -40,7 +43,7 @@ class RouterTest extends TestCase
         $this->assertSame($route, $matched);
     }
 
-    public function testAnyRouteMatchesCommonHttpMethods()
+    public function testAnyRouteMatchesCommonHttpMethods(): void
     {
         $router = new Router();
         $route = $router->any('/resource', fn () => 'OK');
@@ -50,7 +53,7 @@ class RouterTest extends TestCase
         }
     }
 
-    public function testTrailingSlashFallbackMatches()
+    public function testTrailingSlashFallbackMatches(): void
     {
         $router = new Router();
         $route = $router->get('/docs/', fn () => 'Docs');
@@ -58,7 +61,7 @@ class RouterTest extends TestCase
         $this->assertSame($route, $router->dispatch('GET', '/docs'));
     }
 
-    public function testDuplicateRouteThrows()
+    public function testDuplicateRouteThrows(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -67,7 +70,7 @@ class RouterTest extends TestCase
         $router->get('/duplicate', fn () => 'Second');
     }
 
-    public function testDynamicRouteMatchesAndExposesParameters()
+    public function testDynamicRouteMatchesAndExposesParameters(): void
     {
         $router = new Router();
         $route = $router->get('/users/{id}', fn () => 'User');
@@ -75,10 +78,10 @@ class RouterTest extends TestCase
         $matched = $router->dispatch('GET', '/users/42');
 
         $this->assertSame($route, $matched);
-        $this->assertSame(['id' => '42'], $matched?->parameters());
+        $this->assertSame(['id' => '42'], $matched->parameters());
     }
 
-    public function testDynamicRouteHonorsConstraints()
+    public function testDynamicRouteHonorsConstraints(): void
     {
         $router = new Router();
         $router->get('/users/{id}', fn () => 'User')->where('id', '\d+');
@@ -87,7 +90,7 @@ class RouterTest extends TestCase
         $this->assertNull($router->dispatch('GET', '/users/admin'));
     }
 
-    public function testNamedRouteGeneratesUri()
+    public function testNamedRouteGeneratesUri(): void
     {
         $router = new Router();
         $router->get('/users/{id}', fn () => 'User')->name('users.show');
@@ -98,7 +101,7 @@ class RouterTest extends TestCase
         ]));
     }
 
-    public function testNamedRouteRequiresParameters()
+    public function testNamedRouteRequiresParameters(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -108,7 +111,7 @@ class RouterTest extends TestCase
         $router->route('users.show');
     }
 
-    public function testUnknownNamedRouteThrows()
+    public function testUnknownNamedRouteThrows(): void
     {
         $this->expectException(\RuntimeException::class);
 

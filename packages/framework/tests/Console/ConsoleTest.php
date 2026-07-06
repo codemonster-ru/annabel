@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConsoleTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function setUp(): void
@@ -273,6 +274,7 @@ class ConsoleTest extends TestCase
     {
         $basePath = $this->directory('annabel-console-app-');
         $source = tempnam(sys_get_temp_dir(), 'annabel-console-source-');
+        $this->assertIsString($source);
         file_put_contents($source, 'published');
         $this->paths[] = $source;
         $destination = $basePath . '/config/example.php';
@@ -308,7 +310,7 @@ class ConsoleTest extends TestCase
         $this->assertSame('forced', file_get_contents($destination));
     }
 
-    public function test_provider_commands_are_resolved_with_dependency_injection()
+    public function test_provider_commands_are_resolved_with_dependency_injection(): void
     {
         $basePath = $this->directory('annabel-console-app-');
         $app = new Application($basePath, null, false);
@@ -332,7 +334,7 @@ class ConsoleTest extends TestCase
         );
     }
 
-    public function test_command_exceptions_are_converted_to_failure_exit_code()
+    public function test_command_exceptions_are_converted_to_failure_exit_code(): void
     {
         $basePath = $this->directory('annabel-console-app-');
         $app = new Application($basePath, null, false);
@@ -387,11 +389,20 @@ class ConsoleTest extends TestCase
         $this->assertFileExists($middleware);
         $this->assertFileExists($request);
         $this->assertFileExists($policy);
-        $this->assertStringContainsString('namespace App\\Controllers\\Admin;', file_get_contents($controller));
-        $this->assertStringContainsString('class UserController', file_get_contents($controller));
-        $this->assertStringContainsString('class User extends Model', file_get_contents($model));
-        $this->assertStringContainsString('class StoreUserRequest', file_get_contents($request));
-        $this->assertStringContainsString('class PostPolicy', file_get_contents($policy));
+        $controllerContents = file_get_contents($controller);
+        $modelContents = file_get_contents($model);
+        $requestContents = file_get_contents($request);
+        $policyContents = file_get_contents($policy);
+
+        $this->assertIsString($controllerContents);
+        $this->assertIsString($modelContents);
+        $this->assertIsString($requestContents);
+        $this->assertIsString($policyContents);
+        $this->assertStringContainsString('namespace App\\Controllers\\Admin;', $controllerContents);
+        $this->assertStringContainsString('class UserController', $controllerContents);
+        $this->assertStringContainsString('class User extends Model', $modelContents);
+        $this->assertStringContainsString('class StoreUserRequest', $requestContents);
+        $this->assertStringContainsString('class PostPolicy', $policyContents);
     }
 
     public function test_make_commands_do_not_overwrite_without_force(): void
@@ -522,11 +533,14 @@ class TestCliCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $argument = $input->arguments()[0] ?? '';
+        $name = $input->option('name', '');
+
         $output->writeln(sprintf(
             '%s:%s:%s',
             $this->dependency->value,
-            $input->arguments()[0] ?? '',
-            $input->option('name', ''),
+            is_scalar($argument) ? (string) $argument : '',
+            is_scalar($name) ? (string) $name : '',
         ));
 
         return ExitCode::SUCCESS;

@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class ViteTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
 
     protected function tearDown(): void

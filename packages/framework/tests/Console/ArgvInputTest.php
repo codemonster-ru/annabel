@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class ArgvInputTest extends TestCase
 {
-    public function test_it_parses_arguments_and_options()
+    public function test_it_parses_arguments_and_options(): void
     {
         $input = new ArgvInput([
             'annabel',

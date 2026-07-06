@@ -15,7 +15,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class CoreServiceProviderTest extends TestCase
 {
-    public function test_core_services_are_bound()
+    public function test_core_services_are_bound(): void
     {
         Application::resetInstance();
 

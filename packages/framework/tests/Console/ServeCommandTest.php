@@ -7,12 +7,14 @@ use PHPUnit\Framework\TestCase;
 
 class ServeCommandTest extends TestCase
 {
+    /** @var list<string> */
     private array $paths = [];
     private ?string $previousRequestUri = null;
 
     protected function setUp(): void
     {
-        $this->previousRequestUri = $_SERVER['REQUEST_URI'] ?? null;
+        $previousRequestUri = $_SERVER['REQUEST_URI'] ?? null;
+        $this->previousRequestUri = is_string($previousRequestUri) ? $previousRequestUri : null;
     }
 
     protected function tearDown(): void

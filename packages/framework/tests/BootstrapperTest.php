@@ -18,7 +18,7 @@ class BootstrapperTest extends TestCase
         TestLifecycleProvider::$events = [];
     }
 
-    public function test_resolve_class_from_file_throws_on_multiple_classes()
+    public function test_resolve_class_from_file_throws_on_multiple_classes(): void
     {
         Application::resetInstance();
 
@@ -41,7 +41,7 @@ class BootstrapperTest extends TestCase
         }
     }
 
-    public function test_provider_config_can_disable_defaults_and_add_extra_providers()
+    public function test_provider_config_can_disable_defaults_and_add_extra_providers(): void
     {
         $basePath = $this->makeAppConfig([
             'providers' => [
@@ -68,7 +68,7 @@ class BootstrapperTest extends TestCase
         ], $bootstrapper->exposeResolveProviders());
     }
 
-    public function test_providers_are_all_registered_before_any_provider_is_booted()
+    public function test_providers_are_all_registered_before_any_provider_is_booted(): void
     {
         $basePath = $this->makeAppConfig([
             'providers' => [
@@ -94,7 +94,7 @@ class BootstrapperTest extends TestCase
         ], TestLifecycleProvider::$events);
     }
 
-    public function test_package_providers_are_merged_with_application_providers()
+    public function test_package_providers_are_merged_with_application_providers(): void
     {
         $basePath = $this->makeAppConfig([
             'providers' => [
@@ -122,7 +122,7 @@ class BootstrapperTest extends TestCase
         ], $bootstrapper->exposeResolveProviders());
     }
 
-    public function test_disabled_providers_are_removed_after_package_discovery()
+    public function test_disabled_providers_are_removed_after_package_discovery(): void
     {
         $basePath = $this->makeAppConfig([
             'providers' => [
@@ -174,6 +174,7 @@ class BootstrapperTest extends TestCase
         }
     }
 
+    /** @param array<string, mixed> $config */
     private function makeAppConfig(array $config): string
     {
         $basePath = sys_get_temp_dir() . '/annabel-bootstrapper-' . bin2hex(random_bytes(6));
@@ -196,6 +197,7 @@ class TestBootstrapper extends Bootstrapper
         return $this->resolveClassFromFile($file);
     }
 
+    /** @return list<string> */
     public function exposeResolveProviders(): array
     {
         return $this->resolveProviders();
@@ -209,6 +211,7 @@ class TestBootstrapper extends Bootstrapper
 
 class TestLifecycleProvider implements ServiceProviderInterface
 {
+    /** @var list<string> */
     public static array $events = [];
 
     public function __construct(protected Application $app)
@@ -260,6 +263,7 @@ class TestThirdLifecycleProvider implements ServiceProviderInterface
 
 class TestPackageManifest extends PackageManifest
 {
+    /** @param list<string> $discovered */
     public function __construct(string $basePath, private array $discovered)
     {
         parent::__construct($basePath, fn () => []);
@@ -270,6 +274,6 @@ class TestPackageManifest extends PackageManifest
         bool $useCache = true,
         ?string $cachePath = null,
     ): array {
-        return $this->discovered;
+        return array_values($this->discovered);
     }
 }

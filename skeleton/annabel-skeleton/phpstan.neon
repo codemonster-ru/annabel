@@ -2,15 +2,15 @@ parameters:
     level: 6
     bootstrapFiles:
         - phpstan-bootstrap.php
-    treatPhpDocTypesAsCertain: false
     paths:
         - app
         - bootstrap/app.php
+        - bootstrap/providers
         - config
+        - database
         - public/index.php
-        - phpstan-bootstrap.php
-        - tests
+        - resources/views
+        - routes
     excludePaths:
-        analyse:
-            - app/Modules/Core/views
-    tmpDir: /tmp/annabel-cms-phpstan
+        - bootstrap/cache
+    tmpDir: /tmp/annabel-phpstan-skeleton

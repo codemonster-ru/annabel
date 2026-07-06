@@ -1,4 +1,9 @@
 <?php
+/**
+ * @var array<string, mixed> $boot
+ * @var array{script: string, styles: array<int, string>, favicon: string|null} $assets
+ */
+
 $title = 'Install Annabel CMS';
 ?>
 <!DOCTYPE html>

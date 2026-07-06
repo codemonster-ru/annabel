@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     build: {
         manifest: 'manifest.json',
-        outDir: 'public/build',
+        outDir: process.env.ANNABEL_SKELETON_ASSETS_ROOT ?? 'public/build',
         rollupOptions: {
             input: ['resources/js/app.js'],
         },

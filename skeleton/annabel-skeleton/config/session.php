@@ -24,7 +24,7 @@ return [
     ],
     'encryption' => $encryptionKey === null ? [] : [
         'key' => $encryptionKey,
-        'previous_keys' => array_values(array_filter([$previousEncryptionKey])),
+        'previous_keys' => array_filter([$previousEncryptionKey]),
         'allow_plaintext' => (bool) env('SESSION_ALLOW_PLAINTEXT', true, true),
     ],
     'redis' => [

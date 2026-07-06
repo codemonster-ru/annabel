@@ -1,3 +1,17 @@
+<?php
+/**
+ * @var string|null $notice
+ * @var mixed $cacheValue
+ * @var array<string, mixed> $results
+ * @var int|null $sessionCount
+ * @var string|null $sessionId
+ * @var array<string, list<string>> $validationErrors
+ * @var array<string, mixed> $validated
+ * @var array{name?: string, email?: string} $formInput
+ * @var int|null $databaseTotal
+ * @var string|null $databaseError
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 

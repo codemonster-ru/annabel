@@ -2,6 +2,11 @@
 
 use App\Controllers\DemoController;
 use App\Controllers\HomeController;
+use Codemonster\Annabel\Application;
+
+/**
+ * @var Application $app
+ */
 
 $app->get('/', [HomeController::class, 'index']);
 $app->get('/demo', [DemoController::class, 'index']);

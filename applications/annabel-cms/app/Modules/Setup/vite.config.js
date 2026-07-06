@@ -5,7 +5,8 @@ import { cmsModuleRoot, cmsProjectRoot, verifyViteBundlePlugin, vueforgeAliases 
 
 const moduleRoot = cmsModuleRoot(import.meta.url);
 const projectRoot = cmsProjectRoot(import.meta.url);
-const assetsRoot = path.join(projectRoot, 'public/setup/assets');
+const assetsRoot = process.env.ANNABEL_CMS_SETUP_ASSETS_ROOT
+  ?? path.join(projectRoot, 'public/setup/assets');
 
 export default defineConfig({
   root: moduleRoot,

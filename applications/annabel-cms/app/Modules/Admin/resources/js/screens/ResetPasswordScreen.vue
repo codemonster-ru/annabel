@@ -25,11 +25,15 @@ const passwordConfirmation = ref('');
 const error = ref('');
 const errors = ref({});
 const loading = ref(false);
+const minimumLoaderDuration = 500;
 
 async function submitResetPassword() {
-  error.value = '';
-  errors.value = {};
+  if (loading.value) {
+    return;
+  }
+
   loading.value = true;
+  const loaderStartedAt = Date.now();
 
   const body = new FormData();
   body.append('_token', props.csrfToken);
@@ -49,20 +53,37 @@ async function submitResetPassword() {
     if (!response.ok) {
       if (response.status === 422) {
         errors.value = payload.errors || {};
-        error.value = firstError(errors, 'token');
+        error.value = firstError(errors.value, 'token');
         return;
       }
 
+      errors.value = {};
       error.value = payload.message || 'Unable to reset password.';
       return;
     }
 
     window.location.assign(payload.redirect || '/admin/login');
   } catch (e) {
+    errors.value = {};
     error.value = 'Unable to reset password. Please try again.';
   } finally {
+    const remainingDuration = minimumLoaderDuration - (Date.now() - loaderStartedAt);
+
+    if (remainingDuration > 0) {
+      await new Promise((resolve) => window.setTimeout(resolve, remainingDuration));
+    }
+
     loading.value = false;
   }
+}
+
+function submitOnEnter(event) {
+  if (event.isComposing || !(event.target instanceof HTMLInputElement)) {
+    return;
+  }
+
+  event.preventDefault();
+  submitResetPassword();
 }
 </script>
 
@@ -74,7 +95,7 @@ async function submitResetPassword() {
   >
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
-    <form class="auth-form" method="post" action="/admin/reset-password" novalidate @submit.prevent="submitResetPassword">
+    <form class="auth-form" method="post" action="/admin/reset-password" novalidate @submit.prevent="submitResetPassword" @keydown.enter="submitOnEnter">
       <VfAlert v-if="error" tone="danger" title="Reset password failed">
         {{ error }}
       </VfAlert>
@@ -116,7 +137,7 @@ async function submitResetPassword() {
         </VfLink>
       </div>
 
-      <VfButton type="submit" :disabled="loading" block>
+      <VfButton type="submit" :loading="loading" block>
         {{ loading ? 'Updating...' : 'Update password' }}
       </VfButton>
     </form>

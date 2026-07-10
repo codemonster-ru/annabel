@@ -21,12 +21,15 @@ const notice = ref('');
 const error = ref('');
 const errors = ref({});
 const loading = ref(false);
+const minimumLoaderDuration = 500;
 
 async function requestPasswordReset() {
-  notice.value = '';
-  error.value = '';
-  errors.value = {};
+  if (loading.value) {
+    return;
+  }
+
   loading.value = true;
+  const loaderStartedAt = Date.now();
 
   const body = new FormData();
   body.append('_token', props.csrfToken);
@@ -43,20 +46,43 @@ async function requestPasswordReset() {
 
     if (!response.ok) {
       if (response.status === 422) {
+        notice.value = '';
+        error.value = '';
         errors.value = payload.errors || {};
         return;
       }
 
+      notice.value = '';
+      errors.value = {};
       error.value = payload.message || 'Unable to send reset link.';
       return;
     }
 
+    error.value = '';
+    errors.value = {};
     notice.value = payload.message || 'If an admin account with that email exists, we have sent a password reset link.';
   } catch (e) {
+    notice.value = '';
+    errors.value = {};
     error.value = 'Unable to send reset link. Please try again.';
   } finally {
+    const remainingDuration = minimumLoaderDuration - (Date.now() - loaderStartedAt);
+
+    if (remainingDuration > 0) {
+      await new Promise((resolve) => window.setTimeout(resolve, remainingDuration));
+    }
+
     loading.value = false;
   }
+}
+
+function submitOnEnter(event) {
+  if (event.isComposing || !(event.target instanceof HTMLInputElement)) {
+    return;
+  }
+
+  event.preventDefault();
+  requestPasswordReset();
 }
 </script>
 
@@ -68,7 +94,7 @@ async function requestPasswordReset() {
   >
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
-    <form class="auth-form" method="post" action="/admin/forgot-password" novalidate @submit.prevent="requestPasswordReset">
+    <form class="auth-form" method="post" action="/admin/forgot-password" novalidate @submit.prevent="requestPasswordReset" @keydown.enter="submitOnEnter">
       <VfAlert v-if="error" tone="danger" title="Password recovery">
         {{ error }}
       </VfAlert>
@@ -98,7 +124,7 @@ async function requestPasswordReset() {
         </VfLink>
       </div>
 
-      <VfButton type="submit" :disabled="loading" block>
+      <VfButton type="submit" :loading="loading" block>
         {{ loading ? 'Sending...' : 'Send reset link' }}
       </VfButton>
     </form>

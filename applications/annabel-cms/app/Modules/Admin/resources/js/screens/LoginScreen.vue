@@ -23,11 +23,15 @@ const remember = ref(false);
 const error = ref('');
 const errors = ref({});
 const loading = ref(false);
+const minimumLoaderDuration = 500;
 
 async function login() {
-  error.value = '';
-  errors.value = {};
+  if (loading.value) {
+    return;
+  }
+
   loading.value = true;
+  const loaderStartedAt = Date.now();
 
   const body = new FormData();
   body.append('_token', props.csrfToken);
@@ -46,7 +50,18 @@ async function login() {
 
     if (!response.ok) {
       if (response.status === 422) {
+        error.value = '';
         errors.value = payload.errors || {};
+        return;
+      }
+
+      errors.value = {};
+
+      if (response.status === 429) {
+        const retryAfter = Number.parseInt(response.headers.get('Retry-After') || '', 10);
+        error.value = Number.isFinite(retryAfter) && retryAfter > 0
+          ? `Too many sign-in attempts. Please try again in ${retryAfter} seconds.`
+          : 'Too many sign-in attempts. Please try again later.';
         return;
       }
 
@@ -58,8 +73,23 @@ async function login() {
   } catch (e) {
     error.value = 'Unable to sign in. Please try again.';
   } finally {
+    const remainingDuration = minimumLoaderDuration - (Date.now() - loaderStartedAt);
+
+    if (remainingDuration > 0) {
+      await new Promise((resolve) => window.setTimeout(resolve, remainingDuration));
+    }
+
     loading.value = false;
   }
+}
+
+function submitOnEnter(event) {
+  if (event.isComposing || !(event.target instanceof HTMLInputElement)) {
+    return;
+  }
+
+  event.preventDefault();
+  login();
 }
 </script>
 
@@ -71,7 +101,7 @@ async function login() {
   >
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
-    <form class="auth-form" method="post" action="/admin/login" novalidate @submit.prevent="login">
+    <form class="auth-form" method="post" action="/admin/login" novalidate @submit.prevent="login" @keydown.enter="submitOnEnter">
       <VfAlert v-if="error" tone="danger" title="Sign in failed">
         {{ error }}
       </VfAlert>
@@ -112,7 +142,7 @@ async function login() {
         </VfLink>
       </div>
 
-      <VfButton type="submit" :disabled="loading" block>
+      <VfButton type="submit" :loading="loading" block>
         {{ loading ? 'Signing in...' : 'Sign in' }}
       </VfButton>
     </form>

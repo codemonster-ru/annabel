@@ -9,12 +9,13 @@ class AuthenticatedUserTest extends TestCase
 {
     public function testItExposesStableIdentityPayload(): void
     {
-        $user = new AuthenticatedUser(42, 'admin@example.com', ['admin', 'editor']);
+        $user = new AuthenticatedUser(42, 'admin', 'admin@example.com', ['admin', 'editor']);
 
         self::assertTrue($user->hasRole('admin'));
         self::assertFalse($user->hasRole('missing'));
         self::assertSame([
             'id' => 42,
+            'username' => 'admin',
             'email' => 'admin@example.com',
             'roles' => ['admin', 'editor'],
         ], $user->toArray());

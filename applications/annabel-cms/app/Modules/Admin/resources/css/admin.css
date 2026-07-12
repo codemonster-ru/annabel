@@ -60,17 +60,6 @@ body {
   color: var(--vf-color-muted);
 }
 
-.topbar,
-.topbar__actions {
-  display: flex;
-  align-items: center;
-}
-
-.topbar {
-  justify-content: space-between;
-  gap: 1rem;
-}
-
 .admin-auth-layout .vf-auth-layout__panel {
   position: relative;
 }
@@ -88,36 +77,83 @@ body {
   justify-content: center;
 }
 
-.admin-shell {
-  min-height: 100vh;
-  padding: 1.75rem;
+.admin-layout__brand-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.75rem;
 }
 
-.topbar {
-  margin-bottom: 1.75rem;
+.admin-layout__brand-title {
+  font-family: var(--vf-font-family-heading);
+  font-size: var(--vf-heading-h-5-font-size);
+  font-weight: var(--vf-heading-font-weight);
+  line-height: var(--vf-heading-h-5-line-height);
 }
 
-.topbar__actions {
+.admin-layout__brand-content .vf-icon-button {
+  margin-left: auto;
+}
+
+.admin-layout__brand-logo {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.admin-layout__actions {
+  display: flex;
+  align-items: center;
+}
+
+.admin-layout__actions {
+  width: 100%;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.75rem;
 }
 
-.admin-shell main {
+.admin-layout__actions .vf-dropdown__trigger .vf-avatar {
+  cursor: pointer;
+}
+
+.admin-user-menu {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 14rem;
+  padding: var(--vf-field-padding-sm);
+}
+
+.admin-user-menu__username {
+  font-size: var(--vf-text-body-font-size);
+  font-weight: var(--vf-font-weight-medium);
+  line-height: var(--vf-text-body-line-height);
+}
+
+.admin-user-menu__email {
+  overflow-wrap: anywhere;
+  color: var(--vf-color-muted);
+  font-size: var(--vf-text-caption-font-size);
+  line-height: var(--vf-text-caption-line-height);
+}
+
+.admin-layout__content {
   max-width: 840px;
+}
+
+.admin-layout__page-heading {
+  margin-bottom: 1.75rem;
 }
 
 h1 {
   margin: 0 0 0.25rem;
   font-family: var(--vf-font-family-heading);
-  font-size: var(--vf-heading-h-3-font-size);
+  font-size: var(--vf-heading-h-2-font-size);
   font-weight: var(--vf-heading-font-weight);
-  line-height: var(--vf-heading-h-3-line-height);
+  line-height: var(--vf-heading-h-2-line-height);
   letter-spacing: 0;
 }
 
-.hint,
-.signed-in {
+.hint {
   margin: 0;
   color: var(--vf-color-muted);
   font-size: var(--vf-text-caption-font-size);
@@ -153,16 +189,7 @@ code {
     flex-direction: column;
   }
 
-  .admin-shell {
-    padding: 1.25rem;
-  }
-
-  .topbar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .topbar__actions {
+  .admin-layout__actions {
     justify-content: flex-start;
   }
 }

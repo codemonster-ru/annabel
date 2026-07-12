@@ -9,6 +9,7 @@ final class AuthenticatedUser
      */
     public function __construct(
         public readonly int|string $id,
+        public readonly string $username,
         public readonly string $email,
         public readonly array $roles,
     ) {
@@ -20,12 +21,13 @@ final class AuthenticatedUser
     }
 
     /**
-     * @return array{id: int|string, email: string, roles: array<int, string>}
+     * @return array{id: int|string, username: string, email: string, roles: array<int, string>}
      */
     public function toArray(): array
     {
         return [
             'id' => $this->id,
+            'username' => $this->username,
             'email' => $this->email,
             'roles' => $this->roles,
         ];

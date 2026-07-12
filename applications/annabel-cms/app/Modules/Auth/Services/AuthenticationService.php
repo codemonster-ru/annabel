@@ -18,6 +18,7 @@ class AuthenticationService implements AuthenticatorInterface
 
         return new AuthenticatedUser(
             $user->id,
+            (string) $user->username,
             (string) $user->email,
             $user->roleNames(),
         );

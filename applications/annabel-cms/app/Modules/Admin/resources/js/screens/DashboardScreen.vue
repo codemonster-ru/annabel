@@ -1,9 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfPanel } from '@codemonster-ru/vueforge-core/panel';
-import { VfTable } from '@codemonster-ru/vueforge-core/table';
+import { computed, ref } from 'vue';
+import { VfAvatar } from '@codemonster-ru/vueforge-core/avatar';
+import { VfBreadcrumbs } from '@codemonster-ru/vueforge-core/breadcrumbs';
+import { VfDivider } from '@codemonster-ru/vueforge-core/divider';
+import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
+import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
+import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
+import brandLogoUrl from '../../images/codemonster-icon.svg';
 
 const props = defineProps({
   csrfToken: {
@@ -14,14 +19,28 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  modules: {
-    type: Object,
-    default: () => ({}),
-  },
 });
 
 const error = ref('');
 const loading = ref(false);
+const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
+const navigation = [
+  {
+    value: 'dashboard',
+    label: 'Dashboard',
+    href: '/admin',
+  },
+];
+const breadcrumbs = [
+  {
+    label: 'Home',
+    href: '/',
+  },
+  {
+    label: 'Dashboard',
+    current: true,
+  },
+];
 
 async function logout() {
   error.value = '';
@@ -51,39 +70,77 @@ async function logout() {
     loading.value = false;
   }
 }
+
+function goHome() {
+  window.location.assign('/');
+}
 </script>
 
 <template>
-  <section class="admin-shell">
-    <header class="topbar">
-      <div>
-        <h1>Annabel CMS</h1>
-        <p v-if="user && user.email" class="signed-in">Signed in as {{ user.email }}</p>
+  <VfAdminLayout class="admin-layout">
+    <template #brand>
+      <div class="admin-layout__brand-content">
+        <img class="admin-layout__brand-logo" :src="brandLogoUrl" alt="" />
+        <span class="admin-layout__brand-title">Annabel CMS</span>
+        <VfIconButton
+          icon="house"
+          variant="ghost"
+          aria-label="Open CMS home page"
+          title="Open CMS home page"
+          @click="goHome"
+        />
+      </div>
+    </template>
+
+    <template #aside>
+      <VfNavMenu
+        :items="navigation"
+        default-value="dashboard"
+        variant="pills"
+        aria-label="Admin navigation"
+      />
+    </template>
+
+    <template #header>
+      <div class="admin-layout__actions">
+        <VfThemeSwitch variant="button" button-variant="ghost" />
+        <VfDivider orientation="vertical" />
+        <VfDropdown placement="bottom-end">
+          <template #trigger>
+            <VfAvatar
+              :label="avatarLabel"
+              shape="circle"
+              :aria-label="user?.email || 'Current user'"
+              :title="user?.email || 'Current user'"
+            />
+          </template>
+
+          <div class="admin-user-menu">
+            <span class="admin-user-menu__username">{{ user?.username || 'Current user' }}</span>
+            <span class="admin-user-menu__email">{{ user?.email || '' }}</span>
+          </div>
+          <VfDivider />
+          <button
+            class="vf-dropdown__item"
+            type="button"
+            role="menuitem"
+            :disabled="loading"
+            @click="logout"
+          >
+            Logout
+          </button>
+        </VfDropdown>
+      </div>
+    </template>
+
+    <div class="admin-layout__content">
+      <div class="admin-layout__page-heading">
+        <h1>Dashboard</h1>
+        <VfBreadcrumbs :items="breadcrumbs">
+          <template #separator>/</template>
+        </VfBreadcrumbs>
         <p v-if="error" class="field__error">{{ error }}</p>
       </div>
-      <div class="topbar__actions">
-        <VfThemeSwitch variant="button" size="sm" />
-        <VfButton type="button" variant="secondary" :disabled="loading" @click="logout">
-          Logout
-        </VfButton>
-      </div>
-    </header>
-
-    <main>
-      <VfPanel title="Loaded Modules">
-        <VfTable caption="Loaded Admin modules" compact striped>
-          <template #header>
-            <tr>
-              <th>Name</th>
-              <th>Class</th>
-            </tr>
-          </template>
-          <tr v-for="(moduleClass, name) in modules" :key="name">
-            <td>{{ name }}</td>
-            <td><code>{{ moduleClass }}</code></td>
-          </tr>
-        </VfTable>
-      </VfPanel>
-    </main>
-  </section>
+    </div>
+  </VfAdminLayout>
 </template>

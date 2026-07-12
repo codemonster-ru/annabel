@@ -167,6 +167,7 @@ class SessionUserService implements UserSessionInterface
     {
         return new AuthenticatedUser(
             $user->id,
+            (string) $user->username,
             (string) $user->email,
             $user->roleNames(),
         );
@@ -178,15 +179,17 @@ class SessionUserService implements UserSessionInterface
     private function hydrate(array $user): ?AuthenticatedUser
     {
         $id = $user['id'] ?? null;
+        $username = $user['username'] ?? null;
         $email = $user['email'] ?? null;
         $roles = $user['roles'] ?? null;
 
-        if ((!is_int($id) && !is_string($id)) || !is_string($email) || !is_array($roles)) {
+        if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($roles)) {
             return null;
         }
 
         return new AuthenticatedUser(
             $id,
+            $username,
             $email,
             array_values(array_filter($roles, 'is_string')),
         );

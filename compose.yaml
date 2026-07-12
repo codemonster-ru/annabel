@@ -14,6 +14,8 @@ services:
       - .:/workspace
       - ${HOME}/.codex-annabel:/root/.codex
       - composer-cache:/tmp/composer-cache
+      - skeleton-node-modules:/workspace/skeleton/annabel-skeleton/node_modules
+      - cms-node-modules:/workspace/applications/annabel-cms/node_modules
     environment:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
       COMPOSER_MEMORY_LIMIT: -1

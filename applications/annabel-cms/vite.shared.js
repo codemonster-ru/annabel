@@ -55,7 +55,7 @@ export function verifyViteBundlePlugin({ name, assetsRoot, entrypoint }) {
   return {
     name: `verify-${name}-bundle`,
     apply: 'build',
-    async closeBundle() {
+    async writeBundle() {
       const manifestPath = path.join(assetsRoot, '.vite/manifest.json');
       const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
       const entry = manifest[entrypoint];

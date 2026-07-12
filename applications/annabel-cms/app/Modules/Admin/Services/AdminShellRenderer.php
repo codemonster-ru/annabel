@@ -33,7 +33,7 @@ class AdminShellRenderer
      *     authenticated: bool,
      *     screen: string,
      *     csrfToken: string,
-     *     user: array{id: int|string, email: string, roles: array<int, string>}|null,
+     *     user: array{id: int|string, username: string, email: string, roles: array<int, string>}|null,
      *     modules: array<string, string>,
      *     resetToken: string|null
      * }

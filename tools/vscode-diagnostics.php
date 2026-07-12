@@ -851,10 +851,20 @@ function runCmsAssetBuilds(string $root): int
 {
     $cmsDirectory = $root . '/applications/annabel-cms';
 
-    if (!is_file($cmsDirectory . '/node_modules/.bin/vite')) {
+    if (!is_dir($cmsDirectory . '/node_modules')) {
         fwrite(STDERR, 'Annabel diagnostics: CMS asset builds skipped (missing applications/annabel-cms/node_modules/.bin/vite).' . PHP_EOL);
 
         return 0;
+    }
+
+    if (!synchronizeCmsDependencies($root, $cmsDirectory)) {
+        return 1;
+    }
+
+    if (!is_file($cmsDirectory . '/node_modules/.bin/vite')) {
+        fwrite(STDOUT, 'applications/annabel-cms/package.json:1:CMS dependencies: npm ci did not install Vite' . PHP_EOL);
+
+        return 1;
     }
 
     $failures = 0;
@@ -884,6 +894,58 @@ function runCmsAssetBuilds(string $root): int
     }
 
     return $failures;
+}
+
+function synchronizeCmsDependencies(string $root, string $cmsDirectory): bool
+{
+    $lockfile = $cmsDirectory . '/package-lock.json';
+    $marker = $cmsDirectory . '/node_modules/.annabel-package-lock-sha256';
+    $lockfileHash = hash_file('sha256', $lockfile);
+
+    if ($lockfileHash === false) {
+        fwrite(STDOUT, 'applications/annabel-cms/package-lock.json:1:CMS dependencies: Unable to hash package lockfile' . PHP_EOL);
+
+        return false;
+    }
+
+    if (is_file($cmsDirectory . '/node_modules/.bin/vite')
+        && is_file($marker)
+        && trim((string) file_get_contents($marker)) === $lockfileHash
+    ) {
+        return true;
+    }
+
+    progress('CMS assets: synchronizing dependencies with package-lock.json');
+    $process = proc_open(
+        ['npm', 'ci'],
+        [
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ],
+        $pipes,
+        $cmsDirectory,
+    );
+
+    if (!is_resource($process)) {
+        fwrite(STDOUT, 'applications/annabel-cms/package.json:1:CMS dependencies: Unable to start npm ci' . PHP_EOL);
+
+        return false;
+    }
+
+    $output = stream_get_contents($pipes[1]) . "\n" . stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+
+    if (proc_close($process) !== 0) {
+        $message = firstUsefulBuildError($output) ?? 'npm ci failed';
+        fwrite(STDOUT, 'applications/annabel-cms/package.json:1:CMS dependencies: ' . $message . PHP_EOL);
+
+        return false;
+    }
+
+    file_put_contents($marker, $lockfileHash . PHP_EOL);
+
+    return true;
 }
 
 function runSkeletonAssetBuild(string $root): int

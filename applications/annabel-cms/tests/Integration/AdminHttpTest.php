@@ -49,7 +49,7 @@ class AdminHttpTest extends TestCase
     public function testAdminCanLoginThroughContracts(): void
     {
         $app = $this->app();
-        $identity = new AuthenticatedUser(1, 'admin@example.com', ['admin']);
+        $identity = new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']);
         $session = new InMemoryUserSession();
 
         $app->getContainer()->instance(
@@ -81,7 +81,7 @@ class AdminHttpTest extends TestCase
     public function testNonAdminCannotLoginToAdmin(): void
     {
         $app = $this->app();
-        $identity = new AuthenticatedUser(2, 'user@example.com', ['user']);
+        $identity = new AuthenticatedUser(2, 'user', 'user@example.com', ['user']);
 
         $app->getContainer()->instance(
             AuthenticatorInterface::class,

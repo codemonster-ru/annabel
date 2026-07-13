@@ -9,11 +9,28 @@ import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
+import MissingAdminScreen from './MissingAdminScreen.vue';
 
 const props = defineProps({
   csrfToken: {
     type: String,
     required: true,
+  },
+  navigation: {
+    type: Array,
+    default: () => [],
+  },
+  navigationValue: {
+    type: String,
+    default: '',
+  },
+  screenComponent: {
+    type: [Object, Function],
+    default: null,
+  },
+  screenError: {
+    type: String,
+    default: '',
   },
   user: {
     type: Object,
@@ -24,23 +41,31 @@ const props = defineProps({
 const error = ref('');
 const loading = ref(false);
 const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
-const navigation = [
-  {
-    value: 'dashboard',
-    label: 'Dashboard',
-    href: '/admin',
-  },
-];
-const breadcrumbs = [
-  {
-    label: 'Home',
-    href: '/',
-  },
-  {
-    label: 'Dashboard',
-    current: true,
-  },
-];
+const activeNavigationPath = computed(() => findNavigationPath(props.navigation, props.navigationValue));
+const pageTitle = computed(() => activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');
+const breadcrumbs = computed(() => activeNavigationPath.value.map((item, index, items) => ({
+  label: item.label,
+  href: index === items.length - 1 ? undefined : item.href,
+  current: index === items.length - 1,
+})));
+
+function findNavigationPath(items, value, path = []) {
+  for (const item of items) {
+    const currentPath = [...path, item];
+
+    if (item.value === value) {
+      return currentPath;
+    }
+
+    const nestedPath = findNavigationPath(item.children || [], value, currentPath);
+
+    if (nestedPath.length > 0) {
+      return nestedPath;
+    }
+  }
+
+  return [];
+}
 
 async function logout() {
   error.value = '';
@@ -95,7 +120,8 @@ function goHome() {
     <template #aside>
       <VfNavMenu
         :items="navigation"
-        default-value="dashboard"
+        :model-value="navigationValue"
+        expand-mode="multiple"
         variant="pills"
         aria-label="Admin navigation"
       />
@@ -135,12 +161,14 @@ function goHome() {
 
     <div class="admin-layout__content">
       <div class="admin-layout__page-heading">
-        <h1>Dashboard</h1>
+        <h1>{{ pageTitle }}</h1>
         <VfBreadcrumbs :items="breadcrumbs">
           <template #separator>/</template>
         </VfBreadcrumbs>
         <p v-if="error" class="field__error">{{ error }}</p>
       </div>
+      <component :is="screenComponent" v-if="screenComponent" />
+      <MissingAdminScreen v-else-if="screenError" :screen="screenError" />
     </div>
   </VfAdminLayout>
 </template>

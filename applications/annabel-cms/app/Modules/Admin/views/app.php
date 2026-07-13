@@ -1,16 +1,18 @@
 <?php
 /**
- * @var array{screen?: string} $boot
+ * @var array{screen?: string, pageTitle?: string|null} $boot
  * @var array{script: string, styles: array<int, string>, favicon: string|null} $assets
  */
 
-$title = match ($boot['screen'] ?? null) {
-    'login' => 'Sign in | Annabel CMS',
-    'forgot-password' => 'Reset password | Annabel CMS',
-    'reset-password' => 'Choose new password | Annabel CMS',
-    'dashboard' => 'Dashboard | Annabel CMS',
-    default => 'Annabel CMS',
-};
+$pageTitle = $boot['pageTitle'] ?? null;
+$title = is_string($pageTitle) && $pageTitle !== ''
+    ? "{$pageTitle} | Annabel CMS"
+    : match ($boot['screen'] ?? null) {
+        'login' => 'Sign in | Annabel CMS',
+        'forgot-password' => 'Reset password | Annabel CMS',
+        'reset-password' => 'Choose new password | Annabel CMS',
+        default => 'Annabel CMS',
+    };
 ?>
 <!DOCTYPE html>
 <html lang="en">

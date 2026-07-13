@@ -4,4 +4,4 @@ parameters:
     paths:
         - src
         - tests
-    tmpDir: ../../var/phpstan/database
+    tmpDir: /tmp/annabel-phpstan-database

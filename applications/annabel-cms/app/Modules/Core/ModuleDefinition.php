@@ -7,6 +7,7 @@ final class ModuleDefinition
     /**
      * @param array<int, string> $dependencies
      * @param array<string, mixed> $assets
+     * @param array<string, mixed> $metadata
      */
     public function __construct(
         public readonly string $name,
@@ -19,6 +20,7 @@ final class ModuleDefinition
         public readonly ?string $migrations = null,
         public readonly ?string $seeds = null,
         public readonly array $assets = [],
+        public readonly array $metadata = [],
     ) {
     }
 

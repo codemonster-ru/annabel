@@ -120,6 +120,19 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
+    public function testAdminCanOpenUserList(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/settings/users'));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('"screen":"admin.users.list"', (string) $response->getContent());
+    }
+
     private function app(): Application
     {
         $app = require dirname(__DIR__, 2) . '/bootstrap/app.php';

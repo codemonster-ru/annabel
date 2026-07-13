@@ -83,6 +83,14 @@ class ModuleManager
     }
 
     /**
+     * @return array<string, ModuleDefinition>
+     */
+    public function definitions(): array
+    {
+        return $this->modules;
+    }
+
+    /**
      * @return array<int, string>
      */
     public function migrationPaths(): array
@@ -177,6 +185,18 @@ class ModuleManager
         $migrations = $this->optionalPath($manifest, 'migrations', null, $name);
         $seeds = $this->optionalPath($manifest, 'seeds', null, $name);
 
+        $metadata = array_diff_key($manifest, array_flip([
+            'name',
+            'version',
+            'dependencies',
+            'provider',
+            'routes',
+            'views',
+            'migrations',
+            'seeds',
+            'assets',
+        ]));
+
         return new ModuleDefinition(
             $name,
             $version,
@@ -188,6 +208,7 @@ class ModuleManager
             $migrations,
             $seeds,
             $assets,
+            $metadata,
         );
     }
 

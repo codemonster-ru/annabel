@@ -4,7 +4,8 @@ import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import LoginScreen from './screens/LoginScreen.vue';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen.vue';
 import ResetPasswordScreen from './screens/ResetPasswordScreen.vue';
-import DashboardScreen from './screens/DashboardScreen.vue';
+import AdminShellScreen from './screens/AdminShellScreen.vue';
+import { resolveAdminScreen } from './adminFeatures';
 
 const props = defineProps({
   boot: {
@@ -17,8 +18,15 @@ const authenticated = computed(() => Boolean(props.boot.authenticated));
 const screen = computed(() => props.boot.screen || 'login');
 const csrfToken = computed(() => props.boot.csrfToken || '');
 const user = computed(() => props.boot.user || null);
-const modules = computed(() => props.boot.modules || {});
+const navigation = computed(() => props.boot.navigation || []);
+const navigationValue = computed(() => props.boot.navigationValue || '');
 const resetToken = computed(() => props.boot.resetToken || '');
+const screenComponent = computed(() => resolveAdminScreen(screen.value));
+const screenError = computed(() => (
+  authenticated.value && screen.value !== 'dashboard' && !screenComponent.value
+    ? screen.value
+    : ''
+));
 </script>
 
 <template>
@@ -36,11 +44,14 @@ const resetToken = computed(() => props.boot.resetToken || '');
       :csrf-token="csrfToken"
       :reset-token="resetToken"
     />
-    <DashboardScreen
+    <AdminShellScreen
       v-else
       :csrf-token="csrfToken"
+      :navigation="navigation"
+      :navigation-value="navigationValue"
+      :screen-component="screenComponent"
+      :screen-error="screenError"
       :user="user"
-      :modules="modules"
     />
   </VfThemeProvider>
 </template>

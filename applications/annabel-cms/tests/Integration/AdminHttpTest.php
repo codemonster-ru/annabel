@@ -133,6 +133,19 @@ class AdminHttpTest extends TestCase
         self::assertStringContainsString('"screen":"admin.users.list"', (string) $response->getContent());
     }
 
+    public function testGuestCannotLoadUserListData(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/settings/users/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
     private function app(): Application
     {
         $app = require dirname(__DIR__, 2) . '/bootstrap/app.php';

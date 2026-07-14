@@ -136,10 +136,6 @@ body {
   line-height: var(--vf-text-caption-line-height);
 }
 
-.admin-layout__content {
-  max-width: 840px;
-}
-
 .admin-layout__page-heading {
   margin-bottom: 1.75rem;
 }

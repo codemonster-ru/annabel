@@ -1,11 +1,14 @@
 {
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-x7nQJ5tA.js",
+    "file": "UserListScreen-Sb3kqqcY.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/main.js"
+    ],
+    "css": [
+      "UserListScreen-BCqRsUxH.css"
     ]
   },
   "resources/images/codemonster-icon.svg": {
@@ -13,7 +16,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-C-jHawzV.js",
+    "file": "admin-CqPUfLDI.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -21,7 +24,7 @@
       "../AdminUsers/resources/js/screens/UserListScreen.vue"
     ],
     "css": [
-      "main-HWHoT9BW.css"
+      "main-BkIAK8gd.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"

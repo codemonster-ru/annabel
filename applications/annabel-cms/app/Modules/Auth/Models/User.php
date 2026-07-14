@@ -9,8 +9,10 @@ use Codemonster\Database\Relations\BelongsToMany;
  * @property int|string $id
  * @property string $username
  * @property string $email
+ * @property bool $is_active
  * @property string $password
  * @property string|null $remember_token
+ * @property \DateTimeImmutable|null $updated_at
  */
 class User extends Model
 {
@@ -21,6 +23,7 @@ class User extends Model
         'id',
         'username',
         'email',
+        'is_active',
         'password',
         'remember_token',
     ];
@@ -34,6 +37,8 @@ class User extends Model
     /** @var array<string, string> */
     protected array $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
+        'updated_at' => 'datetime',
     ];
 
     public static function findByEmail(string $email): ?self

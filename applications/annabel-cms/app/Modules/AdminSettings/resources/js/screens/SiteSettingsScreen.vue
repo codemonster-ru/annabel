@@ -6,11 +6,9 @@ import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
 import { VfSelect } from '@codemonster-ru/vueforge-core/select';
-import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
 
 const settings = ref({
   site_name: '',
-  site_description: '',
   locale: '',
   timezone: 'UTC',
 });
@@ -130,23 +128,6 @@ onMounted(loadSettings);
               :invalid="invalid"
               :disabled="loading"
               required
-            />
-          </template>
-        </VfField>
-
-        <VfField
-          label="Site description"
-          description="Used as the default description for the public site."
-          :error="firstError('site_description')"
-        >
-          <template #default="{ controlId, describedBy, invalid }">
-            <VfTextarea
-              :id="controlId"
-              v-model="settings.site_description"
-              :aria-describedby="describedBy"
-              :invalid="invalid"
-              :disabled="loading"
-              :rows="4"
             />
           </template>
         </VfField>

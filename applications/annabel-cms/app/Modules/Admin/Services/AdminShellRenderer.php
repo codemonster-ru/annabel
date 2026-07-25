@@ -4,6 +4,7 @@ namespace Codemonster\Cms\Modules\Admin\Services;
 
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use Codemonster\Http\Response;
 use Codemonster\View\View;
 
@@ -13,6 +14,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
         private AdminNavigationRegistry $navigation,
         private UserSessionInterface $users,
         private AdminAssetManager $assets,
+        private SiteSettings $settings,
         private View $view,
     ) {
     }
@@ -50,6 +52,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
      *     navigation: array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>,
      *     navigationValue: string,
      *     pageTitle: string|null,
+     *     siteName: string,
      *     resetToken: string|null
      * }
      * @param array<string, mixed> $extra
@@ -66,6 +69,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
             'navigation' => $navigation,
             'navigationValue' => $isAuthenticated ? $screen : '',
             'pageTitle' => $isAuthenticated ? $this->navigation->label($screen) : null,
+            'siteName' => $this->settings->current()->site_name,
             'resetToken' => null,
         ], $extra);
     }

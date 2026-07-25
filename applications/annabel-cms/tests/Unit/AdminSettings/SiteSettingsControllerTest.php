@@ -19,7 +19,6 @@ class SiteSettingsControllerTest extends TestCase
             ->method('update')
             ->with([
                 'site_name' => 'Example site',
-                'site_description' => null,
                 'locale' => 'en-US',
                 'timezone' => 'Europe/Paris',
             ])
@@ -27,7 +26,6 @@ class SiteSettingsControllerTest extends TestCase
 
         $response = $this->controller($repository)->update(new Request('POST', '/', [], [
             'site_name' => ' Example site ',
-            'site_description' => '',
             'locale' => 'en-US',
             'timezone' => 'Europe/Paris',
         ]));
@@ -45,7 +43,6 @@ class SiteSettingsControllerTest extends TestCase
 
         $response = $this->controller($repository)->update(new Request('POST', '/', [], [
             'site_name' => 'Example site',
-            'site_description' => 'Description',
             'locale' => 'not_a_locale',
             'timezone' => 'UTC',
         ]));
@@ -69,7 +66,6 @@ class SiteSettingsControllerTest extends TestCase
         return new SiteSetting([
             'id' => 1,
             'site_name' => 'Example site',
-            'site_description' => null,
             'locale' => 'en-US',
             'timezone' => 'Europe/Paris',
         ], true);

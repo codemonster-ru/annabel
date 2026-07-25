@@ -6,8 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars((string) ($title ?? '') . ' | ' . (string) ($site->site_name ?? ''), ENT_QUOTES, 'UTF-8') ?></title>
-    <?php if (($site->site_description ?? '') !== ''): ?>
-        <meta name="description" content="<?= htmlspecialchars((string) $site->site_description, ENT_QUOTES, 'UTF-8') ?>">
+    <?php $metaDescription = trim((string) ($meta_description ?? '')); ?>
+    <?php if ($metaDescription !== ''): ?>
+        <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <?php endif; ?>
     <style>
         body {

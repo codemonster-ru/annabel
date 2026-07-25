@@ -5,7 +5,7 @@ use Codemonster\Cms\Modules\Admin\ModuleServiceProvider;
 return [
     'name' => 'Admin',
     'version' => '1.0.0',
-    'dependencies' => ['Core', 'Auth'],
+    'dependencies' => ['Core', 'Auth', 'Settings'],
     'provider' => ModuleServiceProvider::class,
     'routes' => 'routes/web.php',
     'views' => 'views',

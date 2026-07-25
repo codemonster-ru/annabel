@@ -19,7 +19,6 @@ return new class () extends Seeder {
         db()->table('site_settings')->insert([
             'id' => 1,
             'site_name' => 'Annabel',
-            'site_description' => null,
             'locale' => 'en',
             'timezone' => 'UTC',
             'created_at' => $now,

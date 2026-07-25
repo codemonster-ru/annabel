@@ -1,6 +1,6 @@
 {
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-BfAT38kX.js",
+    "file": "SiteSettingsScreen-BcXsikVd.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
@@ -10,11 +10,11 @@
       "_classes-CcykAxZN-Bpz0PNdn.js"
     ],
     "css": [
-      "SiteSettingsScreen-Bcl3zeVf.css"
+      "SiteSettingsScreen-BkcQryB0.css"
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-DCoggoMu.js",
+    "file": "UserListScreen-BG9gFJui.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -46,7 +46,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-DXlIZq12.js",
+    "file": "admin-CdMiVixi.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -66,7 +66,7 @@
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-CR9jlSRE.js",
+    "file": "DashboardScreen-C3Esvk8r.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,

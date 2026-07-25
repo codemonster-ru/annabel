@@ -8,6 +8,7 @@ use Codemonster\Database\ORM\Model;
  * @property int|string $id
  * @property string $slug
  * @property string $title
+ * @property string|null $meta_description
  * @property string $content
  * @property bool $is_published
  * @property string|null $published_at
@@ -21,6 +22,7 @@ class Page extends Model
         'id',
         'slug',
         'title',
+        'meta_description',
         'content',
         'is_published',
         'published_at',

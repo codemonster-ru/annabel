@@ -11,7 +11,7 @@ const stepTitles = {
   review: 'Install',
 };
 const stepHeadings = {
-  welcome: 'Welcome to Annabel CMS',
+  welcome: 'Welcome to Annabel',
   license: 'License agreement',
   requirements: 'Check system requirements',
   database: 'Database connection',

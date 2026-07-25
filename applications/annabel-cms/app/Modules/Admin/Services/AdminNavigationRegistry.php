@@ -6,7 +6,7 @@ use Codemonster\Cms\Modules\Core\ModuleManager;
 
 class AdminNavigationRegistry
 {
-    /** @var array<string, array{id: string, label: string, parent?: string, href?: string, order?: int}>|null */
+    /** @var array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}>|null */
     private ?array $items = null;
 
     public function __construct(
@@ -15,7 +15,7 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @return array<int, array{value: string, label: string, href?: string, children?: array<mixed>}>
+     * @return array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>
      */
     public function navigation(): array
     {
@@ -28,7 +28,7 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @return array<string, array{id: string, label: string, parent?: string, href?: string, order?: int}>
+     * @return array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}>
      */
     private function items(): array
     {
@@ -88,7 +88,7 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @return array{id: string, label: string, parent?: string, href?: string, order?: int}
+     * @return array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}
      */
     private function parseItem(mixed $item, string $module): array
     {
@@ -100,6 +100,7 @@ class AdminNavigationRegistry
         $label = $item['label'] ?? null;
         $parent = $item['parent'] ?? null;
         $href = $item['href'] ?? null;
+        $icon = $item['icon'] ?? null;
         $order = $item['order'] ?? 0;
 
         if (!is_string($id) || $id === '' || !is_string($label) || $label === '') {
@@ -114,6 +115,10 @@ class AdminNavigationRegistry
             throw new \RuntimeException("Admin navigation href must be a non-empty string: {$module}");
         }
 
+        if ($icon !== null && (!is_string($icon) || $icon === '')) {
+            throw new \RuntimeException("Admin navigation icon must be a non-empty string: {$module}");
+        }
+
         if (!is_int($order)) {
             throw new \RuntimeException("Admin navigation order must be an integer: {$module}");
         }
@@ -123,12 +128,13 @@ class AdminNavigationRegistry
             'label' => $label,
             'parent' => $parent,
             'href' => $href,
+            'icon' => $icon,
             'order' => $order,
         ], static fn (mixed $value): bool => $value !== null);
     }
 
     /**
-     * @param array<string, array{id: string, label: string, parent?: string, href?: string, order?: int}> $items
+     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}> $items
      */
     private function assertNoCycles(array $items): void
     {
@@ -159,8 +165,8 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @param array<string, array{id: string, label: string, parent?: string, href?: string, order?: int}> $items
-     * @return array<int, array{value: string, label: string, href?: string, children?: array<mixed>}>
+     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}> $items
+     * @return array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>
      */
     private function children(array $items, ?string $parent): array
     {
@@ -184,6 +190,10 @@ class AdminNavigationRegistry
                 'value' => $item['id'],
                 'label' => $item['label'],
             ];
+
+            if (isset($item['icon'])) {
+                $entry['leadingIcon'] = $item['icon'];
+            }
 
             if (isset($item['href'])) {
                 $entry['href'] = $item['href'];

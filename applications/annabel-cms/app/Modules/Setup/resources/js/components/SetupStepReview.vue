@@ -17,14 +17,14 @@ defineProps({
   <div class="setup-step">
     <template v-if="installing">
       <p class="setup-muted">
-        Installing Annabel CMS...
+        Installing Annabel...
       </p>
       <VfProgressBar indeterminate label="Installation progress" />
     </template>
 
     <template v-else-if="installed">
       <p class="setup-muted">
-        Annabel CMS has been installed successfully.
+        Annabel has been installed successfully.
       </p>
 
       <VfProgressBar :value="100" label="Installation complete" />

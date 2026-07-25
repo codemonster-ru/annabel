@@ -75,7 +75,7 @@ const {
     >
       <template #brand>
         <div class="setup-brand">
-          <span class="setup-brand__name">Annabel CMS</span>
+          <span class="setup-brand__name">Annabel</span>
         </div>
       </template>
 

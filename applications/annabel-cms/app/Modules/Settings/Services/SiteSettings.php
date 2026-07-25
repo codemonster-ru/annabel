@@ -20,7 +20,7 @@ class SiteSettings
     }
 
     /**
-     * @param array{site_name: string, site_description: string|null, locale: string, timezone: string} $attributes
+     * @param array{site_name: string, locale: string, timezone: string} $attributes
      */
     public function update(array $attributes): SiteSetting
     {

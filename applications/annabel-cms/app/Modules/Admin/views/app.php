@@ -1,17 +1,20 @@
 <?php
 /**
- * @var array{screen?: string, pageTitle?: string|null} $boot
+ * @var array{screen?: string, pageTitle?: string|null, siteName?: string} $boot
  * @var array{script: string, styles: array<int, string>, favicon: string|null} $assets
  */
 
 $pageTitle = $boot['pageTitle'] ?? null;
+$siteName = is_string($boot['siteName'] ?? null) && $boot['siteName'] !== ''
+    ? $boot['siteName']
+    : 'Annabel';
 $title = is_string($pageTitle) && $pageTitle !== ''
-    ? "{$pageTitle} | Annabel"
+    ? "{$pageTitle} | {$siteName}"
     : match ($boot['screen'] ?? null) {
-        'login' => 'Sign in | Annabel',
-        'forgot-password' => 'Reset password | Annabel',
-        'reset-password' => 'Choose new password | Annabel',
-        default => 'Annabel',
+        'login' => "Sign in | {$siteName}",
+        'forgot-password' => "Reset password | {$siteName}",
+        'reset-password' => "Choose new password | {$siteName}",
+        default => $siteName,
     };
 ?>
 <!DOCTYPE html>

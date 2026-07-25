@@ -18,7 +18,7 @@ return new class () extends Seeder {
 
         db()->table('pages')->insert([
             'slug' => 'home',
-            'title' => 'Welcome to Annabel CMS',
+            'title' => 'Welcome to Annabel',
             'content' => 'Your CMS is installed and ready for content.',
             'is_published' => 1,
             'published_at' => $now,

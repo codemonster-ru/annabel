@@ -10,15 +10,15 @@ return [
         'navigation' => [
             [
                 'id' => 'admin.users',
-                'parent' => 'settings',
                 'label' => 'Users',
-                'order' => 100,
+                'icon' => 'users',
+                'order' => 200,
             ],
             [
                 'id' => 'admin.users.list',
                 'parent' => 'admin.users',
                 'label' => 'User list',
-                'href' => '/admin/settings/users',
+                'href' => '/admin/users',
                 'order' => 100,
             ],
         ],

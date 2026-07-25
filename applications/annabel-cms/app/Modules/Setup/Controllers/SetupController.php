@@ -36,7 +36,7 @@ class SetupController
         if (!$this->requirements->report()['passed']) {
             return $this->errorResponse(
                 $request,
-                'System requirements are not satisfied. Resolve failed checks before installing Annabel CMS.',
+                'System requirements are not satisfied. Resolve failed checks before installing Annabel.',
             );
         }
 
@@ -82,7 +82,7 @@ class SetupController
 
         if ($request->wantsJson()) {
             return Response::json([
-                'message' => 'Annabel CMS installed successfully.',
+                'message' => 'Annabel installed successfully.',
                 'redirect' => '/admin/login',
             ]);
         }

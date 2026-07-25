@@ -6,12 +6,12 @@
 
 $pageTitle = $boot['pageTitle'] ?? null;
 $title = is_string($pageTitle) && $pageTitle !== ''
-    ? "{$pageTitle} | Annabel CMS"
+    ? "{$pageTitle} | Annabel"
     : match ($boot['screen'] ?? null) {
-        'login' => 'Sign in | Annabel CMS',
-        'forgot-password' => 'Reset password | Annabel CMS',
-        'reset-password' => 'Choose new password | Annabel CMS',
-        default => 'Annabel CMS',
+        'login' => 'Sign in | Annabel',
+        'forgot-password' => 'Reset password | Annabel',
+        'reset-password' => 'Choose new password | Annabel',
+        default => 'Annabel',
     };
 ?>
 <!DOCTYPE html>

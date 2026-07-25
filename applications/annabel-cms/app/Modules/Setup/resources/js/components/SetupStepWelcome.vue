@@ -6,7 +6,7 @@ import { VfLink } from '@codemonster-ru/vueforge-core/link';
 <template>
   <div class="setup-step">
     <p class="setup-muted">
-      Thank you for choosing Annabel CMS. This wizard will check the current server, collect the
+      Thank you for choosing Annabel. This wizard will check the current server, collect the
       required installation settings, and prepare the CMS for first use.
     </p>
 

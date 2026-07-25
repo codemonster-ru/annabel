@@ -19,12 +19,14 @@ return [
             [
                 'id' => 'dashboard',
                 'label' => 'Dashboard',
+                'icon' => 'house',
                 'href' => '/admin',
                 'order' => 100,
             ],
             [
                 'id' => 'settings',
                 'label' => 'Settings',
+                'icon' => 'gear',
                 'order' => 900,
             ],
         ],

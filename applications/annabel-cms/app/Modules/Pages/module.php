@@ -3,7 +3,7 @@
 return [
     'name' => 'Pages',
     'version' => '1.0.0',
-    'dependencies' => ['Core'],
+    'dependencies' => ['Core', 'Settings'],
     'routes' => 'routes/web.php',
     'views' => 'views',
     'migrations' => 'database/migrations',

@@ -1,10 +1,14 @@
+<?php /** @var \Codemonster\Cms\Modules\Settings\Models\SiteSetting $site */ ?>
 <!DOCTYPE html>
-<html lang="<?= htmlspecialchars((string) config('cms.locale', 'en'), ENT_QUOTES, 'UTF-8') ?>">
+<html lang="<?= htmlspecialchars((string) ($site->locale ?? 'en'), ENT_QUOTES, 'UTF-8') ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars((string) ($title ?? config('cms.name', 'Annabel CMS')), ENT_QUOTES, 'UTF-8') ?></title>
+    <title><?= htmlspecialchars((string) ($title ?? '') . ' | ' . (string) ($site->site_name ?? ''), ENT_QUOTES, 'UTF-8') ?></title>
+    <?php if (($site->site_description ?? '') !== ''): ?>
+        <meta name="description" content="<?= htmlspecialchars((string) $site->site_description, ENT_QUOTES, 'UTF-8') ?>">
+    <?php endif; ?>
     <style>
         body {
             margin: 0;

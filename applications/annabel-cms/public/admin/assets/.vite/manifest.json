@@ -1,33 +1,82 @@
 {
+  "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
+    "file": "SiteSettingsScreen-BfAT38kX.js",
+    "name": "SiteSettingsScreen",
+    "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-eFWvtNfB.js",
+      "resources/js/main.js",
+      "_classes-CcykAxZN-Bpz0PNdn.js"
+    ],
+    "css": [
+      "SiteSettingsScreen-Bcl3zeVf.css"
+    ]
+  },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-Sb3kqqcY.js",
+    "file": "UserListScreen-DCoggoMu.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
-      "resources/js/main.js"
+      "resources/js/main.js",
+      "_classes-CcykAxZN-Bpz0PNdn.js"
     ],
     "css": [
-      "UserListScreen-BCqRsUxH.css"
+      "UserListScreen-dz350zex.css"
     ]
+  },
+  "__plugin-vue_export-helper-COPSIoBi.css": {
+    "file": "_plugin-vue_export-helper-COPSIoBi.css",
+    "src": "__plugin-vue_export-helper-COPSIoBi.css"
+  },
+  "__plugin-vue_export-helper-eFWvtNfB.js": {
+    "file": "_plugin-vue_export-helper-eFWvtNfB.js",
+    "name": "_plugin-vue_export-helper",
+    "css": [
+      "_plugin-vue_export-helper-COPSIoBi.css"
+    ]
+  },
+  "_classes-CcykAxZN-Bpz0PNdn.js": {
+    "file": "classes-CcykAxZN-Bpz0PNdn.js",
+    "name": "classes-CcykAxZN"
   },
   "resources/images/codemonster-icon.svg": {
     "file": "codemonster-icon-CdswbS-j.svg",
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-CqPUfLDI.js",
+    "file": "admin-DXlIZq12.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
+    "imports": [
+      "_classes-CcykAxZN-Bpz0PNdn.js"
+    ],
     "dynamicImports": [
+      "resources/js/screens/DashboardScreen.vue",
+      "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
       "../AdminUsers/resources/js/screens/UserListScreen.vue"
     ],
     "css": [
-      "main-BkIAK8gd.css"
+      "main-G1JuwKjK.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
+    ]
+  },
+  "resources/js/screens/DashboardScreen.vue": {
+    "file": "DashboardScreen-CR9jlSRE.js",
+    "name": "DashboardScreen",
+    "src": "resources/js/screens/DashboardScreen.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "__plugin-vue_export-helper-eFWvtNfB.js",
+      "resources/js/main.js",
+      "_classes-CcykAxZN-Bpz0PNdn.js"
+    ],
+    "css": [
+      "DashboardScreen-CB-cofu4.css"
     ]
   }
 }

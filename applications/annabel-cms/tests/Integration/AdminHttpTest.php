@@ -127,7 +127,7 @@ class AdminHttpTest extends TestCase
         $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
         $app->getContainer()->instance(UserSessionInterface::class, $session);
 
-        $response = $app->handle(new Request('GET', '/admin/settings/users'));
+        $response = $app->handle(new Request('GET', '/admin/users'));
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('"screen":"admin.users.list"', (string) $response->getContent());
@@ -137,7 +137,33 @@ class AdminHttpTest extends TestCase
     {
         $response = $this->app()->handle(new Request(
             'GET',
-            '/admin/settings/users/data',
+            '/admin/users/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
+    public function testAdminCanOpenGeneralSettings(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/settings/general'));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('"screen":"admin.settings.general"', (string) $response->getContent());
+    }
+
+    public function testGuestCannotLoadGeneralSettingsData(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/settings/general/data',
             [],
             [],
             ['Accept' => 'application/json'],

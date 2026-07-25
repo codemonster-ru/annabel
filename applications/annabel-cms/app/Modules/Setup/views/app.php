@@ -4,7 +4,7 @@
  * @var array{script: string, styles: array<int, string>, favicon: string|null} $assets
  */
 
-$title = 'Install Annabel CMS';
+$title = 'Install Annabel';
 ?>
 <!DOCTYPE html>
 <html lang="en">

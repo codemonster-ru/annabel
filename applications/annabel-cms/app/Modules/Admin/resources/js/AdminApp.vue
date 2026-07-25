@@ -23,7 +23,7 @@ const navigationValue = computed(() => props.boot.navigationValue || '');
 const resetToken = computed(() => props.boot.resetToken || '');
 const screenComponent = computed(() => resolveAdminScreen(screen.value));
 const screenError = computed(() => (
-  authenticated.value && screen.value !== 'dashboard' && !screenComponent.value
+  authenticated.value && !screenComponent.value
     ? screen.value
     : ''
 ));

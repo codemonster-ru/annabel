@@ -96,7 +96,7 @@ function submitOnEnter(event) {
 <template>
   <VfAuthLayout
     class="admin-auth-layout"
-    title="Annabel CMS"
+    title="Annabel"
     description="Sign in to your admin panel"
   >
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />

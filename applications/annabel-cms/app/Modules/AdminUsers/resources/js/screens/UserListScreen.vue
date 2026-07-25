@@ -39,7 +39,7 @@ async function loadUsers() {
   error.value = '';
 
   try {
-    const response = await fetch(`/admin/settings/users/data?${query}`, {
+    const response = await fetch(`/admin/users/data?${query}`, {
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
     });

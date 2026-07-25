@@ -1,12 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { VfAvatar } from '@codemonster-ru/vueforge-core/avatar';
-import { VfBreadcrumbs } from '@codemonster-ru/vueforge-core/breadcrumbs';
+import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfDivider } from '@codemonster-ru/vueforge-core/divider';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
+import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
 import MissingAdminScreen from './MissingAdminScreen.vue';
@@ -40,14 +41,57 @@ const props = defineProps({
 
 const error = ref('');
 const loading = ref(false);
+const adminLayout = ref(null);
+const sidebarStorageKey = 'annabel-admin-sidebar-collapsed';
+const sidebarCollapsed = ref(readSidebarCollapsed());
+const isDesktopViewport = ref(readDesktopViewport());
+let desktopMediaQuery;
 const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
 const activeNavigationPath = computed(() => findNavigationPath(props.navigation, props.navigationValue));
 const pageTitle = computed(() => activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');
-const breadcrumbs = computed(() => activeNavigationPath.value.map((item, index, items) => ({
-  label: item.label,
-  href: index === items.length - 1 ? undefined : item.href,
-  current: index === items.length - 1,
-})));
+
+function readSidebarCollapsed() {
+  try {
+    return window.localStorage.getItem(sidebarStorageKey) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function readDesktopViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+}
+
+function updateDesktopViewport(event) {
+  isDesktopViewport.value = event.matches;
+}
+
+onMounted(() => {
+  desktopMediaQuery = window.matchMedia('(min-width: 1024px)');
+  desktopMediaQuery.addEventListener('change', updateDesktopViewport);
+});
+
+onBeforeUnmount(() => {
+  desktopMediaQuery?.removeEventListener('change', updateDesktopViewport);
+});
+
+function toggleSidebar() {
+  adminLayout.value?.toggleSidebarCollapsed();
+}
+
+function openSite() {
+  window.open('/', '_blank', 'noopener,noreferrer');
+}
+
+function updateSidebarCollapsed(value) {
+  sidebarCollapsed.value = value;
+
+  try {
+    window.localStorage.setItem(sidebarStorageKey, String(value));
+  } catch {
+    // The sidebar remains usable when browser storage is unavailable.
+  }
+}
 
 function findNavigationPath(items, value, path = []) {
   for (const item of items) {
@@ -96,41 +140,72 @@ async function logout() {
   }
 }
 
-function goHome() {
-  window.location.assign('/');
-}
 </script>
 
 <template>
-  <VfAdminLayout class="admin-layout">
-    <template #brand>
-      <div class="admin-layout__brand-content">
-        <img class="admin-layout__brand-logo" :src="brandLogoUrl" alt="" />
-        <span class="admin-layout__brand-title">Annabel CMS</span>
-        <VfIconButton
-          icon="house"
-          variant="ghost"
-          aria-label="Open CMS home page"
-          title="Open CMS home page"
-          @click="goHome"
-        />
+  <VfAdminLayout
+    ref="adminLayout"
+    class="admin-layout"
+    :sidebar-collapsed="sidebarCollapsed"
+    fill-viewport
+    @update:sidebar-collapsed="updateSidebarCollapsed"
+  >
+    <template #brand="{ isSidebarCompact }">
+      <div
+        class="admin-layout__brand-row"
+        :class="{ 'admin-layout__brand-row--compact': isSidebarCompact }"
+      >
+        <a class="admin-layout__brand-content" href="/admin" aria-label="Admin dashboard">
+          <span class="admin-layout__brand-logo-column" aria-hidden="true">
+            <img class="admin-layout__brand-logo" :src="brandLogoUrl" alt="" />
+          </span>
+          <span class="admin-layout__brand-title">Annabel</span>
+        </a>
+        <span
+          class="admin-layout__brand-site-action"
+          :aria-hidden="isSidebarCompact"
+        >
+          <VfButton
+            variant="ghost"
+            :tabindex="isSidebarCompact ? -1 : undefined"
+            @click="openSite"
+          >
+            <VueIconify :icon="icons.externalLink" aria-hidden="true" />
+            <span>View site</span>
+          </VfButton>
+        </span>
       </div>
     </template>
 
-    <template #aside>
+    <template #aside="{ isSidebarCompact }">
       <VfNavMenu
         :items="navigation"
         :model-value="navigationValue"
+        :compact="isSidebarCompact"
         expand-mode="multiple"
-        variant="pills"
+        variant="sidebar"
         aria-label="Admin navigation"
       />
     </template>
 
+    <template #mobile-brand>
+      <a class="admin-layout__mobile-brand-content" href="/admin" aria-label="Admin dashboard">
+        <img class="admin-layout__brand-logo" :src="brandLogoUrl" alt="" aria-hidden="true" />
+        <span class="admin-layout__brand-title">Annabel</span>
+      </a>
+    </template>
+
     <template #header>
+      <VfIconButton
+        v-if="isDesktopViewport"
+        class="admin-layout__sidebar-toggle"
+        :icon="icons.bars"
+        :aria-label="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
+        :title="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
+        :aria-pressed="sidebarCollapsed"
+        @click="toggleSidebar"
+      />
       <div class="admin-layout__actions">
-        <VfThemeSwitch variant="button" button-variant="ghost" />
-        <VfDivider orientation="vertical" />
         <VfDropdown placement="bottom-end">
           <template #trigger>
             <VfAvatar
@@ -144,6 +219,15 @@ function goHome() {
           <div class="admin-user-menu">
             <span class="admin-user-menu__username">{{ user?.username || 'Current user' }}</span>
             <span class="admin-user-menu__email">{{ user?.email || '' }}</span>
+          </div>
+          <VfDivider />
+          <div
+            class="admin-user-menu__theme"
+            @pointerdown.stop
+            @click.stop
+          >
+            <span class="admin-user-menu__theme-label">Theme</span>
+            <VfThemeSwitch variant="switch" />
           </div>
           <VfDivider />
           <button
@@ -161,10 +245,10 @@ function goHome() {
 
     <div class="admin-layout__content">
       <div class="admin-layout__page-heading">
-        <h1>{{ pageTitle }}</h1>
-        <VfBreadcrumbs :items="breadcrumbs">
-          <template #separator>/</template>
-        </VfBreadcrumbs>
+        <div class="admin-layout__page-heading-top">
+          <h1>{{ pageTitle }}</h1>
+          <div id="admin-page-actions" class="admin-layout__page-actions"></div>
+        </div>
         <p v-if="error" class="field__error">{{ error }}</p>
       </div>
       <component :is="screenComponent" v-if="screenComponent" />

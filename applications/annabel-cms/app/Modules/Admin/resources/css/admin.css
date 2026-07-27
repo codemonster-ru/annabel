@@ -254,6 +254,7 @@ body {
 .admin-layout__page-actions {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--vf-surface-gap-compact);
   justify-content: flex-end;
 }
 

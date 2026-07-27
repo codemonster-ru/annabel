@@ -20,6 +20,7 @@ const columns = [
   { key: 'title', header: 'Title', verticalAlign: 'middle' },
   { key: 'slug', header: 'Slug', verticalAlign: 'middle' },
   { key: 'is_published', header: 'Published', verticalAlign: 'middle' },
+  { key: 'sort_order', header: 'Sort order', verticalAlign: 'middle' },
   { key: 'created_at', header: 'Created', verticalAlign: 'middle' },
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
 ];
@@ -29,6 +30,7 @@ const columnLabels = {
   title: 'Title',
   slug: 'Slug',
   is_published: 'Published',
+  sort_order: 'Sort order',
   created_at: 'Created',
   updated_at: 'Updated',
 };
@@ -49,6 +51,7 @@ const emptyPage = () => ({
   meta_description: '',
   content: '',
   is_published: false,
+  sort_order: 1,
   publish_at: '',
   unpublish_at: '',
 });
@@ -224,6 +227,7 @@ async function savePage() {
   body.append('meta_description', page.value.meta_description);
   body.append('content', page.value.content);
   body.append('is_published', page.value.is_published ? '1' : '0');
+  body.append('sort_order', String(page.value.sort_order ?? 1));
   body.append('publish_at', page.value.publish_at);
   body.append('unpublish_at', page.value.unpublish_at);
 
@@ -338,6 +342,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
               <VfIconButton
                 :icon="icons.gear"
                 variant="ghost"
+                size="sm"
                 aria-label="Configure columns"
                 title="Configure columns"
                 :disabled="preferencesSaving"
@@ -367,6 +372,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
               <VfIconButton
                 :icon="icons.bars"
                 variant="ghost"
+                size="sm"
                 :aria-label="`Actions for ${row.title}`"
                 :title="`Actions for ${row.title}`"
               />
@@ -398,6 +404,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
             {{ value ? 'Yes' : 'No' }}
           </span>
         </template>
+        <template #cell-sort_order="{ value }">{{ value }}</template>
       <template #cell-updated_at="{ value }">
         {{ formatDate(value) }}
       </template>
@@ -454,6 +461,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 <VfField label="Slug" description="Lowercase Latin letters, numbers, and hyphens." :error="firstError('slug')" required>
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfInput :id="controlId" v-model="page.slug" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
+                  </template>
+                </VfField>
+
+                <VfField label="Sort order" description="Lower numbers appear first." :error="firstError('sort_order')">
+                  <template #default="{ controlId, describedBy, invalid }">
+                    <VfInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
                   </template>
                 </VfField>
 
@@ -578,7 +591,6 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 }
 .pages-screen__status {
   color: var(--vf-color-muted);
-  font-size: 0.875rem;
 }
 
 .pages-screen__status--published {

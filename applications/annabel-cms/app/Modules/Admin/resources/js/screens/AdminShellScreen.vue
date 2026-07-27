@@ -5,6 +5,7 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfDivider } from '@codemonster-ru/vueforge-core/divider';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
@@ -22,6 +23,10 @@ const props = defineProps({
     default: () => [],
   },
   navigationValue: {
+    type: String,
+    default: '',
+  },
+  pageTitle: {
     type: String,
     default: '',
   },
@@ -48,7 +53,7 @@ const isDesktopViewport = ref(readDesktopViewport());
 let desktopMediaQuery;
 const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
 const activeNavigationPath = computed(() => findNavigationPath(props.navigation, props.navigationValue));
-const pageTitle = computed(() => activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');
+const pageHeading = computed(() => props.pageTitle || activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');
 
 function readSidebarCollapsed() {
   try {
@@ -206,6 +211,8 @@ async function logout() {
         @click="toggleSidebar"
       />
       <div class="admin-layout__actions">
+        <VfThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />
+        <VfDivider v-if="isDesktopViewport" orientation="vertical" />
         <VfDropdown placement="bottom-end">
           <template #trigger>
             <VfAvatar
@@ -220,8 +227,9 @@ async function logout() {
             <span class="admin-user-menu__username">{{ user?.username || 'Current user' }}</span>
             <span class="admin-user-menu__email">{{ user?.email || '' }}</span>
           </div>
-          <VfDivider />
+          <VfDivider v-if="!isDesktopViewport" />
           <div
+            v-if="!isDesktopViewport"
             class="admin-user-menu__theme"
             @pointerdown.stop
             @click.stop
@@ -230,15 +238,9 @@ async function logout() {
             <VfThemeSwitch variant="switch" />
           </div>
           <VfDivider />
-          <button
-            class="vf-dropdown__item"
-            type="button"
-            role="menuitem"
-            :disabled="loading"
-            @click="logout"
-          >
-            Logout
-          </button>
+          <VfMenu>
+            <VfMenuItem label="Logout" :icon="icons.logOut" :disabled="loading" @select="logout" />
+          </VfMenu>
         </VfDropdown>
       </div>
     </template>
@@ -246,7 +248,7 @@ async function logout() {
     <div class="admin-layout__content">
       <div class="admin-layout__page-heading">
         <div class="admin-layout__page-heading-top">
-          <h1>{{ pageTitle }}</h1>
+          <h1>{{ pageHeading }}</h1>
           <div id="admin-page-actions" class="admin-layout__page-actions"></div>
         </div>
         <p v-if="error" class="field__error">{{ error }}</p>

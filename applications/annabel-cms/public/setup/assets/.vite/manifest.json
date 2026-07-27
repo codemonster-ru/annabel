@@ -4,12 +4,12 @@
     "src": "resources/images/setup-brand.svg"
   },
   "resources/js/main.js": {
-    "file": "setup-D0D05WAQ.js",
+    "file": "setup-DHbqPWZo.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "css": [
-      "main-CGX7NaNk.css"
+      "main-C_4BhRdo.css"
     ]
   }
 }

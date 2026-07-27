@@ -8,10 +8,13 @@ use Codemonster\Database\ORM\Model;
  * @property int|string $id
  * @property string $slug
  * @property string $title
+ * @property string|null $meta_title
  * @property string|null $meta_description
  * @property string $content
  * @property bool $is_published
  * @property string|null $published_at
+ * @property string|null $publish_at
+ * @property string|null $unpublish_at
  */
 class Page extends Model
 {
@@ -22,16 +25,21 @@ class Page extends Model
         'id',
         'slug',
         'title',
+        'meta_title',
         'meta_description',
         'content',
         'is_published',
         'published_at',
+        'publish_at',
+        'unpublish_at',
     ];
 
     /** @var array<string, string> */
     protected array $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'publish_at' => 'datetime',
+        'unpublish_at' => 'datetime',
     ];
 
     public static function findPublishedBySlug(string $slug): ?self
@@ -39,6 +47,14 @@ class Page extends Model
         $page = static::query()
             ->where('slug', self::normalizeSlug($slug))
             ->where('is_published', 1)
+            ->where(static function ($query): void {
+                $query->whereNull('publish_at')
+                    ->orWhere('publish_at', '<=', gmdate('Y-m-d H:i:s'));
+            })
+            ->where(static function ($query): void {
+                $query->whereNull('unpublish_at')
+                    ->orWhere('unpublish_at', '>=', gmdate('Y-m-d H:i:s'));
+            })
             ->first();
 
         return $page instanceof self ? $page : null;

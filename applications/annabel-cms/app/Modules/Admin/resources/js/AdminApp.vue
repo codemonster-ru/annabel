@@ -20,6 +20,7 @@ const csrfToken = computed(() => props.boot.csrfToken || '');
 const user = computed(() => props.boot.user || null);
 const navigation = computed(() => props.boot.navigation || []);
 const navigationValue = computed(() => props.boot.navigationValue || '');
+const pageTitle = computed(() => props.boot.pageTitle || '');
 const resetToken = computed(() => props.boot.resetToken || '');
 const screenComponent = computed(() => resolveAdminScreen(screen.value));
 const screenError = computed(() => (
@@ -49,6 +50,7 @@ const screenError = computed(() => (
       :csrf-token="csrfToken"
       :navigation="navigation"
       :navigation-value="navigationValue"
+      :page-title="pageTitle"
       :screen-component="screenComponent"
       :screen-error="screenError"
       :user="user"

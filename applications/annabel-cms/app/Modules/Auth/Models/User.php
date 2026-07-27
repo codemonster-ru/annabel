@@ -12,6 +12,7 @@ use Codemonster\Database\Relations\BelongsToMany;
  * @property bool $is_active
  * @property string $password
  * @property string|null $remember_token
+ * @property \DateTimeImmutable|null $created_at
  * @property \DateTimeImmutable|null $updated_at
  */
 class User extends Model
@@ -38,6 +39,7 @@ class User extends Model
     protected array $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 

@@ -41,6 +41,7 @@ class PageController
 
         return new Response($this->view->render('pages::show', [
             'title' => $page->title,
+            'meta_title' => $page->meta_title ?: $page->title,
             'meta_description' => $page->meta_description,
             'content' => $page->content,
             'site' => $site,

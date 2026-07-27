@@ -15,10 +15,10 @@ class PageManagementController
     private const TABLE_KEY = 'pages';
 
     /** @var list<string> */
-    private const ALL_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'created_at', 'updated_at'];
+    private const ALL_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'sort_order', 'created_at', 'updated_at'];
 
     /** @var list<string> */
-    private const DEFAULT_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'created_at', 'updated_at'];
+    private const DEFAULT_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'sort_order', 'created_at', 'updated_at'];
 
     private const DEFAULT_PER_PAGE = 10;
 
@@ -55,7 +55,7 @@ class PageManagementController
     public function data(Request $request): Response
     {
         $query = Page::query();
-        $query->getBuilder()->orderBy('id', 'desc');
+        $query->getBuilder()->orderBy('sort_order', 'asc')->orderBy('title', 'asc');
         $page = $this->positiveInteger($request->query('page'), 1);
         $perPage = $this->positiveInteger($request->query('per_page'), self::DEFAULT_PER_PAGE);
 
@@ -176,6 +176,7 @@ class PageManagementController
         $validated = $this->validator->validateOrFail([
             'slug' => Page::normalizeSlug((string) $request->input('slug')),
             'title' => trim((string) $request->input('title')),
+            'sort_order' => $request->input('sort_order'),
             'meta_title' => trim((string) $request->input('meta_title')),
             'meta_description' => trim((string) $request->input('meta_description')),
             'content' => trim((string) $request->input('content')),
@@ -184,6 +185,7 @@ class PageManagementController
         ], [
             'slug' => 'required|string|max:120',
             'title' => 'required|string|max:255',
+            'sort_order' => 'nullable|integer|min:1|max:1000000',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'content' => 'required|string',
@@ -223,6 +225,7 @@ class PageManagementController
         $page->fill([
             'slug' => $validated['slug'],
             'title' => $validated['title'],
+            'sort_order' => (int) ($validated['sort_order'] ?? 1),
             'meta_title' => $validated['meta_title'] !== '' ? $validated['meta_title'] : null,
             'meta_description' => $validated['meta_description'] !== '' ? $validated['meta_description'] : null,
             'content' => $validated['content'],
@@ -246,6 +249,7 @@ class PageManagementController
             'id' => $page->id,
             'slug' => (string) $page->slug,
             'title' => (string) $page->title,
+            'sort_order' => (int) $page->sort_order,
             'meta_title' => (string) ($page->meta_title ?? ''),
             'meta_description' => (string) ($page->meta_description ?? ''),
             'content' => (string) $page->content,

@@ -8,6 +8,7 @@ use Codemonster\Database\ORM\Model;
  * @property int|string $id
  * @property string $slug
  * @property string $title
+ * @property int $sort_order
  * @property string|null $meta_title
  * @property string|null $meta_description
  * @property string $content
@@ -25,6 +26,7 @@ class Page extends Model
         'id',
         'slug',
         'title',
+        'sort_order',
         'meta_title',
         'meta_description',
         'content',
@@ -37,6 +39,7 @@ class Page extends Model
     /** @var array<string, string> */
     protected array $casts = [
         'is_published' => 'boolean',
+        'sort_order' => 'integer',
         'published_at' => 'datetime',
         'publish_at' => 'datetime',
         'unpublish_at' => 'datetime',

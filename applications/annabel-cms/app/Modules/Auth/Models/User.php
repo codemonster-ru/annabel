@@ -74,29 +74,29 @@ class User extends Model
     }
 
     /**
-     * @return BelongsToMany<Role, $this>
+     * @return BelongsToMany<Group, $this>
      */
-    public function roles(): BelongsToMany
+    public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id');
     }
 
     /**
      * @return array<int, string>
      */
-    public function roleNames(): array
+    public function groupNames(): array
     {
-        $roles = db()
-            ->table('role_user')
-            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+        $groups = db()
+            ->table('group_user')
+            ->join('groups', 'group_user.group_id', '=', 'groups.id')
             ->where('user_id', $this->id)
-            ->select('roles.*')
+            ->select('groups.*')
             ->get();
 
         $names = [];
 
-        foreach ($roles as $role) {
-            $name = $role['name'] ?? null;
+        foreach ($groups as $group) {
+            $name = $group['name'] ?? null;
 
             if (is_string($name) && $name !== '') {
                 $names[] = $name;
@@ -106,43 +106,43 @@ class User extends Model
         return $names;
     }
 
-    public function hasRole(string $name): bool
+    public function hasGroup(string $name): bool
     {
         if ($name === '') {
             return false;
         }
 
         return db()
-            ->table('role_user')
-            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->table('group_user')
+            ->join('groups', 'group_user.group_id', '=', 'groups.id')
             ->where('user_id', $this->id)
             ->where('name', $name)
             ->exists();
     }
 
-    public function assignRole(string $name): void
+    public function assignGroup(string $name): void
     {
         if ($name === '') {
             return;
         }
 
-        $role = Role::findOrCreate($name);
+        $role = Group::findOrCreate($name);
         $roleId = $role->id ?? null;
 
         if (!$roleId) {
-            throw new \RuntimeException('Role not found or missing id.');
+            throw new \RuntimeException('Group not found or missing id.');
         }
 
         $exists = db()
-            ->table('role_user')
+            ->table('group_user')
             ->where('user_id', $this->id)
-            ->where('role_id', $roleId)
+            ->where('group_id', $roleId)
             ->exists();
 
         if (!$exists) {
-            db()->table('role_user')->insert([
+            db()->table('group_user')->insert([
                 'user_id' => $this->id,
-                'role_id' => $roleId,
+                'group_id' => $roleId,
             ]);
         }
     }

@@ -11,13 +11,13 @@ class AuthenticatedUserTest extends TestCase
     {
         $user = new AuthenticatedUser(42, 'admin', 'admin@example.com', ['admin', 'editor']);
 
-        self::assertTrue($user->hasRole('admin'));
-        self::assertFalse($user->hasRole('missing'));
+        self::assertTrue($user->hasGroup('admin'));
+        self::assertFalse($user->hasGroup('missing'));
         self::assertSame([
             'id' => 42,
             'username' => 'admin',
             'email' => 'admin@example.com',
-            'roles' => ['admin', 'editor'],
+            'groups' => ['admin', 'editor'],
         ], $user->toArray());
     }
 }

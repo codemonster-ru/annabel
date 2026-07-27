@@ -221,8 +221,8 @@ class UserListController
 
         $user->save();
 
-        if (!$user->hasRole('admin')) {
-            $user->assignRole('admin');
+        if (!$user->hasGroup('admin')) {
+            $user->assignGroup('admin');
         }
 
         return Response::json([

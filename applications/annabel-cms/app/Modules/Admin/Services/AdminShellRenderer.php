@@ -48,7 +48,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
      *     authenticated: bool,
      *     screen: string,
      *     csrfToken: string,
-     *     user: array{id: int|string, username: string, email: string, roles: array<int, string>}|null,
+     *     user: array{id: int|string, username: string, email: string, groups: array<int, string>}|null,
      *     navigation: array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>,
      *     navigationValue: string,
      *     pageTitle: string|null,

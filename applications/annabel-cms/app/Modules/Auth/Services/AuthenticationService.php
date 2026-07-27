@@ -20,7 +20,7 @@ class AuthenticationService implements AuthenticatorInterface
             $user->id,
             (string) $user->username,
             (string) $user->email,
-            $user->roleNames(),
+            $user->groupNames(),
         );
     }
 }

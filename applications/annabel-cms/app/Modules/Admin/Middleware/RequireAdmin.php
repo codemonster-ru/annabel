@@ -23,7 +23,7 @@ class RequireAdmin
                 : Response::redirect('/admin/login');
         }
 
-        if (!$user->hasRole('admin')) {
+        if (!$user->hasGroup('admin')) {
             return $request->wantsJson()
                 ? Response::json(['message' => 'Forbidden'], 403)
                 : new Response('Forbidden', 403);

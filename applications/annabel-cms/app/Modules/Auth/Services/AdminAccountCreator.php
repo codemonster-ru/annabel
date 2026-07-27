@@ -32,7 +32,7 @@ class AdminAccountCreator
                 'password' => password_hash($data['password'], PASSWORD_DEFAULT),
             ]);
 
-            $user->assignRole('admin');
+            $user->assignGroup('admin');
 
             return $user;
         });

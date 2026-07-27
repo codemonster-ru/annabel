@@ -87,7 +87,7 @@ class SessionUserService implements UserSessionInterface
         $this->csrf->regenerateToken();
     }
 
-    public function hasRole(string $role, bool $strict = false): bool
+    public function hasGroup(string $group, bool $strict = false): bool
     {
         $user = $this->current($strict);
 
@@ -95,7 +95,7 @@ class SessionUserService implements UserSessionInterface
             return false;
         }
 
-        return $user->hasRole($role);
+        return $user->hasGroup($group);
     }
 
     public function forgetRememberToken(int|string $userId): void
@@ -169,7 +169,7 @@ class SessionUserService implements UserSessionInterface
             $user->id,
             (string) $user->username,
             (string) $user->email,
-            $user->roleNames(),
+            $user->groupNames(),
         );
     }
 
@@ -181,9 +181,10 @@ class SessionUserService implements UserSessionInterface
         $id = $user['id'] ?? null;
         $username = $user['username'] ?? null;
         $email = $user['email'] ?? null;
-        $roles = $user['roles'] ?? null;
+        // Accept the old session key once so active sessions survive the rename.
+        $groups = $user['groups'] ?? $user['roles'] ?? null;
 
-        if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($roles)) {
+        if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($groups)) {
             return null;
         }
 
@@ -191,7 +192,7 @@ class SessionUserService implements UserSessionInterface
             $id,
             $username,
             $email,
-            array_values(array_filter($roles, 'is_string')),
+            array_values(array_filter($groups, 'is_string')),
         );
     }
 }

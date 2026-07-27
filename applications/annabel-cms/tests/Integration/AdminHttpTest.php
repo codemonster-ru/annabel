@@ -6,6 +6,8 @@ use Codemonster\Annabel\Application;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Settings\Models\SiteSetting;
+use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use Codemonster\Cms\Support\Installation\InstallationState;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
@@ -202,6 +204,15 @@ class AdminHttpTest extends TestCase
     {
         $app = require dirname(__DIR__, 2) . '/bootstrap/app.php';
         $app->getContainer()->instance(InstallationState::class, new InstalledInstallationState());
+
+        $settings = $this->createStub(SiteSettings::class);
+        $settings->method('current')->willReturn(new SiteSetting([
+            'id' => 1,
+            'site_name' => 'Annabel CMS',
+            'locale' => 'en',
+            'timezone' => 'UTC',
+        ], true));
+        $app->getContainer()->instance(SiteSettings::class, $settings);
 
         return $app;
     }

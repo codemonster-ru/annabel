@@ -287,7 +287,7 @@ class PageManagementController
             return null;
         }
 
-        return $value
+        return \DateTimeImmutable::createFromInterface($value)
             ->setTimezone(new \DateTimeZone((string) $this->settings->current()->timezone))
             ->format('Y-m-d\\TH:i');
     }

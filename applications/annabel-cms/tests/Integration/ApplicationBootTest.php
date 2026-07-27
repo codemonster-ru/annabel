@@ -51,6 +51,11 @@ class ApplicationBootTest extends TestCase
                         'label' => 'User list',
                         'href' => '/admin/users',
                     ],
+                    [
+                        'value' => 'admin.users.groups',
+                        'label' => 'Groups',
+                        'href' => '/admin/groups',
+                    ],
                 ],
             ],
             [
@@ -68,6 +73,7 @@ class ApplicationBootTest extends TestCase
         ], $adminNavigation->navigation());
         self::assertSame('General', $adminNavigation->label('admin.settings.general'));
         self::assertSame('User list', $adminNavigation->label('admin.users.list'));
+        self::assertSame('Groups', $adminNavigation->label('admin.users.groups'));
         self::assertNull($adminNavigation->label('admin.missing'));
 
         $basePath = dirname(__DIR__, 2);

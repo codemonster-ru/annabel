@@ -103,7 +103,7 @@ class AdminPasswordResetController
 
         $user = User::find($record['user_id']);
 
-        if (!$user instanceof User || !$user->hasRole('admin')) {
+        if (!$user instanceof User || !$user->hasGroup('admin')) {
             $this->tokens->deleteForUser((int) ($record['user_id'] ?? 0));
 
             return $this->invalidTokenResponse();
@@ -131,7 +131,7 @@ class AdminPasswordResetController
             return null;
         }
 
-        if (!$user->hasRole('admin')) {
+        if (!$user->hasGroup('admin')) {
             abort(403);
         }
 
@@ -142,7 +142,7 @@ class AdminPasswordResetController
     {
         $user = User::findByEmail($email);
 
-        if (!$user instanceof User || !$user->hasRole('admin')) {
+        if (!$user instanceof User || !$user->hasGroup('admin')) {
             return null;
         }
 

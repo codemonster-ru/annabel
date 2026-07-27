@@ -21,6 +21,13 @@ return [
                 'href' => '/admin/users',
                 'order' => 100,
             ],
+            [
+                'id' => 'admin.users.groups',
+                'parent' => 'admin.users',
+                'label' => 'Groups',
+                'href' => '/admin/groups',
+                'order' => 110,
+            ],
         ],
     ],
 ];

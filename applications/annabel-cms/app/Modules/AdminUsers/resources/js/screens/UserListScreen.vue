@@ -233,7 +233,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
         <template #header-actions>
           <VfDropdown placement="bottom-start" :close-on-select="false">
             <template #trigger>
-              <VfIconButton :icon="icons.gear" variant="ghost" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" />
+              <VfIconButton :icon="icons.gear" variant="ghost" size="sm" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" />
             </template>
             <div class="users-screen__column-select-all">
               <VfCheckbox label="All columns" :model-value="visibleColumns.length === columns.length" :disabled="preferencesSaving" @update:model-value="toggleAllColumns" />
@@ -244,7 +244,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
         <template #cell-actions="{ row }">
           <VfDropdown placement="bottom-start">
             <template #trigger>
-              <VfIconButton :icon="icons.bars" variant="ghost" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
+              <VfIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
             <VfMenu>
               <VfMenuItem label="Edit" :icon="icons.pencil" @select="editUser(row)" />
@@ -294,7 +294,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
 <style scoped>
 .users-screen { display: grid; gap: var(--vf-section-gap); }
 .users-screen__column-select-all { display: flex; padding: 0.25rem 0 0.5rem; border-block-end: 1px solid var(--vf-color-border); }
-.users-screen__status { color: var(--vf-color-muted); font-size: 0.875rem; }
+.users-screen__status { color: var(--vf-color-muted); }
 .users-screen__status--active { color: var(--vf-color-success); }
 .users-screen__user-link { color: var(--vf-color-text-link); text-decoration: none; }
 .users-screen__user-link:hover { text-decoration: underline; }

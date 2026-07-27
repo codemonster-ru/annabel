@@ -146,6 +146,32 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
+    public function testAdminCanOpenGroupList(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/groups'));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('"screen":"admin.groups.list"', (string) $response->getContent());
+    }
+
+    public function testGuestCannotLoadGroupListData(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/groups/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
     public function testAdminCanOpenGeneralSettings(): void
     {
         $app = $this->app();
@@ -242,8 +268,8 @@ final class InMemoryUserSession implements UserSessionInterface
         return 2592000;
     }
 
-    public function hasRole(string $role, bool $strict = false): bool
+    public function hasGroup(string $group, bool $strict = false): bool
     {
-        return $this->user?->hasRole($role) ?? false;
+        return $this->user?->hasGroup($group) ?? false;
     }
 }

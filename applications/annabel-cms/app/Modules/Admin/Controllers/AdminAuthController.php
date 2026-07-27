@@ -29,7 +29,7 @@ class AdminAuthController
             return $this->renderer->render(false, 'login');
         }
 
-        if (!$user->hasRole('admin')) {
+        if (!$user->hasGroup('admin')) {
             abort(403);
         }
 
@@ -54,7 +54,7 @@ class AdminAuthController
             ], 401);
         }
 
-        if (!$user->hasRole('admin')) {
+        if (!$user->hasGroup('admin')) {
             return $this->json([
                 'message' => 'This account does not have admin access',
             ], 403);

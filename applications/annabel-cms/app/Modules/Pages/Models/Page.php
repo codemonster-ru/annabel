@@ -13,9 +13,11 @@ use Codemonster\Database\ORM\Model;
  * @property string|null $meta_description
  * @property string $content
  * @property bool $is_published
- * @property string|null $published_at
- * @property string|null $publish_at
- * @property string|null $unpublish_at
+ * @property \DateTimeInterface|null $created_at
+ * @property \DateTimeInterface|null $published_at
+ * @property \DateTimeInterface|null $publish_at
+ * @property \DateTimeInterface|null $unpublish_at
+ * @property \DateTimeInterface|null $updated_at
  */
 class Page extends Model
 {
@@ -40,9 +42,11 @@ class Page extends Model
     protected array $casts = [
         'is_published' => 'boolean',
         'sort_order' => 'integer',
+        'created_at' => 'datetime',
         'published_at' => 'datetime',
         'publish_at' => 'datetime',
         'unpublish_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public static function findPublishedBySlug(string $slug): ?self

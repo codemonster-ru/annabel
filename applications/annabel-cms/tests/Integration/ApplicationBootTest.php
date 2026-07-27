@@ -26,11 +26,12 @@ class ApplicationBootTest extends TestCase
         self::assertSame([
             'Core' => '1.0.0',
             'Auth' => '1.0.0',
-            'Admin' => '1.0.0',
             'Settings' => '1.0.0',
+            'Admin' => '1.0.0',
+            'Pages' => '1.0.0',
+            'AdminPages' => '1.0.0',
             'AdminSettings' => '1.0.0',
             'AdminUsers' => '1.0.0',
-            'Pages' => '1.0.0',
             'Setup' => '1.0.0',
         ], $modules->listAll());
 
@@ -59,6 +60,12 @@ class ApplicationBootTest extends TestCase
                 ],
             ],
             [
+                'value' => 'admin.pages',
+                'label' => 'Pages',
+                'leadingIcon' => 'file-text',
+                'href' => '/admin/pages',
+            ],
+            [
                 'value' => 'settings',
                 'label' => 'Settings',
                 'leadingIcon' => 'gear',
@@ -81,6 +88,7 @@ class ApplicationBootTest extends TestCase
             $basePath . '/app/Modules/Auth/database/migrations',
             $basePath . '/app/Modules/Settings/database/migrations',
             $basePath . '/app/Modules/Pages/database/migrations',
+            $basePath . '/app/Modules/AdminPages/database/migrations',
         ], $modules->migrationPaths());
         self::assertSame([
             $basePath . '/app/Modules/Auth/database/seeds',

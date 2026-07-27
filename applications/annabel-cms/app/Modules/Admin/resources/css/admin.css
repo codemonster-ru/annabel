@@ -292,6 +292,11 @@ label {
   line-height: var(--vf-text-body-line-height);
 }
 
+.vf-input,
+.vf-textarea {
+  font-family: var(--vf-font-family-base);
+}
+
 code {
   font-family: var(--vf-font-family-mono);
   overflow-wrap: anywhere;

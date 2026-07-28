@@ -15,8 +15,8 @@ import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
 const columns = [
-  { key: 'actions', header: '', width: '4rem', align: 'center', verticalAlign: 'middle' },
-  { key: 'id', header: 'ID', width: '5rem', align: 'center', verticalAlign: 'middle' },
+  { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
+  { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'title', header: 'Title', verticalAlign: 'middle' },
   { key: 'slug', header: 'Slug', verticalAlign: 'middle' },
   { key: 'is_published', header: 'Published', verticalAlign: 'middle' },

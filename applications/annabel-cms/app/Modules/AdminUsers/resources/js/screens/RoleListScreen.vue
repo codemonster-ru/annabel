@@ -15,8 +15,8 @@ import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
 const columns = [
-  { key: 'actions', header: '', width: '4rem', align: 'center', verticalAlign: 'middle' },
-  { key: 'id', header: 'ID', width: '5rem', align: 'center', verticalAlign: 'middle' },
+  { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
+  { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'name', header: 'Name', verticalAlign: 'middle' },
   { key: 'code', header: 'Code', verticalAlign: 'middle' },
   { key: 'is_active', header: 'Active', verticalAlign: 'middle' },

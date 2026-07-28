@@ -14,8 +14,8 @@ import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
 const columns = [
-  { key: 'actions', header: '', width: '4rem', align: 'center', verticalAlign: 'middle' },
-  { key: 'id', header: 'ID', width: '5rem', align: 'center', verticalAlign: 'middle' },
+  { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
+  { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'username', header: 'Username', verticalAlign: 'middle' },
   { key: 'email', header: 'Email', verticalAlign: 'middle' },
   { key: 'is_active', header: 'Active', verticalAlign: 'middle' },

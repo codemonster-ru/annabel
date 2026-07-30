@@ -5,6 +5,8 @@ namespace Codemonster\Database\Tests\ORM;
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
 use Codemonster\Database\Tests\Fakes\FakeModels\User;
+use Codemonster\DateTime\FrozenClock;
+use Codemonster\DateTime\SystemClock;
 use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase
@@ -22,6 +24,11 @@ class ModelTest extends TestCase
         $this->conn->tables['users'] = [
             ['id' => 1, 'name' => 'Vasya', 'email' => 'v@example.com'],
         ];
+    }
+
+    protected function tearDown(): void
+    {
+        Model::setClock(new SystemClock());
     }
 
     public function test_find_returns_model(): void
@@ -42,6 +49,22 @@ class ModelTest extends TestCase
         $this->assertNotNull($user->id);
         $this->assertEquals('Test', $user->name);
         $this->assertEquals('test@example.com', $this->conn->tables['users'][1]['email']);
+    }
+
+    public function test_model_timestamps_use_the_registered_clock(): void
+    {
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        Model::setClock($clock);
+
+        User::create([
+            'name' => 'Clock',
+            'email' => 'clock@example.com',
+        ]);
+
+        $row = $this->conn->tables['users'][1];
+
+        $this->assertSame('2026-06-09 10:15:00', $row['created_at']);
+        $this->assertSame('2026-06-09 10:15:00', $row['updated_at']);
     }
 
     public function test_save_updates_existing(): void

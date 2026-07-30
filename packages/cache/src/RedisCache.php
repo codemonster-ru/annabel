@@ -4,13 +4,16 @@ namespace Codemonster\Cache;
 
 use Codemonster\Cache\Exceptions\CacheException;
 use DateInterval;
+use Psr\Clock\ClockInterface;
 
 class RedisCache extends ArrayCache
 {
     public function __construct(
         protected object $client,
         protected string $prefix = 'cache:',
+        ?ClockInterface $clock = null,
     ) {
+        parent::__construct($clock);
     }
 
     public function get(string $key, mixed $default = null): mixed
@@ -123,7 +126,9 @@ class RedisCache extends ArrayCache
         }
 
         if ($ttl instanceof DateInterval) {
-            return (new \DateTimeImmutable())->add($ttl)->getTimestamp() - time();
+            $now = $this->clock->now();
+
+            return $now->add($ttl)->getTimestamp() - $now->getTimestamp();
         }
 
         return $ttl;

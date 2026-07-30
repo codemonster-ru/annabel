@@ -3,8 +3,10 @@
 namespace Codemonster\Queue;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Queue\Contracts\FailedJobRepositoryInterface;
 use Codemonster\Queue\Contracts\QueueInterface;
+use Psr\Clock\ClockInterface;
 
 class QueueManager
 {
@@ -16,15 +18,20 @@ class QueueManager
     protected array $failedJobRepositories = [];
     /** @var \Closure():ConnectionInterface|null */
     protected ?\Closure $databaseConnectionResolver;
+    protected ClockInterface $clock;
 
     /**
      * @param array<string, mixed> $config
      * @param \Closure():ConnectionInterface|null $databaseConnectionResolver
      */
-    public function __construct(array $config, ?\Closure $databaseConnectionResolver = null)
-    {
+    public function __construct(
+        array $config,
+        ?\Closure $databaseConnectionResolver = null,
+        ?ClockInterface $clock = null,
+    ) {
         $this->config = $config;
         $this->databaseConnectionResolver = $databaseConnectionResolver;
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function defaultConnection(): string
@@ -81,6 +88,7 @@ class QueueManager
             $this->stringConfig($config, 'table', 'jobs'),
             $this->stringConfig($config, 'failed_table', 'failed_jobs'),
             $this->intConfig($config, 'max_attempts', 3),
+            $this->clock,
         );
     }
 
@@ -116,6 +124,8 @@ class QueueManager
                 $this->stringConfig($config, 'failed_table', 'failed_jobs'),
                 $this->intConfig($config, 'retry_after', 60),
                 $this->intConfig($config, 'max_attempts', 3),
+                null,
+                $this->clock,
             );
         }
 
@@ -126,6 +136,8 @@ class QueueManager
                 $this->stringConfig($config, 'prefix', 'queue:'),
                 $this->intConfig($config, 'retry_after', 60),
                 $this->intConfig($config, 'max_attempts', 3),
+                null,
+                $this->clock,
             );
         }
 

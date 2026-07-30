@@ -1,11 +1,19 @@
 <?php
 
 use Codemonster\Database\Seeders\Seeder;
+use Codemonster\DateTime\DateTime;
+use Psr\Clock\ClockInterface;
 
 return new class () extends Seeder {
     public function run(): void
     {
-        $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $clock = app(ClockInterface::class);
+
+        if (!$clock instanceof ClockInterface) {
+            throw new RuntimeException('Clock service is not available.');
+        }
+
+        $now = DateTime::now($clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         $groups = [
             'admin' => 1,
             'user' => 2,

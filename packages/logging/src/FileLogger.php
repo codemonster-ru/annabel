@@ -2,13 +2,19 @@
 
 namespace Codemonster\Logging;
 
+use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\AbstractLogger;
 use Stringable;
 
 class FileLogger extends AbstractLogger
 {
-    public function __construct(protected string $path)
+    protected ClockInterface $clock;
+
+    public function __construct(protected string $path, ?ClockInterface $clock = null)
     {
+        $this->clock = $clock ?? new SystemClock(date_default_timezone_get());
     }
 
     public function log($level, string|Stringable $message, array $context = []): void
@@ -23,7 +29,7 @@ class FileLogger extends AbstractLogger
 
         $line = sprintf(
             "[%s] %s: %s %s\n",
-            date('Y-m-d H:i:s'),
+            $this->clock->now()->format(DateTime::DATABASE_FORMAT),
             strtoupper($level),
             $this->interpolate((string) $message, $context),
             $this->formatContext($context),

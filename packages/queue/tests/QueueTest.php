@@ -3,6 +3,7 @@
 namespace Codemonster\Queue\Tests;
 
 use Codemonster\Database\Connection;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\JobOptionsInterface;
 use Codemonster\Queue\DatabaseQueue;
@@ -95,6 +96,22 @@ class QueueTest extends TestCase
         self::assertSame('emails', $job->queue());
         self::assertSame(1, $job->attempts());
         self::assertSame(3, $job->maxAttempts());
+    }
+
+    public function test_database_queue_uses_the_injected_clock(): void
+    {
+        $connection = $this->sqlite();
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $queue = new DatabaseQueue($connection, clock: $clock);
+        $queue->push(new TestJob());
+
+        $row = $connection->table('jobs')->first();
+
+        self::assertNotNull($row);
+        self::assertTrue(is_int($row['available_at']) || is_string($row['available_at']));
+        self::assertTrue(is_int($row['created_at']) || is_string($row['created_at']));
+        self::assertSame($clock->now()->getTimestamp(), (int) $row['available_at']);
+        self::assertSame($clock->now()->getTimestamp(), (int) $row['created_at']);
     }
 
     public function test_worker_processes_database_jobs(): void

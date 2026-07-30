@@ -6,3 +6,4 @@
 - Added sync queue driver.
 - Added Redis queue driver and Redis failed job repository.
 - Added queue manager and job result value object.
+- Added PSR-20 clock injection for deterministic queue timestamps.

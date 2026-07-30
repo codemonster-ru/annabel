@@ -3,14 +3,21 @@
 namespace Codemonster\Cms\Modules\Auth\Services;
 
 use Codemonster\Cms\Modules\Auth\Models\User;
+use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\InvalidDateTimeException;
+use Psr\Clock\ClockInterface;
 
 class PasswordResetTokenService
 {
+    public function __construct(private ClockInterface $clock)
+    {
+    }
+
     public function issue(User $user, int $ttlSeconds): string
     {
         $token = bin2hex(random_bytes(32));
-        $now = date('Y-m-d H:i:s');
-        $expiresAt = date('Y-m-d H:i:s', time() + $ttlSeconds);
+        $now = DateTime::now($this->clock, 'UTC');
+        $expiresAt = $now->addSeconds($ttlSeconds);
 
         transaction(function () use ($user, $token, $now, $expiresAt): void {
             $this->deleteForUser((int) $user->id);
@@ -18,8 +25,8 @@ class PasswordResetTokenService
             db()->table('password_reset_tokens')->insert([
                 'user_id' => $user->id,
                 'token_hash' => hash('sha256', $token),
-                'expires_at' => $expiresAt,
-                'created_at' => $now,
+                'expires_at' => $expiresAt->format(DateTime::DATABASE_FORMAT),
+                'created_at' => $now->format(DateTime::DATABASE_FORMAT),
             ]);
         });
 
@@ -43,7 +50,17 @@ class PasswordResetTokenService
 
         $expiresAt = $record['expires_at'] ?? null;
 
-        if (!is_string($expiresAt) || strtotime($expiresAt) === false || strtotime($expiresAt) < time()) {
+        if (!is_string($expiresAt)) {
+            return null;
+        }
+
+        try {
+            $expiration = DateTime::fromFormat(DateTime::DATABASE_FORMAT, $expiresAt, 'UTC');
+        } catch (InvalidDateTimeException) {
+            return null;
+        }
+
+        if (!$expiration->isAfter(DateTime::now($this->clock, 'UTC'))) {
             return null;
         }
 
@@ -64,7 +81,11 @@ class PasswordResetTokenService
     public function deleteExpired(): void
     {
         db()->table('password_reset_tokens')
-            ->where('expires_at', '<=', date('Y-m-d H:i:s'))
+            ->where(
+                'expires_at',
+                '<=',
+                DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT),
+            )
             ->delete();
     }
 }

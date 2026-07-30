@@ -22,12 +22,17 @@ use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\QueueInterface;
 use Codemonster\Scheduler\Schedule;
 use Codemonster\Validation\Validator;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Throwable;
 
 class DemoController
 {
+    public function __construct(private ClockInterface $clock)
+    {
+    }
+
     public function index(): Response
     {
         return $this->view();
@@ -35,7 +40,7 @@ class DemoController
 
     public function cache(CacheInterface $cache): Response
     {
-        $value = 'cache-' . date('H:i:s');
+        $value = 'cache-' . $this->clock->now()->format('H:i:s');
         $cache->set('annabel.demo.cache', $value);
 
         return $this->view([
@@ -90,7 +95,7 @@ class DemoController
             );
             $database->insert(
                 'INSERT INTO demo_events (label, created_at) VALUES (?, ?)',
-                ['browser-demo', time()],
+                ['browser-demo', $this->clock->now()->getTimestamp()],
             );
             $latest = $database->selectOne('SELECT COUNT(*) AS total FROM demo_events');
 
@@ -109,7 +114,7 @@ class DemoController
     public function filesystem(FilesystemInterface $filesystem): Response
     {
         $path = 'demo/status.txt';
-        $contents = 'filesystem-' . date('H:i:s');
+        $contents = 'filesystem-' . $this->clock->now()->format('H:i:s');
         $filesystem->put($path, $contents);
 
         return $this->view([
@@ -323,6 +328,7 @@ class DemoController
             'databaseTotal' => null,
             'databaseError' => null,
             'results' => [],
+            'currentYear' => $this->clock->now()->format('Y'),
         ], $state));
     }
 }

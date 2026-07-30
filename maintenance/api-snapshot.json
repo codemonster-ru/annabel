@@ -2928,9 +2928,18 @@
             ],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$items": "protected"
             },
             "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "?ClockInterface$param=null",
+                    "return": ""
+                },
                 "add": {
                     "visibility": "public",
                     "static": false,
@@ -3023,6 +3032,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$config": "protected",
                 "$stores": "protected"
             },
@@ -3032,7 +3042,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "array$param",
+                    "parameters": "array$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "createStore": {
@@ -3148,7 +3158,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedstring$param",
+                    "parameters": "protectedstring$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "add": {
@@ -3245,7 +3255,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedobject$param,protectedstring$param='cache:',",
+                    "parameters": "protectedobject$param,protectedstring$param='cache:',?ClockInterface$param=null,",
                     "return": ""
                 },
                 "add": {
@@ -3491,6 +3501,7 @@
             ],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$filename": "public",
                 "$fullPath": "public",
                 "$path": "public",
@@ -3503,7 +3514,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "MigrationPathResolver$param",
+                    "parameters": "MigrationPathResolver$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "description": {
@@ -3544,6 +3555,7 @@
             ],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$filename": "public",
                 "$fullPath": "public",
                 "$path": "public",
@@ -3556,7 +3568,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "SeedPathResolver$param",
+                    "parameters": "SeedPathResolver$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "description": {
@@ -4018,6 +4030,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$commands": "protected",
                 "$migrator": "protected",
                 "$paths": "protected",
@@ -4030,7 +4043,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "ConnectionInterface$param,?MigrationPathResolver$param=null,?SeedPathResolver$param=null,",
+                    "parameters": "ConnectionInterface$param,?MigrationPathResolver$param=null,?SeedPathResolver$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "getMigrator": {
@@ -4928,6 +4941,7 @@
             "properties": {
                 "$attributes": "protected",
                 "$casts": "protected",
+                "$clock": "protected static",
                 "$connectionResolver": "protected static",
                 "$createdAtColumn": "protected",
                 "$exists": "protected",
@@ -5074,6 +5088,14 @@
                     "abstract": false,
                     "parameters": "",
                     "return": "void"
+                },
+                "freshTimestamp": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
                 },
                 "getAttribute": {
                     "visibility": "public",
@@ -5249,6 +5271,14 @@
                     "final": false,
                     "abstract": false,
                     "parameters": "string$param,mixed$param",
+                    "return": "void"
+                },
+                "setClock": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "ClockInterface$param",
                     "return": "void"
                 },
                 "setConnectionResolver": {
@@ -10442,6 +10472,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$line": "public"
             },
             "methods": {
@@ -10450,7 +10481,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedstring$param",
+                    "parameters": "protectedstring$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "log": {
@@ -10474,6 +10505,7 @@
             "constants": [],
             "properties": {
                 "$channels": "protected",
+                "$clock": "protected",
                 "$config": "protected"
             },
             "methods": {
@@ -10482,7 +10514,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "array$param",
+                    "parameters": "array$param,?ClockInterface$param=null",
                     "return": ""
                 },
                 "channel": {
@@ -11270,6 +11302,7 @@
             ],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$table": "public"
             },
             "methods": {
@@ -11278,7 +11311,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedConnectionInterface$param,protectedstring$param='database',protectedstring$param='jobs',protectedstring$param='failed_jobs',protectedint$param=60,protectedint$param=3,protected?JobSerializer$param=null,",
+                    "parameters": "protectedConnectionInterface$param,protectedstring$param='database',protectedstring$param='jobs',protectedstring$param='failed_jobs',protectedint$param=60,protectedint$param=3,protected?JobSerializer$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "candidate": {
@@ -11435,14 +11468,16 @@
                 "FailedJobRepositoryInterface"
             ],
             "constants": [],
-            "properties": [],
+            "properties": {
+                "$clock": "protected"
+            },
             "methods": {
                 "__construct": {
                     "visibility": "public",
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedConnectionInterface$param,protectedstring$param='jobs',protectedstring$param='failed_jobs',protectedint$param=3,",
+                    "parameters": "protectedConnectionInterface$param,protectedstring$param='jobs',protectedstring$param='failed_jobs',protectedint$param=3,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "all": {
@@ -11577,6 +11612,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$config": "protected",
                 "$connections": "protected",
                 "$databaseConnectionResolver": "protected",
@@ -11588,7 +11624,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "array$param,?\\Closure$param=null",
+                    "parameters": "array$param,?\\Closure$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "connection": {
@@ -11799,7 +11835,8 @@
             ],
             "constants": [],
             "properties": {
-                "$callable": "public"
+                "$callable": "public",
+                "$clock": "protected"
             },
             "methods": {
                 "__construct": {
@@ -11807,7 +11844,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedobject$param,protectedstring$param='redis',protectedstring$param='queue:',protectedint$param=60,protectedint$param=3,protected?JobSerializer$param=null,",
+                    "parameters": "protectedobject$param,protectedstring$param='redis',protectedstring$param='queue:',protectedint$param=60,protectedint$param=3,protected?JobSerializer$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "decode": {
@@ -12485,9 +12522,18 @@
             ],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$locks": "protected"
             },
             "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "?ClockInterface$param=null",
+                    "return": ""
+                },
                 "acquire": {
                     "visibility": "public",
                     "static": false,
@@ -12983,7 +13029,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "ThrottleStorageInterface$param,?callable$param=null",
+                    "parameters": "ThrottleStorageInterface$param,?callable$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "attempt": {
@@ -13025,6 +13071,14 @@
                     "abstract": false,
                     "parameters": "array$param",
                     "return": "bool"
+                },
+                "now": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "int"
                 },
                 "record": {
                     "visibility": "protected",
@@ -13139,6 +13193,7 @@
             "properties": {
                 "$callable": "public",
                 "$client": "protected",
+                "$clock": "protected",
                 "$prefix": "protected"
             },
             "methods": {
@@ -13147,7 +13202,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "object$param,string$param='throttle:'",
+                    "parameters": "object$param,string$param='throttle:',?ClockInterface$param=null,",
                     "return": ""
                 },
                 "evalScript": {
@@ -13289,6 +13344,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$decaySeconds": "protected",
                 "$exceptPaths": "protected",
                 "$limiter": "protected",
@@ -13301,7 +13357,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "?RateLimiterInterface$param=null,int$param=60,int$param=60,array$param=[],array$param=[],",
+                    "parameters": "?RateLimiterInterface$param=null,int$param=60,int$param=60,array$param=[],array$param=[],?ClockInterface$param=null,",
                     "return": ""
                 },
                 "attemptKey": {
@@ -13351,6 +13407,14 @@
                     "abstract": false,
                     "parameters": "Request$param",
                     "return": "bool"
+                },
+                "now": {
+                    "visibility": "protected",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "int"
                 },
                 "presetLimitsFromConfig": {
                     "visibility": "protected",
@@ -13571,14 +13635,16 @@
                 "SessionHandlerInterface"
             ],
             "constants": [],
-            "properties": [],
+            "properties": {
+                "$clock": "protected"
+            },
             "methods": {
                 "__construct": {
                     "visibility": "public",
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protectedstring$param",
+                    "parameters": "protectedstring$param,?ClockInterface$param=null",
                     "return": ""
                 }
             }
@@ -14040,7 +14106,7 @@
                     "static": true,
                     "final": false,
                     "abstract": false,
-                    "parameters": "string$param='file',array$param=[],?SessionHandlerInterface$param=null,",
+                    "parameters": "string$param='file',array$param=[],?SessionHandlerInterface$param=null,?ClockInterface$param=null,",
                     "return": "void"
                 },
                 "store": {
@@ -14530,6 +14596,7 @@
             "properties": {
                 "$allowPlaintext": "protected",
                 "$by": "public",
+                "$clock": "protected",
                 "$cookieExpires": "protected",
                 "$cookieLifetime": "protected",
                 "$cookieOptions": "protected",
@@ -14548,7 +14615,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "SessionHandlerInterface$param,?string$param=null,array$param=[],array$param=[],",
+                    "parameters": "SessionHandlerInterface$param,?string$param=null,array$param=[],array$param=[],?ClockInterface$param=null,",
                     "return": ""
                 },
                 "clearSessionCookie": {

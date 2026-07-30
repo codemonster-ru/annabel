@@ -47,3 +47,5 @@ $results = $schedule->runDue();
 
 An explicit value passed to `runDue()`, `dueTasks()`, or `isDue()` takes
 priority over the configured clock.
+
+The same clock controls expiration in the built-in array overlap-lock store.

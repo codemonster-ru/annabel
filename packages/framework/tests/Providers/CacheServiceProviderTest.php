@@ -9,7 +9,9 @@ use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Cache\CacheManager;
 use Codemonster\Cache\Contracts\CacheStoreInterface;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\FrozenClock;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class CacheServiceProviderTest extends TestCase
@@ -62,6 +64,21 @@ class CacheServiceProviderTest extends TestCase
         self::assertCount(1, $resources);
         self::assertSame($app->getBasePath() . '/config/cache.php', $resources[0]['destination']);
         self::assertFileExists($resources[0]['source']);
+    }
+
+    public function test_cache_manager_uses_the_registered_clock(): void
+    {
+        $app = $this->app([
+            'cache.default' => 'array',
+            'cache.stores.array.driver' => 'array',
+        ]);
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+        $manager = $app->make(CacheManager::class);
+
+        $property = new \ReflectionProperty(CacheManager::class, 'clock');
+
+        self::assertSame($clock, $property->getValue($manager));
     }
 
     /**

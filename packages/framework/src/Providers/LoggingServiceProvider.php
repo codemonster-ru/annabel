@@ -4,14 +4,16 @@ namespace Codemonster\Annabel\Providers;
 
 use Codemonster\Annabel\Container;
 use Codemonster\Logging\LoggerManager;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 
 class LoggingServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app()->singleton(LoggerManager::class, fn (): LoggerManager => new LoggerManager(
+        $this->app()->singleton(LoggerManager::class, fn (Container $app): LoggerManager => new LoggerManager(
             $this->loggingConfig(),
+            $app->make(ClockInterface::class),
         ));
         $this->app()->singleton('logger.manager', fn (Container $app): LoggerManager => $app->make(LoggerManager::class));
         $this->app()->singleton(LoggerInterface::class, fn (Container $app): LoggerInterface => $app

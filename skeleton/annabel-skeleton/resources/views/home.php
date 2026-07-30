@@ -25,7 +25,7 @@
         <p><a class="button-link" href="/demo">Open framework demo</a></p>
     </main>
     <footer>
-        &copy; <?= date('Y') ?> <a href="https://github.com/KolesnikovKirill" target="_blank" rel="noopener noreferrer">Kirill Kolesnikov</a>
+        &copy; <?= app(\Psr\Clock\ClockInterface::class)->now()->format('Y') ?> <a href="https://github.com/KolesnikovKirill" target="_blank" rel="noopener noreferrer">Kirill Kolesnikov</a>
     </footer>
 </body>
 

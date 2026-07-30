@@ -33,6 +33,7 @@ namespace {
 namespace Codemonster\Security\Tests\RateLimiting {
 
     use Codemonster\Config\Config;
+    use Codemonster\DateTime\FrozenClock;
     use Codemonster\Http\Request;
     use Codemonster\Http\Response;
     use Codemonster\Security\RateLimiting\RateLimiter;
@@ -177,6 +178,22 @@ namespace Codemonster\Security\Tests\RateLimiting {
             $this->assertArrayHasKey('RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('RateLimit-Reset', $headers);
             $this->assertNotSame('', $this->headerLine($headers, 'RateLimit-Reset'));
+        }
+
+        public function testRateLimitResetUsesTheInjectedClock(): void
+        {
+            $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+            $limiter = new RateLimiter(new SessionThrottleStorage(), clock: $clock);
+            $middleware = new ThrottleRequests($limiter, 5, 60, [], [], $clock);
+            $request = new Request('POST', '/login');
+
+            $response = $this->assertResponse($middleware->handle($request, fn () => new Response('ok')));
+            $headers = $this->headers($response);
+
+            $this->assertSame(
+                (string) ($clock->now()->getTimestamp() + 60),
+                $this->headerLine($headers, 'RateLimit-Reset'),
+            );
         }
 
         public function testAddsRateLimitHeadersOnThrottleResponse(): void

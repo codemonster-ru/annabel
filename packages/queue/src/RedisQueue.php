@@ -2,12 +2,16 @@
 
 namespace Codemonster\Queue;
 
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\JobOptionsInterface;
 use Codemonster\Queue\Contracts\WorkableQueueInterface;
+use Psr\Clock\ClockInterface;
 
 class RedisQueue implements WorkableQueueInterface
 {
+    protected ClockInterface $clock;
+
     public function __construct(
         protected object $client,
         protected string $connectionName = 'redis',
@@ -15,10 +19,12 @@ class RedisQueue implements WorkableQueueInterface
         protected int $retryAfter = 60,
         protected int $maxAttempts = 3,
         protected ?JobSerializer $serializer = null,
+        ?ClockInterface $clock = null,
     ) {
         $this->retryAfter = max(1, $retryAfter);
         $this->maxAttempts = max(1, $maxAttempts);
         $this->serializer ??= new JobSerializer();
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function push(JobInterface $job, ?string $queue = null): JobResult
@@ -38,6 +44,7 @@ class RedisQueue implements WorkableQueueInterface
     {
         $queue = $this->normalizeQueue($queue);
         $id = $this->id();
+        $now = $this->now();
         $envelope = $this->encode([
             'id' => $id,
             'connection' => $this->connectionName,
@@ -46,8 +53,8 @@ class RedisQueue implements WorkableQueueInterface
             'attempts' => 0,
             'max_attempts' => max(1, $maxAttempts ?? $this->maxAttempts),
             'reserved_at' => null,
-            'available_at' => $this->now(),
-            'created_at' => $this->now(),
+            'available_at' => $now,
+            'created_at' => $now,
         ]);
 
         $this->invoke('rPush', $this->readyKey($queue), $envelope);
@@ -58,8 +65,9 @@ class RedisQueue implements WorkableQueueInterface
     public function pop(?string $queue = null): ?QueuedJob
     {
         $queue = $this->normalizeQueue($queue);
-        $this->migrateExpired($this->delayedKey($queue), $this->readyKey($queue), $this->now());
-        $this->migrateExpired($this->reservedKey($queue), $this->readyKey($queue), $this->now());
+        $now = $this->now();
+        $this->migrateExpired($this->delayedKey($queue), $this->readyKey($queue), $now);
+        $this->migrateExpired($this->reservedKey($queue), $this->readyKey($queue), $now);
 
         $envelope = $this->invoke('lPop', $this->readyKey($queue));
 
@@ -69,9 +77,9 @@ class RedisQueue implements WorkableQueueInterface
 
         $data = $this->decode($envelope);
         $data['attempts']++;
-        $data['reserved_at'] = $this->now();
+        $data['reserved_at'] = $now;
         $reservedEnvelope = $this->encode($data);
-        $this->zadd($this->reservedKey($queue), $this->now() + $this->retryAfter, $reservedEnvelope);
+        $this->zadd($this->reservedKey($queue), $now + $this->retryAfter, $reservedEnvelope);
 
         return $this->restore($reservedEnvelope, $data);
     }
@@ -269,7 +277,7 @@ class RedisQueue implements WorkableQueueInterface
 
     protected function now(): int
     {
-        return time();
+        return $this->clock->now()->getTimestamp();
     }
 
     protected function serializer(): JobSerializer

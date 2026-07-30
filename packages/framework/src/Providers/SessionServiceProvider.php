@@ -6,6 +6,7 @@ use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Session\Handlers\RedisSessionHandler;
 use Codemonster\Session\Session;
 use Codemonster\Session\Store;
+use Psr\Clock\ClockInterface;
 
 class SessionServiceProvider extends ServiceProvider implements ServiceProviderInterface
 {
@@ -37,13 +38,14 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
             Session::start(
                 options: $options,
                 customHandler: $this->redisHandler(),
+                clock: $this->app()->make(ClockInterface::class),
             );
 
             return Session::store();
         }
 
         if ($driver === 'array') {
-            Session::start('array', $options);
+            Session::start('array', $options, clock: $this->app()->make(ClockInterface::class));
 
             return Session::store();
         }
@@ -53,7 +55,7 @@ class SessionServiceProvider extends ServiceProvider implements ServiceProviderI
         }
 
         $this->ensureWritableDirectory($path);
-        Session::start('file', $options);
+        Session::start('file', $options, clock: $this->app()->make(ClockInterface::class));
 
         return Session::store();
     }

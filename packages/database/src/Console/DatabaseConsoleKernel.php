@@ -16,6 +16,8 @@ use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
 use Codemonster\Database\Seeders\SeederRunner;
 use Codemonster\Database\Seeders\SeedPathResolver;
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 
 class DatabaseConsoleKernel
 {
@@ -28,12 +30,15 @@ class DatabaseConsoleKernel
     protected SeedPathResolver $seedPaths;
 
     protected SeederRunner $seeder;
+    protected ClockInterface $clock;
 
     public function __construct(
         ConnectionInterface $connection,
         ?MigrationPathResolver $paths = null,
         ?SeedPathResolver $seedPaths = null,
+        ?ClockInterface $clock = null,
     ) {
+        $this->clock = $clock ?? new SystemClock(date_default_timezone_get());
         $this->paths = $paths ?? new MigrationPathResolver();
 
         if (empty($this->paths->getPaths())) {
@@ -60,9 +65,9 @@ class DatabaseConsoleKernel
         $this->commands->register(new MigrateCommand($this->migrator));
         $this->commands->register(new RollbackCommand($this->migrator));
         $this->commands->register(new StatusCommand($this->migrator));
-        $this->commands->register(new MakeMigrationCommand($this->paths));
+        $this->commands->register(new MakeMigrationCommand($this->paths, $this->clock));
         $this->commands->register(new SeedCommand($this->seeder));
-        $this->commands->register(new MakeSeedCommand($this->seedPaths));
+        $this->commands->register(new MakeSeedCommand($this->seedPaths, $this->clock));
         $this->commands->register(new WipeCommand($this->migrator->getConnection()));
         $this->commands->register(new TruncateCommand($this->migrator->getConnection()));
     }

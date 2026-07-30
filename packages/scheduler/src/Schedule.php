@@ -17,8 +17,8 @@ class Schedule
         protected ?LockStoreInterface $lockStore = null,
         ?ClockInterface $clock = null,
     ) {
-        $this->lockStore ??= new ArrayLockStore();
         $this->clock = $clock ?? new SystemClock();
+        $this->lockStore ??= new ArrayLockStore($this->clock);
     }
 
     /**

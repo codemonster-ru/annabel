@@ -6,8 +6,10 @@ use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\SessionServiceProvider;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class SessionServiceProviderTest extends TestCase
 {
@@ -81,6 +83,19 @@ class SessionServiceProviderTest extends TestCase
         $this->expectExceptionMessage('Unsupported session driver: unknown');
 
         $app->make('session');
+    }
+
+    public function test_session_store_uses_the_registered_clock(): void
+    {
+        $app = $this->app([
+            'session.driver' => 'array',
+        ]);
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+        $store = $app->make(Store::class);
+        $store->putWithTtl('token', 'value', 60);
+
+        self::assertSame($clock->now()->getTimestamp() + 60, $store->expiresAt('token'));
     }
 
     /**

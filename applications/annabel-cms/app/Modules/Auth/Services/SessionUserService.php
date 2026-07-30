@@ -7,6 +7,7 @@ use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
+use Psr\Clock\ClockInterface;
 
 class SessionUserService implements UserSessionInterface
 {
@@ -17,6 +18,7 @@ class SessionUserService implements UserSessionInterface
     public function __construct(
         private CsrfTokenManager $csrf,
         private RememberMeService $remember,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -31,7 +33,7 @@ class SessionUserService implements UserSessionInterface
 
         $lastCheck = (int) $session->get('user_checked_at', 0);
 
-        if (!$forceRefresh && ($lastCheck + self::USER_CHECK_TTL_SECONDS) > time()) {
+        if (!$forceRefresh && ($lastCheck + self::USER_CHECK_TTL_SECONDS) > $this->now()) {
             $identity = $this->hydrate($user);
 
             if ($identity) {
@@ -122,11 +124,16 @@ class SessionUserService implements UserSessionInterface
         }
 
         $session->put('user', $user->toArray());
-        $session->put('user_checked_at', time());
+        $session->put('user_checked_at', $this->now());
 
         if ($regenerateSession) {
             $this->csrf->regenerateToken();
         }
+    }
+
+    private function now(): int
+    {
+        return $this->clock->now()->getTimestamp();
     }
 
     private function restoreFromRememberCookie(): ?AuthenticatedUser

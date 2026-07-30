@@ -9,6 +9,9 @@ use Codemonster\Database\Relations\BelongsToMany;
 use Codemonster\Database\Relations\HasMany;
 use Codemonster\Database\Relations\HasOne;
 use Codemonster\Database\Relations\Relation;
+use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 
 /**
  * @method bool runSoftDelete()
@@ -48,6 +51,7 @@ abstract class Model implements \JsonSerializable
      * @var (callable(class-string<Model>): ConnectionInterface)|null
      */
     protected static $connectionResolver;
+    protected static ?ClockInterface $clock = null;
 
     /**
      * @var array<class-string<Model>, array<string, list<callable(static): mixed>>>
@@ -74,6 +78,11 @@ abstract class Model implements \JsonSerializable
     public static function setConnectionResolver(callable $resolver): void
     {
         static::$connectionResolver = $resolver;
+    }
+
+    public static function setClock(ClockInterface $clock): void
+    {
+        static::$clock = $clock;
     }
 
     protected static function connection(): ConnectionInterface
@@ -581,13 +590,20 @@ abstract class Model implements \JsonSerializable
             return;
         }
 
-        $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $now = $this->freshTimestamp();
 
         if (!$this->exists) {
             $this->setAttribute($this->createdAtColumn, $now);
         }
 
         $this->setAttribute($this->updatedAtColumn, $now);
+    }
+
+    protected function freshTimestamp(): string
+    {
+        static::$clock ??= new SystemClock(date_default_timezone_get());
+
+        return static::$clock->now()->format(DateTime::DATABASE_FORMAT);
     }
 
     // ---------------------------------------------------------------------

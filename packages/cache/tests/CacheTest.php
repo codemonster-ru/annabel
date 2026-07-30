@@ -7,6 +7,7 @@ use Codemonster\Cache\CacheManager;
 use Codemonster\Cache\FileCache;
 use Codemonster\Cache\RedisCache;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
@@ -42,6 +43,19 @@ class CacheTest extends TestCase
 
         self::assertFalse($cache->has('short'));
         self::assertSame('missing', $cache->get('short', 'missing'));
+    }
+
+    public function test_array_cache_uses_the_injected_clock(): void
+    {
+        $clock = new MutableCacheClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $cache = new ArrayCache($clock);
+        $cache->set('short', 'value', 10);
+
+        self::assertTrue($cache->has('short'));
+
+        $clock->advance(new \DateInterval('PT10S'));
+
+        self::assertFalse($cache->has('short'));
     }
 
     public function test_cache_add_only_sets_missing_items(): void
@@ -137,6 +151,23 @@ class CacheTest extends TestCase
                 @rmdir($path);
             }
         }
+    }
+}
+
+class MutableCacheClock implements ClockInterface
+{
+    public function __construct(private \DateTimeImmutable $now)
+    {
+    }
+
+    public function now(): \DateTimeImmutable
+    {
+        return $this->now;
+    }
+
+    public function advance(\DateInterval $interval): void
+    {
+        $this->now = $this->now->add($interval);
     }
 }
 

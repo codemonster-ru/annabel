@@ -7,6 +7,7 @@ use Codemonster\Cms\Modules\Setup\Services\EnvironmentFile;
 use Codemonster\Cms\Modules\Setup\Services\SetupAssetManager;
 use Codemonster\Cms\Modules\Setup\Services\SystemRequirements;
 use Codemonster\Cms\Support\Installation\InstallationState;
+use Psr\Clock\ClockInterface;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,10 @@ class ModuleServiceProvider extends ServiceProvider
     {
         $this->app()->singleton(
             InstallationState::class,
-            fn () => new InstallationState(base_path('storage/app/setup/installed.json')),
+            fn () => new InstallationState(
+                base_path('storage/app/setup/installed.json'),
+                $this->app()->make(ClockInterface::class),
+            ),
         );
 
         $this->app()->singleton(

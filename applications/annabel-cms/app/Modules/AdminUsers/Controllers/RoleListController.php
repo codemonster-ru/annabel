@@ -5,9 +5,11 @@ namespace Codemonster\Cms\Modules\AdminUsers\Controllers;
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\Group;
+use Codemonster\DateTime\DateTime;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
+use Psr\Clock\ClockInterface;
 
 class RoleListController
 {
@@ -28,6 +30,7 @@ class RoleListController
         private AdminScreenRendererInterface $admin,
         private UserSessionInterface $users,
         private Validator $validator,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -100,7 +103,7 @@ class RoleListController
         }
         $userId = $user->id;
 
-        $now = date('Y-m-d H:i:s');
+        $now = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         $preferences = db()->table('admin_table_preferences')
             ->where('user_id', $userId)
             ->where('table_key', self::TABLE_KEY)
@@ -232,8 +235,13 @@ class RoleListController
 
     private function positiveInteger(mixed $value, int $default): int
     {
-        if (is_int($value)) return min(1_000_000, max(1, $value));
-        if (!is_string($value) || preg_match('/\A\d+\z/', $value) !== 1) return $default;
+        if (is_int($value)) {
+            return min(1_000_000, max(1, $value));
+        }
+        if (!is_string($value) || preg_match('/\A\d+\z/', $value) !== 1) {
+            return $default;
+        }
+
         return min(1_000_000, max(1, (int) $value));
     }
 
@@ -241,13 +249,20 @@ class RoleListController
     private function visibleColumns(): array
     {
         $user = $this->users->current();
-        if ($user === null) return self::DEFAULT_COLUMNS;
+        if ($user === null) {
+            return self::DEFAULT_COLUMNS;
+        }
         $userId = $user->id;
         $preferences = db()->table('admin_table_preferences')->where('user_id', $userId)->where('table_key', self::TABLE_KEY)->first();
-        if (!$preferences || !is_string($preferences['visible_columns'] ?? null)) return self::DEFAULT_COLUMNS;
+        if (!$preferences || !is_string($preferences['visible_columns'] ?? null)) {
+            return self::DEFAULT_COLUMNS;
+        }
         $columns = json_decode($preferences['visible_columns'], true);
-        if (!is_array($columns)) return self::DEFAULT_COLUMNS;
+        if (!is_array($columns)) {
+            return self::DEFAULT_COLUMNS;
+        }
         $columns = array_values(array_unique(array_filter($columns, static fn (mixed $column): bool => is_string($column) && in_array($column, self::ALL_COLUMNS, true))));
+
         return in_array('actions', $columns, true) ? $columns : self::DEFAULT_COLUMNS;
     }
 }

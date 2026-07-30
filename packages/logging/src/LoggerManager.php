@@ -2,6 +2,8 @@
 
 namespace Codemonster\Logging;
 
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -11,13 +13,15 @@ class LoggerManager
     protected array $config;
     /** @var array<string, LoggerInterface> */
     protected array $channels = [];
+    protected ClockInterface $clock;
 
     /**
      * @param array<string, mixed> $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config, ?ClockInterface $clock = null)
     {
         $this->config = $config;
+        $this->clock = $clock ?? new SystemClock(date_default_timezone_get());
     }
 
     public function defaultChannel(): string
@@ -77,7 +81,7 @@ class LoggerManager
                 throw new LoggingException("Logging channel [{$name}] requires a path.");
             }
 
-            return new FileLogger($path);
+            return new FileLogger($path, $this->clock);
         }
 
         throw new LoggingException("Unsupported logging driver [{$driver}].");

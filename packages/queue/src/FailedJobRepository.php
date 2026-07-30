@@ -3,19 +3,25 @@
 namespace Codemonster\Queue;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Queue\Contracts\FailedJobRepositoryInterface;
+use Psr\Clock\ClockInterface;
 
 class FailedJobRepository implements FailedJobRepositoryInterface
 {
+    protected ClockInterface $clock;
+
     public function __construct(
         protected ConnectionInterface $connection,
         protected string $table = 'jobs',
         protected string $failedTable = 'failed_jobs',
         protected int $maxAttempts = 3,
+        ?ClockInterface $clock = null,
     ) {
         $this->table = $this->normalizeTable($table);
         $this->failedTable = $this->normalizeTable($failedTable);
         $this->maxAttempts = max(1, $maxAttempts);
+        $this->clock = $clock ?? new SystemClock();
     }
 
     /**
@@ -45,14 +51,15 @@ class FailedJobRepository implements FailedJobRepositoryInterface
                 return false;
             }
 
+            $now = $this->clock->now()->getTimestamp();
             $this->connection->table($this->table)->insert([
                 'queue' => $job->queue(),
                 'payload' => $job->payload(),
                 'attempts' => 0,
                 'max_attempts' => $this->maxAttempts,
                 'reserved_at' => null,
-                'available_at' => time(),
-                'created_at' => time(),
+                'available_at' => $now,
+                'created_at' => $now,
             ]);
 
             if (!$this->forget($id)) {

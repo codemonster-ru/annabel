@@ -2,11 +2,18 @@
 
 namespace Codemonster\Cms\Support\Installation;
 
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
+
 class InstallationState
 {
+    private ClockInterface $clock;
+
     public function __construct(
         private string $path,
+        ?ClockInterface $clock = null,
     ) {
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function isInstalled(): bool
@@ -49,7 +56,7 @@ class InstallationState
     public function markInstalled(array $data = []): void
     {
         $payload = array_merge($data, [
-            'installed_at' => date(DATE_ATOM),
+            'installed_at' => $this->clock->now()->format(DATE_ATOM),
         ]);
 
         $directory = dirname($this->path);

@@ -4,6 +4,8 @@ namespace Codemonster\Cache;
 
 use Codemonster\Cache\Contracts\CacheStoreInterface;
 use Codemonster\Cache\Exceptions\CacheException;
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 
 class CacheManager
 {
@@ -11,13 +13,15 @@ class CacheManager
     protected array $config;
     /** @var array<string, CacheStoreInterface> */
     protected array $stores = [];
+    protected ClockInterface $clock;
 
     /**
      * @param array<string, mixed> $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config, ?ClockInterface $clock = null)
     {
         $this->config = $config;
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function defaultStore(): string
@@ -68,7 +72,7 @@ class CacheManager
         $driver = is_string($driver) && $driver !== '' ? $driver : $name;
 
         if ($driver === 'array') {
-            return new ArrayCache();
+            return new ArrayCache($this->clock);
         }
 
         if ($driver === 'file') {
@@ -77,13 +81,14 @@ class CacheManager
                 throw new CacheException("Cache store [{$name}] requires a path.");
             }
 
-            return new FileCache($path);
+            return new FileCache($path, $this->clock);
         }
 
         if ($driver === 'redis') {
             return new RedisCache(
                 $this->redisClient($config),
                 $this->stringConfig($config, 'prefix', 'cache:'),
+                $this->clock,
             );
         }
 

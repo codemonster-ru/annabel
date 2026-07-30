@@ -23,3 +23,16 @@ $token = $csrf->token();
 
 For rate limiting, choose a throttle storage implementation and pass it to
 `RateLimiter`.
+
+## Testable rate limits
+
+`RateLimiter`, `ThrottleRequests`, and Redis throttle storage accept a PSR-20
+clock. Annabel supplies its registered application clock automatically.
+
+```php
+use Codemonster\DateTime\FrozenClock;
+use Codemonster\Security\RateLimiting\RateLimiter;
+
+$clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+$limiter = new RateLimiter($storage, clock: $clock);
+```

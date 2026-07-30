@@ -8,7 +8,9 @@ use Codemonster\Annabel\Providers\DatabaseServiceProvider;
 use Codemonster\Config\Config;
 use Codemonster\Database\Contracts\ConnectionInterface;
 use Codemonster\Database\ORM\Model;
+use Codemonster\DateTime\FrozenClock;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class DatabaseServiceProviderTest extends TestCase
 {
@@ -35,6 +37,18 @@ class DatabaseServiceProviderTest extends TestCase
 
         self::assertInstanceOf(ConnectionInterface::class, TestDatabaseModel::connectionForTest());
     }
+
+    public function test_it_registers_the_application_clock_for_models(): void
+    {
+        $app = new Application(__DIR__ . '/../..', null, false);
+        (new CoreServiceProvider($app))->register();
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+
+        (new DatabaseServiceProvider($app))->register();
+
+        self::assertSame('2026-06-09 10:15:00', (new TestDatabaseModel())->freshTimestampForTest());
+    }
 }
 
 class TestDatabaseModel extends Model
@@ -42,5 +56,10 @@ class TestDatabaseModel extends Model
     public static function connectionForTest(): ConnectionInterface
     {
         return self::connection();
+    }
+
+    public function freshTimestampForTest(): string
+    {
+        return $this->freshTimestamp();
     }
 }

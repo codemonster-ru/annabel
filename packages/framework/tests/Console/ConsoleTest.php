@@ -13,6 +13,7 @@ use Codemonster\Annabel\Providers\ServiceProvider;
 use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Config\Config;
 use Codemonster\Database\Connection;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\WorkableQueueInterface;
 use Codemonster\Queue\JobResult;
@@ -22,6 +23,7 @@ use Codemonster\Queue\QueueManager;
 use Codemonster\Queue\Worker;
 use Codemonster\Scheduler\Schedule;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class ConsoleTest extends TestCase
 {
@@ -238,6 +240,10 @@ class ConsoleTest extends TestCase
             ->dailyAt('03:15')
             ->withoutOverlapping(10);
         $app->getContainer()->instance(Schedule::class, $schedule);
+        $app->getContainer()->instance(
+            ClockInterface::class,
+            new FrozenClock(new \DateTimeImmutable('2026-07-31 03:15:00 UTC')),
+        );
 
         $console = new Console();
         $console->setApplication($app);
@@ -433,12 +439,13 @@ class ConsoleTest extends TestCase
         $connection->statement('CREATE TABLE jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, queue TEXT NOT NULL, payload TEXT NOT NULL, attempts INTEGER NOT NULL, max_attempts INTEGER NOT NULL, reserved_at INTEGER NULL, available_at INTEGER NOT NULL, created_at INTEGER NOT NULL)');
         $connection->statement('CREATE TABLE failed_jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, connection TEXT NOT NULL, queue TEXT NOT NULL, payload TEXT NOT NULL, exception TEXT NULL, failed_at INTEGER NOT NULL)');
         $payload = (new JobSerializer())->serialize(new TestFailedCliJob());
+        $now = new \DateTimeImmutable('2026-07-31 12:30:00 UTC');
         $failedId = (string) $connection->table('failed_jobs')->insertGetId([
             'connection' => 'database',
             'queue' => 'emails',
             'payload' => $payload,
             'exception' => 'RuntimeException: Expected failure.',
-            'failed_at' => time(),
+            'failed_at' => $now->getTimestamp(),
         ]);
         $manager = new QueueManager([
             'default' => 'database',
@@ -451,12 +458,17 @@ class ConsoleTest extends TestCase
         ]);
         $app = new Application($this->directory('annabel-console-app-'), null, false);
         $app->getContainer()->instance(QueueManager::class, $manager);
+        $app->getContainer()->instance(
+            ClockInterface::class,
+            new FrozenClock($now),
+        );
         $output = new BufferedOutput();
         $console = new Console($output);
         $console->setApplication($app);
 
         $this->assertSame(ExitCode::SUCCESS, $console->run(['annabel', 'queue:failed']));
         $this->assertStringContainsString($failedId . '  database  emails', $output->content());
+        $this->assertStringContainsString('2026-07-31 12:30:00', $output->content());
         $this->assertSame(ExitCode::SUCCESS, $console->run(['annabel', 'queue:retry', $failedId]));
         $this->assertCount(1, $connection->table('jobs')->get());
         $this->assertCount(0, $connection->table('failed_jobs')->get());
@@ -466,7 +478,7 @@ class ConsoleTest extends TestCase
             'queue' => 'emails',
             'payload' => $payload,
             'exception' => null,
-            'failed_at' => time(),
+            'failed_at' => $now->getTimestamp(),
         ]);
 
         $this->assertSame(ExitCode::SUCCESS, $console->run(['annabel', 'queue:flush']));

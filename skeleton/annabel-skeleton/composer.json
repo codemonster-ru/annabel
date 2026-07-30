@@ -32,7 +32,8 @@
         "codemonster-ru/queue": "^1.0",
         "codemonster-ru/scheduler": "^1.0",
         "codemonster-ru/security": "^1.1",
-        "codemonster-ru/validation": "^1.0"
+        "codemonster-ru/validation": "^1.0",
+        "psr/clock": "^1.0"
     },
     "autoload": {
         "psr-4": {

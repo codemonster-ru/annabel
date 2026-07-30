@@ -3,12 +3,16 @@
 namespace Codemonster\Queue;
 
 use Codemonster\Database\Contracts\ConnectionInterface;
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\JobOptionsInterface;
 use Codemonster\Queue\Contracts\WorkableQueueInterface;
+use Psr\Clock\ClockInterface;
 
 class DatabaseQueue implements WorkableQueueInterface
 {
+    protected ClockInterface $clock;
+
     public function __construct(
         protected ConnectionInterface $connection,
         protected string $connectionName = 'database',
@@ -17,12 +21,14 @@ class DatabaseQueue implements WorkableQueueInterface
         protected int $retryAfter = 60,
         protected int $maxAttempts = 3,
         protected ?JobSerializer $serializer = null,
+        ?ClockInterface $clock = null,
     ) {
         $this->table = $this->normalizeTable($table);
         $this->failedTable = $this->normalizeTable($failedTable);
         $this->retryAfter = max(1, $retryAfter);
         $this->maxAttempts = max(1, $maxAttempts);
         $this->serializer ??= new JobSerializer();
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function push(JobInterface $job, ?string $queue = null): JobResult
@@ -31,14 +37,15 @@ class DatabaseQueue implements WorkableQueueInterface
         $maxAttempts = $job instanceof JobOptionsInterface
             ? max(1, $job->maxAttempts())
             : $this->maxAttempts;
+        $now = $this->now();
         $id = (string) $this->connection->table($this->table)->insertGetId([
             'queue' => $queue,
             'payload' => $this->serializer()->serialize($job),
             'attempts' => 0,
             'max_attempts' => $maxAttempts,
             'reserved_at' => null,
-            'available_at' => $this->now(),
-            'created_at' => $this->now(),
+            'available_at' => $now,
+            'created_at' => $now,
         ]);
 
         return new JobResult($id, $this->connectionName, $queue, false);
@@ -185,7 +192,7 @@ class DatabaseQueue implements WorkableQueueInterface
 
     protected function now(): int
     {
-        return time();
+        return $this->clock->now()->getTimestamp();
     }
 
     protected function serializer(): JobSerializer

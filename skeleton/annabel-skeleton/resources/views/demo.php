@@ -213,7 +213,7 @@
     </main>
 
     <footer>
-        &copy; <?= date('Y') ?> <a href="https://github.com/KolesnikovKirill" target="_blank" rel="noopener noreferrer">Kirill Kolesnikov</a>
+        &copy; <?= htmlspecialchars((string) $currentYear, ENT_QUOTES, 'UTF-8') ?> <a href="https://github.com/KolesnikovKirill" target="_blank" rel="noopener noreferrer">Kirill Kolesnikov</a>
     </footer>
 </body>
 

@@ -2,6 +2,7 @@
 
 namespace Codemonster\Scheduler\Tests;
 
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Scheduler\Contracts\LockStoreInterface;
 use Codemonster\Scheduler\Schedule;
 use Codemonster\Scheduler\ScheduleException;
@@ -37,6 +38,20 @@ class SchedulerTest extends TestCase
 
         self::assertSame(0, $runs);
         self::assertSame([], $results);
+    }
+
+    public function test_uses_the_injected_clock_when_now_is_not_provided(): void
+    {
+        $runs = 0;
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $schedule = new Schedule(null, $clock);
+        $task = $schedule->call(function () use (&$runs): void {
+            $runs++;
+        })->everyFiveMinutes();
+
+        self::assertTrue($task->isDue());
+        self::assertCount(1, $schedule->runDue());
+        self::assertSame(1, $runs);
     }
 
     public function test_daily_time_and_weekday_filters(): void

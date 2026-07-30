@@ -2,11 +2,13 @@
 
 namespace Codemonster\Security\RateLimiting;
 
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Security\RateLimiting\Contracts\AttemptRateLimiterInterface;
 use Codemonster\Security\RateLimiting\Contracts\RateLimiterInterface;
 use Codemonster\Security\RateLimiting\Storage\SessionThrottleStorage;
+use Psr\Clock\ClockInterface;
 
 class ThrottleRequests
 {
@@ -17,6 +19,7 @@ class ThrottleRequests
     protected array $exceptPaths;
     /** @var list<string> */
     protected array $trustedProxies;
+    protected ClockInterface $clock;
 
     /**
      * @param list<string> $exceptPaths
@@ -28,8 +31,13 @@ class ThrottleRequests
         int $decaySeconds = 60,
         array $exceptPaths = [],
         array $trustedProxies = [],
+        ?ClockInterface $clock = null,
     ) {
-        $this->limiter = $limiter ?? new RateLimiter(new SessionThrottleStorage());
+        $this->clock = $clock ?? new SystemClock();
+        $this->limiter = $limiter ?? new RateLimiter(
+            new SessionThrottleStorage(),
+            clock: $this->clock,
+        );
         $this->maxAttempts = $maxAttempts;
         $this->decaySeconds = $decaySeconds;
         $this->exceptPaths = $exceptPaths;
@@ -73,7 +81,7 @@ class ThrottleRequests
             $response = $next($request);
 
             if ($response instanceof Response) {
-                $resetAt = time() + $this->limiter->availableIn($ipKey);
+                $resetAt = $this->now() + $this->limiter->availableIn($ipKey);
                 $response->header('X-RateLimit-Limit', (string) $ipMaxAttempts);
                 $response->header('X-RateLimit-Remaining', (string) $ipResult['remaining']);
                 $response->header('RateLimit-Limit', (string) $ipMaxAttempts);
@@ -96,7 +104,7 @@ class ThrottleRequests
         $response = $next($request);
 
         if ($response instanceof Response) {
-            $resetAt = time() + $this->limiter->availableIn($key);
+            $resetAt = $this->now() + $this->limiter->availableIn($key);
             $response->header('X-RateLimit-Limit', (string) $maxAttempts);
             $response->header('X-RateLimit-Remaining', (string) $result['remaining']);
             $response->header('RateLimit-Limit', (string) $maxAttempts);
@@ -378,7 +386,7 @@ class ThrottleRequests
     protected function buildThrottleResponse(Request $request, string $key, int $maxAttempts): Response
     {
         $retryAfter = $this->limiter->availableIn($key);
-        $resetAt = time() + $retryAfter;
+        $resetAt = $this->now() + $retryAfter;
         $headers = [
             'Retry-After' => (string) $retryAfter,
             'X-RateLimit-Limit' => (string) $maxAttempts,
@@ -393,6 +401,11 @@ class ThrottleRequests
         }
 
         return new Response('Too Many Requests', 429, array_merge(['Content-Type' => 'text/plain; charset=utf-8'], $headers));
+    }
+
+    protected function now(): int
+    {
+        return $this->clock->now()->getTimestamp();
     }
 
     protected function inExceptPaths(string $uri): bool

@@ -6,7 +6,9 @@ use Codemonster\Annabel\Console\Command;
 use Codemonster\Annabel\Console\Contracts\InputInterface;
 use Codemonster\Annabel\Console\Contracts\OutputInterface;
 use Codemonster\Annabel\Console\ExitCode;
+use Codemonster\DateTime\DateTime;
 use Codemonster\Queue\QueueManager;
+use Psr\Clock\ClockInterface;
 
 class QueueFailedCommand extends Command
 {
@@ -28,6 +30,7 @@ class QueueFailedCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $jobs = $this->manager()->failedJobs($this->connection($input))->all();
+        $timezone = $this->console()->getApplication()->make(ClockInterface::class)->now()->getTimezone();
 
         if ($jobs === []) {
             $output->writeln('No failed jobs.');
@@ -41,7 +44,7 @@ class QueueFailedCommand extends Command
                 $job->id(),
                 $job->connection(),
                 $job->queue(),
-                date('Y-m-d H:i:s', $job->failedAt()),
+                DateTime::fromTimestamp($job->failedAt(), $timezone)->format(DateTime::DATABASE_FORMAT),
                 $job->exception() ?? '-',
             ));
         }

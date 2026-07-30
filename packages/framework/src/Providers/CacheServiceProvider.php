@@ -5,6 +5,7 @@ namespace Codemonster\Annabel\Providers;
 use Codemonster\Annabel\Container;
 use Codemonster\Cache\CacheManager;
 use Codemonster\Cache\Contracts\CacheStoreInterface;
+use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class CacheServiceProvider extends ServiceProvider
@@ -15,8 +16,9 @@ class CacheServiceProvider extends ServiceProvider
             __DIR__ . '/../../config/cache.php' => $this->app()->getBasePath() . '/config/cache.php',
         ], ['config', 'cache']);
 
-        $this->app()->singleton(CacheManager::class, fn (): CacheManager => new CacheManager(
+        $this->app()->singleton(CacheManager::class, fn (Container $app): CacheManager => new CacheManager(
             $this->cacheConfig(),
+            $app->make(ClockInterface::class),
         ));
         $this->app()->singleton('cache.manager', fn (Container $app): CacheManager => $app->make(CacheManager::class));
         $this->app()->singleton(CacheStoreInterface::class, fn (Container $app): CacheStoreInterface => $app

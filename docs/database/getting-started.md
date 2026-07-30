@@ -32,3 +32,18 @@ $users = $database->connection()
     ->where('active', 1)
     ->get();
 ```
+
+## Testable model timestamps
+
+Models accept a shared PSR-20 clock for automatic `created_at`, `updated_at`,
+and soft-delete timestamps. Annabel registers its application clock
+automatically.
+
+```php
+use Codemonster\Database\ORM\Model;
+use Codemonster\DateTime\FrozenClock;
+
+$clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+
+Model::setClock($clock);
+```

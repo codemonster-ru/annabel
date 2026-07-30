@@ -3,11 +3,13 @@
 namespace Codemonster\Cache;
 
 use DateInterval;
+use Psr\Clock\ClockInterface;
 
 class FileCache extends ArrayCache
 {
-    public function __construct(protected string $path)
+    public function __construct(protected string $path, ?ClockInterface $clock = null)
     {
+        parent::__construct($clock);
     }
 
     public function get(string $key, mixed $default = null): mixed
@@ -21,7 +23,7 @@ class FileCache extends ArrayCache
 
         $expiresAt = $payload['expires_at'] ?? null;
 
-        if (is_int($expiresAt) && $expiresAt <= time()) {
+        if (is_int($expiresAt) && $expiresAt <= $this->now()) {
             $this->delete($key);
 
             return $default;
@@ -117,7 +119,7 @@ class FileCache extends ArrayCache
 
         $expiresAt = $payload['expires_at'] ?? null;
 
-        if (is_int($expiresAt) && $expiresAt <= time()) {
+        if (is_int($expiresAt) && $expiresAt <= $this->now()) {
             $this->delete($key);
 
             return false;

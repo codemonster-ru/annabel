@@ -8,6 +8,7 @@ use Codemonster\Queue\Contracts\QueueInterface;
 use Codemonster\Queue\Contracts\WorkableQueueInterface;
 use Codemonster\Queue\QueueManager;
 use Codemonster\Queue\Worker;
+use Psr\Clock\ClockInterface;
 
 class QueueServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,7 @@ class QueueServiceProvider extends ServiceProvider
         $this->app()->singleton(QueueManager::class, fn (Container $app): QueueManager => new QueueManager(
             $this->queueConfig(),
             fn (): ConnectionInterface => $app->make(ConnectionInterface::class),
+            $app->make(ClockInterface::class),
         ));
         $this->app()->singleton('queue.manager', fn (Container $app): QueueManager => $app->make(QueueManager::class));
         $this->app()->singleton(QueueInterface::class, fn (Container $app): QueueInterface => $app

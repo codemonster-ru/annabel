@@ -34,7 +34,9 @@
     },
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/database": "^2.0"
+        "codemonster-ru/database": "^2.0",
+        "codemonster-ru/datetime": "^1.0",
+        "psr/clock": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",

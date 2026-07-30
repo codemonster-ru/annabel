@@ -5,3 +5,4 @@
 - Added PSR-16 array, file, and Redis cache stores.
 - Added cache store manager.
 - Added atomic `add()` support for cache-backed locks.
+- Added PSR-20 clock injection for deterministic cache expiration.

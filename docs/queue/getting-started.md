@@ -28,3 +28,16 @@ final class SendWelcomeEmail implements JobInterface
 $queue = new SyncQueue();
 $queue->push(new SendWelcomeEmail());
 ```
+
+## Testable timestamps
+
+Database and Redis queues, failed-job retries, and `QueueManager` accept a
+PSR-20 clock. Annabel injects its registered application clock automatically.
+
+```php
+use Codemonster\DateTime\FrozenClock;
+use Codemonster\Queue\DatabaseQueue;
+
+$clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+$queue = new DatabaseQueue($connection, clock: $clock);
+```

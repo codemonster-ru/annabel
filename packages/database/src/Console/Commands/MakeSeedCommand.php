@@ -4,14 +4,18 @@ namespace Codemonster\Database\Console\Commands;
 
 use Codemonster\Database\Console\CommandInterface;
 use Codemonster\Database\Seeders\SeedPathResolver;
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 
 class MakeSeedCommand implements CommandInterface
 {
     protected SeedPathResolver $paths;
+    protected ClockInterface $clock;
 
-    public function __construct(SeedPathResolver $paths)
+    public function __construct(SeedPathResolver $paths, ?ClockInterface $clock = null)
     {
         $this->paths = $paths;
+        $this->clock = $clock ?? new SystemClock(date_default_timezone_get());
     }
 
     public function signature(): string
@@ -89,8 +93,7 @@ class MakeSeedCommand implements CommandInterface
 
     protected function buildFileName(string $name): string
     {
-        $now = new \DateTimeImmutable('now');
-        $timestamp = $now->format('Y_m_d_His');
+        $timestamp = $this->clock->now()->format('Y_m_d_His');
         $slug = preg_replace('/(?<!^)([A-Z])/', '_$1', $name) ?? $name;
         $slug = preg_replace('/[^A-Za-z0-9]+/', '_', $slug) ?? $slug;
         $slug = trim($slug, '_');

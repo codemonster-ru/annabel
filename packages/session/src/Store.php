@@ -2,6 +2,8 @@
 
 namespace Codemonster\Session;
 
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 use SessionHandlerInterface;
 
 /**
@@ -35,6 +37,7 @@ class Store
     /** @var array<int, string> */
     protected array $encryptionKeys = [];
     protected bool $allowPlaintext = false;
+    protected ClockInterface $clock;
 
     /**
      * @param array<string, mixed> $cookieOptions
@@ -45,6 +48,7 @@ class Store
         ?string $id = null,
         array $cookieOptions = [],
         array $encryptionOptions = [],
+        ?ClockInterface $clock = null,
     ) {
         $existing = $_COOKIE[self::COOKIE_NAME] ?? null;
 
@@ -60,6 +64,7 @@ class Store
                 : bin2hex(random_bytes(16));
         }
         $this->handler = $handler;
+        $this->clock = $clock ?? new SystemClock();
         $this->cookieOptions = $this->normalizeCookieOptions($cookieOptions);
         $this->normalizeEncryptionOptions($encryptionOptions);
     }
@@ -76,7 +81,7 @@ class Store
         }
 
         $options = $this->cookieOptions;
-        $options['expires'] = $this->cookieExpires ?? (time() + (int) $this->cookieLifetime);
+        $options['expires'] = $this->cookieExpires ?? ($this->now() + (int) $this->cookieLifetime);
 
         setcookie(self::COOKIE_NAME, $this->id, $options);
     }
@@ -90,7 +95,7 @@ class Store
         }
 
         $options = $this->cookieOptions;
-        $options['expires'] = time() - 3600;
+        $options['expires'] = $this->now() - 3600;
 
         setcookie(self::COOKIE_NAME, '', $options);
     }
@@ -311,7 +316,7 @@ class Store
         $this->data[$key] = $value;
 
         $ttl = $this->getTtlMap();
-        $ttl[$key] = time() + $ttlSeconds;
+        $ttl[$key] = $this->now() + $ttlSeconds;
         $this->setTtlMap($ttl);
 
         $this->persist();
@@ -330,7 +335,7 @@ class Store
             return null;
         }
 
-        $remaining = $ttl[$key] - time();
+        $remaining = $ttl[$key] - $this->now();
 
         return $remaining > 0 ? $remaining : 0;
     }
@@ -350,7 +355,7 @@ class Store
 
         $expiresAt = $ttl[$key];
 
-        return $expiresAt > time() ? $expiresAt : null;
+        return $expiresAt > $this->now() ? $expiresAt : null;
     }
 
     public function touch(string $key, int $ttlSeconds): bool
@@ -366,7 +371,7 @@ class Store
         }
 
         $ttl = $this->getTtlMap();
-        $ttl[$key] = time() + $ttlSeconds;
+        $ttl[$key] = $this->now() + $ttlSeconds;
         $this->setTtlMap($ttl);
         $this->persist();
 
@@ -381,7 +386,7 @@ class Store
             return 0;
         }
 
-        $now = time();
+        $now = $this->now();
         $ttl = $this->getTtlMap();
         $updated = 0;
 
@@ -857,7 +862,7 @@ class Store
             return false;
         }
 
-        if ($ttl[$key] > time()) {
+        if ($ttl[$key] > $this->now()) {
             return false;
         }
 
@@ -874,7 +879,7 @@ class Store
             return;
         }
 
-        $now = time();
+        $now = $this->now();
         $changed = false;
 
         foreach ($ttl as $key => $expiresAt) {
@@ -908,5 +913,10 @@ class Store
         $regex = '/^' . str_replace(['\*', '\?'], ['.*', '.'], $escaped) . '$/u';
 
         return preg_match($regex, $key) === 1;
+    }
+
+    protected function now(): int
+    {
+        return $this->clock->now()->getTimestamp();
     }
 }

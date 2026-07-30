@@ -6,6 +6,8 @@ use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Tests\Fakes\FakeConnection;
 use Codemonster\Database\Tests\Fakes\FakeModels\User;
 use Codemonster\Database\Traits\SoftDeletes;
+use Codemonster\DateTime\FrozenClock;
+use Codemonster\DateTime\SystemClock;
 use PHPUnit\Framework\TestCase;
 
 class SoftDeletesTest extends TestCase
@@ -25,8 +27,14 @@ class SoftDeletesTest extends TestCase
         ];
     }
 
+    protected function tearDown(): void
+    {
+        Model::setClock(new SystemClock());
+    }
+
     public function test_soft_delete_marks_row(): void
     {
+        Model::setClock(new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC')));
         $user = SoftDeletingUser::find(1);
         $this->assertInstanceOf(SoftDeletingUser::class, $user);
 
@@ -35,7 +43,7 @@ class SoftDeletesTest extends TestCase
         $user->delete();
 
         $this->assertTrue($user->trashed());
-        $this->assertNotNull($this->conn->tables['users'][0]['deleted_at']);
+        $this->assertSame('2026-06-09 10:15:00', $this->conn->tables['users'][0]['deleted_at']);
     }
 
     public function test_restore_clears_deleted_flag(): void

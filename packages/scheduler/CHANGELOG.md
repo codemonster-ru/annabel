@@ -8,3 +8,4 @@ All notable changes to `codemonster-ru/scheduler` will be documented in this fil
 - Added scheduler locks and `withoutOverlapping()` task protection.
 - Added read-only task inspection helpers for diagnostics.
 - Added PSR-20 clock injection for deterministic due-task evaluation.
+- Applied the configured clock to in-memory overlap-lock expiration.

@@ -2,13 +2,19 @@
 
 namespace Codemonster\Session\Handlers;
 
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
 use SessionHandlerInterface;
 
 /** @api */
 class FileSessionHandler implements SessionHandlerInterface
 {
-    public function __construct(protected string $path)
+    protected ClockInterface $clock;
+
+    public function __construct(protected string $path, ?ClockInterface $clock = null)
     {
+        $this->clock = $clock ?? new SystemClock();
+
         if (file_exists($path) && !is_dir($path)) {
             throw new \RuntimeException("Session path exists and is not a directory: {$path}");
         }
@@ -92,9 +98,11 @@ class FileSessionHandler implements SessionHandlerInterface
             return false;
         }
 
+        $now = $this->clock->now()->getTimestamp();
+
         foreach ($files as $file) {
             $modifiedAt = filemtime($file);
-            if ($modifiedAt !== false && $modifiedAt + $max_lifetime < time()) {
+            if ($modifiedAt !== false && $modifiedAt + $max_lifetime < $now) {
                 if (unlink($file)) {
                     $count++;
                 }

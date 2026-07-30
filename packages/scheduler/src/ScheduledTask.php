@@ -2,7 +2,9 @@
 
 namespace Codemonster\Scheduler;
 
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Scheduler\Contracts\LockStoreInterface;
+use Psr\Clock\ClockInterface;
 
 class ScheduledTask
 {
@@ -21,12 +23,15 @@ class ScheduledTask
     protected bool $withoutOverlapping = false;
     protected int $overlapExpiresAfter = 86400;
     protected ?string $overlapName = null;
+    protected ClockInterface $clock;
 
     /** @param \Closure():mixed $callback */
     public function __construct(
         protected \Closure $callback,
         protected string $description = 'Closure',
+        ?ClockInterface $clock = null,
     ) {
+        $this->clock = $clock ?? new SystemClock();
         $this->minutes = range(0, 59);
         $this->hours = range(0, 23);
         $this->daysOfMonth = range(1, 31);
@@ -122,7 +127,7 @@ class ScheduledTask
 
     public function isDue(?\DateTimeInterface $now = null): bool
     {
-        $now ??= new \DateTimeImmutable();
+        $now ??= $this->clock->now();
 
         if (!in_array((int) $now->format('i'), $this->minutes, true)
             || !in_array((int) $now->format('G'), $this->hours, true)

@@ -6,8 +6,10 @@ use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\LoggingServiceProvider;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Logging\LoggerManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Psr\Log\LoggerInterface;
 
 class LoggingServiceProviderTest extends TestCase
@@ -37,13 +39,20 @@ class LoggingServiceProviderTest extends TestCase
             'logging.channels.file.driver' => 'file',
             'logging.channels.file.path' => $path,
         ]);
+        $app->getContainer()->instance(
+            ClockInterface::class,
+            new FrozenClock(new \DateTimeImmutable('2026-07-31 12:30:00 UTC')),
+        );
 
         $logger = $app->make(LoggerInterface::class);
         $logger->info('Hello {name}', ['name' => 'Annabel']);
 
         self::assertInstanceOf(LoggerManager::class, $app->make(LoggerManager::class));
         self::assertInstanceOf(LoggerInterface::class, $app->make('logger'));
-        self::assertStringContainsString('Hello Annabel', (string) file_get_contents($path));
+        $contents = (string) file_get_contents($path);
+
+        self::assertStringStartsWith('[2026-07-31 12:30:00]', $contents);
+        self::assertStringContainsString('Hello Annabel', $contents);
     }
 
     /**

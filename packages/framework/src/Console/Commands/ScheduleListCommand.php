@@ -8,6 +8,7 @@ use Codemonster\Annabel\Console\Contracts\OutputInterface;
 use Codemonster\Annabel\Console\ExitCode;
 use Codemonster\Scheduler\Schedule;
 use Codemonster\Scheduler\ScheduledTask;
+use Psr\Clock\ClockInterface;
 
 class ScheduleListCommand extends Command
 {
@@ -52,7 +53,7 @@ class ScheduleListCommand extends Command
             'Overlap',
         ));
 
-        $now = new \DateTimeImmutable();
+        $now = $this->console()->getApplication()->make(ClockInterface::class)->now();
 
         foreach ($tasks as $task) {
             $output->writeln(sprintf(

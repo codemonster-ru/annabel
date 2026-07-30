@@ -106,7 +106,7 @@ class PageManagementController
             array_unshift($columns, 'actions');
         }
 
-        $now = date('Y-m-d H:i:s');
+        $now = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         $preferences = db()->table('admin_table_preferences')
             ->where('user_id', $user->id)
             ->where('table_key', self::TABLE_KEY)

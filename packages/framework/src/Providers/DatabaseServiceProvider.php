@@ -16,6 +16,7 @@ use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
 use Codemonster\Database\ORM\Model;
 use Codemonster\Database\Seeders\SeedPathResolver;
+use Psr\Clock\ClockInterface;
 
 class DatabaseServiceProvider implements ServiceProviderInterface
 {
@@ -54,6 +55,7 @@ class DatabaseServiceProvider implements ServiceProviderInterface
         Model::setConnectionResolver(
             fn (string $modelClass): ConnectionInterface => $this->app->make(ConnectionInterface::class),
         );
+        Model::setClock($this->app->make(ClockInterface::class));
 
         $this->app->singleton(MigrationPathResolver::class, function () {
             $resolver = new MigrationPathResolver();
@@ -121,7 +123,12 @@ class DatabaseServiceProvider implements ServiceProviderInterface
             $paths = $app->make(MigrationPathResolver::class);
             $seedPaths = $app->make(SeedPathResolver::class);
 
-            return new LazyDatabaseConsoleKernel($connection, $paths, $seedPaths);
+            return new LazyDatabaseConsoleKernel(
+                $connection,
+                $paths,
+                $seedPaths,
+                $app->make(ClockInterface::class),
+            );
         });
     }
 

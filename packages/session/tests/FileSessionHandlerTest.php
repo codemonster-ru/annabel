@@ -1,5 +1,6 @@
 <?php
 
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Session\Handlers\FileSessionHandler;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
@@ -62,13 +63,14 @@ final class FileSessionHandlerTest extends TestCase
 
     public function testGcRemovesOldFiles(): void
     {
-        $handler = new FileSessionHandler($this->path);
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $handler = new FileSessionHandler($this->path, $clock);
 
         $file = "{$this->path}/sess_old";
 
         file_put_contents($file, '{}');
 
-        touch($file, time() - 3600);
+        touch($file, $clock->now()->getTimestamp() - 3600);
 
         $handler->gc(10);
 

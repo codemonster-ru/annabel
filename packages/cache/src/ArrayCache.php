@@ -4,12 +4,20 @@ namespace Codemonster\Cache;
 
 use Codemonster\Cache\Contracts\CacheStoreInterface;
 use Codemonster\Cache\Exceptions\InvalidCacheKeyException;
+use Codemonster\DateTime\SystemClock;
 use DateInterval;
+use Psr\Clock\ClockInterface;
 
 class ArrayCache implements CacheStoreInterface
 {
     /** @var array<string, array{value: mixed, expires_at: int|null}> */
     protected array $items = [];
+    protected ClockInterface $clock;
+
+    public function __construct(?ClockInterface $clock = null)
+    {
+        $this->clock = $clock ?? new SystemClock();
+    }
 
     public function get(string $key, mixed $default = null): mixed
     {
@@ -115,7 +123,7 @@ class ArrayCache implements CacheStoreInterface
 
         $expiresAt = $this->items[$key]['expires_at'];
 
-        if (is_int($expiresAt) && $expiresAt <= time()) {
+        if (is_int($expiresAt) && $expiresAt <= $this->now()) {
             unset($this->items[$key]);
 
             return false;
@@ -138,9 +146,14 @@ class ArrayCache implements CacheStoreInterface
         }
 
         if ($ttl instanceof DateInterval) {
-            return (new \DateTimeImmutable())->add($ttl)->getTimestamp();
+            return $this->clock->now()->add($ttl)->getTimestamp();
         }
 
-        return time() + max(0, $ttl);
+        return $this->now() + max(0, $ttl);
+    }
+
+    protected function now(): int
+    {
+        return $this->clock->now()->getTimestamp();
     }
 }

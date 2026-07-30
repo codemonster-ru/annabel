@@ -10,6 +10,7 @@ use Codemonster\Annabel\Scheduling\CacheScheduleLockStore;
 use Codemonster\Cache\ArrayCache;
 use Codemonster\Cache\Contracts\CacheStoreInterface;
 use Codemonster\DateTime\FrozenClock;
+use Codemonster\Scheduler\ArrayLockStore;
 use Codemonster\Scheduler\Contracts\LockStoreInterface;
 use Codemonster\Scheduler\Schedule;
 use PHPUnit\Framework\TestCase;
@@ -47,6 +48,20 @@ class ScheduleServiceProviderTest extends TestCase
         $schedule->call(fn (): null => null)->everyFiveMinutes();
 
         self::assertCount(1, $schedule->dueTasks());
+    }
+
+    public function test_array_lock_store_uses_the_registered_clock(): void
+    {
+        $app = $this->app();
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+        $lockStore = $app->make(LockStoreInterface::class);
+
+        self::assertInstanceOf(ArrayLockStore::class, $lockStore);
+
+        $property = new \ReflectionProperty(ArrayLockStore::class, 'clock');
+
+        self::assertSame($clock, $property->getValue($lockStore));
     }
 
     public function test_schedule_routes_are_publishable(): void

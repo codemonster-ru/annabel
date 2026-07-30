@@ -4,6 +4,7 @@ use Codemonster\Session\Handlers\ArraySessionHandler;
 use Codemonster\Session\Session;
 use Codemonster\Session\Store;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 final class SessionTest extends TestCase
 {
@@ -250,12 +251,13 @@ final class SessionTest extends TestCase
 
     public function testTtlExpiresKey(): void
     {
-        Session::start('array');
+        $clock = new MutableSessionClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        Session::start('array', clock: $clock);
         Session::putWithTtl('temp', 'value', 1);
 
         $this->assertSame('value', Session::get('temp'));
 
-        sleep(2);
+        $clock->advance(new \DateInterval('PT1S'));
 
         $this->assertNull(Session::get('temp'));
         $this->assertFalse(Session::has('temp'));
@@ -484,5 +486,22 @@ final class SessionTest extends TestCase
         $this->assertIsString($raw);
         $this->assertStringStartsWith('v1:', $raw);
         $this->assertSame('abc', $store->get('token'));
+    }
+}
+
+final class MutableSessionClock implements ClockInterface
+{
+    public function __construct(private \DateTimeImmutable $now)
+    {
+    }
+
+    public function now(): \DateTimeImmutable
+    {
+        return $this->now;
+    }
+
+    public function advance(\DateInterval $interval): void
+    {
+        $this->now = $this->now->add($interval);
     }
 }

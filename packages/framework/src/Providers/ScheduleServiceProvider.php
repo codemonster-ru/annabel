@@ -23,7 +23,7 @@ class ScheduleServiceProvider extends ServiceProvider
                 return new CacheScheduleLockStore($app->make(CacheStoreInterface::class));
             }
 
-            return new ArrayLockStore();
+            return new ArrayLockStore($app->make(ClockInterface::class));
         });
 
         $this->app()->singleton(Schedule::class, function (Container $app): Schedule {

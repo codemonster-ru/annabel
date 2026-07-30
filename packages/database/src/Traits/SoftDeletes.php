@@ -21,7 +21,7 @@ trait SoftDeletes
             return false;
         }
 
-        $time = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $time = $this->freshTimestamp();
 
         $this->setAttribute($this->deletedAtColumn, $time);
         $this->touchTimestamps();

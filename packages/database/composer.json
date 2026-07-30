@@ -27,7 +27,9 @@
     ],
     "require": {
         "php": ">=8.2",
-        "ext-pdo": "*"
+        "codemonster-ru/datetime": "^1.0",
+        "ext-pdo": "*",
+        "psr/clock": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",

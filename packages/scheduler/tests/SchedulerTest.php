@@ -3,10 +3,12 @@
 namespace Codemonster\Scheduler\Tests;
 
 use Codemonster\DateTime\FrozenClock;
+use Codemonster\Scheduler\ArrayLockStore;
 use Codemonster\Scheduler\Contracts\LockStoreInterface;
 use Codemonster\Scheduler\Schedule;
 use Codemonster\Scheduler\ScheduleException;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class SchedulerTest extends TestCase
 {
@@ -108,11 +110,41 @@ class SchedulerTest extends TestCase
         self::assertSame([300], $lockStore->seconds);
     }
 
+    public function test_array_locks_expire_using_the_injected_clock(): void
+    {
+        $clock = new MutableSchedulerClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $locks = new ArrayLockStore($clock);
+
+        self::assertTrue($locks->acquire('cleanup', 10));
+        self::assertFalse($locks->acquire('cleanup', 10));
+
+        $clock->advance(new \DateInterval('PT10S'));
+
+        self::assertTrue($locks->acquire('cleanup', 10));
+    }
+
     public function test_invalid_daily_time_is_rejected(): void
     {
         $this->expectException(ScheduleException::class);
 
         (new Schedule())->call(fn (): null => null)->dailyAt('25:00');
+    }
+}
+
+class MutableSchedulerClock implements ClockInterface
+{
+    public function __construct(private \DateTimeImmutable $now)
+    {
+    }
+
+    public function now(): \DateTimeImmutable
+    {
+        return $this->now;
+    }
+
+    public function advance(\DateInterval $interval): void
+    {
+        $this->now = $this->now->add($interval);
     }
 }
 

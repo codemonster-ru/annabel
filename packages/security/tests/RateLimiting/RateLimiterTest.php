@@ -2,6 +2,7 @@
 
 namespace Codemonster\Security\Tests\RateLimiting;
 
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Security\RateLimiting\RateLimiter;
 use Codemonster\Security\RateLimiting\Storage\SessionThrottleStorage;
 use Codemonster\Session\Session;
@@ -14,7 +15,7 @@ class RateLimiterTest extends TestCase
         Session::start('array');
 
         $now = 1000;
-        $limiter = new RateLimiter(new SessionThrottleStorage(), function () use (&$now) {
+        $limiter = new RateLimiter(new SessionThrottleStorage(), function () use (&$now): int {
             return $now;
         });
 
@@ -36,7 +37,7 @@ class RateLimiterTest extends TestCase
     {
         $storage = new ArrayAtomicStorage();
         $now = 2000;
-        $limiter = new RateLimiter($storage, function () use (&$now) {
+        $limiter = new RateLimiter($storage, function () use (&$now): int {
             return $now;
         });
 
@@ -51,6 +52,17 @@ class RateLimiterTest extends TestCase
         $result = $limiter->attempt('login', 2, 10);
         $this->assertSame(3, $result['attempts']);
         $this->assertTrue($result['limited']);
+    }
+
+    public function testAcceptsPsrClock(): void
+    {
+        Session::start('array');
+
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $limiter = new RateLimiter(new SessionThrottleStorage(), clock: $clock);
+
+        $this->assertSame(1, $limiter->hit('login', 10));
+        $this->assertSame(10, $limiter->availableIn('login'));
     }
 }
 

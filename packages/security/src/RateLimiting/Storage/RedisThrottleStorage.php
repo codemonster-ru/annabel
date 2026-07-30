@@ -2,16 +2,24 @@
 
 namespace Codemonster\Security\RateLimiting\Storage;
 
+use Codemonster\DateTime\SystemClock;
+use Psr\Clock\ClockInterface;
+
 class RedisThrottleStorage implements AtomicThrottleStorageInterface
 {
     /** @var object */
     protected $client;
     protected string $prefix;
+    protected ClockInterface $clock;
 
-    public function __construct(object $client, string $prefix = 'throttle:')
-    {
+    public function __construct(
+        object $client,
+        string $prefix = 'throttle:',
+        ?ClockInterface $clock = null,
+    ) {
         $this->client = $client;
         $this->prefix = $prefix;
+        $this->clock = $clock ?? new SystemClock();
     }
 
     public function get(string $key): ?array
@@ -24,7 +32,7 @@ class RedisThrottleStorage implements AtomicThrottleStorageInterface
         }
 
         $ttl = self::integerValue($this->invoke('ttl', $redisKey), 0);
-        $expiresAt = $ttl > 0 ? time() + $ttl : 0;
+        $expiresAt = $ttl > 0 ? $this->now() + $ttl : 0;
 
         return [
             'attempts' => self::integerValue($value, 0),
@@ -39,7 +47,7 @@ class RedisThrottleStorage implements AtomicThrottleStorageInterface
         $redisKey = $this->prefix . $key;
 
         if ($expiresAt > 0) {
-            $ttl = max(0, $expiresAt - time());
+            $ttl = max(0, $expiresAt - $this->now());
             $this->invoke('setex', $redisKey, $ttl, (string) $attempts);
 
             return;
@@ -130,5 +138,10 @@ LUA;
         }
 
         return $default;
+    }
+
+    private function now(): int
+    {
+        return $this->clock->now()->getTimestamp();
     }
 }

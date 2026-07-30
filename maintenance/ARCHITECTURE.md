@@ -8,7 +8,7 @@ usable without depending on `codemonster-ru/annabel`.
 
 - `codemonster-ru/annabel` is the composition layer: application lifecycle,
   container, providers, kernel, console, and publishing.
-- Domain packages (`api-resource`, `http`, `http-client`, `router`, `view`, `session`, `auth`, `security`, `filesystem`,
+- Domain packages (`api-resource`, `http`, `http-client`, `router`, `view`, `session`, `auth`, `security`, `filesystem`, `datetime`,
   `cache`, `events`, `validation`, `logging`, `mail`, `queue`, `scheduler`, `database`, `env`, `config`, `errors`, `dumper`, `razor`, `ssr-bridge`) own their runtime
   behavior and must not depend on the framework package.
 - `codemonster-ru/support` contains convenience helpers. Helpers may resolve

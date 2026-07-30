@@ -9,6 +9,7 @@ RUN apk add --no-cache \
         curl \
         fd \
         git \
+        icu-data-full \
         icu-dev \
         jq \
         linux-headers \

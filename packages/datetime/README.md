@@ -11,8 +11,8 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/codemonster-ru/datetime.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/datetime)
 [![License](https://img.shields.io/packagist/l/codemonster-ru/datetime.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/datetime)
 
-Immutable date-time operations, timezone conversion, strict parsing, and
-PSR-20 clocks for PHP applications.
+Immutable date-time operations, timezone conversion, strict parsing, ICU
+formatting, business calendars, and PSR-20 clocks for PHP applications.
 
 ## Documentation
 

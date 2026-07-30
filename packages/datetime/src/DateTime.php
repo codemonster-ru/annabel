@@ -155,6 +155,26 @@ final class DateTime
         return $this->modifyBy(-$days, 'day');
     }
 
+    public function addWeeks(int $weeks): self
+    {
+        return $this->addDays($weeks * 7);
+    }
+
+    public function subtractWeeks(int $weeks): self
+    {
+        return $this->subtractDays($weeks * 7);
+    }
+
+    public function addQuarters(int $quarters): self
+    {
+        return $this->addMonths($quarters * 3);
+    }
+
+    public function subtractQuarters(int $quarters): self
+    {
+        return $this->subtractMonths($quarters * 3);
+    }
+
     public function addHours(int $hours): self
     {
         return $this->shiftBySeconds($hours * 3600);
@@ -185,6 +205,37 @@ final class DateTime
         return $this->shiftBySeconds(-$seconds);
     }
 
+    public function setDate(int $year, int $month, int $day): self
+    {
+        if (!checkdate($month, $day, $year)) {
+            throw new InvalidDateTimeException(
+                sprintf('Invalid calendar date [%04d-%02d-%02d].', $year, $month, $day),
+            );
+        }
+
+        return new self($this->dateTime->setDate($year, $month, $day));
+    }
+
+    public function setTime(int $hour, int $minute, int $second = 0, int $microsecond = 0): self
+    {
+        if (
+            $hour < 0
+            || $hour > 23
+            || $minute < 0
+            || $minute > 59
+            || $second < 0
+            || $second > 59
+            || $microsecond < 0
+            || $microsecond > 999999
+        ) {
+            throw new InvalidDateTimeException(
+                sprintf('Invalid time [%02d:%02d:%02d.%06d].', $hour, $minute, $second, $microsecond),
+            );
+        }
+
+        return new self($this->dateTime->setTime($hour, $minute, $second, $microsecond));
+    }
+
     public function startOfDay(): self
     {
         return new self($this->dateTime->setTime(0, 0));
@@ -195,6 +246,21 @@ final class DateTime
         return new self($this->dateTime->setTime(23, 59, 59, 999999));
     }
 
+    public function startOfWeek(int $firstDay = 1): self
+    {
+        self::guardWeekday($firstDay);
+
+        $weekday = (int) $this->format('N');
+        $daysSinceStart = ($weekday - $firstDay + 7) % 7;
+
+        return $this->subtractDays($daysSinceStart)->startOfDay();
+    }
+
+    public function endOfWeek(int $firstDay = 1): self
+    {
+        return $this->startOfWeek($firstDay)->addDays(6)->endOfDay();
+    }
+
     public function startOfMonth(): self
     {
         return new self($this->dateTime->modify('first day of this month')->setTime(0, 0));
@@ -203,6 +269,23 @@ final class DateTime
     public function endOfMonth(): self
     {
         return new self($this->dateTime->modify('last day of this month')->setTime(23, 59, 59, 999999));
+    }
+
+    public function quarter(): int
+    {
+        return intdiv((int) $this->format('n') - 1, 3) + 1;
+    }
+
+    public function startOfQuarter(): self
+    {
+        $month = (($this->quarter() - 1) * 3) + 1;
+
+        return $this->setDate((int) $this->format('Y'), $month, 1)->startOfDay();
+    }
+
+    public function endOfQuarter(): self
+    {
+        return $this->startOfQuarter()->addMonths(3)->subtractDays(1)->endOfDay();
     }
 
     public function startOfYear(): self
@@ -228,6 +311,47 @@ final class DateTime
     public function isSameInstant(self|\DateTimeInterface $other): bool
     {
         return $this->format('U.u') === self::native($other)->format('U.u');
+    }
+
+    public function isBetween(
+        self|\DateTimeInterface $start,
+        self|\DateTimeInterface $end,
+        bool $inclusive = true,
+    ): bool {
+        $start = self::native($start);
+        $end = self::native($end);
+
+        if ($end < $start) {
+            throw new InvalidDateTimeException('The end of a date-time range must not precede its start.');
+        }
+
+        if ($inclusive) {
+            return $this->dateTime >= $start && $this->dateTime <= $end;
+        }
+
+        return $this->dateTime > $start && $this->dateTime < $end;
+    }
+
+    public function min(self|\DateTimeInterface $other): self
+    {
+        $native = self::native($other);
+
+        if ($this->dateTime <= $native) {
+            return $this;
+        }
+
+        return $other instanceof self ? $other : new self($native);
+    }
+
+    public function max(self|\DateTimeInterface $other): self
+    {
+        $native = self::native($other);
+
+        if ($this->dateTime >= $native) {
+            return $this;
+        }
+
+        return $other instanceof self ? $other : new self($native);
     }
 
     public function diff(self|\DateTimeInterface $other, bool $absolute = false): \DateInterval
@@ -271,6 +395,13 @@ final class DateTime
 
         if ($errors !== false && ($errors['warning_count'] > 0 || $errors['error_count'] > 0)) {
             throw new InvalidDateTimeException('Invalid date-time [' . $value . '].');
+        }
+    }
+
+    private static function guardWeekday(int $weekday): void
+    {
+        if ($weekday < 1 || $weekday > 7) {
+            throw new InvalidDateTimeException('ISO weekday must be between 1 and 7.');
         }
     }
 }

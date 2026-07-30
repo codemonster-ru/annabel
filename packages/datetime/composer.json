@@ -44,6 +44,9 @@
         "analyse": "phpstan analyse --memory-limit=1G",
         "test": "phpunit --colors=always --testdox"
     },
+    "suggest": {
+        "ext-intl": "Required for localized date-time and human interval formatting."
+    },
     "keywords": [
         "php",
         "datetime",

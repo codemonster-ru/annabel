@@ -7557,6 +7557,67 @@
                 }
             }
         },
+        "Codemonster\\DateTime\\BusinessCalendar": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/BusinessCalendar.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "array$param=[6,7],iterable$param=[]",
+                    "return": ""
+                },
+                "addBusinessDays": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param,int$param",
+                    "return": "DateTime"
+                },
+                "businessDaysBetween": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param,DateTime|\\DateTimeInterface$param,",
+                    "return": "int"
+                },
+                "isBusinessDay": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param",
+                    "return": "bool"
+                },
+                "isHoliday": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param",
+                    "return": "bool"
+                },
+                "isWeekend": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param",
+                    "return": "bool"
+                }
+            }
+        },
         "Codemonster\\DateTime\\DateTime": {
             "package": "codemonster-ru/datetime",
             "file": "src/DateTime.php",
@@ -7610,7 +7671,23 @@
                     "parameters": "int$param",
                     "return": "self"
                 },
+                "addQuarters": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
                 "addSeconds": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addWeeks": {
                     "visibility": "public",
                     "static": false,
                     "final": false,
@@ -7648,6 +7725,22 @@
                     "final": false,
                     "abstract": false,
                     "parameters": "",
+                    "return": "self"
+                },
+                "endOfQuarter": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "endOfWeek": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param=1",
                     "return": "self"
                 },
                 "endOfYear": {
@@ -7706,6 +7799,14 @@
                     "parameters": "self|\\DateTimeInterface$param",
                     "return": "bool"
                 },
+                "isBetween": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param,self|\\DateTimeInterface$param,bool$param=true,",
+                    "return": "bool"
+                },
                 "isSameInstant": {
                     "visibility": "public",
                     "static": false,
@@ -7713,6 +7814,22 @@
                     "abstract": false,
                     "parameters": "self|\\DateTimeInterface$param",
                     "return": "bool"
+                },
+                "max": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param",
+                    "return": "self"
+                },
+                "min": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param",
+                    "return": "self"
                 },
                 "now": {
                     "visibility": "public",
@@ -7730,6 +7847,30 @@
                     "parameters": "string$param,string|\\DateTimeZone$param='UTC',",
                     "return": "self"
                 },
+                "quarter": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "int"
+                },
+                "setDate": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param,int$param,int$param",
+                    "return": "self"
+                },
+                "setTime": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param,int$param,int$param=0,int$param=0",
+                    "return": "self"
+                },
                 "startOfDay": {
                     "visibility": "public",
                     "static": false,
@@ -7744,6 +7885,22 @@
                     "final": false,
                     "abstract": false,
                     "parameters": "",
+                    "return": "self"
+                },
+                "startOfQuarter": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "startOfWeek": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param=1",
                     "return": "self"
                 },
                 "startOfYear": {
@@ -7794,7 +7951,23 @@
                     "parameters": "int$param",
                     "return": "self"
                 },
+                "subtractQuarters": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
                 "subtractSeconds": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractWeeks": {
                     "visibility": "public",
                     "static": false,
                     "final": false,
@@ -7860,6 +8033,20 @@
                 }
             }
         },
+        "Codemonster\\DateTime\\DateTimeFormattingException": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/DateTimeFormattingException.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [
+                "RuntimeException"
+            ],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": []
+        },
         "Codemonster\\DateTime\\FrozenClock": {
             "package": "codemonster-ru/datetime",
             "file": "src/FrozenClock.php",
@@ -7907,6 +8094,43 @@
                 }
             }
         },
+        "Codemonster\\DateTime\\HumanDiffFormatter": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/HumanDiffFormatter.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "privatestring$param='en'",
+                    "return": ""
+                },
+                "formatDuration": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateInterval$param,int$param=2",
+                    "return": "string"
+                },
+                "formatRelative": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param,DateTime|\\DateTimeInterface$param,int$param=1,",
+                    "return": "string"
+                }
+            }
+        },
         "Codemonster\\DateTime\\InvalidDateTimeException": {
             "package": "codemonster-ru/datetime",
             "file": "src/InvalidDateTimeException.php",
@@ -7920,6 +8144,35 @@
             "constants": [],
             "properties": [],
             "methods": []
+        },
+        "Codemonster\\DateTime\\LocalizedFormatter": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/LocalizedFormatter.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,?int$param=null,?int$param=null,?string$param=null,",
+                    "return": ""
+                },
+                "format": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param",
+                    "return": "string"
+                }
+            }
         },
         "Codemonster\\DateTime\\SystemClock": {
             "package": "codemonster-ru/datetime",

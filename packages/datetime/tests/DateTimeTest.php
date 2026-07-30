@@ -59,6 +59,16 @@ final class DateTimeTest extends TestCase
         self::assertSame('2026-08-02 09:45:40', $changed->format(DateTime::DATABASE_FORMAT));
     }
 
+    public function test_it_supports_week_and_quarter_arithmetic(): void
+    {
+        $date = DateTime::parse('2026-02-15 12:30:00');
+
+        self::assertSame('2026-03-01', $date->addWeeks(2)->format('Y-m-d'));
+        self::assertSame('2026-02-01', $date->subtractWeeks(2)->format('Y-m-d'));
+        self::assertSame('2026-08-15', $date->addQuarters(2)->format('Y-m-d'));
+        self::assertSame('2025-11-15', $date->subtractQuarters(1)->format('Y-m-d'));
+    }
+
     public function test_days_are_calendar_units_while_hours_are_elapsed_time(): void
     {
         $date = DateTime::parse('2026-03-28 12:00:00', 'Europe/Berlin');
@@ -97,6 +107,38 @@ final class DateTimeTest extends TestCase
         self::assertSame('2024-12-31 23:59:59.999999', $date->endOfYear()->format('Y-m-d H:i:s.u'));
     }
 
+    public function test_it_calculates_week_and_quarter_boundaries(): void
+    {
+        $date = DateTime::parse('2026-07-31 12:30:45');
+
+        self::assertSame('2026-07-27 00:00:00', $date->startOfWeek()->format(DateTime::DATABASE_FORMAT));
+        self::assertSame('2026-08-02 23:59:59.999999', $date->endOfWeek()->format('Y-m-d H:i:s.u'));
+        self::assertSame('2026-07-26', $date->startOfWeek(7)->format('Y-m-d'));
+        self::assertSame(3, $date->quarter());
+        self::assertSame('2026-07-01 00:00:00', $date->startOfQuarter()->format(DateTime::DATABASE_FORMAT));
+        self::assertSame('2026-09-30 23:59:59.999999', $date->endOfQuarter()->format('Y-m-d H:i:s.u'));
+    }
+
+    public function test_setters_are_strict_and_immutable(): void
+    {
+        $original = DateTime::parse('2026-07-31 12:30:45.123456');
+        $changed = $original->setDate(2024, 2, 29)->setTime(23, 59, 58, 654321);
+
+        self::assertSame('2026-07-31 12:30:45.123456', $original->format('Y-m-d H:i:s.u'));
+        self::assertSame('2024-02-29 23:59:58.654321', $changed->format('Y-m-d H:i:s.u'));
+
+        $this->expectException(InvalidDateTimeException::class);
+
+        $original->setDate(2023, 2, 29);
+    }
+
+    public function test_set_time_rejects_out_of_range_components(): void
+    {
+        $this->expectException(InvalidDateTimeException::class);
+
+        DateTime::parse('2026-07-31')->setTime(24, 0);
+    }
+
     public function test_it_compares_instants_and_calculates_differences(): void
     {
         $earlier = DateTime::parse('2026-07-31 10:00:00');
@@ -105,6 +147,28 @@ final class DateTimeTest extends TestCase
         self::assertTrue($earlier->isBefore($later));
         self::assertTrue($later->isAfter($earlier));
         self::assertSame(2, $earlier->diff($later)->days);
+    }
+
+    public function test_it_compares_ranges_and_selects_minimum_and_maximum(): void
+    {
+        $start = DateTime::parse('2026-07-01');
+        $middle = DateTime::parse('2026-07-15');
+        $end = DateTime::parse('2026-07-31');
+
+        self::assertTrue($middle->isBetween($start, $end));
+        self::assertFalse($start->isBetween($start, $end, false));
+        self::assertSame($start, $middle->min($start));
+        self::assertSame($end, $middle->max($end));
+    }
+
+    public function test_between_rejects_an_inverted_range(): void
+    {
+        $this->expectException(InvalidDateTimeException::class);
+
+        DateTime::parse('2026-07-15')->isBetween(
+            DateTime::parse('2026-07-31'),
+            DateTime::parse('2026-07-01'),
+        );
     }
 
     public function test_now_uses_the_injected_clock_and_optional_output_timezone(): void

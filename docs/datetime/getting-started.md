@@ -45,3 +45,26 @@ $now = DateTime::now($clock, 'Asia/Novokuznetsk');
 
 `FrozenClock::advance()` and `FrozenClock::rewind()` return new clock instances;
 the original clock remains unchanged.
+
+## Annabel integration
+
+Annabel binds `Psr\Clock\ClockInterface` and the `clock` container alias to a
+singleton `SystemClock`. The system clock uses UTC; application or user
+timezones should be applied when parsing input or formatting output.
+
+```php
+use Codemonster\DateTime\DateTime;
+use Psr\Clock\ClockInterface;
+
+final class ReportController
+{
+    public function __construct(private ClockInterface $clock)
+    {
+    }
+
+    public function generatedAt(): string
+    {
+        return DateTime::now($this->clock, 'Europe/Paris')->toIso8601String();
+    }
+}
+```

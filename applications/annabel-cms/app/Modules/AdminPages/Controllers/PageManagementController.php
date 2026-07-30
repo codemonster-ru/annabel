@@ -6,9 +6,12 @@ use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Pages\Models\Page;
 use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
+use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\InvalidDateTimeException;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
+use Psr\Clock\ClockInterface;
 
 class PageManagementController
 {
@@ -30,6 +33,7 @@ class PageManagementController
         private SiteSettings $settings,
         private UserSessionInterface $users,
         private Validator $validator,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -230,7 +234,9 @@ class PageManagementController
             'meta_description' => $validated['meta_description'] !== '' ? $validated['meta_description'] : null,
             'content' => $validated['content'],
             'is_published' => $isPublished,
-            'published_at' => $isPublished ? ($page->published_at ?? gmdate('Y-m-d H:i:s')) : null,
+            'published_at' => $isPublished
+                ? ($page->published_at ?? DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT))
+                : null,
             'publish_at' => $publishAt,
             'unpublish_at' => $unpublishAt,
         ]);
@@ -268,17 +274,17 @@ class PageManagementController
             return null;
         }
 
-        $date = \DateTimeImmutable::createFromFormat(
-            'Y-m-d\\TH:i',
-            $value,
-            new \DateTimeZone((string) $this->settings->current()->timezone),
-        );
-
-        if (!$date || \DateTimeImmutable::getLastErrors() !== false && \DateTimeImmutable::getLastErrors()['warning_count'] > 0) {
+        try {
+            $date = DateTime::fromFormat(
+                'Y-m-d\\TH:i',
+                $value,
+                (string) $this->settings->current()->timezone,
+            );
+        } catch (InvalidDateTimeException) {
             return null;
         }
 
-        return $date->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        return $date->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT);
     }
 
     private function toLocalInput(mixed $value): ?string
@@ -287,8 +293,8 @@ class PageManagementController
             return null;
         }
 
-        return \DateTimeImmutable::createFromInterface($value)
-            ->setTimezone(new \DateTimeZone((string) $this->settings->current()->timezone))
+        return DateTime::fromInterface($value)
+            ->toTimezone((string) $this->settings->current()->timezone)
             ->format('Y-m-d\\TH:i');
     }
 

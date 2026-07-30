@@ -4,10 +4,12 @@ namespace Codemonster\Annabel\Tests\Providers;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Env\Env;
 use Codemonster\Router\Router;
 use Codemonster\Validation\Validator;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\LoggerInterface;
@@ -25,6 +27,9 @@ class CoreServiceProviderTest extends TestCase
         $this->assertTrue($c->has(Config::class));
         $this->assertTrue($c->has(Env::class));
         $this->assertTrue($c->has(Router::class));
+        $this->assertInstanceOf(SystemClock::class, $c->make(ClockInterface::class));
+        $this->assertSame($c->make(ClockInterface::class), $c->make('clock'));
+        $this->assertSame('UTC', $c->make(ClockInterface::class)->now()->getTimezone()->getName());
         $this->assertInstanceOf(LoggerInterface::class, $c->make(LoggerInterface::class));
         $this->assertInstanceOf(CacheInterface::class, $c->make(CacheInterface::class));
         $this->assertInstanceOf(ListenerProviderInterface::class, $c->make(ListenerProviderInterface::class));

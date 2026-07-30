@@ -12545,6 +12545,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$tasks": "protected"
             },
             "methods": {
@@ -12553,7 +12554,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protected?LockStoreInterface$param=null",
+                    "parameters": "protected?LockStoreInterface$param=null,?ClockInterface$param=null,",
                     "return": ""
                 },
                 "call": {
@@ -12614,6 +12615,7 @@
             "implements": [],
             "constants": [],
             "properties": {
+                "$clock": "protected",
                 "$daysOfMonth": "protected",
                 "$filters": "protected",
                 "$hours": "protected",
@@ -12631,7 +12633,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "protected\\Closure$param,protectedstring$param='Closure',",
+                    "parameters": "protected\\Closure$param,protectedstring$param='Closure',?ClockInterface$param=null,",
                     "return": ""
                 },
                 "dailyAt": {

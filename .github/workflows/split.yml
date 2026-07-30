@@ -24,6 +24,7 @@ on:
             - 'env/v*.*.*'
             - 'events/v*.*.*'
             - 'database/v*.*.*'
+            - 'datetime/v*.*.*'
             - 'session/v*.*.*'
             - 'auth/v*.*.*'
             - 'errors/v*.*.*'
@@ -103,6 +104,9 @@ jobs:
                     - id: database
                       path: packages/database
                       repository: codemonster-ru/database
+                    - id: datetime
+                      path: packages/datetime
+                      repository: codemonster-ru/datetime
                     - id: session
                       path: packages/session
                       repository: codemonster-ru/session

@@ -63,6 +63,7 @@ function annabelApiContracts(): array
         'codemonster-ru/cache' => annabelApiAll(),
         'codemonster-ru/config' => annabelApiAll(),
         'codemonster-ru/database' => annabelApiAll(),
+        'codemonster-ru/datetime' => annabelApiAll(),
         'codemonster-ru/dumper' => annabelApiAll(),
         'codemonster-ru/env' => annabelApiAll(),
         'codemonster-ru/errors' => annabelApiAll(),

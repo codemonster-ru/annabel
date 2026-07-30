@@ -7557,6 +7557,401 @@
                 }
             }
         },
+        "Codemonster\\DateTime\\DateTime": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/DateTime.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [],
+            "constants": {
+                "DATABASE_FORMAT": "public"
+            },
+            "properties": [],
+            "methods": {
+                "add": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateInterval$param",
+                    "return": "self"
+                },
+                "addDays": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addHours": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addMinutes": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addMonths": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addSeconds": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "addYears": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "diff": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param,bool$param=false",
+                    "return": "\\DateInterval"
+                },
+                "endOfDay": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "endOfMonth": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "endOfYear": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "format": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "string"
+                },
+                "fromFormat": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,string$param,string|\\DateTimeZone$param='UTC',",
+                    "return": "self"
+                },
+                "fromInterface": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateTimeInterface$param",
+                    "return": "self"
+                },
+                "fromTimestamp": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param,string|\\DateTimeZone$param='UTC',",
+                    "return": "self"
+                },
+                "isAfter": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param",
+                    "return": "bool"
+                },
+                "isBefore": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param",
+                    "return": "bool"
+                },
+                "isSameInstant": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "self|\\DateTimeInterface$param",
+                    "return": "bool"
+                },
+                "now": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "?ClockInterface$param=null,string|\\DateTimeZone|null$param=null,",
+                    "return": "self"
+                },
+                "parse": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,string|\\DateTimeZone$param='UTC',",
+                    "return": "self"
+                },
+                "startOfDay": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "startOfMonth": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "startOfYear": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "self"
+                },
+                "subtract": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateInterval$param",
+                    "return": "self"
+                },
+                "subtractDays": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractHours": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractMinutes": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractMonths": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractSeconds": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "subtractYears": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "int$param",
+                    "return": "self"
+                },
+                "timestamp": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "int"
+                },
+                "timezone": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "\\DateTimeZone"
+                },
+                "timezoneName": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                },
+                "toIso8601String": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                },
+                "toNative": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "\\DateTimeImmutable"
+                },
+                "toTimezone": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string|\\DateTimeZone$param",
+                    "return": "self"
+                }
+            }
+        },
+        "Codemonster\\DateTime\\FrozenClock": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/FrozenClock.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [
+                "ClockInterface"
+            ],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "DateTime|\\DateTimeInterface$param",
+                    "return": ""
+                },
+                "advance": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateInterval$param",
+                    "return": "self"
+                },
+                "now": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "\\DateTimeImmutable"
+                },
+                "rewind": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "\\DateInterval$param",
+                    "return": "self"
+                }
+            }
+        },
+        "Codemonster\\DateTime\\InvalidDateTimeException": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/InvalidDateTimeException.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [
+                "InvalidArgumentException"
+            ],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": []
+        },
+        "Codemonster\\DateTime\\SystemClock": {
+            "package": "codemonster-ru/datetime",
+            "file": "src/SystemClock.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [
+                "ClockInterface"
+            ],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string|\\DateTimeZone$param='UTC'",
+                    "return": ""
+                },
+                "now": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "\\DateTimeImmutable"
+                }
+            }
+        },
         "Codemonster\\Dumper\\Dumper": {
             "package": "codemonster-ru/dumper",
             "file": "src/Dumper.php",

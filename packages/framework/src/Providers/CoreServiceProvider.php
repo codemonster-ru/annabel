@@ -8,11 +8,13 @@ use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
 use Codemonster\Annabel\Http\Kernel;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Env\Env;
 use Codemonster\Errors\Contracts\ExceptionHandlerInterface;
 use Codemonster\Errors\Handlers\SmartExceptionHandler;
 use Codemonster\Http\Request;
 use Codemonster\Router\Router;
+use Psr\Clock\ClockInterface;
 
 class CoreServiceProvider implements ServiceProviderInterface
 {
@@ -44,6 +46,15 @@ class CoreServiceProvider implements ServiceProviderInterface
         });
 
         $this->app->singleton('config', fn (Container $c) => $c->make(Config::class));
+
+        $this->app->singleton(SystemClock::class, fn () => new SystemClock());
+
+        $this->app->singleton(
+            ClockInterface::class,
+            fn (Container $c): ClockInterface => $c->make(SystemClock::class),
+        );
+
+        $this->app->singleton('clock', fn (Container $c): ClockInterface => $c->make(ClockInterface::class));
 
         $this->app->singleton(Router::class, fn () => new Router());
 

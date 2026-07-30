@@ -8,6 +8,7 @@ use Codemonster\Cache\Contracts\CacheStoreInterface;
 use Codemonster\Scheduler\ArrayLockStore;
 use Codemonster\Scheduler\Contracts\LockStoreInterface;
 use Codemonster\Scheduler\Schedule;
+use Psr\Clock\ClockInterface;
 
 class ScheduleServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,10 @@ class ScheduleServiceProvider extends ServiceProvider
         });
 
         $this->app()->singleton(Schedule::class, function (Container $app): Schedule {
-            $schedule = new Schedule($app->make(LockStoreInterface::class));
+            $schedule = new Schedule(
+                $app->make(LockStoreInterface::class),
+                $app->make(ClockInterface::class),
+            );
             $this->loadSchedule($schedule);
 
             return $schedule;

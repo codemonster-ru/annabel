@@ -31,6 +31,80 @@ time fields are reset rather than filled from the current system time.
 $date = DateTime::fromFormat('Y-m-d', '2026-07-31');
 ```
 
+## Calendar operations
+
+All operations return new values. Days, weeks, months, quarters, and years are
+calendar units; hours, minutes, and seconds are elapsed time.
+
+```php
+$quarter = DateTime::parse('2026-07-31 12:30', 'Europe/Paris')
+    ->startOfQuarter();
+
+$nextWeek = $quarter->addWeeks(1);
+$changed = $nextWeek->setDate(2026, 8, 15)->setTime(9, 30);
+```
+
+Weeks start on Monday by default. Pass an ISO-8601 weekday from `1` (Monday) to
+`7` (Sunday) to `startOfWeek()` or `endOfWeek()` to use another first day.
+
+Ranges can be inclusive or exclusive:
+
+```php
+$inside = $date->isBetween($start, $end);
+$strictlyInside = $date->isBetween($start, $end, inclusive: false);
+$earliest = $date->min($other);
+$latest = $date->max($other);
+```
+
+## Localized formatting
+
+`LocalizedFormatter` delegates patterns, month names, and date/time styles to
+ICU. It throws `DateTimeFormattingException` if the requested locale data is
+not installed instead of silently using another language.
+
+```php
+use Codemonster\DateTime\LocalizedFormatter;
+
+$formatter = new LocalizedFormatter(
+    'ru_RU',
+    \IntlDateFormatter::NONE,
+    \IntlDateFormatter::NONE,
+    'd MMMM y, HH:mm',
+);
+
+echo $formatter->format($date);
+```
+
+English and Russian relative intervals use ICU plural rules:
+
+```php
+use Codemonster\DateTime\HumanDiffFormatter;
+
+$human = new HumanDiffFormatter('ru_RU');
+
+echo $human->formatRelative($now, $event); // через 2 дня
+```
+
+## Business calendars
+
+Business calendars use ISO-8601 weekday numbers and explicit `Y-m-d` holidays.
+The default weekend is Saturday and Sunday.
+
+```php
+use Codemonster\DateTime\BusinessCalendar;
+
+$calendar = new BusinessCalendar(
+    weekendDays: [6, 7],
+    holidays: ['2026-01-01', '2026-01-07'],
+);
+
+$nextBusinessDate = $calendar->addBusinessDays($date, 3);
+$days = $calendar->businessDaysBetween($start, $end);
+```
+
+`businessDaysBetween()` counts both range boundaries when they are business
+days. Reversed ranges are rejected.
+
 ## Testable time
 
 `DateTime::now()` accepts any PSR-20 clock.

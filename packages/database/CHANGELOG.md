@@ -2,6 +2,13 @@
 
 All significant changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- Added PSR-20 clock registration for deterministic model, soft-delete, migration,
+  and seed timestamps.
+
 ## [2.1.1] - 2026-07-05
 
 ### Fixed

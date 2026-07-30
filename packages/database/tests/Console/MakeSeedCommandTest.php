@@ -5,6 +5,7 @@ namespace Codemonster\Database\Tests\Console;
 use Codemonster\Database\Console\Commands\MakeSeedCommand;
 use Codemonster\Database\Seeders\SeedPathResolver;
 use Codemonster\Database\Tests\TestCase;
+use Codemonster\DateTime\FrozenClock;
 
 class MakeSeedCommandTest extends TestCase
 {
@@ -17,7 +18,10 @@ class MakeSeedCommandTest extends TestCase
         $paths = new SeedPathResolver();
         $paths->addPath($dir);
 
-        $command = new MakeSeedCommand($paths);
+        $command = new MakeSeedCommand(
+            $paths,
+            new FrozenClock(new \DateTimeImmutable('2026-07-31 12:30:45 UTC')),
+        );
 
         $this->expectOutputRegex('/^Created seed: .+\\.php\\R$/');
 
@@ -27,6 +31,10 @@ class MakeSeedCommandTest extends TestCase
 
         $this->assertSame(0, $result);
         $this->assertCount(1, $files);
+        $this->assertSame(
+            $dir . DIRECTORY_SEPARATOR . '2026_07_31_123045_users_seeder.php',
+            $files[0],
+        );
 
         foreach ($files as $file) {
             unlink($file);

@@ -8,12 +8,15 @@ use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\SecurityServiceProvider;
 use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 use Codemonster\Security\Csrf\VerifyCsrfToken;
 use Codemonster\Security\RateLimiting\Contracts\RateLimiterInterface;
+use Codemonster\Security\RateLimiting\Storage\ThrottleStorageInterface;
 use Codemonster\Security\RateLimiting\ThrottleRequests;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class SecurityServiceProviderTest extends TestCase
 {
@@ -100,5 +103,22 @@ class SecurityServiceProviderTest extends TestCase
 
         $this->assertSame(200, $app->getKernel()->handle($request)->getStatusCode());
         $this->assertSame(429, $app->getKernel()->handle($request)->getStatusCode());
+    }
+
+    public function test_rate_limiter_uses_the_registered_clock(): void
+    {
+        Application::resetInstance();
+
+        $app = new Application(__DIR__ . '/../../', null, false);
+        (new CoreServiceProvider($app))->register();
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+        (new SecurityServiceProvider($app))->register();
+        $limiter = $app->make(RateLimiterInterface::class);
+        $limiter->hit('clock-test', 60);
+        $record = $app->make(ThrottleStorageInterface::class)->get('clock-test');
+
+        $this->assertNotNull($record);
+        $this->assertSame($clock->now()->getTimestamp() + 60, $record['expires_at']);
     }
 }

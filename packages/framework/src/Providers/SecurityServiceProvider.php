@@ -15,6 +15,7 @@ use Codemonster\Security\RateLimiting\Storage\RedisThrottleStorage;
 use Codemonster\Security\RateLimiting\Storage\SessionThrottleStorage;
 use Codemonster\Security\RateLimiting\Storage\ThrottleStorageInterface;
 use Codemonster\Security\RateLimiting\ThrottleRequests;
+use Psr\Clock\ClockInterface;
 
 class SecurityServiceProvider extends ServiceProvider
 {
@@ -60,7 +61,11 @@ class SecurityServiceProvider extends ServiceProvider
                 if (is_object($client)) {
                     $prefix = self::stringValue($cfg['prefix'] ?? null, 'throttle:');
 
-                    return new RedisThrottleStorage($client, $prefix);
+                    return new RedisThrottleStorage(
+                        $client,
+                        $prefix,
+                        $this->app()->make(ClockInterface::class),
+                    );
                 }
             }
 
@@ -68,7 +73,10 @@ class SecurityServiceProvider extends ServiceProvider
         });
 
         $this->app()->singleton(RateLimiterInterface::class, function () {
-            return new RateLimiter($this->app()->make(ThrottleStorageInterface::class));
+            return new RateLimiter(
+                $this->app()->make(ThrottleStorageInterface::class),
+                clock: $this->app()->make(ClockInterface::class),
+            );
         });
 
         $this->app()->bind(ThrottleRequests::class, function () {
@@ -80,6 +88,7 @@ class SecurityServiceProvider extends ServiceProvider
                 self::positiveInt($cfg['decay_seconds'] ?? null, 60),
                 self::stringList($cfg['except'] ?? null),
                 self::stringList($cfg['trusted_proxies'] ?? null),
+                $this->app()->make(ClockInterface::class),
             );
         });
     }

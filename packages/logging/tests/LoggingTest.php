@@ -2,6 +2,7 @@
 
 namespace Codemonster\Logging\Tests;
 
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Logging\FileLogger;
 use Codemonster\Logging\LoggerManager;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +13,8 @@ class LoggingTest extends TestCase
     public function test_file_logger_writes_interpolated_messages(): void
     {
         $path = sys_get_temp_dir() . '/annabel-logging-' . bin2hex(random_bytes(6)) . '/app.log';
-        $logger = new FileLogger($path);
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-07-31 12:30:00 UTC'));
+        $logger = new FileLogger($path, $clock);
 
         try {
             $logger->info('User {id} registered', [
@@ -22,6 +24,7 @@ class LoggingTest extends TestCase
 
             $contents = (string) file_get_contents($path);
 
+            self::assertStringStartsWith('[2026-07-31 12:30:00]', $contents);
             self::assertStringContainsString('INFO: User 42 registered', $contents);
             self::assertStringContainsString('"role":"admin"', $contents);
         } finally {
@@ -50,14 +53,17 @@ class LoggingTest extends TestCase
                     'driver' => 'null',
                 ],
             ],
-        ]);
+        ], new FrozenClock(new \DateTimeImmutable('2026-07-31 12:30:00 UTC')));
 
         try {
             $manager->channel()->warning('Careful');
 
             self::assertSame(['file', 'null'], $manager->channels());
             self::assertInstanceOf(LoggerInterface::class, $manager->channel('null'));
-            self::assertStringContainsString('WARNING: Careful', (string) file_get_contents($path));
+            $contents = (string) file_get_contents($path);
+
+            self::assertStringStartsWith('[2026-07-31 12:30:00]', $contents);
+            self::assertStringContainsString('WARNING: Careful', $contents);
         } finally {
             if (is_file($path)) {
                 @unlink($path);

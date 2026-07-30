@@ -150,7 +150,7 @@ class ScheduledTask
     {
         $lockName = null;
         if ($this->withoutOverlapping) {
-            $lockStore ??= new ArrayLockStore();
+            $lockStore ??= new ArrayLockStore($this->clock);
             $lockName = $this->overlapLockName();
 
             if (!$lockStore->acquire($lockName, $this->overlapExpiresAfter)) {

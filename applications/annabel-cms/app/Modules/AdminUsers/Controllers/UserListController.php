@@ -5,9 +5,11 @@ namespace Codemonster\Cms\Modules\AdminUsers\Controllers;
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\User;
+use Codemonster\DateTime\DateTime;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
+use Psr\Clock\ClockInterface;
 
 class UserListController
 {
@@ -28,6 +30,7 @@ class UserListController
         private AdminScreenRendererInterface $admin,
         private UserSessionInterface $users,
         private Validator $validator,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -100,7 +103,7 @@ class UserListController
             array_unshift($columns, 'actions');
         }
 
-        $now = date('Y-m-d H:i:s');
+        $now = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         $preferences = db()->table('admin_table_preferences')
             ->where('user_id', $user->id)
             ->where('table_key', self::TABLE_KEY)

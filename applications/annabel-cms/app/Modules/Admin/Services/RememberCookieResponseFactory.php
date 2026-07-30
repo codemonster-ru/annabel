@@ -4,11 +4,13 @@ namespace Codemonster\Cms\Modules\Admin\Services;
 
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Http\Response;
+use Psr\Clock\ClockInterface;
 
 class RememberCookieResponseFactory
 {
     public function __construct(
         private UserSessionInterface $users,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -17,7 +19,7 @@ class RememberCookieResponseFactory
         return $response->withCookie(
             $this->users->rememberCookieName(),
             $value,
-            $this->options(time() + $this->users->rememberCookieLifetime()),
+            $this->options($this->clock->now()->getTimestamp() + $this->users->rememberCookieLifetime()),
         );
     }
 
@@ -26,7 +28,7 @@ class RememberCookieResponseFactory
         return $response->withCookie(
             $this->users->rememberCookieName(),
             '',
-            $this->options(time() - 3600, 0),
+            $this->options($this->clock->now()->getTimestamp() - 3600, 0),
         );
     }
 

@@ -2,9 +2,11 @@
 
 namespace Codemonster\Security\RateLimiting;
 
+use Codemonster\DateTime\SystemClock;
 use Codemonster\Security\RateLimiting\Contracts\AttemptRateLimiterInterface;
 use Codemonster\Security\RateLimiting\Storage\AtomicThrottleStorageInterface;
 use Codemonster\Security\RateLimiting\Storage\ThrottleStorageInterface;
+use Psr\Clock\ClockInterface;
 
 class RateLimiter implements AttemptRateLimiterInterface
 {
@@ -12,10 +14,15 @@ class RateLimiter implements AttemptRateLimiterInterface
     /** @var callable(): int */
     protected $now;
 
-    public function __construct(ThrottleStorageInterface $storage, ?callable $now = null)
-    {
+    /** @param (callable():int)|null $now */
+    public function __construct(
+        ThrottleStorageInterface $storage,
+        ?callable $now = null,
+        ?ClockInterface $clock = null,
+    ) {
         $this->storage = $storage;
-        $this->now = $now ?? static fn () => time();
+        $clock ??= new SystemClock();
+        $this->now = $now ?? static fn (): int => $clock->now()->getTimestamp();
     }
 
     public function tooManyAttempts(string $key, int $maxAttempts): bool
@@ -38,13 +45,13 @@ class RateLimiter implements AttemptRateLimiterInterface
     public function hit(string $key, int $decaySeconds): int
     {
         if ($this->storage instanceof AtomicThrottleStorageInterface) {
-            $record = $this->storage->increment($key, $decaySeconds, ($this->now)());
+            $record = $this->storage->increment($key, $decaySeconds, $this->now());
 
             return $record['attempts'];
         }
 
         $record = $this->record($key);
-        $now = ($this->now)();
+        $now = $this->now();
 
         if (!$record || $this->isExpired($record)) {
             $record = [
@@ -68,7 +75,7 @@ class RateLimiter implements AttemptRateLimiterInterface
     public function attempt(string $key, int $maxAttempts, int $decaySeconds): array
     {
         if ($this->storage instanceof AtomicThrottleStorageInterface) {
-            $now = ($this->now)();
+            $now = $this->now();
             $record = $this->storage->increment($key, $decaySeconds, $now);
 
             $attempts = $record['attempts'];
@@ -109,7 +116,7 @@ class RateLimiter implements AttemptRateLimiterInterface
             return 0;
         }
 
-        $now = ($this->now)();
+        $now = $this->now();
         $expiresAt = $record['expires_at'];
 
         return max(0, $expiresAt - $now);
@@ -130,8 +137,13 @@ class RateLimiter implements AttemptRateLimiterInterface
     protected function isExpired(array $record): bool
     {
         $expiresAt = $record['expires_at'];
-        $now = ($this->now)();
+        $now = $this->now();
 
         return $expiresAt !== 0 && $now >= $expiresAt;
+    }
+
+    protected function now(): int
+    {
+        return ($this->now)();
     }
 }

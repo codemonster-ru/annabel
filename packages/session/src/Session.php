@@ -4,6 +4,7 @@ namespace Codemonster\Session;
 
 use Codemonster\Session\Handlers\ArraySessionHandler;
 use Codemonster\Session\Handlers\FileSessionHandler;
+use Psr\Clock\ClockInterface;
 use SessionHandlerInterface;
 
 /** @api */
@@ -18,6 +19,7 @@ class Session
         string $driver = 'file',
         array $options = [],
         ?SessionHandlerInterface $customHandler = null,
+        ?ClockInterface $clock = null,
     ): void {
         if ($customHandler) {
             $handler = $customHandler;
@@ -28,7 +30,7 @@ class Session
             if (!is_string($savePath)) {
                 throw new \InvalidArgumentException('Session path must be a string.');
             }
-            $handler = new FileSessionHandler($savePath);
+            $handler = new FileSessionHandler($savePath, $clock);
         }
 
         $cookieOptions = $options['cookie'] ?? [];
@@ -36,7 +38,7 @@ class Session
         if (!is_array($cookieOptions) || !is_array($encryptionOptions)) {
             throw new \InvalidArgumentException('Session cookie and encryption options must be arrays.');
         }
-        static::$store = new Store($handler, null, $cookieOptions, $encryptionOptions);
+        static::$store = new Store($handler, null, $cookieOptions, $encryptionOptions, $clock);
         static::$store->start();
 
         if (!empty($options['regenerate'])) {

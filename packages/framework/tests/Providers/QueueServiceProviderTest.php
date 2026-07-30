@@ -7,10 +7,12 @@ use Codemonster\Annabel\Providers\CoreServiceProvider;
 use Codemonster\Annabel\Providers\QueueServiceProvider;
 use Codemonster\Annabel\Publishing\PublishRegistry;
 use Codemonster\Config\Config;
+use Codemonster\DateTime\FrozenClock;
 use Codemonster\Queue\Contracts\JobInterface;
 use Codemonster\Queue\Contracts\QueueInterface;
 use Codemonster\Queue\QueueManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 
 class QueueServiceProviderTest extends TestCase
 {
@@ -46,6 +48,21 @@ class QueueServiceProviderTest extends TestCase
         self::assertCount(1, $resources);
         self::assertSame($app->getBasePath() . '/config/queue.php', $resources[0]['destination']);
         self::assertFileExists($resources[0]['source']);
+    }
+
+    public function test_queue_manager_uses_the_registered_clock(): void
+    {
+        $app = $this->app([
+            'queue.default' => 'sync',
+            'queue.connections.sync.driver' => 'sync',
+        ]);
+        $clock = new FrozenClock(new \DateTimeImmutable('2026-06-09 10:15:00 UTC'));
+        $app->getContainer()->instance(ClockInterface::class, $clock);
+        $manager = $app->make(QueueManager::class);
+
+        $property = new \ReflectionProperty(QueueManager::class, 'clock');
+
+        self::assertSame($clock, $property->getValue($manager));
     }
 
     /**

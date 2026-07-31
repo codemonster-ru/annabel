@@ -1,8 +1,8 @@
 <?php
 
 use Codemonster\Cms\Modules\Admin\Middleware\RequireAdmin;
-use Codemonster\Cms\Modules\AdminUsers\Controllers\UserListController;
 use Codemonster\Cms\Modules\AdminUsers\Controllers\RoleListController;
+use Codemonster\Cms\Modules\AdminUsers\Controllers\UserListController;
 use Codemonster\Cms\Support\Installation\Middleware\RequireInstalled;
 
 router()->get('/admin/users', [UserListController::class, 'index'])

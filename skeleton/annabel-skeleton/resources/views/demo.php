@@ -10,6 +10,7 @@
  * @var array{name?: string, email?: string} $formInput
  * @var int|null $databaseTotal
  * @var string|null $databaseError
+ * @var string $currentYear
  */
 ?>
 <!DOCTYPE html>

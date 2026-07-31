@@ -9,8 +9,9 @@ declare(strict_types=1);
 $root = dirname(__DIR__);
 $violations = [];
 
+$packageManifests = packageComposerFiles($root);
 $publicManifests = array_merge(
-    packageComposerFiles($root),
+    $packageManifests,
     [
         $root . '/skeleton/annabel-skeleton/composer.json',
         $root . '/applications/annabel-cms/composer.json',
@@ -20,9 +21,11 @@ $publicManifests = array_merge(
 foreach ($publicManifests as $composerFile) {
     inspectComposerManifest($root, $composerFile, $violations);
     inspectChangelog($root, $composerFile, $violations);
+    inspectReleaseFiles($root, $composerFile, $violations);
 }
 
 inspectSplitWorkflow($root, $violations);
+inspectPackageTestMatrix($root, $packageManifests, $violations);
 inspectCmsAssets($root, $violations);
 
 if ($violations !== []) {
@@ -118,6 +121,47 @@ function inspectChangelog(string $root, string $composerFile, array &$violations
 
     if (!str_starts_with($releaseVersion, $aliasMatches[1] . '.')) {
         $violations[] = "{$relativeFile}: release {$releaseVersion} does not match branch alias {$branchAlias}";
+    }
+}
+
+/**
+ * @param list<string> $violations
+ */
+function inspectReleaseFiles(string $root, string $composerFile, array &$violations): void
+{
+    $directory = dirname($composerFile);
+
+    foreach (['README.md', 'LICENSE'] as $file) {
+        $path = $directory . '/' . $file;
+
+        if (!is_file($path)) {
+            $violations[] = relativePath($root, $path) . ': required release file is missing';
+        }
+    }
+}
+
+/**
+ * @param list<string> $packageManifests
+ * @param list<string> $violations
+ */
+function inspectPackageTestMatrix(string $root, array $packageManifests, array &$violations): void
+{
+    $workflowFile = $root . '/.github/workflows/tests.yml';
+
+    if (!is_file($workflowFile)) {
+        $violations[] = '.github/workflows/tests.yml: package test workflow is missing';
+
+        return;
+    }
+
+    $contents = (string) file_get_contents($workflowFile);
+
+    foreach ($packageManifests as $composerFile) {
+        $packageDirectory = relativePath($root, dirname($composerFile));
+
+        if (!preg_match('/^\\s+-\\s+' . preg_quote($packageDirectory, '/') . '\\s*$/m', $contents)) {
+            $violations[] = ".github/workflows/tests.yml: {$packageDirectory} is missing from the package test matrix";
+        }
     }
 }
 

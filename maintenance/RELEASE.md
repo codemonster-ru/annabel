@@ -53,4 +53,10 @@ Before tagging a release:
    `composer api:snapshot:update` and document the change.
 3. Update affected package changelogs.
 4. Verify the skeleton remains clean with `composer project:hygiene`.
-5. Tag packages with immutable `vMAJOR.MINOR.PATCH` tags.
+5. Verify the target split repository exists and is connected to Packagist.
+6. Push the release preparation commit to `main` and wait for the package split
+   and test workflows to pass.
+7. Tag the monorepo with `PACKAGE_ID/vMAJOR.MINOR.PATCH`, for example
+   `datetime/v1.0.0`.
+8. Verify the package repository received the matching `vMAJOR.MINOR.PATCH`
+   tag and that Packagist indexed the release.

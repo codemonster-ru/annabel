@@ -56,6 +56,7 @@ jobs:
                     - packages/env
                     - packages/events
                     - packages/database
+                    - packages/datetime
                     - packages/session
                     - packages/auth
                     - packages/errors
@@ -74,6 +75,7 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   coverage: none
+                  extensions: intl
                   tools: composer:v2
 
             - name: Validate composer.json

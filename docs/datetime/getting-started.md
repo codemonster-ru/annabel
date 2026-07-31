@@ -36,6 +36,10 @@ $date = DateTime::fromFormat('Y-m-d', '2026-07-31');
 All operations return new values. Days, weeks, months, quarters, and years are
 calendar units; hours, minutes, and seconds are elapsed time.
 
+This distinction is intentional around daylight-saving transitions: adding a
+day preserves the local wall-clock time, while adding 24 hours advances the
+instant by exactly 86,400 seconds.
+
 ```php
 $quarter = DateTime::parse('2026-07-31 12:30', 'Europe/Paris')
     ->startOfQuarter();
@@ -54,6 +58,18 @@ $inside = $date->isBetween($start, $end);
 $strictlyInside = $date->isBetween($start, $end, inclusive: false);
 $earliest = $date->min($other);
 $latest = $date->max($other);
+```
+
+## Native PHP interoperability
+
+Use timestamps or native immutable values at package boundaries:
+
+```php
+$date = DateTime::fromTimestamp($timestamp, 'Europe/Paris');
+$sameDate = DateTime::fromInterface($nativeDateTime);
+
+$timestamp = $date->timestamp();
+$nativeDateTime = $date->toNative();
 ```
 
 ## Localized formatting

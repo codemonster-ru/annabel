@@ -1,6 +1,6 @@
 {
     "name": "codemonster-ru/datetime",
-    "description": "Immutable date-time operations, timezone conversion, and testable clocks for PHP applications.",
+    "description": "Immutable date-time operations, strict parsing, timezone conversion, localization, business calendars, and PSR-20 clocks.",
     "type": "library",
     "license": "MIT",
     "repositories": [
@@ -54,6 +54,10 @@
         "time",
         "timezone",
         "clock",
+        "psr-20",
+        "immutable",
+        "localization",
+        "business-calendar",
         "annabel",
         "codemonster"
     ],

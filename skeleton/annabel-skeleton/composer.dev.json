@@ -20,6 +20,7 @@
         "codemonster-ru/cache": "dev-main as 1.0.99",
         "codemonster-ru/config": "dev-main as 2.1.99",
         "codemonster-ru/database": "dev-main as 2.1.99",
+        "codemonster-ru/datetime": "dev-main as 1.0.99",
         "codemonster-ru/dumper": "dev-main as 1.0.99",
         "codemonster-ru/env": "dev-main as 2.3.99",
         "codemonster-ru/errors": "dev-main as 1.2.99",

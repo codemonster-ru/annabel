@@ -224,15 +224,11 @@ class EnvParser
         return $line === '' || (isset($line[0]) && $line[0] === '#');
     }
 
-    /** @return array{string, string|null, list<int>} */
+    /** @return array{string, string, list<int>} */
     private static function parseEntry(string $raw, bool $asciiNames): array
     {
         [$namePart, $valuePart] = self::splitLine($raw);
         $name = self::normalizeName($namePart, $asciiNames);
-
-        if ($valuePart === null) {
-            return [$name, null, []];
-        }
 
         [$value, $vars] = self::parseValue($valuePart);
 

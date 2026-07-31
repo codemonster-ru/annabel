@@ -66,6 +66,12 @@ function shouldSkip(string $entry): bool
 
 function removePath(string $path): void
 {
+    if (is_link($path)) {
+        unlink($path);
+
+        return;
+    }
+
     if (!file_exists($path)) {
         return;
     }

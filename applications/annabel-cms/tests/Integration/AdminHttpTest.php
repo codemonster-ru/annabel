@@ -6,6 +6,9 @@ use Codemonster\Annabel\Application;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Core\Services\ModuleActivationManager;
+use Codemonster\Cms\Modules\Core\Services\ModuleInstallationRegistry;
+use Codemonster\Cms\Modules\Core\Services\ModuleInstaller;
 use Codemonster\Cms\Modules\Settings\Models\SiteSetting;
 use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use Codemonster\Cms\Support\Installation\InstallationState;
@@ -201,6 +204,163 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
+    public function testAdminCanOpenModuleList(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/settings/modules'));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('"screen":"admin.settings.modules"', (string) $response->getContent());
+    }
+
+    public function testAdminCanLoadModuleListData(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request(
+            'GET',
+            '/admin/settings/modules/data',
+            ['page' => '1', 'per_page' => '10'],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+        $payload = json_decode((string) $response->getContent(), true);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame([
+            'Admin',
+            'AdminModules',
+            'AdminPages',
+            'AdminSettings',
+            'AdminUsers',
+            'Auth',
+            'Core',
+            'Pages',
+            'Settings',
+            'Setup',
+        ], array_column($payload['data'], 'name'));
+        self::assertContains([
+            'name' => 'AdminModules',
+            'version' => '1.0.0',
+            'dependencies' => ['Admin'],
+            'author' => [
+                'name' => 'Codemonster',
+                'url' => 'https://codemonster.net',
+            ],
+            'is_installed' => true,
+            'is_enabled' => true,
+            'is_system' => true,
+            'can_enable' => false,
+            'can_disable' => false,
+            'can_install' => false,
+            'can_uninstall' => false,
+        ], $payload['data']);
+        self::assertContains([
+            'name' => 'Setup',
+            'version' => '1.0.0',
+            'dependencies' => ['Core'],
+            'author' => [
+                'name' => 'Codemonster',
+                'url' => 'https://codemonster.net',
+            ],
+            'is_installed' => false,
+            'is_enabled' => false,
+            'is_system' => true,
+            'can_enable' => false,
+            'can_disable' => false,
+            'can_install' => false,
+            'can_uninstall' => false,
+        ], $payload['data']);
+        $pages = array_values(array_filter(
+            $payload['data'],
+            static fn (array $module): bool => $module['name'] === 'Pages',
+        ))[0];
+        self::assertFalse($pages['can_disable']);
+        foreach (['AdminPages', 'AdminSettings', 'AdminUsers'] as $systemModule) {
+            $module = array_values(array_filter(
+                $payload['data'],
+                static fn (array $item): bool => $item['name'] === $systemModule,
+            ))[0];
+            self::assertTrue($module['is_system']);
+            self::assertFalse($module['can_disable']);
+        }
+        self::assertSame(10, $payload['total']);
+        self::assertSame(1, $payload['current_page']);
+        self::assertSame(10, $payload['per_page']);
+    }
+
+    public function testGuestCannotLoadModuleListData(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/settings/modules/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
+    public function testAdminCanDisableModule(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $activation = $this->createMock(ModuleActivationManager::class);
+        $activation->expects(self::once())->method('disable')->with('AdminPages');
+        $app->getContainer()->instance(ModuleActivationManager::class, $activation);
+
+        $response = $app->handle(new Request(
+            'POST',
+            '/admin/settings/modules/data/AdminPages/disable',
+            [],
+            ['_token' => $app->make(CsrfTokenManager::class)->token()],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(
+            'Module disabled successfully.',
+            json_decode((string) $response->getContent(), true)['message'],
+        );
+    }
+
+    public function testAdminCanInstallModule(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $installer = $this->createMock(ModuleInstaller::class);
+        $installer->expects(self::once())->method('install')->with('Demo');
+        $app->getContainer()->instance(ModuleInstaller::class, $installer);
+
+        $response = $app->handle(new Request(
+            'POST',
+            '/admin/settings/modules/data/Demo/install',
+            [],
+            ['_token' => $app->make(CsrfTokenManager::class)->token()],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(
+            'Module installed successfully.',
+            json_decode((string) $response->getContent(), true)['message'],
+        );
+    }
+
     private function app(): Application
     {
         $app = require dirname(__DIR__, 2) . '/bootstrap/app.php';
@@ -213,6 +373,20 @@ class AdminHttpTest extends TestCase
             'locale' => 'en',
         ], true));
         $app->getContainer()->instance(SiteSettings::class, $settings);
+
+        $installations = $this->createStub(ModuleInstallationRegistry::class);
+        $installations->method('states')->willReturn(array_fill_keys([
+            'Core',
+            'Auth',
+            'Settings',
+            'Admin',
+            'AdminModules',
+            'Pages',
+            'AdminPages',
+            'AdminSettings',
+            'AdminUsers',
+        ], true));
+        $app->getContainer()->instance(ModuleInstallationRegistry::class, $installations);
 
         return $app;
     }

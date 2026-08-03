@@ -28,6 +28,7 @@ class ApplicationBootTest extends TestCase
             'Auth' => '1.0.0',
             'Settings' => '1.0.0',
             'Admin' => '1.0.0',
+            'AdminModules' => '1.0.0',
             'Pages' => '1.0.0',
             'AdminPages' => '1.0.0',
             'AdminSettings' => '1.0.0',
@@ -75,10 +76,16 @@ class ApplicationBootTest extends TestCase
                         'label' => 'General',
                         'href' => '/admin/settings/general',
                     ],
+                    [
+                        'value' => 'admin.settings.modules',
+                        'label' => 'Modules',
+                        'href' => '/admin/settings/modules',
+                    ],
                 ],
             ],
         ], $adminNavigation->navigation());
         self::assertSame('General', $adminNavigation->label('admin.settings.general'));
+        self::assertSame('Modules', $adminNavigation->label('admin.settings.modules'));
         self::assertSame('User list', $adminNavigation->label('admin.users.list'));
         self::assertSame('Groups', $adminNavigation->label('admin.users.groups'));
         self::assertNull($adminNavigation->label('admin.missing'));

@@ -431,7 +431,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__publication-field" label="Publish from" description="Leave empty to publish immediately." :error="firstError('publish_at')">
+                <VfField class="pages-screen__publication-field" label="Active from" :error="firstError('publish_at')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
@@ -445,7 +445,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__publication-field" label="Publish until" description="Leave empty to publish indefinitely." :error="firstError('unpublish_at')">
+                <VfField class="pages-screen__publication-field" label="Active until" :error="firstError('unpublish_at')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
@@ -465,7 +465,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-                <VfField label="Slug" description="Lowercase Latin letters, numbers, and hyphens." :error="firstError('slug')" required>
+                <VfField label="Slug" :error="firstError('slug')" required>
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfInput :id="controlId" v-model="page.slug" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
                   </template>

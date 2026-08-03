@@ -47,7 +47,7 @@ class SessionUserService implements UserSessionInterface
 
         $dbUser = $this->findModel($user);
 
-        if (!$dbUser) {
+        if (!$dbUser || !$dbUser->isActiveAt($this->clock->now())) {
             $this->logout();
 
             return $this->restoreFromRememberCookie();

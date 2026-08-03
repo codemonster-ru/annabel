@@ -10,6 +10,8 @@ use Codemonster\Database\Relations\BelongsToMany;
  * @property string $username
  * @property string $email
  * @property bool $is_active
+ * @property \DateTimeImmutable|null $active_from
+ * @property \DateTimeImmutable|null $active_until
  * @property string $password
  * @property string|null $remember_token
  * @property \DateTimeImmutable|null $created_at
@@ -25,6 +27,8 @@ class User extends Model
         'username',
         'email',
         'is_active',
+        'active_from',
+        'active_until',
         'password',
         'remember_token',
     ];
@@ -39,6 +43,8 @@ class User extends Model
     protected array $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'active_from' => 'datetime',
+        'active_until' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -71,6 +77,18 @@ class User extends Model
     public static function validUsername(string $username): bool
     {
         return preg_match('/^[A-Za-z0-9][A-Za-z0-9_-]{2,59}$/', $username) === 1;
+    }
+
+    public function isActiveAt(?\DateTimeInterface $at = null): bool
+    {
+        if (!$this->is_active) {
+            return false;
+        }
+
+        $timestamp = ($at ?? new \DateTimeImmutable())->getTimestamp();
+
+        return ($this->active_from === null || $this->active_from->getTimestamp() <= $timestamp)
+            && ($this->active_until === null || $this->active_until->getTimestamp() >= $timestamp);
     }
 
     /**

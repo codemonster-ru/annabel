@@ -6,6 +6,7 @@ use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\Group;
 use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\InvalidDateTimeException;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
@@ -176,8 +177,23 @@ class RoleListController
             'code' => trim((string) $request->input('code')),
             'description' => trim((string) $request->input('description')),
             'is_active' => $request->input('is_active'),
+            'active_from' => trim((string) $request->input('active_from')),
+            'active_until' => trim((string) $request->input('active_until')),
             'sort_order' => $request->input('sort_order'),
-        ], ['name' => 'required|string|min:2|max:60', 'code' => 'required|string|min:2|max:60', 'description' => 'nullable|string|max:255', 'is_active' => 'nullable|boolean', 'sort_order' => 'nullable|integer|min:1|max:1000000']);
+        ], ['name' => 'required|string|min:2|max:60', 'code' => 'required|string|min:2|max:60', 'description' => 'nullable|string|max:255', 'is_active' => 'nullable|boolean', 'active_from' => 'nullable|string', 'active_until' => 'nullable|string', 'sort_order' => 'nullable|integer|min:1|max:1000000']);
+
+        $activeFrom = $this->toUtc($validated['active_from']);
+        $activeUntil = $this->toUtc($validated['active_until']);
+
+        if ($validated['active_from'] !== '' && $activeFrom === null) {
+            return $this->invalid('active_from', 'The activity start must be a valid date and time.');
+        }
+        if ($validated['active_until'] !== '' && $activeUntil === null) {
+            return $this->invalid('active_until', 'The activity end must be a valid date and time.');
+        }
+        if ($activeFrom !== null && $activeUntil !== null && $activeUntil <= $activeFrom) {
+            return $this->invalid('active_until', 'The activity end must be after the activity start.');
+        }
 
         if (preg_match('/\A[A-Za-z0-9][A-Za-z0-9 _-]{1,59}\z/', $validated['name']) !== 1) {
             return $this->invalid('name', 'Group name may contain only letters, numbers, spaces, underscores, or hyphens and must start with a letter or number.');
@@ -206,6 +222,8 @@ class RoleListController
             'code' => $validated['code'],
             'description' => $validated['description'] !== '' ? $validated['description'] : null,
             'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
+            'active_from' => $activeFrom,
+            'active_until' => $activeUntil,
             'sort_order' => (int) ($validated['sort_order'] ?? 0),
         ]);
         $role->save();
@@ -222,10 +240,42 @@ class RoleListController
             'code' => (string) $role->code,
             'description' => $role->description !== null ? (string) $role->description : null,
             'is_active' => (bool) $role->is_active,
+            'active_from' => $this->toIso8601($role->active_from),
+            'active_until' => $this->toIso8601($role->active_until),
             'sort_order' => (int) $role->sort_order,
             'created_at' => $role->created_at?->format(DATE_ATOM),
             'updated_at' => $role->updated_at?->format(DATE_ATOM),
         ];
+    }
+
+    private function toUtc(string $value): ?string
+    {
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\z/', $value) !== 1) {
+            return null;
+        }
+
+        try {
+            $date = DateTime::parse($value);
+        } catch (InvalidDateTimeException) {
+            return null;
+        }
+
+        return $date->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT);
+    }
+
+    private function toIso8601(mixed $value): string
+    {
+        if (!$value instanceof \DateTimeInterface) {
+            return '';
+        }
+
+        return DateTime::fromInterface($value)
+            ->toTimezone('UTC')
+            ->format(DATE_ATOM);
     }
 
     private function invalid(string $field, string $message): Response

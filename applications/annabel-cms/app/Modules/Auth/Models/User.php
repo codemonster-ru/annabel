@@ -86,17 +86,18 @@ class User extends Model
      */
     public function groupNames(): array
     {
-        $groups = db()
-            ->table('group_user')
-            ->join('groups', 'group_user.group_id', '=', 'groups.id')
+        $query = Group::activeQueryAt();
+        $query->getBuilder()
+            ->join('group_user', 'groups.id', '=', 'group_user.group_id')
+            ->select('groups.*');
+        $groups = $query
             ->where('user_id', $this->id)
-            ->select('groups.*')
             ->get();
 
         $names = [];
 
         foreach ($groups as $group) {
-            $name = $group['name'] ?? null;
+            $name = $group->name;
 
             if (is_string($name) && $name !== '') {
                 $names[] = $name;
@@ -112,11 +113,12 @@ class User extends Model
             return false;
         }
 
-        return db()
-            ->table('group_user')
-            ->join('groups', 'group_user.group_id', '=', 'groups.id')
+        $query = Group::activeQueryAt();
+        $query->getBuilder()->join('group_user', 'groups.id', '=', 'group_user.group_id');
+
+        return $query
             ->where('user_id', $this->id)
-            ->where('name', $name)
+            ->where('groups.name', $name)
             ->exists();
     }
 

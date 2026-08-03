@@ -5,6 +5,11 @@ use Codemonster\Cms\Modules\Auth\ModuleServiceProvider;
 return [
     'name' => 'Auth',
     'version' => '1.0.0',
+    'system' => true,
+    'author' => [
+        'name' => 'Codemonster',
+        'url' => 'https://codemonster.net',
+    ],
     'dependencies' => ['Core'],
     'provider' => ModuleServiceProvider::class,
     'routes' => null,

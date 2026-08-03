@@ -3,6 +3,11 @@
 return [
     'name' => 'AdminUsers',
     'version' => '1.0.0',
+    'system' => true,
+    'author' => [
+        'name' => 'Codemonster',
+        'url' => 'https://codemonster.net',
+    ],
     'dependencies' => ['Admin', 'Auth'],
     'routes' => 'routes/web.php',
     'views' => null,

@@ -8,6 +8,7 @@ final class ModuleDefinition
      * @param array<int, string> $dependencies
      * @param array<string, mixed> $assets
      * @param array<string, mixed> $metadata
+     * @param array{name: string, url?: string}|null $author
      */
     public function __construct(
         public readonly string $name,
@@ -21,6 +22,8 @@ final class ModuleDefinition
         public readonly ?string $seeds = null,
         public readonly array $assets = [],
         public readonly array $metadata = [],
+        public readonly ?array $author = null,
+        public readonly bool $system = false,
     ) {
     }
 

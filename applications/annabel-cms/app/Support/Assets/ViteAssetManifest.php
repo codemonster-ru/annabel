@@ -36,7 +36,7 @@ final class ViteAssetManifest
 
         return [
             'script' => $this->url($entry['file']),
-            'styles' => $this->styles($entry),
+            'styles' => $this->styles($manifest, $this->entry),
             'favicon' => $this->favicon($manifest),
         ];
     }
@@ -63,20 +63,56 @@ final class ViteAssetManifest
     }
 
     /**
-     * @param array<string, mixed> $entry
+     * @param array<string, mixed> $manifest
      * @return list<string>
      */
-    private function styles(array $entry): array
+    private function styles(array $manifest, string $entry): array
     {
         $styles = [];
+        $seenEntries = [];
+        $seenStyles = [];
 
-        foreach ((array) ($entry['css'] ?? []) as $css) {
-            if (is_string($css)) {
-                $styles[] = $this->url($css);
+        $this->collectStyles($manifest, $entry, $styles, $seenEntries, $seenStyles);
+
+        return $styles;
+    }
+
+    /**
+     * @param array<string, mixed> $manifest
+     * @param list<string> $styles
+     * @param array<string, true> $seenEntries
+     * @param array<string, true> $seenStyles
+     */
+    private function collectStyles(
+        array $manifest,
+        string $entry,
+        array &$styles,
+        array &$seenEntries,
+        array &$seenStyles,
+    ): void {
+        if (isset($seenEntries[$entry])) {
+            return;
+        }
+
+        $seenEntries[$entry] = true;
+        $chunk = $manifest[$entry] ?? null;
+
+        if (!is_array($chunk)) {
+            return;
+        }
+
+        foreach ((array) ($chunk['imports'] ?? []) as $import) {
+            if (is_string($import)) {
+                $this->collectStyles($manifest, $import, $styles, $seenEntries, $seenStyles);
             }
         }
 
-        return $styles;
+        foreach ((array) ($chunk['css'] ?? []) as $css) {
+            if (is_string($css) && !isset($seenStyles[$css])) {
+                $seenStyles[$css] = true;
+                $styles[] = $this->url($css);
+            }
+        }
     }
 
     /**

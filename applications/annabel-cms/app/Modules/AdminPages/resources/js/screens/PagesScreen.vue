@@ -228,8 +228,8 @@ async function savePage() {
   body.append('content', page.value.content);
   body.append('is_published', page.value.is_published ? '1' : '0');
   body.append('sort_order', String(page.value.sort_order ?? 1));
-  body.append('publish_at', page.value.publish_at);
-  body.append('unpublish_at', page.value.unpublish_at);
+  body.append('publish_at', page.value.publish_at ?? '');
+  body.append('unpublish_at', page.value.unpublish_at ?? '');
 
   const endpoint = editing.value ? `/admin/pages/data/${page.value.id}` : '/admin/pages/data';
 

@@ -332,13 +332,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
 .users-screen__fields :deep(.vf-field) { width: 100%; }
 
 @media (min-width: 1200px) {
-  .users-screen__fields { width: 70%; max-width: 64rem; margin-inline: auto; }
-  .users-screen__fields :deep(.vf-field) { grid-template-columns: 10rem minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; }
-  .users-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; text-align: end; white-space: nowrap; }
+  .users-screen__fields :deep(.vf-field) { grid-template-columns: minmax(14rem, 25%) minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; }
+  .users-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; overflow-wrap: anywhere; text-align: end; }
   .users-screen__fields :deep(.vf-field__control),
   .users-screen__fields :deep(.vf-field__description),
   .users-screen__fields :deep(.vf-field__error) { grid-column: 2; }
-  .users-screen__fields :deep(.vf-field__control) { grid-row: 1; width: 16rem; max-width: 100%; }
+  .users-screen__fields :deep(.vf-field__control) { grid-row: 1; }
   .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
   .users-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; }
 }

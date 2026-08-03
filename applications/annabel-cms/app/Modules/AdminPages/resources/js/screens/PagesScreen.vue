@@ -84,6 +84,7 @@ function firstError(field) {
 }
 
 function formatDate(value) {
+  if (value == null || value === '') return '—';
   const date = new Date(value);
 
   return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);

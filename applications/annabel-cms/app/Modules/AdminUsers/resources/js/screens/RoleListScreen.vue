@@ -39,7 +39,7 @@ const error = ref(''); const success = ref(''); const errors = ref({});
 const activeTab = ref('general');
 
 function firstError(field) { const messages = errors.value[field]; return Array.isArray(messages) && messages.length ? messages[0] : ''; }
-function formatDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date); }
+function formatDate(value) { if (value == null || value === '') return '—'; const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date); }
 
 async function loadRoles() {
   loading.value = true; error.value = '';

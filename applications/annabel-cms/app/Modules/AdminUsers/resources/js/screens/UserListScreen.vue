@@ -5,6 +5,7 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
@@ -12,7 +13,11 @@ import { VfInput } from '@codemonster-ru/vueforge-core/input';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { icons } from '@codemonster-ru/vueforge-icons';
-import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
+import {
+  formatDateTime,
+  localDateTimeValueToIso,
+  toLocalDateTimeValue,
+} from '../../../../Admin/resources/js/support/dateTime';
 
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -33,7 +38,7 @@ const columnLabels = {
   updated_at: 'Updated',
 };
 const userFormTabs = [{ value: 'general', label: 'General' }];
-const emptyUser = () => ({ id: null, username: '', email: '', password: '', password_confirmation: '', is_active: true });
+const emptyUser = () => ({ id: null, username: '', email: '', password: '', password_confirmation: '', is_active: true, active_from: '', active_until: '' });
 
 const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/admin/users';
 const formMode = computed(() => currentPath === '/admin/users/create' || /^\/admin\/users\/\d+\/edit$/.test(currentPath));
@@ -54,10 +59,32 @@ const error = ref('');
 const success = ref('');
 const errors = ref({});
 const activeTab = ref('general');
+const activeFromMax = computed(() => shiftLocalDateTime(user.value.active_until, -1));
+const activeUntilMin = computed(() => shiftLocalDateTime(user.value.active_from, 1));
 
 function firstError(field) {
   const messages = errors.value[field];
   return Array.isArray(messages) && messages.length > 0 ? messages[0] : '';
+}
+
+function shiftLocalDateTime(value, minutes) {
+  if (!value) return undefined;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+
+  date.setMinutes(date.getMinutes() + minutes);
+
+  return toLocalDateTimeValue(date);
+}
+
+function userFromPayload(value) {
+  return {
+    ...emptyUser(),
+    ...value,
+    active_from: toLocalDateTimeValue(value?.active_from),
+    active_until: toLocalDateTimeValue(value?.active_until),
+  };
 }
 
 async function loadUsers() {
@@ -87,7 +114,7 @@ async function loadUser() {
     const response = await fetch(`/admin/users/data/${editId.value}`, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.message || 'Unable to load user.');
-    user.value = { ...emptyUser(), ...payload.user };
+    user.value = userFromPayload(payload.user || {});
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to load user.';
@@ -150,6 +177,8 @@ async function saveUser() {
   body.append('password', user.value.password);
   body.append('password_confirmation', user.value.password_confirmation);
   body.append('is_active', user.value.is_active ? '1' : '0');
+  body.append('active_from', localDateTimeValueToIso(user.value.active_from) ?? user.value.active_from);
+  body.append('active_until', localDateTimeValueToIso(user.value.active_until) ?? user.value.active_until);
   const endpoint = editing.value ? `/admin/users/data/${user.value.id}` : '/admin/users/data';
 
   try {
@@ -159,7 +188,7 @@ async function saveUser() {
       if (response.status === 422) errors.value = payload.errors || {};
       throw new Error(payload.message || 'Unable to save user.');
     }
-    user.value = { ...emptyUser(), ...payload.user };
+    user.value = userFromPayload(payload.user || {});
     success.value = payload.message || 'User saved successfully.';
     if (!editing.value) window.location.assign('/admin/users');
   } catch (exception) {
@@ -266,6 +295,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
           <VfField class="users-screen__active-field" label="Active">
             <template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
           </VfField>
+          <VfField class="users-screen__activity-field" label="Active from" :error="firstError('active_from')">
+            <template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="user.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+          </VfField>
+          <VfField class="users-screen__activity-field" label="Active until" :error="firstError('active_until')">
+            <template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="user.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+          </VfField>
           <VfField label="Username" :error="firstError('username')" required>
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.username" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
           </VfField>
@@ -305,6 +340,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
   .users-screen__fields :deep(.vf-field__error) { grid-column: 2; }
   .users-screen__fields :deep(.vf-field__control) { grid-row: 1; }
   .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
+  .users-screen__activity-field :deep(.vf-date-picker-wrap) { width: 16rem; max-width: 100%; }
   .users-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; }
 }
 </style>

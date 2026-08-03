@@ -85,6 +85,7 @@ class ApplicationBootTest extends TestCase
 
         $basePath = dirname(__DIR__, 2);
         self::assertSame([
+            $basePath . '/app/Modules/Core/database/migrations',
             $basePath . '/app/Modules/Auth/database/migrations',
             $basePath . '/app/Modules/Settings/database/migrations',
             $basePath . '/app/Modules/Pages/database/migrations',

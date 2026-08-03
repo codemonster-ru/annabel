@@ -28,7 +28,6 @@ return new class () extends Seeder {
             'id' => 1,
             'site_name' => 'Annabel',
             'locale' => 'en',
-            'timezone' => 'UTC',
             'created_at' => $now,
             'updated_at' => $now,
         ]);

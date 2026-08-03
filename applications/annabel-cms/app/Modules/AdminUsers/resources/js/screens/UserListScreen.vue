@@ -12,6 +12,7 @@ import { VfInput } from '@codemonster-ru/vueforge-core/input';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { icons } from '@codemonster-ru/vueforge-icons';
+import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -31,7 +32,6 @@ const columnLabels = {
   created_at: 'Created',
   updated_at: 'Updated',
 };
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 const userFormTabs = [{ value: 'general', label: 'General' }];
 const emptyUser = () => ({ id: null, username: '', email: '', password: '', password_confirmation: '', is_active: true });
 
@@ -58,12 +58,6 @@ const activeTab = ref('general');
 function firstError(field) {
   const messages = errors.value[field];
   return Array.isArray(messages) && messages.length > 0 ? messages[0] : '';
-}
-
-function formatDate(value) {
-  if (value == null || value === '') return '—';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);
 }
 
 async function loadUsers() {
@@ -259,8 +253,8 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
         <template #cell-is_active="{ value }">
           <span :class="['users-screen__status', { 'users-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span>
         </template>
-        <template #cell-created_at="{ value }">{{ formatDate(value) }}</template>
-        <template #cell-updated_at="{ value }">{{ formatDate(value) }}</template>
+        <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template>
+        <template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
       </VfDataTable>
     </div>
 

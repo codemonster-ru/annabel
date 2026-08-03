@@ -14,6 +14,11 @@ import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { icons } from '@codemonster-ru/vueforge-icons';
+import {
+  formatDateTime,
+  localDateTimeValueToIso,
+  toLocalDateTimeValue,
+} from '../../../../Admin/resources/js/support/dateTime';
 
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -35,10 +40,6 @@ const columnLabels = {
   created_at: 'Created',
   updated_at: 'Updated',
 };
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
 const formTabs = [
   { value: 'general', label: 'General' },
   { value: 'seo', label: 'SEO' },
@@ -83,11 +84,13 @@ function firstError(field) {
   return Array.isArray(messages) && messages.length > 0 ? messages[0] : '';
 }
 
-function formatDate(value) {
-  if (value == null || value === '') return '—';
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);
+function pageFromPayload(value) {
+  return {
+    ...emptyPage(),
+    ...value,
+    publish_at: toLocalDateTimeValue(value?.publish_at),
+    unpublish_at: toLocalDateTimeValue(value?.unpublish_at),
+  };
 }
 
 async function loadPages() {
@@ -187,7 +190,7 @@ async function loadPage() {
 
     if (!response.ok) throw new Error(payload.message || 'Unable to load page.');
 
-    page.value = { ...emptyPage(), ...payload.page };
+    page.value = pageFromPayload(payload.page);
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to load page.';
@@ -229,8 +232,8 @@ async function savePage() {
   body.append('content', page.value.content);
   body.append('is_published', page.value.is_published ? '1' : '0');
   body.append('sort_order', String(page.value.sort_order ?? 1));
-  body.append('publish_at', page.value.publish_at ?? '');
-  body.append('unpublish_at', page.value.unpublish_at ?? '');
+  body.append('publish_at', localDateTimeValueToIso(page.value.publish_at) ?? page.value.publish_at);
+  body.append('unpublish_at', localDateTimeValueToIso(page.value.unpublish_at) ?? page.value.unpublish_at);
 
   const endpoint = editing.value ? `/admin/pages/data/${page.value.id}` : '/admin/pages/data';
 
@@ -248,13 +251,13 @@ async function savePage() {
       throw new Error(payload.message || 'Unable to save page.');
     }
 
-    const saved = payload.page;
+    const saved = pageFromPayload(payload.page);
     const index = pages.value.findIndex((item) => item.id === saved.id);
 
     if (index === -1) pages.value.unshift(saved);
     else pages.value[index] = saved;
 
-    page.value = { ...emptyPage(), ...saved };
+    page.value = saved;
     success.value = payload.message || 'Page saved successfully.';
 
     if (!editing.value) {
@@ -408,10 +411,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         </template>
         <template #cell-sort_order="{ value }">{{ value }}</template>
       <template #cell-updated_at="{ value }">
-        {{ formatDate(value) }}
+        {{ formatDateTime(value) }}
       </template>
       <template #cell-created_at="{ value }">
-        {{ formatDate(value) }}
+        {{ formatDateTime(value) }}
       </template>
     </VfDataTable>
     </div>

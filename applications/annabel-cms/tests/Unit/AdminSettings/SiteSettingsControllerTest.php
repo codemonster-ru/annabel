@@ -20,14 +20,12 @@ class SiteSettingsControllerTest extends TestCase
             ->with([
                 'site_name' => 'Example site',
                 'locale' => 'en-US',
-                'timezone' => 'Europe/Paris',
             ])
             ->willReturn($this->settings());
 
         $response = $this->controller($repository)->update(new Request('POST', '/', [], [
             'site_name' => ' Example site ',
             'locale' => 'en-US',
-            'timezone' => 'Europe/Paris',
         ]));
         $payload = json_decode((string) $response->getContent(), true);
 
@@ -44,7 +42,6 @@ class SiteSettingsControllerTest extends TestCase
         $response = $this->controller($repository)->update(new Request('POST', '/', [], [
             'site_name' => 'Example site',
             'locale' => 'not_a_locale',
-            'timezone' => 'UTC',
         ]));
         $payload = json_decode((string) $response->getContent(), true);
 
@@ -67,7 +64,6 @@ class SiteSettingsControllerTest extends TestCase
             'id' => 1,
             'site_name' => 'Example site',
             'locale' => 'en-US',
-            'timezone' => 'Europe/Paris',
         ], true);
     }
 }

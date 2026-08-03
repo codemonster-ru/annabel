@@ -13,6 +13,7 @@ import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
 import { icons } from '@codemonster-ru/vueforge-icons';
+import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -25,7 +26,6 @@ const columns = [
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
 ];
 const columnLabels = { actions: 'Actions', id: 'ID', name: 'Name', code: 'Code', is_active: 'Active', sort_order: 'Sort order', created_at: 'Created', updated_at: 'Updated' };
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 const groupFormTabs = [{ value: 'general', label: 'General' }];
 const emptyGroup = () => ({ id: null, name: '', code: '', description: '', is_active: true, sort_order: 1 });
 const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/admin/groups';
@@ -39,8 +39,6 @@ const error = ref(''); const success = ref(''); const errors = ref({});
 const activeTab = ref('general');
 
 function firstError(field) { const messages = errors.value[field]; return Array.isArray(messages) && messages.length ? messages[0] : ''; }
-function formatDate(value) { if (value == null || value === '') return '—'; const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date); }
-
 async function loadRoles() {
   loading.value = true; error.value = '';
   try {
@@ -103,7 +101,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
         <template #cell-code="{ value }">{{ value }}</template>
         <template #cell-is_active="{ value }"><span :class="['groups-screen__status', { 'groups-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span></template>
         <template #cell-sort_order="{ value }">{{ value }}</template>
-        <template #cell-created_at="{ value }">{{ formatDate(value) }}</template><template #cell-updated_at="{ value }">{{ formatDate(value) }}</template>
+        <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template><template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
       </VfDataTable>
     </div>
     <form id="groups-group-form" v-else class="groups-screen__form" novalidate @submit.prevent="saveRole"><VfCard><VfTabs v-model="activeTab" :items="groupFormTabs"><template #panel="{ activeValue }"><div v-if="activeValue === 'general'" class="groups-screen__fields"><VfField class="groups-screen__active-field" label="Active"><template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="role.is_active" :disabled="saving" /></template></VfField><VfField label="Name" description="Letters, numbers, spaces, underscores, or hyphens." :error="firstError('name')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.name" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Code" description="Stable lowercase identifier for use in code." :error="firstError('code')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.code" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Description" description="Up to 255 characters." :error="firstError('description')"><template #default="{ controlId, describedBy, invalid }"><VfTextarea :id="controlId" v-model="role.description" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" maxlength="255" /></template></VfField><VfField label="Sort order" description="Lower numbers appear first." :error="firstError('sort_order')"><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField></div></template></VfTabs></VfCard></form>

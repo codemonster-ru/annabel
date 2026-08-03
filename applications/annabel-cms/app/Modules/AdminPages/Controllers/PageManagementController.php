@@ -5,7 +5,6 @@ namespace Codemonster\Cms\Modules\AdminPages\Controllers;
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Pages\Models\Page;
-use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use Codemonster\DateTime\DateTime;
 use Codemonster\DateTime\InvalidDateTimeException;
 use Codemonster\Http\Request;
@@ -30,7 +29,6 @@ class PageManagementController
 
     public function __construct(
         private AdminScreenRendererInterface $admin,
-        private SiteSettings $settings,
         private UserSessionInterface $users,
         private Validator $validator,
         private ClockInterface $clock,
@@ -268,8 +266,8 @@ class PageManagementController
             'created_at' => $page->created_at?->format(DATE_ATOM),
             'published_at' => $page->published_at?->format(DATE_ATOM),
             'updated_at' => $page->updated_at?->format(DATE_ATOM),
-            'publish_at' => $this->toLocalInput($page->publish_at),
-            'unpublish_at' => $this->toLocalInput($page->unpublish_at),
+            'publish_at' => $this->toIso8601($page->publish_at),
+            'unpublish_at' => $this->toIso8601($page->unpublish_at),
         ];
     }
 
@@ -279,12 +277,12 @@ class PageManagementController
             return null;
         }
 
+        if (preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\z/', $value) !== 1) {
+            return null;
+        }
+
         try {
-            $date = DateTime::fromFormat(
-                'Y-m-d\\TH:i',
-                $value,
-                (string) $this->settings->current()->timezone,
-            );
+            $date = DateTime::parse($value);
         } catch (InvalidDateTimeException) {
             return null;
         }
@@ -292,15 +290,15 @@ class PageManagementController
         return $date->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT);
     }
 
-    private function toLocalInput(mixed $value): string
+    private function toIso8601(mixed $value): string
     {
         if (!$value instanceof \DateTimeInterface) {
             return '';
         }
 
         return DateTime::fromInterface($value)
-            ->toTimezone((string) $this->settings->current()->timezone)
-            ->format('Y-m-d\\TH:i');
+            ->toTimezone('UTC')
+            ->format(DATE_ATOM);
     }
 
     private function invalid(string $field, string $message): Response

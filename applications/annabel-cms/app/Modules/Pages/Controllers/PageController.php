@@ -30,7 +30,6 @@ class PageController
     private function render(?Page $page): Response
     {
         $site = $this->settings->current();
-        date_default_timezone_set((string) $site->timezone);
 
         if (!$page instanceof Page) {
             return new Response($this->view->render('pages::not-found', [

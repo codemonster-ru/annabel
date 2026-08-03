@@ -4,11 +4,15 @@ namespace Codemonster\Cms\Modules\Core;
 
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
+use Codemonster\Cms\Modules\Core\Services\ModuleInstallationRegistry;
 
 class ModuleManager
 {
     /** @var array<string, ModuleDefinition> */
     private array $modules = [];
+
+    /** @var array<string, ModuleDefinition> */
+    private array $availableModules = [];
 
     /** @var array<string, ServiceProviderInterface> */
     private array $providers = [];
@@ -32,8 +36,18 @@ class ModuleManager
         $excluded = array_fill_keys($exclude, true);
         $modules = [];
 
-        foreach ($this->discover() as $name => $module) {
+        $this->availableModules = $this->discover();
+        $states = $this->app->make(ModuleInstallationRegistry::class)->states();
+
+        foreach ($this->availableModules as $name => $module) {
             if (isset($excluded[$name])) {
+                continue;
+            }
+
+            if ($states !== null
+                && !$module->system
+                && ($states[$name] ?? false) !== true
+            ) {
                 continue;
             }
 
@@ -50,7 +64,7 @@ class ModuleManager
     }
 
     /**
-     * @return array<string, array{name: string, version: string, dependencies: array<int, string>, assets: array<string, mixed>}>
+     * @return array<string, array{name: string, version: string, dependencies: array<int, string>, assets: array<string, mixed>, author: array{name: string, url?: string}|null, system: bool}>
      */
     public function all(): array
     {
@@ -62,6 +76,8 @@ class ModuleManager
                 'version' => $module->version,
                 'dependencies' => $module->dependencies,
                 'assets' => $module->assets,
+                'author' => $module->author,
+                'system' => $module->system,
             ];
         }
 
@@ -88,6 +104,14 @@ class ModuleManager
     public function definitions(): array
     {
         return $this->modules;
+    }
+
+    /**
+     * @return array<string, ModuleDefinition>
+     */
+    public function availableDefinitions(): array
+    {
+        return $this->availableModules;
     }
 
     /**
@@ -153,6 +177,8 @@ class ModuleManager
         $dependencies = $manifest['dependencies'] ?? [];
         $provider = $manifest['provider'] ?? null;
         $assets = $manifest['assets'] ?? [];
+        $author = $this->author($manifest['author'] ?? null, is_string($name) ? $name : $modulePath);
+        $system = $manifest['system'] ?? false;
 
         if (!is_string($name) || $name === '') {
             throw new \RuntimeException("Module name is required: {$modulePath}");
@@ -180,6 +206,10 @@ class ModuleManager
             throw new \RuntimeException("Module assets must be an array: {$name}");
         }
 
+        if (!is_bool($system)) {
+            throw new \RuntimeException("Module system flag must be a boolean: {$name}");
+        }
+
         $routes = $this->optionalPath($manifest, 'routes', 'routes/web.php', $name);
         $views = $this->optionalPath($manifest, 'views', 'views', $name);
         $migrations = $this->optionalPath($manifest, 'migrations', null, $name);
@@ -195,6 +225,8 @@ class ModuleManager
             'migrations',
             'seeds',
             'assets',
+            'author',
+            'system',
         ]));
 
         return new ModuleDefinition(
@@ -209,7 +241,39 @@ class ModuleManager
             $seeds,
             $assets,
             $metadata,
+            $author,
+            $system,
         );
+    }
+
+    /**
+     * @return array{name: string, url?: string}|null
+     */
+    private function author(mixed $value, string $module): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_array($value)) {
+            throw new \RuntimeException("Module author must be an array: {$module}");
+        }
+
+        $name = $value['name'] ?? null;
+        $url = $value['url'] ?? null;
+
+        if (!is_string($name) || $name === '') {
+            throw new \RuntimeException("Module author name is required: {$module}");
+        }
+
+        if ($url !== null && (!is_string($url) || filter_var($url, FILTER_VALIDATE_URL) === false)) {
+            throw new \RuntimeException("Module author URL must be valid: {$module}");
+        }
+
+        return array_filter([
+            'name' => $name,
+            'url' => $url,
+        ], static fn (mixed $item): bool => $item !== null);
     }
 
     /**

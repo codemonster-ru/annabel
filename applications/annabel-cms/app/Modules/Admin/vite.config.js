@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { cmsModuleRoot, cmsProjectRoot, verifyViteBundlePlugin, vueforgeAliases } from '../../../vite.shared.js';
+import { cmsModuleRoot, cmsProjectRoot, verifyViteBundlePlugin } from '../../../vite.shared.js';
 
 const moduleRoot = cmsModuleRoot(import.meta.url);
 const projectRoot = cmsProjectRoot(import.meta.url);
@@ -11,9 +11,6 @@ const assetsRoot = process.env.ANNABEL_CMS_ADMIN_ASSETS_ROOT
 export default defineConfig({
   root: moduleRoot,
   base: '/admin/assets/',
-  resolve: {
-    alias: vueforgeAliases(import.meta.url),
-  },
   plugins: [
     vue(),
     verifyViteBundlePlugin({

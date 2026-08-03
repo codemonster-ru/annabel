@@ -22,7 +22,7 @@ class ModelTest extends TestCase
 
         // seed some rows
         $this->conn->tables['users'] = [
-            ['id' => 1, 'name' => 'Vasya', 'email' => 'v@example.com'],
+            ['id' => 1, 'name' => 'Vasya', 'email' => 'v@example.com', 'created_at' => '2026-06-09 10:15:00'],
         ];
     }
 
@@ -37,6 +37,7 @@ class ModelTest extends TestCase
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals('Vasya', $user->name);
+        $this->assertSame('2026-06-09 10:15:00', $user->created_at);
     }
 
     public function test_create_inserts_row(): void
@@ -121,6 +122,18 @@ class ModelTest extends TestCase
 
         $this->assertSame([], $guarded->getAttributes());
         $this->assertSame(['name' => 'Ok'], $fillable->getAttributes());
+    }
+
+    public function test_hydration_preserves_attributes_that_are_not_fillable(): void
+    {
+        $models = FillableUser::hydrate([
+            ['name' => 'Database value', 'email' => 'db@example.com'],
+        ]);
+
+        $this->assertSame([
+            'name' => 'Database value',
+            'email' => 'db@example.com',
+        ], $models[0]?->getAttributes());
     }
 
     public function test_model_events_are_fired_for_create_and_update(): void

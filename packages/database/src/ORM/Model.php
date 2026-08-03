@@ -145,7 +145,11 @@ abstract class Model implements \JsonSerializable
         $items = [];
 
         foreach ($rows as $row) {
-            $items[] = new static((array) $row, true);
+            $model = new static();
+            $model->exists = true;
+            $model->attributes = (array) $row;
+            $model->syncOriginal();
+            $items[] = $model;
         }
 
         return new ModelCollection($items);

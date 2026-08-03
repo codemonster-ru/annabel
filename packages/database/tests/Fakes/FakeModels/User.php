@@ -15,6 +15,7 @@ use Codemonster\Database\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $created_at
  * @property string|null $deleted_at
  * @property ModelCollection<Post> $posts
  * @property Profile|null $profile

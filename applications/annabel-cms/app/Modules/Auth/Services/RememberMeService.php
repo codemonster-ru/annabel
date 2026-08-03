@@ -3,9 +3,14 @@
 namespace Codemonster\Cms\Modules\Auth\Services;
 
 use Codemonster\Cms\Modules\Auth\Models\User;
+use Psr\Clock\ClockInterface;
 
 class RememberMeService
 {
+    public function __construct(private ClockInterface $clock)
+    {
+    }
+
     public function issue(User $user): string
     {
         $token = bin2hex(random_bytes(32));
@@ -31,6 +36,7 @@ class RememberMeService
 
         if (
             !$user instanceof User
+            || !$user->isActiveAt($this->clock->now())
             || !is_string($user->remember_token)
             || $user->remember_token === ''
             || !hash_equals($user->remember_token, hash('sha256', $token))

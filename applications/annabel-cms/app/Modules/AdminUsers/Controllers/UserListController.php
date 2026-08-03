@@ -6,6 +6,7 @@ use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\DateTime\DateTime;
+use Codemonster\DateTime\InvalidDateTimeException;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
@@ -182,15 +183,32 @@ class UserListController
             'username' => trim((string) $request->input('username')),
             'email' => trim((string) $request->input('email')),
             'is_active' => $request->input('is_active'),
+            'active_from' => trim((string) $request->input('active_from')),
+            'active_until' => trim((string) $request->input('active_until')),
             'password' => $password,
             'password_confirmation' => (string) $request->input('password_confirmation'),
         ], [
             'username' => 'required|string|min:3|max:60',
             'email' => 'required|email|max:255',
             'is_active' => 'nullable|boolean',
+            'active_from' => 'nullable|string',
+            'active_until' => 'nullable|string',
             'password' => $user->id ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
             'password_confirmation' => 'nullable|string',
         ]);
+
+        $activeFrom = $this->toUtc($validated['active_from']);
+        $activeUntil = $this->toUtc($validated['active_until']);
+
+        if ($validated['active_from'] !== '' && $activeFrom === null) {
+            return $this->invalid('active_from', 'The activity start must be a valid date and time.');
+        }
+        if ($validated['active_until'] !== '' && $activeUntil === null) {
+            return $this->invalid('active_until', 'The activity end must be a valid date and time.');
+        }
+        if ($activeFrom !== null && $activeUntil !== null && $activeUntil <= $activeFrom) {
+            return $this->invalid('active_until', 'The activity end must be after the activity start.');
+        }
 
         if (!User::validUsername($validated['username'])) {
             return $this->invalid('username', 'Username may contain only letters, numbers, underscores, or hyphens and must start with a letter or number.');
@@ -216,6 +234,8 @@ class UserListController
             'username' => $validated['username'],
             'email' => $validated['email'],
             'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
+            'active_from' => $activeFrom,
+            'active_until' => $activeUntil,
         ]);
 
         if ($password !== '') {
@@ -242,9 +262,41 @@ class UserListController
             'username' => (string) $user->username,
             'email' => (string) $user->email,
             'is_active' => (bool) $user->is_active,
+            'active_from' => $this->toIso8601($user->active_from),
+            'active_until' => $this->toIso8601($user->active_until),
             'created_at' => $user->created_at?->format(DATE_ATOM),
             'updated_at' => $user->updated_at?->format(DATE_ATOM),
         ];
+    }
+
+    private function toUtc(string $value): ?string
+    {
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\z/', $value) !== 1) {
+            return null;
+        }
+
+        try {
+            $date = DateTime::parse($value);
+        } catch (InvalidDateTimeException) {
+            return null;
+        }
+
+        return $date->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT);
+    }
+
+    private function toIso8601(mixed $value): string
+    {
+        if (!$value instanceof \DateTimeInterface) {
+            return '';
+        }
+
+        return DateTime::fromInterface($value)
+            ->toTimezone('UTC')
+            ->format(DATE_ATOM);
     }
 
     private function invalid(string $field, string $message): Response

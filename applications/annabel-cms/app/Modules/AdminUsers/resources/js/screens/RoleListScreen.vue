@@ -5,6 +5,7 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
@@ -13,7 +14,11 @@ import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
 import { icons } from '@codemonster-ru/vueforge-icons';
-import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
+import {
+  formatDateTime,
+  localDateTimeValueToIso,
+  toLocalDateTimeValue,
+} from '../../../../Admin/resources/js/support/dateTime';
 
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -27,7 +32,7 @@ const columns = [
 ];
 const columnLabels = { actions: 'Actions', id: 'ID', name: 'Name', code: 'Code', is_active: 'Active', sort_order: 'Sort order', created_at: 'Created', updated_at: 'Updated' };
 const groupFormTabs = [{ value: 'general', label: 'General' }];
-const emptyGroup = () => ({ id: null, name: '', code: '', description: '', is_active: true, sort_order: 1 });
+const emptyGroup = () => ({ id: null, name: '', code: '', description: '', is_active: true, active_from: '', active_until: '', sort_order: 1 });
 const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/admin/groups';
 const formMode = computed(() => currentPath === '/admin/groups/create' || /^\/admin\/groups\/\d+\/edit$/.test(currentPath));
 const editId = computed(() => currentPath.match(/^\/admin\/groups\/(\d+)\/edit$/)?.[1] || null);
@@ -37,8 +42,28 @@ const page = ref(1); const pageSize = ref(10); const totalRows = ref(0); const c
 const loading = ref(true); const saving = ref(false); const deleting = ref(false); const preferencesSaving = ref(false);
 const error = ref(''); const success = ref(''); const errors = ref({});
 const activeTab = ref('general');
+const activeFromMax = computed(() => shiftLocalDateTime(role.value.active_until, -1));
+const activeUntilMin = computed(() => shiftLocalDateTime(role.value.active_from, 1));
 
 function firstError(field) { const messages = errors.value[field]; return Array.isArray(messages) && messages.length ? messages[0] : ''; }
+function shiftLocalDateTime(value, minutes) {
+  if (!value) return undefined;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+
+  date.setMinutes(date.getMinutes() + minutes);
+
+  return toLocalDateTimeValue(date);
+}
+function groupFromPayload(value) {
+  return {
+    ...emptyGroup(),
+    ...value,
+    active_from: toLocalDateTimeValue(value?.active_from),
+    active_until: toLocalDateTimeValue(value?.active_until),
+  };
+}
 async function loadRoles() {
   loading.value = true; error.value = '';
   try {
@@ -55,7 +80,7 @@ async function loadRole() {
   try {
     const response = await fetch(`/admin/groups/data/${editId.value}`, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
     const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.message || 'Unable to load role.');
-    role.value = { ...emptyGroup(), ...(payload.group || {}) }; csrfToken.value = payload.csrf_token || '';
+    role.value = groupFromPayload(payload.group || {}); csrfToken.value = payload.csrf_token || '';
   } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to load role.'; } finally { loading.value = false; }
 }
 async function saveColumnPreferences(next) {
@@ -71,12 +96,12 @@ function newRole() { window.location.assign('/admin/groups/create'); }
 function backToRoles() { window.location.assign('/admin/groups'); }
 async function saveRole() {
   if (saving.value) return; saving.value = true; error.value = ''; success.value = ''; errors.value = {};
-  const body = new FormData(); body.append('_token', csrfToken.value); body.append('name', role.value.name); body.append('code', role.value.code); body.append('description', role.value.description || ''); body.append('is_active', role.value.is_active ? '1' : '0'); body.append('sort_order', String(role.value.sort_order ?? 1));
+  const body = new FormData(); body.append('_token', csrfToken.value); body.append('name', role.value.name); body.append('code', role.value.code); body.append('description', role.value.description || ''); body.append('is_active', role.value.is_active ? '1' : '0'); body.append('active_from', localDateTimeValueToIso(role.value.active_from) ?? role.value.active_from); body.append('active_until', localDateTimeValueToIso(role.value.active_until) ?? role.value.active_until); body.append('sort_order', String(role.value.sort_order ?? 1));
   const endpoint = editing.value ? `/admin/groups/data/${role.value.id}` : '/admin/groups/data';
   try {
     const response = await fetch(endpoint, { method: 'POST', headers: { Accept: 'application/json' }, body, credentials: 'same-origin' }); const payload = await response.json().catch(() => ({}));
     if (!response.ok) { if (response.status === 422) errors.value = payload.errors || {}; throw new Error(payload.message || 'Unable to save role.'); }
-    role.value = { ...emptyGroup(), ...(payload.group || {}) }; success.value = payload.message || 'Group saved successfully.'; if (!editing.value) window.location.assign('/admin/groups');
+    role.value = groupFromPayload(payload.group || {}); success.value = payload.message || 'Group saved successfully.'; if (!editing.value) window.location.assign('/admin/groups');
   } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to save role.'; } finally { saving.value = false; }
 }
 async function deleteRole(value) {
@@ -104,7 +129,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
         <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template><template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
       </VfDataTable>
     </div>
-    <form id="groups-group-form" v-else class="groups-screen__form" novalidate @submit.prevent="saveRole"><VfCard><VfTabs v-model="activeTab" :items="groupFormTabs"><template #panel="{ activeValue }"><div v-if="activeValue === 'general'" class="groups-screen__fields"><VfField class="groups-screen__active-field" label="Active"><template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="role.is_active" :disabled="saving" /></template></VfField><VfField label="Name" description="Letters, numbers, spaces, underscores, or hyphens." :error="firstError('name')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.name" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Code" description="Stable lowercase identifier for use in code." :error="firstError('code')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.code" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Description" description="Up to 255 characters." :error="firstError('description')"><template #default="{ controlId, describedBy, invalid }"><VfTextarea :id="controlId" v-model="role.description" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" maxlength="255" /></template></VfField><VfField label="Sort order" description="Lower numbers appear first." :error="firstError('sort_order')"><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField></div></template></VfTabs></VfCard></form>
+    <form id="groups-group-form" v-else class="groups-screen__form" novalidate @submit.prevent="saveRole"><VfCard><VfTabs v-model="activeTab" :items="groupFormTabs"><template #panel="{ activeValue }"><div v-if="activeValue === 'general'" class="groups-screen__fields"><VfField class="groups-screen__active-field" label="Active"><template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="role.is_active" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active from" :error="firstError('active_from')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="role.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active until" :error="firstError('active_until')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="role.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField label="Name" description="Letters, numbers, spaces, underscores, or hyphens." :error="firstError('name')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.name" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Code" description="Stable lowercase identifier for use in code." :error="firstError('code')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.code" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Description" description="Up to 255 characters." :error="firstError('description')"><template #default="{ controlId, describedBy, invalid }"><VfTextarea :id="controlId" v-model="role.description" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" maxlength="255" /></template></VfField><VfField label="Sort order" description="Lower numbers appear first." :error="firstError('sort_order')"><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField></div></template></VfTabs></VfCard></form>
   </div>
 </template>
 
@@ -117,5 +142,5 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
 .groups-screen__fields :deep(.vf-field) { width: 100%; }
 .groups-screen__status { color: var(--vf-color-muted); }
 .groups-screen__status--active { color: var(--vf-color-success); }
-@media (min-width: 1200px) { .groups-screen__fields { width: 70%; max-width: 64rem; margin-inline: auto; } .groups-screen__fields :deep(.vf-field) { grid-template-columns: 10rem minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; } .groups-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; text-align: end; } .groups-screen__fields :deep(.vf-field__control), .groups-screen__fields :deep(.vf-field__description), .groups-screen__fields :deep(.vf-field__error) { grid-column: 2; } .groups-screen__fields :deep(.vf-field__control) { grid-row: 1; } .groups-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; } .groups-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; } }
+@media (min-width: 1200px) { .groups-screen__fields { width: 70%; max-width: 64rem; margin-inline: auto; } .groups-screen__fields :deep(.vf-field) { grid-template-columns: 10rem minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; } .groups-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; text-align: end; } .groups-screen__fields :deep(.vf-field__control), .groups-screen__fields :deep(.vf-field__description), .groups-screen__fields :deep(.vf-field__error) { grid-column: 2; } .groups-screen__fields :deep(.vf-field__control) { grid-row: 1; } .groups-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; } .groups-screen__activity-field :deep(.vf-date-picker-wrap) { width: 16rem; max-width: 100%; } .groups-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; } }
 </style>

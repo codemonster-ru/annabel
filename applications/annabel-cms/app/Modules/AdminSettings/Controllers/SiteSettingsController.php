@@ -27,7 +27,6 @@ class SiteSettingsController
     {
         return Response::json([
             'settings' => $this->payload($this->settings->current()),
-            'timezone_options' => $this->timezoneOptions(),
             'csrf_token' => csrf_token(),
         ]);
     }
@@ -37,11 +36,9 @@ class SiteSettingsController
         $validated = $this->validator->validateOrFail([
             'site_name' => trim((string) $request->input('site_name')),
             'locale' => trim((string) $request->input('locale')),
-            'timezone' => trim((string) $request->input('timezone')),
         ], [
             'site_name' => 'required|string|max:120',
             'locale' => 'required|string|max:20',
-            'timezone' => 'required|string|max:64',
         ], [
             'site_name' => 'site name',
         ]);
@@ -50,14 +47,9 @@ class SiteSettingsController
             return $this->invalidSetting('locale', 'The locale must be a valid language tag.');
         }
 
-        if (!in_array($validated['timezone'], timezone_identifiers_list(), true)) {
-            return $this->invalidSetting('timezone', 'The timezone must be valid.');
-        }
-
         $settings = $this->settings->update([
             'site_name' => $validated['site_name'],
             'locale' => $validated['locale'],
-            'timezone' => $validated['timezone'],
         ]);
 
         return Response::json([
@@ -66,23 +58,13 @@ class SiteSettingsController
         ]);
     }
 
-    /** @return array{site_name: string, locale: string, timezone: string} */
+    /** @return array{site_name: string, locale: string} */
     private function payload(SiteSetting $settings): array
     {
         return [
             'site_name' => (string) $settings->site_name,
             'locale' => (string) $settings->locale,
-            'timezone' => (string) $settings->timezone,
         ];
-    }
-
-    /** @return list<array{value: string, label: string}> */
-    private function timezoneOptions(): array
-    {
-        return array_map(
-            static fn (string $timezone): array => ['value' => $timezone, 'label' => $timezone],
-            timezone_identifiers_list(),
-        );
     }
 
     private function invalidSetting(string $field, string $message): Response

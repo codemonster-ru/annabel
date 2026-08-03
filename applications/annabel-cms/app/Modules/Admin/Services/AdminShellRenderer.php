@@ -53,6 +53,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
      *     navigationValue: string,
      *     pageTitle: string|null,
      *     siteName: string,
+     *     locale: string,
      *     resetToken: string|null
      * }
      * @param array<string, mixed> $extra
@@ -60,6 +61,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
     public function payload(bool $isAuthenticated, string $screen = 'login', array $extra = []): array
     {
         $navigation = $isAuthenticated ? $this->navigation->navigation() : [];
+        $settings = $this->settings->current();
 
         return array_merge([
             'authenticated' => $isAuthenticated,
@@ -69,7 +71,8 @@ class AdminShellRenderer implements AdminScreenRendererInterface
             'navigation' => $navigation,
             'navigationValue' => $isAuthenticated ? $screen : '',
             'pageTitle' => $isAuthenticated ? $this->navigation->label($screen) : null,
-            'siteName' => $this->settings->current()->site_name,
+            'siteName' => (string) $settings->site_name,
+            'locale' => (string) $settings->locale,
             'resetToken' => null,
         ], $extra);
     }

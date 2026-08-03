@@ -133,6 +133,7 @@ class AdminHttpTest extends TestCase
 
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('"screen":"admin.users.list"', (string) $response->getContent());
+        self::assertStringContainsString('"locale":"en"', (string) $response->getContent());
     }
 
     public function testGuestCannotLoadUserListData(): void
@@ -210,7 +211,6 @@ class AdminHttpTest extends TestCase
             'id' => 1,
             'site_name' => 'Annabel CMS',
             'locale' => 'en',
-            'timezone' => 'UTC',
         ], true));
         $app->getContainer()->instance(SiteSettings::class, $settings);
 

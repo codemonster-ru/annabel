@@ -5,6 +5,7 @@ APP_DIR="/workspace/applications/annabel-cms"
 LOCAL_PACKAGES="
 annabel
 database
+datetime
 http
 security
 session

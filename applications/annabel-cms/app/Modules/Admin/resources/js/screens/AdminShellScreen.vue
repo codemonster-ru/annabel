@@ -1,5 +1,6 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useBreakpoint } from '@codemonster-ru/vueforge-core/foundation';
 import { VfAvatar } from '@codemonster-ru/vueforge-core/avatar';
 import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfDivider } from '@codemonster-ru/vueforge-core/divider';
@@ -46,11 +47,9 @@ const props = defineProps({
 
 const error = ref('');
 const loading = ref(false);
-const adminLayout = ref(null);
 const sidebarStorageKey = 'annabel-admin-sidebar-collapsed';
 const sidebarCollapsed = ref(readSidebarCollapsed());
-const isDesktopViewport = ref(readDesktopViewport());
-let desktopMediaQuery;
+const isDesktopViewport = useBreakpoint('lg');
 const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
 const activeNavigationPath = computed(() => findNavigationPath(props.navigation, props.navigationValue));
 const pageHeading = computed(() => props.pageTitle || activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');
@@ -61,27 +60,6 @@ function readSidebarCollapsed() {
   } catch {
     return false;
   }
-}
-
-function readDesktopViewport() {
-  return typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
-}
-
-function updateDesktopViewport(event) {
-  isDesktopViewport.value = event.matches;
-}
-
-onMounted(() => {
-  desktopMediaQuery = window.matchMedia('(min-width: 1024px)');
-  desktopMediaQuery.addEventListener('change', updateDesktopViewport);
-});
-
-onBeforeUnmount(() => {
-  desktopMediaQuery?.removeEventListener('change', updateDesktopViewport);
-});
-
-function toggleSidebar() {
-  adminLayout.value?.toggleSidebarCollapsed();
 }
 
 function openSite() {
@@ -149,7 +127,6 @@ async function logout() {
 
 <template>
   <VfAdminLayout
-    ref="adminLayout"
     class="admin-layout"
     :sidebar-collapsed="sidebarCollapsed"
     fill-viewport
@@ -200,7 +177,7 @@ async function logout() {
       </a>
     </template>
 
-    <template #header>
+    <template #header="{ toggleSidebarCollapsed }">
       <VfIconButton
         v-if="isDesktopViewport"
         class="admin-layout__sidebar-toggle"
@@ -208,7 +185,7 @@ async function logout() {
         :aria-label="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
         :title="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
         :aria-pressed="sidebarCollapsed"
-        @click="toggleSidebar"
+        @click="toggleSidebarCollapsed"
       />
       <div class="admin-layout__actions">
         <VfThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />

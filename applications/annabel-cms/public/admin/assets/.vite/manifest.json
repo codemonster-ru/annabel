@@ -1,30 +1,30 @@
 {
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-CgMeJghv.js",
+    "file": "PagesScreen-dNswnFMy.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-eFWvtNfB.js",
       "resources/js/main.js",
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "PagesScreen-jqYsZ4ZS.css",
-      "tabs-DPP212_C.css",
+      "PagesScreen-CUIPFMfb.css",
+      "tabs-CgjAHIus.css",
       "field-BQt9ZzR5.css",
       "textarea-CkbLlkxv.css"
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-aJKXODaa.js",
+    "file": "SiteSettingsScreen-TvEs8rL6.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-eFWvtNfB.js",
       "resources/js/main.js",
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
       "SiteSettingsScreen-DImrv5kK.css",
@@ -32,40 +32,40 @@
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-D6rrcMs5.js",
+    "file": "RoleListScreen-ERZO5_R0.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-eFWvtNfB.js",
       "resources/js/main.js",
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "RoleListScreen-CQ5vTexn.css",
-      "tabs-DPP212_C.css",
+      "RoleListScreen-BNXR14FZ.css",
+      "tabs-CgjAHIus.css",
       "field-BQt9ZzR5.css",
       "textarea-CkbLlkxv.css"
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-CiDmUzRT.js",
+    "file": "UserListScreen-0f6ks9-r.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-eFWvtNfB.js",
       "resources/js/main.js",
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "UserListScreen-BnzKfVfh.css",
-      "tabs-DPP212_C.css",
+      "UserListScreen-DG45N6Ob.css",
+      "tabs-CgjAHIus.css",
       "field-BQt9ZzR5.css"
     ]
   },
-  "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js": {
-    "file": "VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js",
+  "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js": {
+    "file": "VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js",
     "name": "VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof"
   },
   "__plugin-vue_export-helper-COPSIoBi.css": {
@@ -83,9 +83,9 @@
     "file": "field-BQt9ZzR5.css",
     "src": "_field-BQt9ZzR5.css"
   },
-  "_tabs-DPP212_C.css": {
-    "file": "tabs-DPP212_C.css",
-    "src": "_tabs-DPP212_C.css"
+  "_tabs-CgjAHIus.css": {
+    "file": "tabs-CgjAHIus.css",
+    "src": "_tabs-CgjAHIus.css"
   },
   "_textarea-CkbLlkxv.css": {
     "file": "textarea-CkbLlkxv.css",
@@ -96,12 +96,12 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-oaa1MJ6D.js",
+    "file": "admin-4XW9xRPl.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "imports": [
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "dynamicImports": [
       "resources/js/screens/DashboardScreen.vue",
@@ -111,20 +111,20 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-BYw8z3Wk.css"
+      "main-yB9vncVA.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-ClgD7bxB.js",
+    "file": "DashboardScreen-D5mr_3n_.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-eFWvtNfB.js",
-      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-DMkX0Dnc.js"
+      "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
       "DashboardScreen-CB-cofu4.css"

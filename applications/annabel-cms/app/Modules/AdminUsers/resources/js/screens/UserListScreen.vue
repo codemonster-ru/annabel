@@ -54,7 +54,6 @@ const error = ref('');
 const success = ref('');
 const errors = ref({});
 const activeTab = ref('general');
-const tableColumns = computed(() => columns.filter((column) => visibleColumns.value.includes(column.key)));
 
 function firstError(field) {
   const messages = errors.value[field];
@@ -215,7 +214,8 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
 
     <div v-if="!formMode" class="users-screen__list">
       <VfDataTable
-        :columns="tableColumns"
+        :columns="columns"
+        :visible-column-keys="visibleColumns"
         :rows="rows"
         row-key="id"
         striped

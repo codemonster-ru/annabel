@@ -37,7 +37,6 @@ const page = ref(1); const pageSize = ref(10); const totalRows = ref(0); const c
 const loading = ref(true); const saving = ref(false); const deleting = ref(false); const preferencesSaving = ref(false);
 const error = ref(''); const success = ref(''); const errors = ref({});
 const activeTab = ref('general');
-const tableColumns = computed(() => columns.filter((column) => visibleColumns.value.includes(column.key)));
 
 function firstError(field) { const messages = errors.value[field]; return Array.isArray(messages) && messages.length ? messages[0] : ''; }
 function formatDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date); }
@@ -97,7 +96,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
     <Teleport v-else to="#admin-page-actions"><VfButton variant="primary" :disabled="loading || saving" @click="newRole">New group</VfButton></Teleport>
     <VfAlert v-if="error" tone="danger" title="Groups">{{ error }}</VfAlert><VfAlert v-if="success" tone="success" title="Groups">{{ success }}</VfAlert>
     <div v-if="!formMode" class="roles-screen__list">
-      <VfDataTable :columns="tableColumns" :rows="rows" row-key="id" striped column-dividers :loading="loading" pagination pagination-mode="manual" :page="page" :page-size="pageSize" :total-rows="totalRows" empty-text="No groups found" @update:page="page = $event" @update:page-size="pageSize = $event">
+      <VfDataTable :columns="columns" :visible-column-keys="visibleColumns" :rows="rows" row-key="id" striped column-dividers :loading="loading" pagination pagination-mode="manual" :page="page" :page-size="pageSize" :total-rows="totalRows" empty-text="No groups found" @update:page="page = $event" @update:page-size="pageSize = $event">
         <template #header-actions><VfDropdown placement="bottom-start" :close-on-select="false"><template #trigger><VfIconButton :icon="icons.gear" variant="ghost" size="sm" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" /></template><div class="roles-screen__column-select-all"><VfCheckbox label="All columns" :model-value="visibleColumns.length === columns.length" :disabled="preferencesSaving" @update:model-value="toggleAllColumns" /></div><VfCheckbox v-for="column in columns" :key="column.key" :model-value="visibleColumns.includes(column.key)" :label="columnLabels[column.key]" :disabled="column.key === 'actions' || preferencesSaving" @update:model-value="toggleColumn(column.key, $event)" /></VfDropdown></template>
         <template #cell-actions="{ row }"><VfDropdown placement="bottom-start"><template #trigger><VfIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><VfMenu><VfMenuItem label="Edit" :icon="icons.pencil" @select="editRole(row)" /><VfMenuItem label="Delete" :icon="icons.trash" tone="danger" @select="deleteRole(row)" /></VfMenu></VfDropdown></template>
         <template #cell-name="{ value, row }"><a class="roles-screen__role-link" :href="`/admin/groups/${row.id}/edit`"><strong>{{ value }}</strong></a></template>

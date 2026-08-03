@@ -5,6 +5,7 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
@@ -75,7 +76,6 @@ const success = ref('');
 const errors = ref({});
 const activeTab = ref('general');
 const editing = computed(() => editId.value !== null);
-const tableColumns = computed(() => columns.filter((column) => visibleColumns.value.includes(column.key)));
 
 function firstError(field) {
   const messages = errors.value[field];
@@ -321,7 +321,8 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
     <div v-if="!formMode" class="pages-screen__list">
       <VfDataTable
-        :columns="tableColumns"
+        :columns="columns"
+        :visible-column-keys="visibleColumns"
         :rows="pages"
         row-key="id"
         striped
@@ -428,10 +429,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
                 <VfField class="pages-screen__publication-field" label="Publish from" description="Leave empty to publish immediately." :error="firstError('publish_at')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput
+                    <VfDatePicker
                       :id="controlId"
                       v-model="page.publish_at"
-                      type="datetime-local"
+                      show-time
+                      clearable
                       :aria-describedby="describedBy"
                       :invalid="invalid"
                       :disabled="saving"
@@ -441,10 +443,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
                 <VfField class="pages-screen__publication-field" label="Publish until" description="Leave empty to publish indefinitely." :error="firstError('unpublish_at')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput
+                    <VfDatePicker
                       :id="controlId"
                       v-model="page.unpublish_at"
-                      type="datetime-local"
+                      show-time
+                      clearable
                       :aria-describedby="describedBy"
                       :invalid="invalid"
                       :disabled="saving"
@@ -584,7 +587,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
     padding-block-start: 0;
   }
 
-  .pages-screen__publication-field :deep(.vf-input) {
+  .pages-screen__publication-field :deep(.vf-date-picker-wrap) {
     width: 16rem;
     max-width: 100%;
   }

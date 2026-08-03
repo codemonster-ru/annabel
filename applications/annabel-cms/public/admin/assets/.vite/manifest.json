@@ -1,6 +1,6 @@
 {
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-dNswnFMy.js",
+    "file": "PagesScreen-CJ9psYSQ.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -10,14 +10,14 @@
       "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "PagesScreen-CUIPFMfb.css",
+      "PagesScreen-BueBl5hF.css",
       "tabs-CgjAHIus.css",
       "field-BQt9ZzR5.css",
       "textarea-CkbLlkxv.css"
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-TvEs8rL6.js",
+    "file": "SiteSettingsScreen-HZu29w0L.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
@@ -32,7 +32,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-ERZO5_R0.js",
+    "file": "RoleListScreen-BiwhNhf0.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
@@ -49,7 +49,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-0f6ks9-r.js",
+    "file": "UserListScreen-BY58CEU4.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -96,7 +96,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-4XW9xRPl.js",
+    "file": "admin-DiiH4TmQ.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,

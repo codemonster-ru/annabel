@@ -5,14 +5,11 @@ import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfSelect } from '@codemonster-ru/vueforge-core/select';
 
 const settings = ref({
   site_name: '',
   locale: '',
-  timezone: 'UTC',
 });
-const timezoneOptions = ref([]);
 const csrfToken = ref('');
 const loading = ref(true);
 const saving = ref(false);
@@ -42,7 +39,6 @@ async function loadSettings() {
     }
 
     settings.value = { ...settings.value, ...payload.settings };
-    timezoneOptions.value = Array.isArray(payload.timezone_options) ? payload.timezone_options : [];
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to load site settings.';
@@ -141,19 +137,6 @@ onMounted(loadSettings);
               :invalid="invalid"
               :disabled="loading"
               required
-            />
-          </template>
-        </VfField>
-
-        <VfField label="Timezone" :error="firstError('timezone')" required>
-          <template #default="{ controlId, describedBy, invalid }">
-            <VfSelect
-              :id="controlId"
-              v-model="settings.timezone"
-              :options="timezoneOptions"
-              :aria-describedby="describedBy"
-              :invalid="invalid"
-              :disabled="loading"
             />
           </template>
         </VfField>

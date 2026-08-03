@@ -24,4 +24,19 @@ class ModuleDefinitionTest extends TestCase
 
         $module->resolve('../Setup/routes/web.php');
     }
+
+    public function testItStoresModuleAuthor(): void
+    {
+        $module = new ModuleDefinition(
+            'Demo',
+            '1.0.0',
+            '/cms/app/Modules/Demo',
+            author: ['name' => 'Codemonster', 'url' => 'https://codemonster.net'],
+        );
+
+        self::assertSame([
+            'name' => 'Codemonster',
+            'url' => 'https://codemonster.net',
+        ], $module->author);
+    }
 }

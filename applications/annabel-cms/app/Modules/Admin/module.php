@@ -5,6 +5,11 @@ use Codemonster\Cms\Modules\Admin\ModuleServiceProvider;
 return [
     'name' => 'Admin',
     'version' => '1.0.0',
+    'system' => true,
+    'author' => [
+        'name' => 'Codemonster',
+        'url' => 'https://codemonster.net',
+    ],
     'dependencies' => ['Core', 'Auth', 'Settings'],
     'provider' => ModuleServiceProvider::class,
     'routes' => 'routes/web.php',

@@ -226,7 +226,7 @@ class PageManagementController
         }
 
         $isPublished = in_array((string) $request->input('is_published'), ['1', 'true', 'on'], true);
-        $page->fill([
+        $attributes = [
             'slug' => $validated['slug'],
             'title' => $validated['title'],
             'sort_order' => (int) ($validated['sort_order'] ?? 1),
@@ -234,12 +234,17 @@ class PageManagementController
             'meta_description' => $validated['meta_description'] !== '' ? $validated['meta_description'] : null,
             'content' => $validated['content'],
             'is_published' => $isPublished,
-            'published_at' => $isPublished
-                ? ($page->published_at ?? DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT))
-                : null,
             'publish_at' => $publishAt,
             'unpublish_at' => $unpublishAt,
-        ]);
+        ];
+
+        if (!$isPublished) {
+            $attributes['published_at'] = null;
+        } elseif ($page->published_at === null) {
+            $attributes['published_at'] = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
+        }
+
+        $page->fill($attributes);
         $page->save();
 
         return Response::json([
@@ -287,10 +292,10 @@ class PageManagementController
         return $date->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT);
     }
 
-    private function toLocalInput(mixed $value): ?string
+    private function toLocalInput(mixed $value): string
     {
         if (!$value instanceof \DateTimeInterface) {
-            return null;
+            return '';
         }
 
         return DateTime::fromInterface($value)

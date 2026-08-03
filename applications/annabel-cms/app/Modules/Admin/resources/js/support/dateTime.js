@@ -1,22 +1,7 @@
-let dateTimeFormatter = createFormatter();
-
-function createFormatter(locale) {
-  return new Intl.DateTimeFormat(locale || undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-}
-
-export function configureDateTime({ locale } = {}) {
-  dateTimeFormatter = createFormatter(locale);
-}
-
 export function formatDateTime(value) {
-  if (value == null || value === '') return '—';
+  const localValue = toLocalDateTimeValue(value);
 
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? '—' : dateTimeFormatter.format(date);
+  return localValue === '' ? '—' : localValue.replace('T', ' ');
 }
 
 export function toLocalDateTimeValue(value) {

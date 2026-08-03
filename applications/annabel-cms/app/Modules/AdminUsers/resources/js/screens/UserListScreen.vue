@@ -307,10 +307,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
           <VfField label="Email" :error="firstError('email')" required>
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.email" type="email" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
           </VfField>
-          <VfField label="Password" :description="editing ? 'Leave empty to keep the current password.' : 'At least 8 characters.'" :error="firstError('password')" :required="!editing">
+          <VfField label="New password" :error="firstError('password')" :required="!editing">
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
           </VfField>
-          <VfField label="Confirm password" :error="firstError('password_confirmation')" :required="!editing">
+          <VfField label="Confirm new password" :error="firstError('password_confirmation')" :required="!editing">
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
           </VfField>
             </div>
@@ -334,13 +334,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : (loading.value = 
 @media (min-width: 1200px) {
   .users-screen__fields { width: 70%; max-width: 64rem; margin-inline: auto; }
   .users-screen__fields :deep(.vf-field) { grid-template-columns: 10rem minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; }
-  .users-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; text-align: end; }
+  .users-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; text-align: end; white-space: nowrap; }
   .users-screen__fields :deep(.vf-field__control),
   .users-screen__fields :deep(.vf-field__description),
   .users-screen__fields :deep(.vf-field__error) { grid-column: 2; }
-  .users-screen__fields :deep(.vf-field__control) { grid-row: 1; }
+  .users-screen__fields :deep(.vf-field__control) { grid-row: 1; width: 16rem; max-width: 100%; }
   .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
-  .users-screen__activity-field :deep(.vf-date-picker-wrap) { width: 16rem; max-width: 100%; }
   .users-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; }
 }
 </style>

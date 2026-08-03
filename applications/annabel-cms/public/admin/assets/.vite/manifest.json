@@ -1,6 +1,6 @@
 {
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-ClEktzcV.js",
+    "file": "PagesScreen-DvH9fl2b.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -10,14 +10,14 @@
       "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "PagesScreen-DTuWhh8y.css",
+      "PagesScreen-B3zu1up3.css",
       "tabs-CUwkKURw.css",
       "field-BQt9ZzR5.css",
       "textarea-CkbLlkxv.css"
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-I8G_mGcx.js",
+    "file": "SiteSettingsScreen-BcA14Jnl.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
@@ -32,7 +32,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-Bcofy1Ku.js",
+    "file": "RoleListScreen-DgBGAA4o.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
@@ -42,14 +42,14 @@
       "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "RoleListScreen-DEtqAE_n.css",
+      "RoleListScreen-Cz-VQata.css",
       "tabs-CUwkKURw.css",
       "field-BQt9ZzR5.css",
       "textarea-CkbLlkxv.css"
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-BrptfhVg.js",
+    "file": "UserListScreen-C99GoYp5.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -59,7 +59,7 @@
       "_VfCard.vue_vue_type_script_setup_true_lang-C1ms4Cof-B0DNUOxm.js"
     ],
     "css": [
-      "UserListScreen-DeM1GOkb.css",
+      "UserListScreen-Cek48vK2.css",
       "tabs-CUwkKURw.css",
       "field-BQt9ZzR5.css"
     ]
@@ -96,7 +96,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-BK10E052.js",
+    "file": "admin-C3D8QDKq.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,

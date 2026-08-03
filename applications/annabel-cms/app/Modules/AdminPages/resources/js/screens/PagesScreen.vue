@@ -471,7 +471,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-                <VfField label="Sort order" description="Lower numbers appear first." :error="firstError('sort_order')">
+                <VfField label="Sort order" :error="firstError('sort_order')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
                   </template>
@@ -552,18 +552,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 }
 
 @media (min-width: 1200px) {
-  .pages-screen__tab-fields {
-    width: 70%;
-    max-width: 64rem;
-    margin-inline: auto;
-  }
-
   .pages-screen__tab-fields > :deep(.vf-field) {
     grid-column: 1 / -1;
   }
 
   .pages-screen__tab-fields :deep(.vf-field) {
-    grid-template-columns: 10rem minmax(0, 1fr);
+    grid-template-columns: minmax(14rem, 25%) minmax(0, 1fr);
     column-gap: var(--vf-section-gap);
     align-items: start;
   }
@@ -572,6 +566,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
     align-self: start;
     justify-self: end;
     padding-block-start: 0.65rem;
+    overflow-wrap: anywhere;
     text-align: end;
   }
 
@@ -591,10 +586,6 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
     padding-block-start: 0;
   }
 
-  .pages-screen__publication-field :deep(.vf-date-picker-wrap) {
-    width: 16rem;
-    max-width: 100%;
-  }
 }
 .pages-screen__status {
   color: var(--vf-color-muted);

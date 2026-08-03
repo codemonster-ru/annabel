@@ -63,8 +63,11 @@ class ModelQuery
         }
 
         $model = $this->modelClass;
+        $instance = $model::hydrate([(array) $row])[0];
 
-        $instance = new $model((array) $row, true);
+        if (!$instance instanceof Model) {
+            return null;
+        }
 
         if ($this->eagerLoads !== []) {
             $instance->load($this->eagerLoads);

@@ -12,7 +12,7 @@ use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
 use Psr\Clock\ClockInterface;
 
-class RoleListController
+class GroupListController
 {
     private const TABLE_KEY = 'groups';
 
@@ -66,14 +66,14 @@ class RoleListController
         }
 
         $pagination = $query->paginate($perPage, $page);
-        $roles = [];
+        $groups = [];
 
-        foreach ($pagination['data'] as $role) {
-            $roles[] = $this->payload($role);
+        foreach ($pagination['data'] as $group) {
+            $groups[] = $this->payload($group);
         }
 
         return Response::json([
-            'data' => $roles,
+            'data' => $groups,
             'total' => $pagination['total'],
             'current_page' => $pagination['current_page'],
             'per_page' => $pagination['per_page'],
@@ -129,12 +129,12 @@ class RoleListController
 
     public function showData(string $id): Response
     {
-        $role = Group::find($id);
-        if (!$role instanceof Group) {
+        $group = Group::find($id);
+        if (!$group instanceof Group) {
             return Response::json(['message' => 'Group not found.'], 404);
         }
 
-        return Response::json(['group' => $this->payload($role), 'csrf_token' => csrf_token()]);
+        return Response::json(['group' => $this->payload($group), 'csrf_token' => csrf_token()]);
     }
 
     public function store(Request $request): Response
@@ -144,33 +144,33 @@ class RoleListController
 
     public function update(Request $request, string $id): Response
     {
-        $role = Group::find($id);
-        if (!$role instanceof Group) {
+        $group = Group::find($id);
+        if (!$group instanceof Group) {
             return Response::json(['message' => 'Group not found.'], 404);
         }
 
-        return $this->save($request, $role);
+        return $this->save($request, $group);
     }
 
     public function destroy(string $id): Response
     {
-        $role = Group::find($id);
-        if (!$role instanceof Group) {
+        $group = Group::find($id);
+        if (!$group instanceof Group) {
             return Response::json(['message' => 'Group not found.'], 404);
         }
-        if ((string) $role->code === 'admin') {
+        if ((string) $group->code === 'admin') {
             return Response::json(['message' => 'The admin group cannot be deleted.'], 422);
         }
-        if (db()->table('group_user')->where('group_id', $role->id)->exists()) {
+        if (db()->table('group_user')->where('group_id', $group->id)->exists()) {
             return Response::json(['message' => 'Group cannot be deleted while assigned to users.'], 422);
         }
 
-        $role->delete();
+        $group->delete();
 
         return Response::json(['message' => 'Group deleted successfully.']);
     }
 
-    private function save(Request $request, Group $role): Response
+    private function save(Request $request, Group $group): Response
     {
         $validated = $this->validator->validateOrFail([
             'name' => trim((string) $request->input('name')),
@@ -201,23 +201,23 @@ class RoleListController
         if (preg_match('/\A[a-z0-9][a-z0-9_-]{1,59}\z/', $validated['code']) !== 1) {
             return $this->invalid('code', 'Code may contain only lowercase letters, numbers, underscores, or hyphens and must start with a letter or number.');
         }
-        if ((string) $role->code === 'admin' && $validated['name'] !== 'Admin') {
+        if ((string) $group->code === 'admin' && $validated['name'] !== 'Admin') {
             return $this->invalid('name', 'The admin group cannot be renamed.');
         }
-        if ((string) $role->code === 'admin' && $validated['code'] !== 'admin') {
+        if ((string) $group->code === 'admin' && $validated['code'] !== 'admin') {
             return $this->invalid('code', 'The admin group code cannot be changed.');
         }
 
-        $duplicate = Group::query()->where('name', $validated['name'])->where('id', '!=', $role->id ?? 0)->first();
+        $duplicate = Group::query()->where('name', $validated['name'])->where('id', '!=', $group->id ?? 0)->first();
         if ($duplicate instanceof Group) {
             return $this->invalid('name', 'This group name is already in use.');
         }
-        $duplicateCode = Group::query()->where('code', $validated['code'])->where('id', '!=', $role->id ?? 0)->first();
+        $duplicateCode = Group::query()->where('code', $validated['code'])->where('id', '!=', $group->id ?? 0)->first();
         if ($duplicateCode instanceof Group) {
             return $this->invalid('code', 'This group code is already in use.');
         }
 
-        $role->fill([
+        $group->fill([
             'name' => $validated['name'],
             'code' => $validated['code'],
             'description' => $validated['description'] !== '' ? $validated['description'] : null,
@@ -226,25 +226,25 @@ class RoleListController
             'active_until' => $activeUntil,
             'sort_order' => (int) ($validated['sort_order'] ?? 0),
         ]);
-        $role->save();
+        $group->save();
 
-        return Response::json(['message' => 'Group saved successfully.', 'group' => $this->payload($role)]);
+        return Response::json(['message' => 'Group saved successfully.', 'group' => $this->payload($group)]);
     }
 
     /** @return array<string, mixed> */
-    private function payload(Group $role): array
+    private function payload(Group $group): array
     {
         return [
-            'id' => $role->id,
-            'name' => (string) $role->name,
-            'code' => (string) $role->code,
-            'description' => $role->description !== null ? (string) $role->description : null,
-            'is_active' => (bool) $role->is_active,
-            'active_from' => $this->toIso8601($role->active_from),
-            'active_until' => $this->toIso8601($role->active_until),
-            'sort_order' => (int) $role->sort_order,
-            'created_at' => $role->created_at?->format(DATE_ATOM),
-            'updated_at' => $role->updated_at?->format(DATE_ATOM),
+            'id' => $group->id,
+            'name' => (string) $group->name,
+            'code' => (string) $group->code,
+            'description' => $group->description !== null ? (string) $group->description : null,
+            'is_active' => (bool) $group->is_active,
+            'active_from' => $this->toIso8601($group->active_from),
+            'active_until' => $this->toIso8601($group->active_until),
+            'sort_order' => (int) $group->sort_order,
+            'created_at' => $group->created_at?->format(DATE_ATOM),
+            'updated_at' => $group->updated_at?->format(DATE_ATOM),
         ];
     }
 

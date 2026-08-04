@@ -241,6 +241,82 @@ class AdminHttpTest extends TestCase
         self::assertSame(10, $payload['per_page']);
     }
 
+    public function testAdminCanOpenSystemUpdates(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/settings/system/updates'));
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString(
+            '"screen":"admin.settings.system-updates"',
+            (string) $response->getContent(),
+        );
+    }
+
+    public function testAdminCanLoadSystemUpdateData(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request(
+            'GET',
+            '/admin/settings/system/updates/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+        $payload = json_decode((string) $response->getContent(), true);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('1.1.0', $payload['cms_version']);
+        self::assertNull($payload['latest_version']);
+        self::assertSame('stable', $payload['channel']);
+        self::assertNull($payload['last_checked_at']);
+        self::assertNull($payload['last_successful_update_at']);
+        self::assertSame(10, $payload['total']);
+        self::assertSame(1, $payload['current_page']);
+        self::assertSame(10, $payload['per_page']);
+        self::assertSame([
+            'Admin',
+            'AdminModules',
+            'AdminPages',
+            'AdminSettings',
+            'AdminUsers',
+            'Auth',
+            'Core',
+            'Pages',
+            'Settings',
+            'Setup',
+        ], array_column($payload['components'], 'name'));
+        self::assertSame(
+            [
+                'name' => 'Setup',
+                'installed_version' => null,
+                'available_version' => null,
+            ],
+            $payload['components'][9],
+        );
+    }
+
+    public function testGuestCannotLoadSystemUpdateData(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/settings/system/updates/data',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
     public function testGuestCannotLoadModuleListData(): void
     {
         $response = $this->app()->handle(new Request(

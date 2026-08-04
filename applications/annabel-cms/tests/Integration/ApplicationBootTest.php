@@ -81,11 +81,17 @@ class ApplicationBootTest extends TestCase
                         'label' => 'Modules',
                         'href' => '/admin/settings/modules',
                     ],
+                    [
+                        'value' => 'admin.settings.system-updates',
+                        'label' => 'System updates',
+                        'href' => '/admin/settings/system/updates',
+                    ],
                 ],
             ],
         ], $adminNavigation->navigation());
         self::assertSame('General', $adminNavigation->label('admin.settings.general'));
         self::assertSame('Modules', $adminNavigation->label('admin.settings.modules'));
+        self::assertSame('System updates', $adminNavigation->label('admin.settings.system-updates'));
         self::assertSame('User list', $adminNavigation->label('admin.users.list'));
         self::assertSame('Groups', $adminNavigation->label('admin.users.groups'));
         self::assertNull($adminNavigation->label('admin.missing'));

@@ -188,8 +188,7 @@ class SessionUserService implements UserSessionInterface
         $id = $user['id'] ?? null;
         $username = $user['username'] ?? null;
         $email = $user['email'] ?? null;
-        // Accept the old session key once so active sessions survive the rename.
-        $groups = $user['groups'] ?? $user['roles'] ?? null;
+        $groups = $user['groups'] ?? null;
 
         if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($groups)) {
             return null;

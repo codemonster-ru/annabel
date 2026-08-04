@@ -68,24 +68,10 @@ class Group extends Model
             });
     }
 
-    public static function findByName(string $name): ?self
-    {
-        $group = static::query()->where('name', $name)->first();
-
-        return $group instanceof self ? $group : null;
-    }
-
     public static function findByCode(string $code): ?self
     {
         $group = static::query()->where('code', $code)->first();
 
         return $group instanceof self ? $group : null;
-    }
-
-    public static function findOrCreate(string $name): self
-    {
-        $group = static::findByName($name);
-
-        return $group ?? static::create(['name' => $name]);
     }
 }

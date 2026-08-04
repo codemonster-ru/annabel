@@ -176,7 +176,7 @@ class SessionUserService implements UserSessionInterface
             $user->id,
             (string) $user->username,
             (string) $user->email,
-            $user->groupNames(),
+            $user->groupCodes(),
         );
     }
 

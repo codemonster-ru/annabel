@@ -102,7 +102,7 @@ class User extends Model
     /**
      * @return array<int, string>
      */
-    public function groupNames(): array
+    public function groupCodes(): array
     {
         $query = Group::activeQueryAt();
         $query->getBuilder()
@@ -113,22 +113,22 @@ class User extends Model
             ->where('group_user.user_id', $this->id)
             ->get();
 
-        $names = [];
+        $codes = [];
 
         foreach ($groups as $group) {
-            $name = $group->name;
+            $code = $group->code;
 
-            if (is_string($name) && $name !== '') {
-                $names[] = $name;
+            if (is_string($code) && $code !== '') {
+                $codes[] = $code;
             }
         }
 
-        return $names;
+        return $codes;
     }
 
-    public function hasGroup(string $name): bool
+    public function hasGroup(string $code): bool
     {
-        if ($name === '') {
+        if ($code === '') {
             return false;
         }
 
@@ -138,17 +138,22 @@ class User extends Model
 
         return $query
             ->where('group_user.user_id', $this->id)
-            ->where('groups.name', $name)
+            ->where('groups.code', $code)
             ->exists();
     }
 
-    public function assignGroup(string $name): void
+    public function assignGroup(string $code): void
     {
-        if ($name === '') {
+        if ($code === '') {
             return;
         }
 
-        $role = Group::findOrCreate($name);
+        $role = Group::findByCode($code);
+
+        if (!$role instanceof Group) {
+            throw new \RuntimeException('Group not found.');
+        }
+
         $roleId = $role->id ?? null;
 
         if (!$roleId) {

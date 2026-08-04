@@ -5,7 +5,7 @@ namespace Codemonster\Cms\Modules\Auth\Contracts;
 final class AuthenticatedUser
 {
     /**
-     * @param array<int, string> $groups
+     * @param array<int, string> $groups Group codes used for authorization.
      */
     public function __construct(
         public readonly int|string $id,

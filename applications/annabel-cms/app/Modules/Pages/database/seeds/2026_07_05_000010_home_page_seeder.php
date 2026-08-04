@@ -28,8 +28,8 @@ return new class () extends Seeder {
             'slug' => 'home',
             'title' => 'Welcome to Annabel',
             'content' => 'Your CMS is installed and ready for content.',
-            'is_published' => 1,
-            'published_at' => $now,
+            'is_active' => 1,
+            'activated_at' => $now,
             'created_at' => $now,
             'updated_at' => $now,
         ]);

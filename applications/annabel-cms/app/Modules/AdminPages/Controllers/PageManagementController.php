@@ -17,10 +17,10 @@ class PageManagementController
     private const TABLE_KEY = 'pages';
 
     /** @var list<string> */
-    private const ALL_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'sort_order', 'created_at', 'updated_at'];
+    private const ALL_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_active', 'sort_order', 'created_at', 'updated_at'];
 
     /** @var list<string> */
-    private const DEFAULT_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_published', 'sort_order', 'created_at', 'updated_at'];
+    private const DEFAULT_COLUMNS = ['actions', 'id', 'title', 'slug', 'is_active', 'sort_order', 'created_at', 'updated_at'];
 
     private const DEFAULT_PER_PAGE = 10;
 
@@ -182,8 +182,8 @@ class PageManagementController
             'meta_title' => trim((string) $request->input('meta_title')),
             'meta_description' => trim((string) $request->input('meta_description')),
             'content' => trim((string) $request->input('content')),
-            'publish_at' => trim((string) $request->input('publish_at')),
-            'unpublish_at' => trim((string) $request->input('unpublish_at')),
+            'active_from' => trim((string) $request->input('active_from')),
+            'active_until' => trim((string) $request->input('active_until')),
         ], [
             'slug' => 'required|string|max:120',
             'title' => 'required|string|max:255',
@@ -191,23 +191,23 @@ class PageManagementController
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'content' => 'required|string',
-            'publish_at' => 'nullable|string',
-            'unpublish_at' => 'nullable|string',
+            'active_from' => 'nullable|string',
+            'active_until' => 'nullable|string',
         ]);
 
-        $publishAt = $this->toUtc($validated['publish_at']);
-        $unpublishAt = $this->toUtc($validated['unpublish_at']);
+        $activeFrom = $this->toUtc($validated['active_from']);
+        $activeUntil = $this->toUtc($validated['active_until']);
 
-        if ($validated['publish_at'] !== '' && $publishAt === null) {
-            return $this->invalid('publish_at', 'The publish date must be a valid date and time.');
+        if ($validated['active_from'] !== '' && $activeFrom === null) {
+            return $this->invalid('active_from', 'The active from date must be a valid date and time.');
         }
 
-        if ($validated['unpublish_at'] !== '' && $unpublishAt === null) {
-            return $this->invalid('unpublish_at', 'The unpublish date must be a valid date and time.');
+        if ($validated['active_until'] !== '' && $activeUntil === null) {
+            return $this->invalid('active_until', 'The active until date must be a valid date and time.');
         }
 
-        if ($publishAt !== null && $unpublishAt !== null && $unpublishAt <= $publishAt) {
-            return $this->invalid('unpublish_at', 'The unpublish date must be after the publish date.');
+        if ($activeFrom !== null && $activeUntil !== null && $activeUntil <= $activeFrom) {
+            return $this->invalid('active_until', 'The active until date must be after the active from date.');
         }
 
         if (!Page::validSlug($validated['slug'])) {
@@ -223,7 +223,7 @@ class PageManagementController
             return $this->invalid('slug', 'This slug is already in use.');
         }
 
-        $isPublished = in_array((string) $request->input('is_published'), ['1', 'true', 'on'], true);
+        $isActive = in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true);
         $attributes = [
             'slug' => $validated['slug'],
             'title' => $validated['title'],
@@ -231,15 +231,15 @@ class PageManagementController
             'meta_title' => $validated['meta_title'] !== '' ? $validated['meta_title'] : null,
             'meta_description' => $validated['meta_description'] !== '' ? $validated['meta_description'] : null,
             'content' => $validated['content'],
-            'is_published' => $isPublished,
-            'publish_at' => $publishAt,
-            'unpublish_at' => $unpublishAt,
+            'is_active' => $isActive,
+            'active_from' => $activeFrom,
+            'active_until' => $activeUntil,
         ];
 
-        if (!$isPublished) {
-            $attributes['published_at'] = null;
-        } elseif ($page->published_at === null) {
-            $attributes['published_at'] = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
+        if (!$isActive) {
+            $attributes['activated_at'] = null;
+        } elseif ($page->activated_at === null) {
+            $attributes['activated_at'] = DateTime::now($this->clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         }
 
         $page->fill($attributes);
@@ -262,12 +262,12 @@ class PageManagementController
             'meta_title' => (string) ($page->meta_title ?? ''),
             'meta_description' => (string) ($page->meta_description ?? ''),
             'content' => (string) $page->content,
-            'is_published' => (bool) $page->is_published,
+            'is_active' => (bool) $page->is_active,
             'created_at' => $page->created_at?->format(DATE_ATOM),
-            'published_at' => $page->published_at?->format(DATE_ATOM),
+            'activated_at' => $page->activated_at?->format(DATE_ATOM),
             'updated_at' => $page->updated_at?->format(DATE_ATOM),
-            'publish_at' => $this->toIso8601($page->publish_at),
-            'unpublish_at' => $this->toIso8601($page->unpublish_at),
+            'active_from' => $this->toIso8601($page->active_from),
+            'active_until' => $this->toIso8601($page->active_until),
         ];
     }
 

@@ -37,7 +37,7 @@ class ModuleInstallerTest extends TestCase
         $modules = $this->moduleManager(['Demo' => $module]);
         $installations = $this->createMock(ModuleInstallationRegistry::class);
         $installations->method('states')->willReturn([]);
-        $installations->expects(self::once())->method('install')->with('Demo');
+        $installations->expects(self::once())->method('install')->with('Demo', '1.0.0');
 
         (new ModuleInstaller(
             $modules,
@@ -46,7 +46,7 @@ class ModuleInstallerTest extends TestCase
         ))->install('Demo');
     }
 
-    public function testUninstallRemovesDisabledModuleRegistrationAfterRollback(): void
+    public function testUninstallRemovesDisabledModuleRegistrationWithoutDeletingData(): void
     {
         $module = new ModuleDefinition('Demo', '1.0.0', '/missing/modules/Demo');
         $modules = $this->moduleManager(['Demo' => $module]);

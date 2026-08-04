@@ -27,6 +27,10 @@ router()->get('/admin/users/data/{id}', [UserListController::class, 'showData'])
     ->middleware(RequireInstalled::class)
     ->middleware(RequireAdmin::class);
 
+router()->get('/admin/users/group-options', [UserListController::class, 'groupOptions'])
+    ->middleware(RequireInstalled::class)
+    ->middleware(RequireAdmin::class);
+
 router()->post('/admin/users/preferences', [UserListController::class, 'updatePreferences'])
     ->middleware(RequireInstalled::class)
     ->middleware(RequireAdmin::class);

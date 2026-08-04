@@ -153,6 +153,19 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
+    public function testGuestCannotLoadUserGroupOptions(): void
+    {
+        $response = $this->app()->handle(new Request(
+            'GET',
+            '/admin/users/group-options',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(401, $response->getStatusCode());
+    }
+
     public function testAdminCanOpenGroupList(): void
     {
         $app = $this->app();

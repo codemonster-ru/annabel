@@ -108,8 +108,9 @@ class User extends Model
         $query->getBuilder()
             ->join('group_user', 'groups.id', '=', 'group_user.group_id')
             ->select('groups.*');
+        $this->applyActiveMembershipWindow($query);
         $groups = $query
-            ->where('user_id', $this->id)
+            ->where('group_user.user_id', $this->id)
             ->get();
 
         $names = [];
@@ -133,9 +134,10 @@ class User extends Model
 
         $query = Group::activeQueryAt();
         $query->getBuilder()->join('group_user', 'groups.id', '=', 'group_user.group_id');
+        $this->applyActiveMembershipWindow($query);
 
         return $query
-            ->where('user_id', $this->id)
+            ->where('group_user.user_id', $this->id)
             ->where('groups.name', $name)
             ->exists();
     }
@@ -165,5 +167,25 @@ class User extends Model
                 'group_id' => $roleId,
             ]);
         }
+    }
+
+    /** @param \Codemonster\Database\ORM\ModelQuery<Group> $query */
+    private function applyActiveMembershipWindow(\Codemonster\Database\ORM\ModelQuery $query, ?\DateTimeInterface $at = null): void
+    {
+        $date = \DateTimeImmutable::createFromInterface(
+            $at ?? new \DateTimeImmutable('now', new \DateTimeZone('UTC')),
+        )
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+
+        $query
+            ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
+                $builder->whereNull('group_user.active_from')
+                    ->orWhere('group_user.active_from', '<=', $date);
+            })
+            ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
+                $builder->whereNull('group_user.active_until')
+                    ->orWhere('group_user.active_until', '>=', $date);
+            });
     }
 }

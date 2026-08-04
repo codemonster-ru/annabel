@@ -1,6 +1,6 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-CkRVNq-4.js",
+    "file": "ModuleListScreen-4vTSORuE.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
@@ -16,7 +16,7 @@
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-BQbEQRRV.js",
+    "file": "SystemUpdateScreen-W-ohI_wM.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
@@ -34,7 +34,7 @@
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-DfFrmrM0.js",
+    "file": "PagesScreen-BDZeGy11.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -46,7 +46,7 @@
       "_classes-CcykAxZN-BLQh74BR.js"
     ],
     "css": [
-      "PagesScreen-CYkJVKHt.css",
+      "PagesScreen-5afLAb03.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css",
       "date-picker-_CyJbeBc.css",
@@ -55,7 +55,7 @@
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-BiSUEosE.js",
+    "file": "SiteSettingsScreen-C8EO7Qaq.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
@@ -72,7 +72,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/GroupListScreen.vue": {
-    "file": "GroupListScreen-DSS36fc8.js",
+    "file": "GroupListScreen-DSP4E47v.js",
     "name": "GroupListScreen",
     "src": "../AdminUsers/resources/js/screens/GroupListScreen.vue",
     "isDynamicEntry": true,
@@ -84,7 +84,7 @@
       "_classes-CcykAxZN-BLQh74BR.js"
     ],
     "css": [
-      "GroupListScreen-BF5YN5Ro.css",
+      "GroupListScreen-DlfeBENi.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css",
       "date-picker-_CyJbeBc.css",
@@ -93,7 +93,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-C7RWV_0c.js",
+    "file": "UserListScreen-C3pJem3n.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -170,7 +170,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-CJ1pNKAz.js",
+    "file": "admin-D9LpdplY.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -195,7 +195,7 @@
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-oF2bI7n-.js",
+    "file": "DashboardScreen-CKgONfNY.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,

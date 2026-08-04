@@ -19,6 +19,6 @@ class PageResolver
             return null;
         }
 
-        return Page::findPublishedBySlug($slug);
+        return Page::findActiveBySlug($slug);
     }
 }

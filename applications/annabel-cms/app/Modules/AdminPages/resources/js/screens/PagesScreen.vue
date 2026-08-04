@@ -25,7 +25,7 @@ const columns = [
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'title', header: 'Title', verticalAlign: 'middle' },
   { key: 'slug', header: 'Slug', verticalAlign: 'middle' },
-  { key: 'is_published', header: 'Published', verticalAlign: 'middle' },
+  { key: 'is_active', header: 'Active', verticalAlign: 'middle' },
   { key: 'sort_order', header: 'Sort order', verticalAlign: 'middle' },
   { key: 'created_at', header: 'Created', verticalAlign: 'middle' },
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
@@ -35,7 +35,7 @@ const columnLabels = {
   id: 'ID',
   title: 'Title',
   slug: 'Slug',
-  is_published: 'Published',
+  is_active: 'Active',
   sort_order: 'Sort order',
   created_at: 'Created',
   updated_at: 'Updated',
@@ -52,10 +52,10 @@ const emptyPage = () => ({
   meta_title: '',
   meta_description: '',
   content: '',
-  is_published: false,
+  is_active: false,
   sort_order: 1,
-  publish_at: '',
-  unpublish_at: '',
+  active_from: '',
+  active_until: '',
 });
 
 const pages = ref([]);
@@ -88,8 +88,8 @@ function pageFromPayload(value) {
   return {
     ...emptyPage(),
     ...value,
-    publish_at: toLocalDateTimeValue(value?.publish_at),
-    unpublish_at: toLocalDateTimeValue(value?.unpublish_at),
+    active_from: toLocalDateTimeValue(value?.active_from),
+    active_until: toLocalDateTimeValue(value?.active_until),
   };
 }
 
@@ -230,10 +230,10 @@ async function savePage() {
   body.append('meta_title', page.value.meta_title);
   body.append('meta_description', page.value.meta_description);
   body.append('content', page.value.content);
-  body.append('is_published', page.value.is_published ? '1' : '0');
+  body.append('is_active', page.value.is_active ? '1' : '0');
   body.append('sort_order', String(page.value.sort_order ?? 1));
-  body.append('publish_at', localDateTimeValueToIso(page.value.publish_at) ?? page.value.publish_at);
-  body.append('unpublish_at', localDateTimeValueToIso(page.value.unpublish_at) ?? page.value.unpublish_at);
+  body.append('active_from', localDateTimeValueToIso(page.value.active_from) ?? page.value.active_from);
+  body.append('active_until', localDateTimeValueToIso(page.value.active_until) ?? page.value.active_until);
 
   const endpoint = editing.value ? `/admin/pages/data/${page.value.id}` : '/admin/pages/data';
 
@@ -385,7 +385,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
             <VfMenu>
               <VfMenuItem label="Edit" :icon="icons.pencil" @select="editPage(row)" />
               <VfMenuItem
-                v-if="row.is_published"
+                v-if="row.is_active"
                 label="View page"
                 :icon="icons.externalLink"
                 :href="publicPageUrl(row)"
@@ -404,8 +404,8 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         <template #cell-slug="{ value }">
           /pages/{{ value }}
         </template>
-        <template #cell-is_published="{ value }">
-          <span :class="['pages-screen__status', { 'pages-screen__status--published': value }]">
+        <template #cell-is_active="{ value }">
+          <span :class="['pages-screen__status', { 'pages-screen__status--active': value }]">
             {{ value ? 'Yes' : 'No' }}
           </span>
         </template>
@@ -425,17 +425,17 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           <VfTabs v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
               <div v-if="activeValue === 'general'" class="pages-screen__tab-fields">
-                <VfField class="pages-screen__published-field" label="Published">
+                <VfField class="pages-screen__active-field" label="Active">
                   <template #default="{ controlId }">
-                    <VfCheckbox :id="controlId" v-model="page.is_published" :disabled="saving" />
+                    <VfCheckbox :id="controlId" v-model="page.is_active" :disabled="saving" />
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__publication-field" label="Active from" :error="firstError('publish_at')">
+                <VfField class="pages-screen__activity-field" label="Active from" :error="firstError('active_from')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
-                      v-model="page.publish_at"
+                      v-model="page.active_from"
                       show-time
                       clearable
                       :aria-describedby="describedBy"
@@ -445,11 +445,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__publication-field" label="Active until" :error="firstError('unpublish_at')">
+                <VfField class="pages-screen__activity-field" label="Active until" :error="firstError('active_until')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
-                      v-model="page.unpublish_at"
+                      v-model="page.active_until"
                       show-time
                       clearable
                       :aria-describedby="describedBy"
@@ -580,7 +580,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
     grid-row: 1;
   }
 
-  .pages-screen__published-field :deep(.vf-field__label) {
+  .pages-screen__active-field :deep(.vf-field__label) {
     align-self: center;
     justify-self: end;
     padding-block-start: 0;
@@ -591,7 +591,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
   color: var(--vf-color-muted);
 }
 
-.pages-screen__status--published {
+.pages-screen__status--active {
   color: var(--vf-color-success);
 }
 

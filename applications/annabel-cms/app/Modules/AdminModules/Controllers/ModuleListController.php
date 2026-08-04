@@ -7,6 +7,7 @@ use Codemonster\Cms\Modules\Core\ModuleManager;
 use Codemonster\Cms\Modules\Core\Services\ModuleActivationManager;
 use Codemonster\Cms\Modules\Core\Services\ModuleInstallationRegistry;
 use Codemonster\Cms\Modules\Core\Services\ModuleInstaller;
+use Codemonster\Cms\Modules\Core\Services\ModuleUpdater;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 
@@ -23,6 +24,7 @@ class ModuleListController
         private ModuleInstallationRegistry $installations,
         private ModuleActivationManager $activation,
         private ModuleInstaller $installer,
+        private ModuleUpdater $updater,
     ) {
     }
 
@@ -34,21 +36,32 @@ class ModuleListController
     public function data(Request $request): Response
     {
         $modules = [];
-        $states = $this->installations->states() ?? [];
+        $records = $this->installations->records() ?? [];
+        $states = array_map(
+            static fn (array $record): bool => $record['is_enabled'],
+            $records,
+        );
 
         foreach ($this->modules->availableDefinitions() as $module) {
+            if ($module->system) {
+                continue;
+            }
+
+            $record = $records[$module->name] ?? null;
+
             $modules[] = [
                 'name' => $module->name,
                 'version' => $module->version,
+                'installed_version' => $record['installed_version'] ?? null,
                 'dependencies' => $module->dependencies,
                 'author' => $module->author,
                 'is_installed' => array_key_exists($module->name, $states),
                 'is_enabled' => $states[$module->name] ?? false,
-                'is_system' => $this->activation->isSystem($module),
                 'can_enable' => $this->activation->canEnable($module, $states),
                 'can_disable' => $this->activation->canDisable($module, $states),
                 'can_install' => $this->installer->canInstall($module, $states),
                 'can_uninstall' => $this->installer->canUninstall($module, $states),
+                'can_update' => $this->updater->canUpdate($module, $records),
             ];
         }
 
@@ -93,6 +106,17 @@ class ModuleListController
     public function uninstall(string $name): Response
     {
         return $this->changeInstallation($name, false);
+    }
+
+    public function update(string $name): Response
+    {
+        try {
+            $this->updater->update($name);
+        } catch (\RuntimeException $exception) {
+            return Response::json(['message' => $exception->getMessage()], 422);
+        }
+
+        return Response::json(['message' => 'Module updated successfully.']);
     }
 
     private function changeState(string $name, bool $enabled): Response

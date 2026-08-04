@@ -414,7 +414,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
 .users-screen__fields :deep(.vf-field) { width: 100%; }
 .users-screen__groups { display: grid; gap: var(--vf-section-gap); width: 100%; }
 .users-screen__group-id { color: var(--vf-color-muted); font-variant-numeric: tabular-nums; }
-.users-screen__group-name { display: grid; gap: 0.125rem; text-transform: capitalize; }
+.users-screen__group-name { display: grid; gap: 0.125rem; }
 .users-screen__group-link { color: var(--vf-color-text-link); text-decoration: none; }
 .users-screen__group-link:hover { text-decoration: underline; }
 .users-screen__group-inactive { color: var(--vf-color-muted); font-size: 0.875rem; }

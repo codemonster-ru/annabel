@@ -12,11 +12,11 @@ use Codemonster\Database\ORM\Model;
  * @property string|null $meta_title
  * @property string|null $meta_description
  * @property string $content
- * @property bool $is_published
+ * @property bool $is_active
  * @property \DateTimeInterface|null $created_at
- * @property \DateTimeInterface|null $published_at
- * @property \DateTimeInterface|null $publish_at
- * @property \DateTimeInterface|null $unpublish_at
+ * @property \DateTimeInterface|null $activated_at
+ * @property \DateTimeInterface|null $active_from
+ * @property \DateTimeInterface|null $active_until
  * @property \DateTimeInterface|null $updated_at
  */
 class Page extends Model
@@ -32,35 +32,35 @@ class Page extends Model
         'meta_title',
         'meta_description',
         'content',
-        'is_published',
-        'published_at',
-        'publish_at',
-        'unpublish_at',
+        'is_active',
+        'activated_at',
+        'active_from',
+        'active_until',
     ];
 
     /** @var array<string, string> */
     protected array $casts = [
-        'is_published' => 'boolean',
+        'is_active' => 'boolean',
         'sort_order' => 'integer',
         'created_at' => 'datetime',
-        'published_at' => 'datetime',
-        'publish_at' => 'datetime',
-        'unpublish_at' => 'datetime',
+        'activated_at' => 'datetime',
+        'active_from' => 'datetime',
+        'active_until' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    public static function findPublishedBySlug(string $slug): ?self
+    public static function findActiveBySlug(string $slug): ?self
     {
         $page = static::query()
             ->where('slug', self::normalizeSlug($slug))
-            ->where('is_published', 1)
+            ->where('is_active', 1)
             ->where(static function ($query): void {
-                $query->whereNull('publish_at')
-                    ->orWhere('publish_at', '<=', gmdate('Y-m-d H:i:s'));
+                $query->whereNull('active_from')
+                    ->orWhere('active_from', '<=', gmdate('Y-m-d H:i:s'));
             })
             ->where(static function ($query): void {
-                $query->whereNull('unpublish_at')
-                    ->orWhere('unpublish_at', '>=', gmdate('Y-m-d H:i:s'));
+                $query->whereNull('active_until')
+                    ->orWhere('active_until', '>=', gmdate('Y-m-d H:i:s'));
             })
             ->first();
 

@@ -4,6 +4,7 @@ namespace Codemonster\Cms\Modules\AdminUsers\Controllers;
 
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Auth\Models\Group;
 use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\DateTime\DateTime;
 use Codemonster\DateTime\InvalidDateTimeException;
@@ -138,6 +139,15 @@ class UserListController
 
         return Response::json([
             'user' => $this->payload($user),
+            'groups' => $this->groupOptionPayload($user),
+            'csrf_token' => csrf_token(),
+        ]);
+    }
+
+    public function groupOptions(): Response
+    {
+        return Response::json([
+            'groups' => $this->groupOptionPayload(),
             'csrf_token' => csrf_token(),
         ]);
     }
@@ -210,6 +220,11 @@ class UserListController
             return $this->invalid('active_until', 'The activity end must be after the activity start.');
         }
 
+        $groupAssignments = $this->validatedGroupAssignments($request);
+        if ($groupAssignments instanceof Response) {
+            return $groupAssignments;
+        }
+
         if (!User::validUsername($validated['username'])) {
             return $this->invalid('username', 'Username may contain only letters, numbers, underscores, or hyphens and must start with a letter or number.');
         }
@@ -230,28 +245,162 @@ class UserListController
             return $this->invalid('email', 'This email is already in use.');
         }
 
-        $user->fill([
-            'username' => $validated['username'],
-            'email' => $validated['email'],
-            'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
-            'active_from' => $activeFrom,
-            'active_until' => $activeUntil,
-        ]);
+        transaction(function () use ($request, $validated, $activeFrom, $activeUntil, $password, $user, $groupAssignments): void {
+            $user->fill([
+                'username' => $validated['username'],
+                'email' => $validated['email'],
+                'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
+                'active_from' => $activeFrom,
+                'active_until' => $activeUntil,
+            ]);
 
-        if ($password !== '') {
-            $user->password = password_hash($password, PASSWORD_DEFAULT);
-        }
+            if ($password !== '') {
+                $user->password = password_hash($password, PASSWORD_DEFAULT);
+            }
 
-        $user->save();
-
-        if (!$user->hasGroup('admin')) {
-            $user->assignGroup('admin');
-        }
+            $user->save();
+            $this->syncGroupAssignments($user, $groupAssignments);
+        });
 
         return Response::json([
             'message' => 'User saved successfully.',
             'user' => $this->payload($user),
+            'groups' => $this->groupOptionPayload($user),
         ]);
+    }
+
+    /**
+     * @return list<array{group_id: int, active_from: string|null, active_until: string|null}>|Response
+     */
+    private function validatedGroupAssignments(Request $request): array|Response
+    {
+        $value = $request->input('groups');
+
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        if (!is_array($value)) {
+            return $this->invalid('groups', 'The selected groups must be a valid list.');
+        }
+
+        $assignments = [];
+        $groupIds = [];
+
+        foreach ($value as $membership) {
+            if (!is_array($membership)) {
+                return $this->invalid('groups', 'The selected groups must be a valid list.');
+            }
+
+            $id = $membership['id'] ?? null;
+            if ((!is_int($id) && !is_string($id)) || preg_match('/\A[1-9]\d*\z/', (string) $id) !== 1) {
+                return $this->invalid('groups', 'A selected group is invalid.');
+            }
+
+            $groupId = (int) $id;
+            if (isset($groupIds[$groupId])) {
+                return $this->invalid('groups', 'A group may only be selected once.');
+            }
+
+            $activeFromValue = trim(is_string($membership['active_from'] ?? null) ? $membership['active_from'] : '');
+            $activeUntilValue = trim(is_string($membership['active_until'] ?? null) ? $membership['active_until'] : '');
+            $membershipActiveFrom = $this->toUtc($activeFromValue);
+            $membershipActiveUntil = $this->toUtc($activeUntilValue);
+
+            if ($activeFromValue !== '' && $membershipActiveFrom === null) {
+                return $this->invalid("groups.{$groupId}.active_from", 'The membership start must be a valid date and time.');
+            }
+            if ($activeUntilValue !== '' && $membershipActiveUntil === null) {
+                return $this->invalid("groups.{$groupId}.active_until", 'The membership end must be a valid date and time.');
+            }
+            if ($membershipActiveFrom !== null && $membershipActiveUntil !== null && $membershipActiveUntil <= $membershipActiveFrom) {
+                return $this->invalid("groups.{$groupId}.active_until", 'The membership end must be after the membership start.');
+            }
+
+            $groupIds[$groupId] = true;
+            $assignments[] = [
+                'group_id' => $groupId,
+                'active_from' => $membershipActiveFrom,
+                'active_until' => $membershipActiveUntil,
+            ];
+        }
+
+        if ($groupIds !== []) {
+            $knownIds = [];
+            foreach (Group::query()->whereIn('id', array_keys($groupIds))->get() as $group) {
+                $knownIds[(int) $group->id] = true;
+            }
+
+            if (count($knownIds) !== count($groupIds)) {
+                return $this->invalid('groups', 'A selected group does not exist.');
+            }
+        }
+
+        return $assignments;
+    }
+
+    /** @param list<array{group_id: int, active_from: string|null, active_until: string|null}> $assignments */
+    private function syncGroupAssignments(User $user, array $assignments): void
+    {
+        $desired = [];
+        foreach ($assignments as $assignment) {
+            $desired[$assignment['group_id']] = $assignment;
+        }
+
+        foreach (db()->table('group_user')->where('user_id', $user->id)->get() as $membership) {
+            $groupId = (int) $membership['group_id'];
+
+            if (!isset($desired[$groupId])) {
+                db()->table('group_user')
+                    ->where('user_id', $user->id)
+                    ->where('group_id', $groupId)
+                    ->delete();
+                continue;
+            }
+
+            db()->table('group_user')
+                ->where('user_id', $user->id)
+                ->where('group_id', $groupId)
+                ->update([
+                    'active_from' => $desired[$groupId]['active_from'],
+                    'active_until' => $desired[$groupId]['active_until'],
+                ]);
+            unset($desired[$groupId]);
+        }
+
+        foreach ($desired as $assignment) {
+            db()->table('group_user')->insert(['user_id' => $user->id] + $assignment);
+        }
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function groupOptionPayload(?User $user = null): array
+    {
+        $memberships = [];
+        if ($user !== null) {
+            foreach (db()->table('group_user')->where('user_id', $user->id)->get() as $membership) {
+                $memberships[(int) $membership['group_id']] = $membership;
+            }
+        }
+
+        $groups = Group::query();
+        $groups->getBuilder()->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
+        $payload = [];
+
+        foreach ($groups->get() as $group) {
+            $membership = $memberships[(int) $group->id] ?? null;
+            $payload[] = [
+                'id' => $group->id,
+                'name' => (string) $group->name,
+                'code' => (string) $group->code,
+                'is_active' => (bool) $group->is_active,
+                'selected' => $membership !== null,
+                'active_from' => $this->toIso8601($membership['active_from'] ?? null),
+                'active_until' => $this->toIso8601($membership['active_until'] ?? null),
+            ];
+        }
+
+        return $payload;
     }
 
     /** @return array<string, mixed> */
@@ -290,6 +439,14 @@ class UserListController
 
     private function toIso8601(mixed $value): string
     {
+        if (is_string($value) && $value !== '') {
+            try {
+                return DateTime::parse($value, 'UTC')->format(DATE_ATOM);
+            } catch (InvalidDateTimeException) {
+                return '';
+            }
+        }
+
         if (!$value instanceof \DateTimeInterface) {
             return '';
         }

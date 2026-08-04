@@ -24,12 +24,12 @@ class ApplicationBootTest extends TestCase
         $adminNavigation = $app->make(AdminNavigationRegistry::class);
 
         self::assertSame([
-            'Core' => '1.0.0',
+            'Core' => '1.1.0',
             'Auth' => '1.0.0',
             'Settings' => '1.0.0',
             'Admin' => '1.0.0',
-            'AdminModules' => '1.0.0',
-            'Pages' => '1.0.0',
+            'AdminModules' => '1.1.0',
+            'Pages' => '1.1.0',
             'AdminPages' => '1.0.0',
             'AdminSettings' => '1.0.0',
             'AdminUsers' => '1.0.0',

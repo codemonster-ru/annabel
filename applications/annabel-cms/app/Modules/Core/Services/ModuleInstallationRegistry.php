@@ -18,7 +18,7 @@ class ModuleInstallationRegistry
     {
         $installed = [];
 
-        foreach ($this->states() ?? [] as $name => $state) {
+        foreach ($this->records() ?? [] as $name => $record) {
             $installed[$name] = true;
         }
 
@@ -26,9 +26,10 @@ class ModuleInstallationRegistry
     }
 
     /**
-     * @return array<string, bool>|null Null means the installation registry is not available yet.
+     * @return array<string, array{is_enabled: bool, installed_version: ?string, installed_at: ?string, updated_at: ?string}>|null
+     *     Null means the installation registry is not available yet.
      */
-    public function states(): ?array
+    public function records(): ?array
     {
         try {
             $rows = $this->connection->table('module_installations')->get();
@@ -36,14 +37,47 @@ class ModuleInstallationRegistry
             return null;
         }
 
-        $states = [];
+        $records = [];
 
         foreach ($rows as $row) {
             $name = $row['name'] ?? null;
 
-            if (is_string($name) && $name !== '') {
-                $states[$name] = !array_key_exists('is_enabled', $row) || (bool) $row['is_enabled'];
+            if (!is_string($name) || $name === '') {
+                continue;
             }
+
+            $installedVersion = $row['installed_version'] ?? null;
+            $installedAt = $row['installed_at'] ?? null;
+            $updatedAt = $row['updated_at'] ?? null;
+
+            $records[$name] = [
+                'is_enabled' => !array_key_exists('is_enabled', $row) || (bool) $row['is_enabled'],
+                'installed_version' => is_string($installedVersion) && $installedVersion !== ''
+                    ? $installedVersion
+                    : null,
+                'installed_at' => is_string($installedAt) && $installedAt !== '' ? $installedAt : null,
+                'updated_at' => is_string($updatedAt) && $updatedAt !== '' ? $updatedAt : null,
+            ];
+        }
+
+        return $records;
+    }
+
+    /**
+     * @return array<string, bool>|null Null means the installation registry is not available yet.
+     */
+    public function states(): ?array
+    {
+        $records = $this->records();
+
+        if ($records === null) {
+            return null;
+        }
+
+        $states = [];
+
+        foreach ($records as $name => $record) {
+            $states[$name] = $record['is_enabled'];
         }
 
         return $states;
@@ -63,13 +97,27 @@ class ModuleInstallationRegistry
             ->update(['is_enabled' => 0]);
     }
 
-    public function install(string $name): void
+    public function install(string $name, string $version): void
     {
+        $now = gmdate('Y-m-d H:i:s');
+
         $this->connection->table('module_installations')->insert([
             'name' => $name,
-            'installed_at' => gmdate('Y-m-d H:i:s'),
+            'installed_version' => $version,
+            'installed_at' => $now,
+            'updated_at' => $now,
             'is_enabled' => 0,
         ]);
+    }
+
+    public function markUpdated(string $name, string $version): void
+    {
+        $this->connection->table('module_installations')
+            ->where('name', $name)
+            ->update([
+                'installed_version' => $version,
+                'updated_at' => gmdate('Y-m-d H:i:s'),
+            ]);
     }
 
     public function uninstall(string $name): void

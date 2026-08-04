@@ -31,3 +31,8 @@ router()->post('/admin/settings/modules/data/{name}/uninstall', [ModuleListContr
     ->where('name', '[A-Za-z][A-Za-z0-9_-]*')
     ->middleware(RequireInstalled::class)
     ->middleware(RequireAdmin::class);
+
+router()->post('/admin/settings/modules/data/{name}/update', [ModuleListController::class, 'update'])
+    ->where('name', '[A-Za-z][A-Za-z0-9_-]*')
+    ->middleware(RequireInstalled::class)
+    ->middleware(RequireAdmin::class);

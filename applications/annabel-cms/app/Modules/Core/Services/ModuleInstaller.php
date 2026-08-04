@@ -5,7 +5,6 @@ namespace Codemonster\Cms\Modules\Core\Services;
 use Codemonster\Cms\Modules\Core\ModuleDefinition;
 use Codemonster\Cms\Modules\Core\ModuleManager;
 use Codemonster\Database\Contracts\ConnectionInterface;
-use Codemonster\Database\Migrations\Migration;
 use Codemonster\Database\Migrations\MigrationPathResolver;
 use Codemonster\Database\Migrations\MigrationRepository;
 use Codemonster\Database\Migrations\Migrator;
@@ -32,7 +31,7 @@ class ModuleInstaller
 
         $this->migrate($module);
         $this->seed($module);
-        $this->installations->install($name);
+        $this->installations->install($name, $module->version);
     }
 
     public function uninstall(string $name): void
@@ -44,7 +43,6 @@ class ModuleInstaller
             throw new \RuntimeException("Module cannot be uninstalled: {$name}");
         }
 
-        $this->rollback($module);
         $this->installations->uninstall($name);
     }
 
@@ -106,39 +104,6 @@ class ModuleInstaller
         $paths = new SeedPathResolver();
         $paths->addPath($path);
         (new SeederRunner($this->connection, $paths))->seed();
-    }
-
-    private function rollback(ModuleDefinition $module): void
-    {
-        $path = $module->resolve($module->migrations);
-
-        if ($path === null || !is_dir($path)) {
-            return;
-        }
-
-        $files = glob($path . DIRECTORY_SEPARATOR . '*.php') ?: [];
-        rsort($files, SORT_STRING);
-        $repository = $this->repository();
-        $ran = array_fill_keys(array_column($repository->getRan(), 'migration'), true);
-
-        foreach ($files as $file) {
-            $name = basename($file, '.php');
-
-            if (!isset($ran[$name])) {
-                continue;
-            }
-
-            $migration = require $file;
-
-            if (!$migration instanceof Migration) {
-                throw new \RuntimeException("Migration file must return a migration: {$file}");
-            }
-
-            $this->connection->transaction(function () use ($migration, $repository, $name): void {
-                $migration->down();
-                $repository->delete($name);
-            });
-        }
     }
 
     private function repository(): MigrationRepository

@@ -18,7 +18,7 @@ const dataColumns = [
 
 const rows = ref([]);
 const columns = computed(() => (
-  rows.value.some((row) => row.can_enable || row.can_disable || row.can_install || row.can_uninstall)
+  rows.value.some((row) => row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)
     ? [
         { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
         ...dataColumns,
@@ -69,10 +69,11 @@ async function runAction(module, action) {
     disable: module?.can_disable,
     install: module?.can_install,
     uninstall: module?.can_uninstall,
+    update: module?.can_update,
   };
 
   if (!allowed[action] || changingModule.value) return;
-  if (action === 'uninstall' && !window.confirm(`Uninstall module ${module.name}? Its migrations will be rolled back.`)) return;
+  if (action === 'uninstall' && !window.confirm(`Uninstall module ${module.name}? Its data will be preserved.`)) return;
 
   changingModule.value = module.name;
   error.value = '';
@@ -127,7 +128,7 @@ watch([page, pageSize], loadModules);
       @update:page-size="pageSize = $event"
     >
       <template #cell-actions="{ row }">
-        <VfDropdown v-if="row.can_enable || row.can_disable || row.can_install || row.can_uninstall" placement="bottom-start">
+        <VfDropdown v-if="row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update" placement="bottom-start">
           <template #trigger>
             <VfIconButton
               :icon="icons.bars"
@@ -158,6 +159,12 @@ watch([page, pageSize], loadModules);
               @select="runAction(row, 'install')"
             />
             <VfMenuItem
+              v-if="row.can_update"
+              label="Update"
+              :icon="icons.refresh"
+              @select="runAction(row, 'update')"
+            />
+            <VfMenuItem
               v-if="row.can_uninstall"
               label="Uninstall"
               :icon="icons.trash"
@@ -168,6 +175,12 @@ watch([page, pageSize], loadModules);
         </VfDropdown>
       </template>
       <template #cell-name="{ value }"><strong>{{ value }}</strong></template>
+      <template #cell-version="{ value, row }">
+        <span>{{ value }}</span>
+        <small v-if="row.is_installed && row.installed_version !== value" class="modules-screen__version">
+          Installed: {{ row.installed_version || 'unknown' }}
+        </small>
+      </template>
       <template #cell-author="{ value }">
         <a v-if="value?.url" :href="value.url" target="_blank" rel="noopener noreferrer">
           {{ value.name }}
@@ -212,5 +225,10 @@ watch([page, pageSize], loadModules);
 
 .modules-screen__status--installed {
   color: var(--vf-color-success);
+}
+
+.modules-screen__version {
+  display: block;
+  color: var(--vf-color-muted);
 }
 </style>

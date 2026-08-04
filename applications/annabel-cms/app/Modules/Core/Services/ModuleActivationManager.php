@@ -18,6 +18,10 @@ class ModuleActivationManager
         $module = $this->module($name);
         $states = $this->states();
 
+        if ($this->isSystem($module)) {
+            throw new \RuntimeException("System module cannot be enabled manually: {$name}");
+        }
+
         if (!array_key_exists($name, $states)) {
             throw new \RuntimeException("Module is not installed: {$name}");
         }

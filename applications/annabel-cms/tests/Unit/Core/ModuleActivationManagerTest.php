@@ -59,6 +59,24 @@ class ModuleActivationManagerTest extends TestCase
         (new ModuleActivationManager($modules, $installations))->disable('Core');
     }
 
+    public function testItRejectsEnablingSystemModuleManually(): void
+    {
+        $core = new ModuleDefinition(
+            'Core',
+            '1.0.0',
+            '/modules/Core',
+            system: true,
+        );
+        $modules = $this->modules(['Core' => $core]);
+        $installations = $this->createStub(ModuleInstallationRegistry::class);
+        $installations->method('states')->willReturn(['Core' => false]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('System module cannot be enabled manually: Core');
+
+        (new ModuleActivationManager($modules, $installations))->enable('Core');
+    }
+
     /**
      * @param array<string, ModuleDefinition> $definitions
      */

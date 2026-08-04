@@ -158,7 +158,7 @@ class RoleListController
         if (!$role instanceof Group) {
             return Response::json(['message' => 'Group not found.'], 404);
         }
-        if ((string) $role->name === 'admin') {
+        if ((string) $role->code === 'admin') {
             return Response::json(['message' => 'The admin group cannot be deleted.'], 422);
         }
         if (db()->table('group_user')->where('group_id', $role->id)->exists()) {
@@ -201,7 +201,7 @@ class RoleListController
         if (preg_match('/\A[a-z0-9][a-z0-9_-]{1,59}\z/', $validated['code']) !== 1) {
             return $this->invalid('code', 'Code may contain only lowercase letters, numbers, underscores, or hyphens and must start with a letter or number.');
         }
-        if ((string) $role->name === 'admin' && $validated['name'] !== 'admin') {
+        if ((string) $role->code === 'admin' && $validated['name'] !== 'Admin') {
             return $this->invalid('name', 'The admin group cannot be renamed.');
         }
         if ((string) $role->code === 'admin' && $validated['code'] !== 'admin') {

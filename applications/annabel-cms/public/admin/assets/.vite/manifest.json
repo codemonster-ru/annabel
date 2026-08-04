@@ -1,6 +1,6 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-BwFj6d07.js",
+    "file": "ModuleListScreen-CI_2uYog.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
@@ -16,7 +16,7 @@
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-BniudDsw.js",
+    "file": "SystemUpdateScreen-CMh-lSRZ.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
@@ -34,7 +34,7 @@
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-oZdQJIYf.js",
+    "file": "PagesScreen-VRDwHoRL.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -55,7 +55,7 @@
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-fTMgEzon.js",
+    "file": "SiteSettingsScreen-D_FhvThM.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
@@ -72,7 +72,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-JOF6yCi4.js",
+    "file": "RoleListScreen-BHjpTGQz.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
@@ -93,7 +93,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-CPBUVrft.js",
+    "file": "UserListScreen-1qevCRHu.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -170,7 +170,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-P3ryHagS.js",
+    "file": "admin-B7OmDwTO.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -188,14 +188,14 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-r5dHfvEY.css"
+      "main-Bjx75E-g.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-BylT5GAK.js",
+    "file": "DashboardScreen-CRON-9qZ.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,

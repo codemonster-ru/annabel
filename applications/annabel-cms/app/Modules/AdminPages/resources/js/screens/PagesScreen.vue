@@ -398,7 +398,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         </template>
         <template #cell-title="{ row }">
           <a class="pages-screen__title-link" :href="`/admin/pages/${row.id}/edit`">
-            <strong>{{ row.title }}</strong>
+            {{ row.title }}
           </a>
         </template>
         <template #cell-slug="{ value }">

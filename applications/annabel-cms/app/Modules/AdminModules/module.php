@@ -20,6 +20,13 @@ return [
                 'href' => '/admin/settings/modules',
                 'order' => 100,
             ],
+            [
+                'id' => 'admin.settings.system-updates',
+                'parent' => 'settings',
+                'label' => 'System updates',
+                'href' => '/admin/settings/system/updates',
+                'order' => 110,
+            ],
         ],
     ],
 ];

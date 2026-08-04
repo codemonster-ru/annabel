@@ -77,6 +77,14 @@ body {
   justify-content: center;
 }
 
+.admin-layout .auth-footer {
+  justify-content: flex-start;
+}
+
+.admin-layout.vf-admin-layout--fill-viewport .vf-admin-layout__main {
+  min-block-size: var(--vf-layout-viewport-height);
+}
+
 .admin-layout__brand-row {
   display: flex;
   align-items: center;

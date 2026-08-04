@@ -12,6 +12,7 @@ import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
+import AuthFooter from '../components/AuthFooter.vue';
 import MissingAdminScreen from './MissingAdminScreen.vue';
 
 const props = defineProps({
@@ -233,5 +234,9 @@ async function logout() {
       <component :is="screenComponent" v-if="screenComponent" />
       <MissingAdminScreen v-else-if="screenError" :screen="screenError" />
     </div>
+
+    <template #footer>
+      <AuthFooter />
+    </template>
   </VfAdminLayout>
 </template>

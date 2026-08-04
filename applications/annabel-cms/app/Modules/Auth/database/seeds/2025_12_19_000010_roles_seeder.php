@@ -15,14 +15,14 @@ return new class () extends Seeder {
 
         $now = DateTime::now($clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
         $groups = [
-            'admin' => 1,
-            'user' => 2,
+            ['name' => 'Admin', 'code' => 'admin', 'sort_order' => 1],
+            ['name' => 'User', 'code' => 'user', 'sort_order' => 2],
         ];
 
-        foreach ($groups as $name => $sortOrder) {
+        foreach ($groups as $group) {
             $exists = db()
                 ->table('groups')
-                ->where('name', $name)
+                ->where('code', $group['code'])
                 ->exists();
 
             if ($exists) {
@@ -30,8 +30,9 @@ return new class () extends Seeder {
             }
 
             db()->table('groups')->insert([
-                'name' => $name,
-                'sort_order' => $sortOrder,
+                'name' => $group['name'],
+                'code' => $group['code'],
+                'sort_order' => $group['sort_order'],
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

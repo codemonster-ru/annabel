@@ -327,7 +327,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
           </VfDropdown>
         </template>
         <template #cell-username="{ row }">
-          <a class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`"><strong>{{ row.username }}</strong></a>
+          <a class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`">{{ row.username }}</a>
         </template>
         <template #cell-is_active="{ value }">
           <span :class="['users-screen__status', { 'users-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span>

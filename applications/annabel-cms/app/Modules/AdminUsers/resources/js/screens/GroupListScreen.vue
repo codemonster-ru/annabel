@@ -37,13 +37,13 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
 const formMode = computed(() => currentPath === '/admin/groups/create' || /^\/admin\/groups\/\d+\/edit$/.test(currentPath));
 const editId = computed(() => currentPath.match(/^\/admin\/groups\/(\d+)\/edit$/)?.[1] || null);
 const editing = computed(() => editId.value !== null);
-const rows = ref([]); const role = ref(emptyGroup()); const visibleColumns = ref(columns.map((column) => column.key));
+const rows = ref([]); const group = ref(emptyGroup()); const visibleColumns = ref(columns.map((column) => column.key));
 const page = ref(1); const pageSize = ref(10); const totalRows = ref(0); const csrfToken = ref('');
 const loading = ref(true); const saving = ref(false); const deleting = ref(false); const preferencesSaving = ref(false);
 const error = ref(''); const success = ref(''); const errors = ref({});
 const activeTab = ref('general');
-const activeFromMax = computed(() => shiftLocalDateTime(role.value.active_until, -1));
-const activeUntilMin = computed(() => shiftLocalDateTime(role.value.active_from, 1));
+const activeFromMax = computed(() => shiftLocalDateTime(group.value.active_until, -1));
+const activeUntilMin = computed(() => shiftLocalDateTime(group.value.active_from, 1));
 
 function firstError(field) { const messages = errors.value[field]; return Array.isArray(messages) && messages.length ? messages[0] : ''; }
 function shiftLocalDateTime(value, minutes) {
@@ -64,7 +64,7 @@ function groupFromPayload(value) {
     active_until: toLocalDateTimeValue(value?.active_until),
   };
 }
-async function loadRoles() {
+async function loadGroups() {
   loading.value = true; error.value = '';
   try {
     const query = new URLSearchParams({ page: String(page.value), per_page: String(pageSize.value) });
@@ -75,13 +75,13 @@ async function loadRoles() {
     if (Array.isArray(payload.visible_columns) && payload.visible_columns.includes('actions')) visibleColumns.value = payload.visible_columns;
   } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to load groups.'; } finally { loading.value = false; }
 }
-async function loadRole() {
+async function loadGroup() {
   loading.value = true; error.value = '';
   try {
     const response = await fetch(`/admin/groups/data/${editId.value}`, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
-    const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.message || 'Unable to load role.');
-    role.value = groupFromPayload(payload.group || {}); csrfToken.value = payload.csrf_token || '';
-  } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to load role.'; } finally { loading.value = false; }
+    const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.message || 'Unable to load group.');
+    group.value = groupFromPayload(payload.group || {}); csrfToken.value = payload.csrf_token || '';
+  } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to load group.'; } finally { loading.value = false; }
 }
 async function saveColumnPreferences(next) {
   const previous = visibleColumns.value; visibleColumns.value = columns.map((column) => column.key).filter((key) => next.includes(key)); preferencesSaving.value = true;
@@ -91,53 +91,53 @@ async function saveColumnPreferences(next) {
 }
 function toggleColumn(key, value) { if (key !== 'actions') saveColumnPreferences(value ? [...visibleColumns.value, key] : visibleColumns.value.filter((column) => column !== key)); }
 function toggleAllColumns(value) { saveColumnPreferences(value ? columns.map((column) => column.key) : ['actions']); }
-function editRole(value) { window.location.assign(`/admin/groups/${value.id}/edit`); }
-function newRole() { window.location.assign('/admin/groups/create'); }
-function backToRoles() { window.location.assign('/admin/groups'); }
-async function saveRole() {
+function editGroup(value) { window.location.assign(`/admin/groups/${value.id}/edit`); }
+function newGroup() { window.location.assign('/admin/groups/create'); }
+function backToGroups() { window.location.assign('/admin/groups'); }
+async function saveGroup() {
   if (saving.value) return; saving.value = true; error.value = ''; success.value = ''; errors.value = {};
-  const body = new FormData(); body.append('_token', csrfToken.value); body.append('name', role.value.name); body.append('code', role.value.code); body.append('description', role.value.description || ''); body.append('is_active', role.value.is_active ? '1' : '0'); body.append('active_from', localDateTimeValueToIso(role.value.active_from) ?? role.value.active_from); body.append('active_until', localDateTimeValueToIso(role.value.active_until) ?? role.value.active_until); body.append('sort_order', String(role.value.sort_order ?? 1));
-  const endpoint = editing.value ? `/admin/groups/data/${role.value.id}` : '/admin/groups/data';
+  const body = new FormData(); body.append('_token', csrfToken.value); body.append('name', group.value.name); body.append('code', group.value.code); body.append('description', group.value.description || ''); body.append('is_active', group.value.is_active ? '1' : '0'); body.append('active_from', localDateTimeValueToIso(group.value.active_from) ?? group.value.active_from); body.append('active_until', localDateTimeValueToIso(group.value.active_until) ?? group.value.active_until); body.append('sort_order', String(group.value.sort_order ?? 1));
+  const endpoint = editing.value ? `/admin/groups/data/${group.value.id}` : '/admin/groups/data';
   try {
     const response = await fetch(endpoint, { method: 'POST', headers: { Accept: 'application/json' }, body, credentials: 'same-origin' }); const payload = await response.json().catch(() => ({}));
-    if (!response.ok) { if (response.status === 422) errors.value = payload.errors || {}; throw new Error(payload.message || 'Unable to save role.'); }
-    role.value = groupFromPayload(payload.group || {}); success.value = payload.message || 'Group saved successfully.'; if (!editing.value) window.location.assign('/admin/groups');
-  } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to save role.'; } finally { saving.value = false; }
+    if (!response.ok) { if (response.status === 422) errors.value = payload.errors || {}; throw new Error(payload.message || 'Unable to save group.'); }
+    group.value = groupFromPayload(payload.group || {}); success.value = payload.message || 'Group saved successfully.'; if (!editing.value) window.location.assign('/admin/groups');
+  } catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to save group.'; } finally { saving.value = false; }
 }
-async function deleteRole(value) {
-  if (!value?.id || deleting.value || !window.confirm('Delete this role?')) return; deleting.value = true;
+async function deleteGroup(value) {
+  if (!value?.id || deleting.value || !window.confirm('Delete this group?')) return; deleting.value = true;
   const body = new FormData(); body.append('_token', csrfToken.value);
   try { const response = await fetch(`/admin/groups/data/${value.id}/delete`, { method: 'POST', headers: { Accept: 'application/json' }, body, credentials: 'same-origin' }); const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.message || 'Unable to delete group.'); window.location.assign('/admin/groups'); }
-  catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to delete role.'; } finally { deleting.value = false; }
+  catch (exception) { error.value = exception instanceof Error ? exception.message : 'Unable to delete group.'; } finally { deleting.value = false; }
 }
-watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.value ? loadRole() : (loading.value = false)) : loadRoles()));
+watch([page, pageSize], loadGroups); onMounted(() => (formMode.value ? (editId.value ? loadGroup() : (loading.value = false)) : loadGroups()));
 </script>
 
 <template>
   <div class="groups-screen">
-    <Teleport v-if="formMode" to="#admin-page-actions"><VfButton type="submit" form="groups-group-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save group' }}</VfButton><VfButton variant="secondary" :disabled="saving || deleting" @click="backToRoles">Back</VfButton></Teleport>
-    <Teleport v-else to="#admin-page-actions"><VfButton variant="primary" :disabled="loading || saving" @click="newRole">New group</VfButton></Teleport>
+    <Teleport v-if="formMode" to="#admin-page-actions"><VfButton type="submit" form="groups-group-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save group' }}</VfButton><VfButton variant="secondary" :disabled="saving || deleting" @click="backToGroups">Back</VfButton></Teleport>
+    <Teleport v-else to="#admin-page-actions"><VfButton variant="primary" :disabled="loading || saving" @click="newGroup">New group</VfButton></Teleport>
     <VfAlert v-if="error" tone="danger" title="Groups">{{ error }}</VfAlert><VfAlert v-if="success" tone="success" title="Groups">{{ success }}</VfAlert>
-    <div v-if="!formMode" class="roles-screen__list">
+    <div v-if="!formMode" class="groups-screen__list">
       <VfDataTable :columns="columns" :visible-column-keys="visibleColumns" :rows="rows" row-key="id" striped column-dividers :loading="loading" pagination pagination-mode="manual" :page="page" :page-size="pageSize" :total-rows="totalRows" empty-text="No groups found" @update:page="page = $event" @update:page-size="pageSize = $event">
-        <template #header-actions><VfDropdown placement="bottom-start" :close-on-select="false"><template #trigger><VfIconButton :icon="icons.gear" variant="ghost" size="sm" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" /></template><div class="roles-screen__column-select-all"><VfCheckbox label="All columns" :model-value="visibleColumns.length === columns.length" :disabled="preferencesSaving" @update:model-value="toggleAllColumns" /></div><VfCheckbox v-for="column in columns" :key="column.key" :model-value="visibleColumns.includes(column.key)" :label="columnLabels[column.key]" :disabled="column.key === 'actions' || preferencesSaving" @update:model-value="toggleColumn(column.key, $event)" /></VfDropdown></template>
-        <template #cell-actions="{ row }"><VfDropdown placement="bottom-start"><template #trigger><VfIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><VfMenu><VfMenuItem label="Edit" :icon="icons.pencil" @select="editRole(row)" /><VfMenuItem label="Delete" :icon="icons.trash" tone="danger" @select="deleteRole(row)" /></VfMenu></VfDropdown></template>
-        <template #cell-name="{ value, row }"><a class="roles-screen__role-link" :href="`/admin/groups/${row.id}/edit`"><strong>{{ value }}</strong></a></template>
+        <template #header-actions><VfDropdown placement="bottom-start" :close-on-select="false"><template #trigger><VfIconButton :icon="icons.gear" variant="ghost" size="sm" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" /></template><div class="groups-screen__column-select-all"><VfCheckbox label="All columns" :model-value="visibleColumns.length === columns.length" :disabled="preferencesSaving" @update:model-value="toggleAllColumns" /></div><VfCheckbox v-for="column in columns" :key="column.key" :model-value="visibleColumns.includes(column.key)" :label="columnLabels[column.key]" :disabled="column.key === 'actions' || preferencesSaving" @update:model-value="toggleColumn(column.key, $event)" /></VfDropdown></template>
+        <template #cell-actions="{ row }"><VfDropdown placement="bottom-start"><template #trigger><VfIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><VfMenu><VfMenuItem label="Edit" :icon="icons.pencil" @select="editGroup(row)" /><VfMenuItem label="Delete" :icon="icons.trash" tone="danger" @select="deleteGroup(row)" /></VfMenu></VfDropdown></template>
+        <template #cell-name="{ value, row }"><a class="groups-screen__group-link" :href="`/admin/groups/${row.id}/edit`"><strong>{{ value }}</strong></a></template>
         <template #cell-code="{ value }">{{ value }}</template>
         <template #cell-is_active="{ value }"><span :class="['groups-screen__status', { 'groups-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span></template>
         <template #cell-sort_order="{ value }">{{ value }}</template>
         <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template><template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
       </VfDataTable>
     </div>
-    <form id="groups-group-form" v-else class="groups-screen__form" novalidate @submit.prevent="saveRole"><VfCard><VfTabs v-model="activeTab" :items="groupFormTabs"><template #panel="{ activeValue }"><div v-if="activeValue === 'general'" class="groups-screen__fields"><VfField class="groups-screen__active-field" label="Active"><template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="role.is_active" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active from" :error="firstError('active_from')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="role.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active until" :error="firstError('active_until')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="role.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField label="Name" :error="firstError('name')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.name" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Code" :error="firstError('code')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.code" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Description" :error="firstError('description')"><template #default="{ controlId, describedBy, invalid }"><VfTextarea :id="controlId" v-model="role.description" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" maxlength="255" /></template></VfField><VfField label="Sort order" :error="firstError('sort_order')"><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="role.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField></div></template></VfTabs></VfCard></form>
+    <form id="groups-group-form" v-else class="groups-screen__form" novalidate @submit.prevent="saveGroup"><VfCard><VfTabs v-model="activeTab" :items="groupFormTabs"><template #panel="{ activeValue }"><div v-if="activeValue === 'general'" class="groups-screen__fields"><VfField class="groups-screen__active-field" label="Active"><template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="group.is_active" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active from" :error="firstError('active_from')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="group.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField class="groups-screen__activity-field" label="Active until" :error="firstError('active_until')"><template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="group.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField><VfField label="Name" :error="firstError('name')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="group.name" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Code" :error="firstError('code')" required><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="group.code" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template></VfField><VfField label="Description" :error="firstError('description')"><template #default="{ controlId, describedBy, invalid }"><VfTextarea :id="controlId" v-model="group.description" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" maxlength="255" /></template></VfField><VfField label="Sort order" :error="firstError('sort_order')"><template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="group.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template></VfField></div></template></VfTabs></VfCard></form>
   </div>
 </template>
 
 <style scoped>
-.roles-screen { display: grid; gap: var(--vf-section-gap); }
-.roles-screen__column-select-all { display: flex; padding: 0.25rem 0 0.5rem; border-block-end: 1px solid var(--vf-color-border); }
-.roles-screen__role-link { color: var(--vf-color-text-link); text-decoration: none; }
-.roles-screen__role-link:hover { text-decoration: underline; }
+.groups-screen { display: grid; gap: var(--vf-section-gap); }
+.groups-screen__column-select-all { display: flex; padding: 0.25rem 0 0.5rem; border-block-end: 1px solid var(--vf-color-border); }
+.groups-screen__group-link { color: var(--vf-color-text-link); text-decoration: none; }
+.groups-screen__group-link:hover { text-decoration: underline; }
 .groups-screen__fields { display: grid; gap: var(--vf-section-gap); width: 100%; }
 .groups-screen__fields :deep(.vf-field) { width: 100%; }
 .groups-screen__status { color: var(--vf-color-muted); }

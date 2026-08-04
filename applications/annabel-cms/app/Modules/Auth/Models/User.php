@@ -148,28 +148,28 @@ class User extends Model
             return;
         }
 
-        $role = Group::findByCode($code);
+        $group = Group::findByCode($code);
 
-        if (!$role instanceof Group) {
+        if (!$group instanceof Group) {
             throw new \RuntimeException('Group not found.');
         }
 
-        $roleId = $role->id ?? null;
+        $groupId = $group->id ?? null;
 
-        if (!$roleId) {
+        if (!$groupId) {
             throw new \RuntimeException('Group not found or missing id.');
         }
 
         $exists = db()
             ->table('group_user')
             ->where('user_id', $this->id)
-            ->where('group_id', $roleId)
+            ->where('group_id', $groupId)
             ->exists();
 
         if (!$exists) {
             db()->table('group_user')->insert([
                 'user_id' => $this->id,
-                'group_id' => $roleId,
+                'group_id' => $groupId,
             ]);
         }
     }

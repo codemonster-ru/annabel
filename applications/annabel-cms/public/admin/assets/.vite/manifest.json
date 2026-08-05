@@ -1,22 +1,22 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-4vTSORuE.js",
+    "file": "ModuleListScreen-sNVxzrO1.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "ModuleListScreen-C2U7a_kb.css",
+      "ModuleListScreen-CdErel3H.css",
       "data-table-OwIGMQrw.css"
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-W-ohI_wM.js",
+    "file": "SystemUpdateScreen-BwaWIq3B.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
@@ -24,17 +24,17 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-Dwi77MU7.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "SystemUpdateScreen-BogHmUX8.css",
+      "SystemUpdateScreen-D3nyzmFY.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css"
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-BDZeGy11.js",
+    "file": "PagesScreen-BGcg71xb.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -42,11 +42,11 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-Dwi77MU7.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "PagesScreen-5afLAb03.css",
+      "PagesScreen-DFnzEb4N.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css",
       "date-picker-_CyJbeBc.css",
@@ -55,36 +55,36 @@
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-C8EO7Qaq.js",
+    "file": "SiteSettingsScreen-D_2f7INc.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "SiteSettingsScreen-C8BlTdZJ.css",
+      "SiteSettingsScreen-CzMqdfXM.css",
       "card-COPSIoBi.css",
       "field-BQt9ZzR5.css"
     ]
   },
-  "../AdminUsers/resources/js/screens/GroupListScreen.vue": {
-    "file": "GroupListScreen-DSP4E47v.js",
-    "name": "GroupListScreen",
-    "src": "../AdminUsers/resources/js/screens/GroupListScreen.vue",
+  "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
+    "file": "RoleListScreen-WeZj6peG.js",
+    "name": "RoleListScreen",
+    "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-Dwi77MU7.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "GroupListScreen-DlfeBENi.css",
+      "RoleListScreen-Behe7g7O.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css",
       "date-picker-_CyJbeBc.css",
@@ -93,7 +93,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-C3pJem3n.js",
+    "file": "UserListScreen-DJpT0Pg7.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -101,11 +101,11 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-Dwi77MU7.js",
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "UserListScreen-B_ILVhTE.css",
+      "UserListScreen-C4HZQa7N.css",
       "card-COPSIoBi.css",
       "data-table-OwIGMQrw.css",
       "date-picker-_CyJbeBc.css",
@@ -116,26 +116,26 @@
     "file": "_plugin-vue_export-helper-BDNMzG2s.js",
     "name": "_plugin-vue_export-helper"
   },
-  "_alert-D2gExYle.js": {
-    "file": "alert-D2gExYle.js",
+  "_alert-D5FoitmX.css": {
+    "file": "alert-D5FoitmX.css",
+    "src": "_alert-D5FoitmX.css"
+  },
+  "_alert-DOgiJGNi.js": {
+    "file": "alert-DOgiJGNi.js",
     "name": "alert",
     "imports": [
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
       "alert-D5FoitmX.css"
     ]
   },
-  "_alert-D5FoitmX.css": {
-    "file": "alert-D5FoitmX.css",
-    "src": "_alert-D5FoitmX.css"
-  },
   "_card-COPSIoBi.css": {
     "file": "card-COPSIoBi.css",
     "src": "_card-COPSIoBi.css"
   },
-  "_classes-CcykAxZN-BLQh74BR.js": {
-    "file": "classes-CcykAxZN-BLQh74BR.js",
+  "_classes-CcykAxZN-Bal9QcUN.js": {
+    "file": "classes-CcykAxZN-Bal9QcUN.js",
     "name": "classes-CcykAxZN"
   },
   "_data-table-OwIGMQrw.css": {
@@ -170,13 +170,13 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-D9LpdplY.js",
+    "file": "admin-yFdKhLHF.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "imports": [
-      "_alert-D2gExYle.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_alert-DOgiJGNi.js",
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "dynamicImports": [
       "resources/js/screens/DashboardScreen.vue",
@@ -185,7 +185,7 @@
       "../AdminPages/resources/js/screens/PagesScreen.vue",
       "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
       "../AdminUsers/resources/js/screens/UserListScreen.vue",
-      "../AdminUsers/resources/js/screens/GroupListScreen.vue"
+      "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
       "main-Bjx75E-g.css"
@@ -195,17 +195,17 @@
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-CKgONfNY.js",
+    "file": "DashboardScreen-BHjJPrEp.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_classes-CcykAxZN-BLQh74BR.js"
+      "_classes-CcykAxZN-Bal9QcUN.js"
     ],
     "css": [
-      "DashboardScreen-CB-cofu4.css",
+      "DashboardScreen-DHP-r1JO.css",
       "card-COPSIoBi.css"
     ]
   }

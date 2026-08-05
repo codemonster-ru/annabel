@@ -7,6 +7,7 @@ use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Admin\Services\AdminNavigationRegistry;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Auth\Services\PermissionRegistry;
 use Codemonster\Cms\Modules\Core\ModuleManager;
 use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
@@ -54,9 +55,9 @@ class ApplicationBootTest extends TestCase
                         'href' => '/admin/users',
                     ],
                     [
-                        'value' => 'admin.users.groups',
-                        'label' => 'Groups',
-                        'href' => '/admin/groups',
+                        'value' => 'admin.users.roles',
+                        'label' => 'Roles',
+                        'href' => '/admin/roles',
                     ],
                 ],
             ],
@@ -93,7 +94,7 @@ class ApplicationBootTest extends TestCase
         self::assertSame('Modules', $adminNavigation->label('admin.settings.modules'));
         self::assertSame('System updates', $adminNavigation->label('admin.settings.system-updates'));
         self::assertSame('User list', $adminNavigation->label('admin.users.list'));
-        self::assertSame('Groups', $adminNavigation->label('admin.users.groups'));
+        self::assertSame('Roles', $adminNavigation->label('admin.users.roles'));
         self::assertNull($adminNavigation->label('admin.missing'));
 
         $basePath = dirname(__DIR__, 2);
@@ -114,6 +115,10 @@ class ApplicationBootTest extends TestCase
 
         self::assertInstanceOf(AuthenticatorInterface::class, $app->make(AuthenticatorInterface::class));
         self::assertInstanceOf(UserSessionInterface::class, $app->make(UserSessionInterface::class));
+        $permissions = $app->make(PermissionRegistry::class)->all();
+        self::assertCount(23, $permissions);
+        self::assertContains('pages.publish', array_column($permissions, 'code'));
+        self::assertContains('roles.update', array_column($permissions, 'code'));
         self::assertInstanceOf(AdminScreenRendererInterface::class, $app->make(AdminScreenRendererInterface::class));
         self::assertInstanceOf(SiteSettings::class, $app->make(SiteSettings::class));
     }

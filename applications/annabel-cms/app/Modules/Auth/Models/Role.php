@@ -18,9 +18,9 @@ use Codemonster\Database\Query\QueryBuilder;
  * @property \DateTimeImmutable|null $created_at
  * @property \DateTimeImmutable|null $updated_at
  */
-class Group extends Model
+class Role extends Model
 {
-    protected string $table = 'groups';
+    protected string $table = 'roles';
 
     /** @var list<string> */
     protected array $fillable = ['id', 'name', 'code', 'description', 'is_active', 'active_from', 'active_until', 'sort_order'];
@@ -57,21 +57,21 @@ class Group extends Model
             ->format('Y-m-d H:i:s');
 
         return static::query()
-            ->where('groups.is_active', 1)
+            ->where('roles.is_active', 1)
             ->where(static function (QueryBuilder $query) use ($date): void {
-                $query->whereNull('groups.active_from')
-                    ->orWhere('groups.active_from', '<=', $date);
+                $query->whereNull('roles.active_from')
+                    ->orWhere('roles.active_from', '<=', $date);
             })
             ->where(static function (QueryBuilder $query) use ($date): void {
-                $query->whereNull('groups.active_until')
-                    ->orWhere('groups.active_until', '>=', $date);
+                $query->whereNull('roles.active_until')
+                    ->orWhere('roles.active_until', '>=', $date);
             });
     }
 
     public static function findByCode(string $code): ?self
     {
-        $group = static::query()->where('code', $code)->first();
+        $role = static::query()->where('code', $code)->first();
 
-        return $group instanceof self ? $group : null;
+        return $role instanceof self ? $role : null;
     }
 }

@@ -3,7 +3,9 @@
 namespace Codemonster\Cms\Modules\AdminPages\Controllers;
 
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
+use Codemonster\Cms\Modules\Auth\Contracts\AuthorizationInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
+use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\Cms\Modules\Pages\Models\Page;
 use Codemonster\DateTime\DateTime;
 use Codemonster\DateTime\InvalidDateTimeException;
@@ -30,6 +32,7 @@ class PageManagementController
     public function __construct(
         private AdminScreenRendererInterface $admin,
         private UserSessionInterface $users,
+        private AuthorizationInterface $authorization,
         private Validator $validator,
         private ClockInterface $clock,
     ) {
@@ -47,8 +50,16 @@ class PageManagementController
 
     public function edit(string $id): Response
     {
-        if (!Page::find($id) instanceof Page) {
+        $page = Page::find($id);
+
+        if (!$page instanceof Page) {
             abort(404);
+        }
+
+        $user = $this->users->current();
+
+        if ($user === null || $this->authorization->denies($user, 'pages.update', $page)) {
+            abort(403);
         }
 
         return $this->admin->renderAuthenticated('admin.pages', 'admin.pages', 'Edit page');
@@ -138,8 +149,17 @@ class PageManagementController
             return Response::json(['message' => 'Page not found.'], 404);
         }
 
+        $user = $this->users->current();
+
+        if ($user === null || $this->authorization->denies($user, 'pages.update', $page)) {
+            return Response::json(['message' => 'Forbidden'], 403);
+        }
+
         return Response::json([
             'page' => $this->payload($page),
+            'owner_options' => $this->authorization->allows($user, 'pages.assign_owner', $page)
+                ? $this->ownerOptions()
+                : [],
             'csrf_token' => csrf_token(),
         ]);
     }
@@ -157,6 +177,12 @@ class PageManagementController
             return Response::json(['message' => 'Page not found.'], 404);
         }
 
+        $user = $this->users->current();
+
+        if ($user === null || $this->authorization->denies($user, 'pages.update', $page)) {
+            return Response::json(['message' => 'Forbidden'], 403);
+        }
+
         return $this->save($request, $page);
     }
 
@@ -168,6 +194,12 @@ class PageManagementController
             return Response::json(['message' => 'Page not found.'], 404);
         }
 
+        $user = $this->users->current();
+
+        if ($user === null || $this->authorization->denies($user, 'pages.delete', $page)) {
+            return Response::json(['message' => 'Forbidden'], 403);
+        }
+
         $page->delete();
 
         return Response::json(['message' => 'Page deleted successfully.']);
@@ -175,6 +207,11 @@ class PageManagementController
 
     private function save(Request $request, Page $page): Response
     {
+        $user = $this->users->current();
+        if ($user === null) {
+            return Response::json(['message' => 'Unauthenticated'], 401);
+        }
+
         $validated = $this->validator->validateOrFail([
             'slug' => Page::normalizeSlug((string) $request->input('slug')),
             'title' => trim((string) $request->input('title')),
@@ -224,6 +261,39 @@ class PageManagementController
         }
 
         $isActive = in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true);
+        $isNew = !$page->id;
+        $currentOwnerId = $page->owner_id ?? $user->id;
+        $requestedOwnerId = $request->input('owner_id');
+
+        if ($requestedOwnerId !== null && $requestedOwnerId !== '') {
+            if ((!is_int($requestedOwnerId) && !is_string($requestedOwnerId))
+                || preg_match('/\A[1-9]\d*\z/', (string) $requestedOwnerId) !== 1
+                || !User::find($requestedOwnerId) instanceof User
+            ) {
+                return $this->invalid('owner_id', 'The selected owner does not exist.');
+            }
+            if ((string) $requestedOwnerId !== (string) $currentOwnerId
+                && $this->authorization->denies($user, 'pages.assign_owner', $page)
+            ) {
+                return Response::json(['message' => 'Forbidden'], 403);
+            }
+            $currentOwnerId = $requestedOwnerId;
+        }
+
+        $publicationChanged = $isNew
+            ? $isActive || $activeFrom !== null || $activeUntil !== null
+            : $isActive !== (bool) $page->is_active
+                || $activeFrom !== $this->databaseDate($page->active_from)
+                || $activeUntil !== $this->databaseDate($page->active_until);
+
+        $authorizationPage = $page;
+        if ($isNew) {
+            $authorizationPage->owner_id = $currentOwnerId;
+        }
+        if ($publicationChanged && $this->authorization->denies($user, 'pages.publish', $authorizationPage)) {
+            return Response::json(['message' => 'Publishing this page is forbidden.'], 403);
+        }
+
         $attributes = [
             'slug' => $validated['slug'],
             'title' => $validated['title'],
@@ -234,7 +304,13 @@ class PageManagementController
             'is_active' => $isActive,
             'active_from' => $activeFrom,
             'active_until' => $activeUntil,
+            'owner_id' => $currentOwnerId,
+            'updated_by' => $user->id,
         ];
+
+        if ($isNew) {
+            $attributes['created_by'] = $user->id;
+        }
 
         if (!$isActive) {
             $attributes['activated_at'] = null;
@@ -256,6 +332,9 @@ class PageManagementController
     {
         return [
             'id' => $page->id,
+            'created_by' => $page->created_by,
+            'owner_id' => $page->owner_id,
+            'updated_by' => $page->updated_by,
             'slug' => (string) $page->slug,
             'title' => (string) $page->title,
             'sort_order' => (int) $page->sort_order,
@@ -299,6 +378,27 @@ class PageManagementController
         return DateTime::fromInterface($value)
             ->toTimezone('UTC')
             ->format(DATE_ATOM);
+    }
+
+    private function databaseDate(mixed $value): ?string
+    {
+        return $value instanceof \DateTimeInterface
+            ? DateTime::fromInterface($value)->toTimezone('UTC')->format(DateTime::DATABASE_FORMAT)
+            : null;
+    }
+
+    /** @return list<array{id: int|string, label: string}> */
+    private function ownerOptions(): array
+    {
+        $users = User::query()->where('is_active', 1);
+        $users->getBuilder()->orderBy('username', 'asc');
+        $options = [];
+
+        foreach ($users->get() as $user) {
+            $options[] = ['id' => $user->id, 'label' => (string) $user->username];
+        }
+
+        return $options;
     }
 
     private function invalid(string $field, string $message): Response

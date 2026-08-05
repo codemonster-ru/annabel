@@ -24,4 +24,11 @@ class PageTest extends TestCase
         self::assertFalse(Page::validSlug('about-'));
         self::assertFalse(Page::validSlug('about_us'));
     }
+
+    public function testItDeterminesOwnershipWithoutCoercingMissingAuthors(): void
+    {
+        self::assertTrue((new Page(['owner_id' => 42]))->isOwnedBy('42'));
+        self::assertFalse((new Page(['owner_id' => 42]))->isOwnedBy(7));
+        self::assertFalse((new Page(['owner_id' => null]))->isOwnedBy(42));
+    }
 }

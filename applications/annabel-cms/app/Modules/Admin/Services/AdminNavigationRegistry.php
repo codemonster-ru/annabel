@@ -2,15 +2,18 @@
 
 namespace Codemonster\Cms\Modules\Admin\Services;
 
+use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatedUser;
+use Codemonster\Cms\Modules\Auth\Contracts\AuthorizationInterface;
 use Codemonster\Cms\Modules\Core\ModuleManager;
 
 class AdminNavigationRegistry
 {
-    /** @var array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}>|null */
+    /** @var array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, permission?: string, order?: int}>|null */
     private ?array $items = null;
 
     public function __construct(
         private ModuleManager $modules,
+        private AuthorizationInterface $authorization,
     ) {
     }
 
@@ -22,13 +25,21 @@ class AdminNavigationRegistry
         return $this->children($this->items(), null);
     }
 
+    /**
+     * @return array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>
+     */
+    public function navigationFor(AuthenticatedUser $user): array
+    {
+        return $this->children($this->items(), null, $user);
+    }
+
     public function label(string $value): ?string
     {
         return $this->items()[$value]['label'] ?? null;
     }
 
     /**
-     * @return array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}>
+     * @return array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, permission?: string, order?: int}>
      */
     private function items(): array
     {
@@ -88,7 +99,7 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @return array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}
+     * @return array{id: string, label: string, parent?: string, href?: string, icon?: string, permission?: string, order?: int}
      */
     private function parseItem(mixed $item, string $module): array
     {
@@ -101,6 +112,7 @@ class AdminNavigationRegistry
         $parent = $item['parent'] ?? null;
         $href = $item['href'] ?? null;
         $icon = $item['icon'] ?? null;
+        $permission = $item['permission'] ?? null;
         $order = $item['order'] ?? 0;
 
         if (!is_string($id) || $id === '' || !is_string($label) || $label === '') {
@@ -119,6 +131,10 @@ class AdminNavigationRegistry
             throw new \RuntimeException("Admin navigation icon must be a non-empty string: {$module}");
         }
 
+        if ($permission !== null && (!is_string($permission) || $permission === '')) {
+            throw new \RuntimeException("Admin navigation permission must be a non-empty string: {$module}");
+        }
+
         if (!is_int($order)) {
             throw new \RuntimeException("Admin navigation order must be an integer: {$module}");
         }
@@ -129,12 +145,13 @@ class AdminNavigationRegistry
             'parent' => $parent,
             'href' => $href,
             'icon' => $icon,
+            'permission' => $permission,
             'order' => $order,
         ], static fn (mixed $value): bool => $value !== null);
     }
 
     /**
-     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}> $items
+     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, permission?: string, order?: int}> $items
      */
     private function assertNoCycles(array $items): void
     {
@@ -165,10 +182,10 @@ class AdminNavigationRegistry
     }
 
     /**
-     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, order?: int}> $items
+     * @param array<string, array{id: string, label: string, parent?: string, href?: string, icon?: string, permission?: string, order?: int}> $items
      * @return array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>
      */
-    private function children(array $items, ?string $parent): array
+    private function children(array $items, ?string $parent, ?AuthenticatedUser $user = null): array
     {
         $children = array_filter(
             $items,
@@ -184,8 +201,19 @@ class AdminNavigationRegistry
         ]);
 
         $result = [];
-
         foreach ($children as $item) {
+            $permission = $item['permission'] ?? null;
+
+            if ($permission !== null && $user !== null && $this->authorization->denies($user, $permission)) {
+                continue;
+            }
+
+            $nested = $this->children($items, $item['id'], $user);
+
+            if (!isset($item['href']) && $nested === []) {
+                continue;
+            }
+
             $entry = [
                 'value' => $item['id'],
                 'label' => $item['label'],
@@ -198,8 +226,6 @@ class AdminNavigationRegistry
             if (isset($item['href'])) {
                 $entry['href'] = $item['href'];
             }
-
-            $nested = $this->children($items, $item['id']);
 
             if ($nested !== []) {
                 $entry['children'] = $nested;

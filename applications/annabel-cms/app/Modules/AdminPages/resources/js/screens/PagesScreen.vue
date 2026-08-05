@@ -20,12 +20,14 @@ import {
   toLocalDateTimeValue,
 } from '../../../../Admin/resources/js/support/dateTime';
 
+const props = defineProps({ user: { type: Object, default: null } });
+
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'title', header: 'Title', verticalAlign: 'middle' },
   { key: 'slug', header: 'Slug', verticalAlign: 'middle' },
-  { key: 'is_active', header: 'Active', verticalAlign: 'middle' },
+  { key: 'is_active', header: 'Published', verticalAlign: 'middle' },
   { key: 'sort_order', header: 'Sort order', verticalAlign: 'middle' },
   { key: 'created_at', header: 'Created', verticalAlign: 'middle' },
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
@@ -35,7 +37,7 @@ const columnLabels = {
   id: 'ID',
   title: 'Title',
   slug: 'Slug',
-  is_active: 'Active',
+  is_active: 'Published',
   sort_order: 'Sort order',
   created_at: 'Created',
   updated_at: 'Updated',
@@ -47,6 +49,9 @@ const formTabs = [
 
 const emptyPage = () => ({
   id: null,
+  created_by: null,
+  owner_id: null,
+  updated_by: null,
   slug: '',
   title: '',
   meta_title: '',
@@ -59,6 +64,7 @@ const emptyPage = () => ({
 });
 
 const pages = ref([]);
+const ownerOptions = ref([]);
 const page = ref(emptyPage());
 const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/admin/pages';
 const formMode = computed(() => currentPath === '/admin/pages/create' || /^\/admin\/pages\/\d+\/edit$/.test(currentPath));
@@ -77,6 +83,12 @@ const success = ref('');
 const errors = ref({});
 const activeTab = ref('general');
 const editing = computed(() => editId.value !== null);
+const can = (permission) => props.user?.roles?.includes('admin') || props.user?.permissions?.includes(permission);
+const ownsPage = (value) => value?.owner_id != null && String(value.owner_id) === String(props.user?.id);
+const canUpdatePage = (value) => can('pages.update') || (can('pages.update.own') && ownsPage(value));
+const canDeletePage = (value) => can('pages.delete') || (can('pages.delete.own') && ownsPage(value));
+const canPublishPage = (value) => can('pages.publish') || (can('pages.publish.own') && (value?.id ? ownsPage(value) : true));
+const canAssignOwner = computed(() => editing.value && can('pages.assign_owner') && ownerOptions.value.length > 0);
 
 function firstError(field) {
   const messages = errors.value[field];
@@ -191,6 +203,7 @@ async function loadPage() {
     if (!response.ok) throw new Error(payload.message || 'Unable to load page.');
 
     page.value = pageFromPayload(payload.page);
+    ownerOptions.value = Array.isArray(payload.owner_options) ? payload.owner_options : [];
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to load page.';
@@ -200,6 +213,7 @@ async function loadPage() {
 }
 
 function editPage(value) {
+  if (!canUpdatePage(value)) return;
   window.location.assign(`/admin/pages/${value.id}/edit`);
 }
 
@@ -234,6 +248,7 @@ async function savePage() {
   body.append('sort_order', String(page.value.sort_order ?? 1));
   body.append('active_from', localDateTimeValueToIso(page.value.active_from) ?? page.value.active_from);
   body.append('active_until', localDateTimeValueToIso(page.value.active_until) ?? page.value.active_until);
+  if (canAssignOwner.value) body.append('owner_id', String(page.value.owner_id ?? ''));
 
   const endpoint = editing.value ? `/admin/pages/data/${page.value.id}` : '/admin/pages/data';
 
@@ -271,7 +286,7 @@ async function savePage() {
 }
 
 async function deletePage(value = page.value) {
-  if (!value?.id || deleting.value || !window.confirm('Delete this page?')) return;
+  if (!value?.id || !canDeletePage(value) || deleting.value || !window.confirm('Delete this page?')) return;
 
   deleting.value = true;
   error.value = '';
@@ -312,7 +327,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         Back
       </VfButton>
     </Teleport>
-    <Teleport v-else to="#admin-page-actions">
+    <Teleport v-else-if="can('pages.create')" to="#admin-page-actions">
       <VfButton variant="primary" :disabled="loading || saving" @click="newPage">New page</VfButton>
     </Teleport>
 
@@ -372,7 +387,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           </VfDropdown>
         </template>
         <template #cell-actions="{ row }">
-          <VfDropdown placement="bottom-start">
+          <VfDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
             <template #trigger>
               <VfIconButton
                 :icon="icons.bars"
@@ -383,7 +398,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
               />
             </template>
             <VfMenu>
-              <VfMenuItem label="Edit" :icon="icons.pencil" @select="editPage(row)" />
+              <VfMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="icons.pencil" @select="editPage(row)" />
               <VfMenuItem
                 v-if="row.is_active"
                 label="View page"
@@ -392,14 +407,15 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 target="_blank"
                 rel="noopener noreferrer"
               />
-              <VfMenuItem label="Delete" :icon="icons.trash" tone="danger" @select="deletePage(row)" />
+              <VfMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deletePage(row)" />
             </VfMenu>
           </VfDropdown>
         </template>
         <template #cell-title="{ row }">
-          <a class="pages-screen__title-link" :href="`/admin/pages/${row.id}/edit`">
+          <a v-if="canUpdatePage(row)" class="pages-screen__title-link" :href="`/admin/pages/${row.id}/edit`">
             {{ row.title }}
           </a>
+          <span v-else>{{ row.title }}</span>
         </template>
         <template #cell-slug="{ value }">
           /pages/{{ value }}
@@ -425,13 +441,13 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           <VfTabs v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
               <div v-if="activeValue === 'general'" class="pages-screen__tab-fields">
-                <VfField class="pages-screen__active-field" label="Active">
+                <VfField class="pages-screen__active-field" label="Published">
                   <template #default="{ controlId }">
-                    <VfCheckbox :id="controlId" v-model="page.is_active" :disabled="saving" />
+                    <VfCheckbox :id="controlId" v-model="page.is_active" :disabled="saving || !canPublishPage(page)" />
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__activity-field" label="Active from" :error="firstError('active_from')">
+                <VfField class="pages-screen__activity-field" label="Publish from" :error="firstError('active_from')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
@@ -440,12 +456,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       clearable
                       :aria-describedby="describedBy"
                       :invalid="invalid"
-                      :disabled="saving"
+                      :disabled="saving || !canPublishPage(page)"
                     />
                   </template>
                 </VfField>
 
-                <VfField class="pages-screen__activity-field" label="Active until" :error="firstError('active_until')">
+                <VfField class="pages-screen__activity-field" label="Publish until" :error="firstError('active_until')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfDatePicker
                       :id="controlId"
@@ -454,8 +470,25 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       clearable
                       :aria-describedby="describedBy"
                       :invalid="invalid"
-                      :disabled="saving"
+                      :disabled="saving || !canPublishPage(page)"
                     />
+                  </template>
+                </VfField>
+
+                <VfField v-if="canAssignOwner" label="Owner" :error="firstError('owner_id')">
+                  <template #default="{ controlId, describedBy, invalid }">
+                    <select
+                      :id="controlId"
+                      v-model="page.owner_id"
+                      class="pages-screen__owner-select"
+                      :aria-describedby="describedBy"
+                      :aria-invalid="invalid"
+                      :disabled="saving"
+                    >
+                      <option v-for="option in ownerOptions" :key="option.id" :value="option.id">
+                        {{ option.label }}
+                      </option>
+                    </select>
                   </template>
                 </VfField>
 
@@ -543,6 +576,16 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 .pages-screen__fields {
   display: grid;
   gap: var(--vf-surface-gap-compact);
+}
+
+.pages-screen__owner-select {
+  width: 100%;
+  min-height: var(--vf-control-height-md);
+  padding-inline: var(--vf-field-padding-md);
+  color: var(--vf-color-text-primary);
+  background: var(--vf-field-background);
+  border: var(--vf-border-width) solid var(--vf-input-border-color);
+  border-radius: var(--vf-radius-control-tight);
 }
 
 .pages-screen__tab-fields {

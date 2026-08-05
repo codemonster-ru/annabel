@@ -111,6 +111,79 @@ class AdminHttpTest extends TestCase
         self::assertSame(403, $response->getStatusCode());
     }
 
+    public function testUserWithAdminAccessPermissionCanLogin(): void
+    {
+        $app = $this->app();
+        $identity = new AuthenticatedUser(2, 'editor', 'editor@example.com', ['editor'], ['admin.access', 'pages.view']);
+
+        $app->getContainer()->instance(
+            AuthenticatorInterface::class,
+            new FixedAuthenticator($identity),
+        );
+        $app->getContainer()->instance(UserSessionInterface::class, new InMemoryUserSession());
+
+        $token = $app->make(CsrfTokenManager::class)->token();
+        $response = $app->handle(new Request(
+            'POST',
+            '/admin/login',
+            [],
+            [
+                '_token' => $token,
+                'login' => 'editor@example.com',
+                'password' => 'secret',
+            ],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(200, $response->getStatusCode());
+    }
+
+    public function testPermissionLimitsAdminRoutesAndNavigation(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(
+            2,
+            'editor',
+            'editor@example.com',
+            ['editor'],
+            ['admin.access', 'pages.view'],
+        ));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $pages = $app->handle(new Request('GET', '/admin/pages'));
+        $users = $app->handle(new Request(
+            'GET',
+            '/admin/users',
+            [],
+            [],
+            ['Accept' => 'application/json'],
+        ));
+
+        self::assertSame(200, $pages->getStatusCode());
+        self::assertStringContainsString('/admin/pages', (string) $pages->getContent());
+        self::assertStringNotContainsString('/admin/users', (string) $pages->getContent());
+        self::assertSame(403, $users->getStatusCode());
+    }
+
+    public function testOwnPagePermissionReachesObjectPolicy(): void
+    {
+        $app = $this->app();
+        $session = new InMemoryUserSession();
+        $session->login(new AuthenticatedUser(
+            2,
+            'editor',
+            'editor@example.com',
+            ['editor'],
+            ['admin.access', 'pages.view', 'pages.update.own'],
+        ));
+        $app->getContainer()->instance(UserSessionInterface::class, $session);
+
+        $response = $app->handle(new Request('GET', '/admin/pages/999999/edit'));
+
+        self::assertSame(404, $response->getStatusCode());
+    }
+
     public function testGuestCannotCallAdminLogout(): void
     {
         $app = $this->app();
@@ -153,11 +226,11 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
-    public function testGuestCannotLoadUserGroupOptions(): void
+    public function testGuestCannotLoadUserRoleOptions(): void
     {
         $response = $this->app()->handle(new Request(
             'GET',
-            '/admin/users/group-options',
+            '/admin/users/role-options',
             [],
             [],
             ['Accept' => 'application/json'],
@@ -166,24 +239,24 @@ class AdminHttpTest extends TestCase
         self::assertSame(401, $response->getStatusCode());
     }
 
-    public function testAdminCanOpenGroupList(): void
+    public function testAdminCanOpenRoleList(): void
     {
         $app = $this->app();
         $session = new InMemoryUserSession();
         $session->login(new AuthenticatedUser(1, 'admin', 'admin@example.com', ['admin']));
         $app->getContainer()->instance(UserSessionInterface::class, $session);
 
-        $response = $app->handle(new Request('GET', '/admin/groups'));
+        $response = $app->handle(new Request('GET', '/admin/roles'));
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('"screen":"admin.groups.list"', (string) $response->getContent());
+        self::assertStringContainsString('"screen":"admin.roles.list"', (string) $response->getContent());
     }
 
-    public function testGuestCannotLoadGroupListData(): void
+    public function testGuestCannotLoadRoleListData(): void
     {
         $response = $this->app()->handle(new Request(
             'GET',
-            '/admin/groups/data',
+            '/admin/roles/data',
             [],
             [],
             ['Accept' => 'application/json'],
@@ -520,8 +593,8 @@ final class InMemoryUserSession implements UserSessionInterface
         return 2592000;
     }
 
-    public function hasGroup(string $group, bool $strict = false): bool
+    public function hasRole(string $role, bool $strict = false): bool
     {
-        return $this->user?->hasGroup($group) ?? false;
+        return $this->user?->hasRole($role) ?? false;
     }
 }

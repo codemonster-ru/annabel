@@ -6,6 +6,7 @@ use Codemonster\Annabel\Providers\ServiceProvider;
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Admin\Services\AdminNavigationRegistry;
 use Codemonster\Cms\Modules\Admin\Services\AdminShellRenderer;
+use Codemonster\Cms\Modules\Auth\Contracts\AuthorizationInterface;
 use Codemonster\Cms\Modules\Core\ModuleManager;
 
 class ModuleServiceProvider extends ServiceProvider
@@ -16,6 +17,7 @@ class ModuleServiceProvider extends ServiceProvider
             AdminNavigationRegistry::class,
             fn (): AdminNavigationRegistry => new AdminNavigationRegistry(
                 $this->app()->make(ModuleManager::class),
+                $this->app()->make(AuthorizationInterface::class),
             ),
         );
         $this->app()->bind(

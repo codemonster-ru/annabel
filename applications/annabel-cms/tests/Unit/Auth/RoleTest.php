@@ -2,19 +2,19 @@
 
 namespace Codemonster\Cms\Tests\Unit\Auth;
 
-use Codemonster\Cms\Modules\Auth\Models\Group;
+use Codemonster\Cms\Modules\Auth\Models\Role;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class GroupTest extends TestCase
+class RoleTest extends TestCase
 {
     /** @param array<string, mixed> $attributes */
     #[DataProvider('activityWindows')]
-    public function testItDeterminesWhetherGroupIsActive(array $attributes, bool $expected): void
+    public function testItDeterminesWhetherRoleIsActive(array $attributes, bool $expected): void
     {
-        $group = new Group($attributes);
+        $role = new Role($attributes);
 
-        self::assertSame($expected, $group->isActiveAt(new \DateTimeImmutable('2026-08-03 12:00:00 UTC')));
+        self::assertSame($expected, $role->isActiveAt(new \DateTimeImmutable('2026-08-03 12:00:00 UTC')));
     }
 
     /** @return iterable<string, array{array<string, mixed>, bool}> */

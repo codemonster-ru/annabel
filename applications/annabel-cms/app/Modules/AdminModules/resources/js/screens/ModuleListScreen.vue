@@ -7,6 +7,9 @@ import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
+const props = defineProps({ user: { type: Object, default: null } });
+const canManage = computed(() => props.user?.roles?.includes('admin') || props.user?.permissions?.includes('modules.manage'));
+
 const dataColumns = [
   { key: 'name', header: 'Name', verticalAlign: 'middle' },
   { key: 'author', header: 'Developer', verticalAlign: 'middle' },
@@ -18,7 +21,7 @@ const dataColumns = [
 
 const rows = ref([]);
 const columns = computed(() => (
-  rows.value.some((row) => row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)
+  canManage.value && rows.value.some((row) => row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)
     ? [
         { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
         ...dataColumns,
@@ -72,7 +75,7 @@ async function runAction(module, action) {
     update: module?.can_update,
   };
 
-  if (!allowed[action] || changingModule.value) return;
+  if (!canManage.value || !allowed[action] || changingModule.value) return;
   if (action === 'uninstall' && !window.confirm(`Uninstall module ${module.name}? Its data will be preserved.`)) return;
 
   changingModule.value = module.name;
@@ -128,7 +131,7 @@ watch([page, pageSize], loadModules);
       @update:page-size="pageSize = $event"
     >
       <template #cell-actions="{ row }">
-        <VfDropdown v-if="row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update" placement="bottom-start">
+        <VfDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
           <template #trigger>
             <VfIconButton
               :icon="icons.bars"

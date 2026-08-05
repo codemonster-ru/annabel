@@ -27,18 +27,37 @@ return [
     'routes' => 'routes/web.php',
     'views' => 'views',
     'assets' => [],
+    'permissions' => [
+        [
+            'code' => 'example.manage',
+            'name' => 'Manage examples',
+            'category' => 'Examples',
+            'sort_order' => 100,
+        ],
+    ],
 ];
 ```
 
 Modules may depend on another module's public contracts. They should not depend
 on its controllers, persistence models, or concrete services.
 
-## Authentication Boundary
+## Authentication and Authorization Boundary
 
-The Auth module publishes `AuthenticatorInterface`, `UserSessionInterface`, and
-the immutable `AuthenticatedUser` identity object. Admin depends on those
-contracts. The Auth module remains responsible for users, roles, password
-verification, and session persistence.
+The Auth module publishes `AuthenticatorInterface`, `UserSessionInterface`,
+`AuthorizationInterface`, and the immutable `AuthenticatedUser` identity
+object. Admin depends on those contracts. The Auth module remains responsible
+for users, roles, permission assignments, password verification, and session
+persistence.
+
+Permission definitions belong to the module that owns the protected operation
+and are declared in its manifest. Role assignments store the stable permission
+code, so installing a module does not require editing or synchronizing a
+central Auth catalog.
+
+Use `AuthorizationInterface::allows($user, $ability, $subject)` for both global
+and object-level checks. A module that owns an object policy registers it from
+its service provider; controllers and middleware must not invoke policies or
+inspect roles directly. The `admin` role is the system-wide superuser bypass.
 
 ## Frontend Assets
 

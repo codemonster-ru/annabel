@@ -5,6 +5,7 @@ namespace Codemonster\Cms\Modules\Admin\Controllers;
 use Codemonster\Cms\Modules\Admin\Services\AdminPasswordResetMailer;
 use Codemonster\Cms\Modules\Admin\Services\AdminShellRenderer;
 use Codemonster\Cms\Modules\Admin\Services\RememberCookieResponseFactory;
+use Codemonster\Cms\Modules\Auth\Contracts\AuthorizationInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\Cms\Modules\Auth\Services\PasswordResetTokenService;
@@ -18,6 +19,7 @@ class AdminPasswordResetController
 
     public function __construct(
         private UserSessionInterface $users,
+        private AuthorizationInterface $authorization,
         private AdminShellRenderer $renderer,
         private PasswordResetTokenService $tokens,
         private AdminPasswordResetMailer $mailer,
@@ -103,7 +105,7 @@ class AdminPasswordResetController
 
         $user = User::find($record['user_id']);
 
-        if (!$user instanceof User || !$user->hasGroup('admin')) {
+        if (!$user instanceof User || $this->authorization->denies($user, 'admin.access')) {
             $this->tokens->deleteForUser((int) ($record['user_id'] ?? 0));
 
             return $this->invalidTokenResponse();
@@ -131,7 +133,7 @@ class AdminPasswordResetController
             return null;
         }
 
-        if (!$user->hasGroup('admin')) {
+        if ($this->authorization->denies($user, 'admin.access')) {
             abort(403);
         }
 
@@ -142,7 +144,7 @@ class AdminPasswordResetController
     {
         $user = User::findByEmail($email);
 
-        if (!$user instanceof User || !$user->hasGroup('admin')) {
+        if (!$user instanceof User || $this->authorization->denies($user, 'admin.access')) {
             return null;
         }
 

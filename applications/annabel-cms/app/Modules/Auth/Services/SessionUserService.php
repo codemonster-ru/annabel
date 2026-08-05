@@ -89,7 +89,7 @@ class SessionUserService implements UserSessionInterface
         $this->csrf->regenerateToken();
     }
 
-    public function hasGroup(string $group, bool $strict = false): bool
+    public function hasRole(string $role, bool $strict = false): bool
     {
         $user = $this->current($strict);
 
@@ -97,7 +97,7 @@ class SessionUserService implements UserSessionInterface
             return false;
         }
 
-        return $user->hasGroup($group);
+        return $user->hasRole($role);
     }
 
     public function forgetRememberToken(int|string $userId): void
@@ -176,7 +176,8 @@ class SessionUserService implements UserSessionInterface
             $user->id,
             (string) $user->username,
             (string) $user->email,
-            $user->groupCodes(),
+            $user->roleCodes(),
+            $user->permissionCodes(),
         );
     }
 
@@ -188,9 +189,10 @@ class SessionUserService implements UserSessionInterface
         $id = $user['id'] ?? null;
         $username = $user['username'] ?? null;
         $email = $user['email'] ?? null;
-        $groups = $user['groups'] ?? null;
+        $roles = $user['roles'] ?? null;
+        $permissions = $user['permissions'] ?? [];
 
-        if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($groups)) {
+        if ((!is_int($id) && !is_string($id)) || !is_string($username) || !is_string($email) || !is_array($roles) || !is_array($permissions)) {
             return null;
         }
 
@@ -198,7 +200,8 @@ class SessionUserService implements UserSessionInterface
             $id,
             $username,
             $email,
-            array_values(array_filter($groups, 'is_string')),
+            array_values(array_filter($roles, 'is_string')),
+            array_values(array_filter($permissions, 'is_string')),
         );
     }
 }

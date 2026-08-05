@@ -14,6 +14,9 @@ return [
     'provider' => ModuleServiceProvider::class,
     'routes' => 'routes/web.php',
     'views' => 'views',
+    'permissions' => [
+        ['code' => 'admin.access', 'name' => 'Access the administration panel', 'category' => 'Administration', 'sort_order' => 100],
+    ],
     'assets' => [
         'vite_config' => 'vite.config.js',
         'manifest' => 'public/admin/assets/.vite/manifest.json',
@@ -26,6 +29,7 @@ return [
                 'label' => 'Dashboard',
                 'icon' => 'house',
                 'href' => '/admin',
+                'permission' => 'admin.access',
                 'order' => 100,
             ],
             [

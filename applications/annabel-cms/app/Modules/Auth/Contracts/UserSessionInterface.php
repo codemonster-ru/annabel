@@ -16,5 +16,5 @@ interface UserSessionInterface
 
     public function rememberCookieLifetime(): int;
 
-    public function hasGroup(string $group, bool $strict = false): bool;
+    public function hasRole(string $role, bool $strict = false): bool;
 }

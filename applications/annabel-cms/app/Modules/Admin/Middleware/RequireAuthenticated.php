@@ -6,7 +6,7 @@ use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
 
-class RequireAdmin
+class RequireAuthenticated
 {
     public function __construct(
         private UserSessionInterface $users,
@@ -15,18 +15,10 @@ class RequireAdmin
 
     public function handle(Request $request, callable $next): Response
     {
-        $user = $this->users->current(true);
-
-        if (!$user) {
+        if ($this->users->current(true) === null) {
             return $request->wantsJson()
                 ? Response::json(['message' => 'Unauthenticated'], 401)
                 : Response::redirect('/admin/login');
-        }
-
-        if (!$user->hasGroup('admin')) {
-            return $request->wantsJson()
-                ? Response::json(['message' => 'Forbidden'], 403)
-                : new Response('Forbidden', 403);
         }
 
         $response = $next($request);

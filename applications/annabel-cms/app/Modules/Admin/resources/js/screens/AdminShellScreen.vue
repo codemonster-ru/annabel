@@ -231,7 +231,7 @@ async function logout() {
         </div>
         <p v-if="error" class="field__error">{{ error }}</p>
       </div>
-      <component :is="screenComponent" v-if="screenComponent" />
+      <component :is="screenComponent" v-if="screenComponent" :user="user" />
       <MissingAdminScreen v-else-if="screenError" :screen="screenError" />
     </div>
 

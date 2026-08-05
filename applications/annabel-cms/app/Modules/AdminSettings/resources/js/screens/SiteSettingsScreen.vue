@@ -6,6 +6,9 @@ import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
 
+const props = defineProps({ user: { type: Object, default: null } });
+const canUpdate = () => props.user?.roles?.includes('admin') || props.user?.permissions?.includes('settings.update');
+
 const settings = ref({
   site_name: '',
   locale: '',
@@ -94,7 +97,7 @@ onMounted(loadSettings);
 </script>
 
 <template>
-  <Teleport to="#admin-page-actions">
+  <Teleport v-if="canUpdate()" to="#admin-page-actions">
     <VfButton
       type="submit"
       form="site-settings-form"
@@ -122,7 +125,7 @@ onMounted(loadSettings);
               v-model="settings.site_name"
               :aria-describedby="describedBy"
               :invalid="invalid"
-              :disabled="loading"
+              :disabled="loading || !canUpdate()"
               required
             />
           </template>
@@ -135,7 +138,7 @@ onMounted(loadSettings);
               v-model="settings.locale"
               :aria-describedby="describedBy"
               :invalid="invalid"
-              :disabled="loading"
+              :disabled="loading || !canUpdate()"
               required
             />
           </template>

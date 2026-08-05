@@ -6,6 +6,8 @@ import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
 import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
 import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
+defineProps({ user: { type: Object, default: null } });
+
 const tabs = [
   { value: 'updates', label: 'Updates' },
   { value: 'components', label: 'Components' },

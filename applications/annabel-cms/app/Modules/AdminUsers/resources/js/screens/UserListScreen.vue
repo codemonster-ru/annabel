@@ -19,6 +19,8 @@ import {
   toLocalDateTimeValue,
 } from '../../../../Admin/resources/js/support/dateTime';
 
+const props = defineProps({ user: { type: Object, default: null } });
+
 const columns = [
   { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
@@ -28,10 +30,10 @@ const columns = [
   { key: 'created_at', header: 'Created', verticalAlign: 'middle' },
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
 ];
-const groupColumns = [
+const roleColumns = [
   { key: 'selected', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
-  { key: 'name', header: 'Group', width: '25%', verticalAlign: 'middle' },
+  { key: 'name', header: 'Role', width: '25%', verticalAlign: 'middle' },
   { key: 'period', header: 'Active period', verticalAlign: 'top' },
 ];
 const columnLabels = {
@@ -45,10 +47,10 @@ const columnLabels = {
 };
 const userFormTabs = [
   { value: 'general', label: 'General' },
-  { value: 'groups', label: 'Groups' },
+  { value: 'roles', label: 'Roles' },
 ];
 const emptyUser = () => ({ id: null, username: '', email: '', password: '', password_confirmation: '', is_active: true, active_from: '', active_until: '' });
-const groupFromPayload = (value) => ({
+const roleFromPayload = (value) => ({
   ...value,
   selected: Boolean(value?.selected),
   active_from: toLocalDateTimeValue(value?.active_from),
@@ -61,7 +63,7 @@ const editId = computed(() => currentPath.match(/^\/admin\/users\/(\d+)\/edit$/)
 const editing = computed(() => editId.value !== null);
 const rows = ref([]);
 const user = ref(emptyUser());
-const groups = ref([]);
+const roles = ref([]);
 const visibleColumns = ref(columns.map((column) => column.key));
 const page = ref(1);
 const pageSize = ref(10);
@@ -77,6 +79,7 @@ const errors = ref({});
 const activeTab = ref('general');
 const activeFromMax = computed(() => shiftLocalDateTime(user.value.active_until, -1));
 const activeUntilMin = computed(() => shiftLocalDateTime(user.value.active_from, 1));
+const can = (permission) => props.user?.roles?.includes('admin') || props.user?.permissions?.includes(permission);
 
 function firstError(field) {
   const messages = errors.value[field];
@@ -103,12 +106,12 @@ function userFromPayload(value) {
   };
 }
 
-function membershipStartMax(group) {
-  return shiftLocalDateTime(group.active_until, -1);
+function membershipStartMax(role) {
+  return shiftLocalDateTime(role.active_until, -1);
 }
 
-function membershipEndMin(group) {
-  return shiftLocalDateTime(group.active_from, 1);
+function membershipEndMin(role) {
+  return shiftLocalDateTime(role.active_from, 1);
 }
 
 async function loadUsers() {
@@ -139,7 +142,7 @@ async function loadUser() {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.message || 'Unable to load user.');
     user.value = userFromPayload(payload.user || {});
-    groups.value = Array.isArray(payload.groups) ? payload.groups.map(groupFromPayload) : [];
+    roles.value = Array.isArray(payload.roles) ? payload.roles.map(roleFromPayload) : [];
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to load user.';
@@ -148,17 +151,17 @@ async function loadUser() {
   }
 }
 
-async function loadGroupOptions() {
+async function loadRoleOptions() {
   loading.value = true;
   error.value = '';
   try {
-    const response = await fetch('/admin/users/group-options', { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+    const response = await fetch('/admin/users/role-options', { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.message || 'Unable to load groups.');
-    groups.value = Array.isArray(payload.groups) ? payload.groups.map(groupFromPayload) : [];
+    if (!response.ok) throw new Error(payload.message || 'Unable to load roles.');
+    roles.value = Array.isArray(payload.roles) ? payload.roles.map(roleFromPayload) : [];
     csrfToken.value = payload.csrf_token || '';
   } catch (exception) {
-    error.value = exception instanceof Error ? exception.message : 'Unable to load groups.';
+    error.value = exception instanceof Error ? exception.message : 'Unable to load roles.';
   } finally {
     loading.value = false;
   }
@@ -220,10 +223,10 @@ async function saveUser() {
   body.append('is_active', user.value.is_active ? '1' : '0');
   body.append('active_from', localDateTimeValueToIso(user.value.active_from) ?? user.value.active_from);
   body.append('active_until', localDateTimeValueToIso(user.value.active_until) ?? user.value.active_until);
-  body.append('groups', JSON.stringify(groups.value.filter((group) => group.selected).map((group) => ({
-    id: group.id,
-    active_from: localDateTimeValueToIso(group.active_from) ?? group.active_from,
-    active_until: localDateTimeValueToIso(group.active_until) ?? group.active_until,
+  body.append('roles', JSON.stringify(roles.value.filter((role) => role.selected).map((role) => ({
+    id: role.id,
+    active_from: localDateTimeValueToIso(role.active_from) ?? role.active_from,
+    active_until: localDateTimeValueToIso(role.active_until) ?? role.active_until,
   }))));
   const endpoint = editing.value ? `/admin/users/data/${user.value.id}` : '/admin/users/data';
 
@@ -233,12 +236,12 @@ async function saveUser() {
     if (!response.ok) {
       if (response.status === 422) {
         errors.value = payload.errors || {};
-        if (Object.keys(errors.value).some((field) => field === 'groups' || field.startsWith('groups.'))) activeTab.value = 'groups';
+        if (Object.keys(errors.value).some((field) => field === 'roles' || field.startsWith('roles.'))) activeTab.value = 'roles';
       }
       throw new Error(payload.message || 'Unable to save user.');
     }
     user.value = userFromPayload(payload.user || {});
-    groups.value = Array.isArray(payload.groups) ? payload.groups.map(groupFromPayload) : groups.value;
+    roles.value = Array.isArray(payload.roles) ? payload.roles.map(roleFromPayload) : roles.value;
     success.value = payload.message || 'User saved successfully.';
     if (!editing.value) window.location.assign('/admin/users');
   } catch (exception) {
@@ -266,7 +269,7 @@ async function deleteUser(value) {
 }
 
 watch([page, pageSize], loadUsers);
-onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions()) : loadUsers()));
+onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()) : loadUsers()));
 </script>
 
 <template>
@@ -275,7 +278,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
       <VfButton type="submit" form="users-user-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save user' }}</VfButton>
       <VfButton variant="secondary" :disabled="saving || deleting" @click="backToUsers">Back</VfButton>
     </Teleport>
-    <Teleport v-else to="#admin-page-actions">
+    <Teleport v-else-if="can('users.create')" to="#admin-page-actions">
       <VfButton variant="primary" :disabled="loading || saving" @click="newUser">New user</VfButton>
     </Teleport>
 
@@ -316,18 +319,19 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
           </VfDropdown>
         </template>
         <template #cell-actions="{ row }">
-          <VfDropdown placement="bottom-start">
+          <VfDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
             <template #trigger>
               <VfIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
             <VfMenu>
-              <VfMenuItem label="Edit" :icon="icons.pencil" @select="editUser(row)" />
-              <VfMenuItem label="Delete" :icon="icons.trash" tone="danger" @select="deleteUser(row)" />
+              <VfMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
+              <VfMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteUser(row)" />
             </VfMenu>
           </VfDropdown>
         </template>
         <template #cell-username="{ row }">
-          <a class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`">{{ row.username }}</a>
+          <a v-if="can('users.update')" class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`">{{ row.username }}</a>
+          <span v-else>{{ row.username }}</span>
         </template>
         <template #cell-is_active="{ value }">
           <span :class="['users-screen__status', { 'users-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span>
@@ -364,32 +368,32 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
           </VfField>
             </div>
-            <div v-else-if="activeValue === 'groups'" class="users-screen__groups">
-              <VfAlert v-if="firstError('groups')" tone="danger" title="Groups">{{ firstError('groups') }}</VfAlert>
-              <VfDataTable :columns="groupColumns" :rows="groups" row-key="id" striped column-dividers empty-text="No groups available">
-                <template #cell-selected="{ row: group }">
-                  <VfCheckbox v-model="group.selected" :aria-label="`Select group ${group.name}`" :disabled="saving" />
+            <div v-else-if="activeValue === 'roles'" class="users-screen__roles">
+              <VfAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</VfAlert>
+              <VfDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
+                <template #cell-selected="{ row: role }">
+                  <VfCheckbox v-model="role.selected" :aria-label="`Select role ${role.name}`" :disabled="saving" />
                 </template>
                 <template #cell-id="{ value }">
-                  <span class="users-screen__group-id">{{ value }}</span>
+                  <span class="users-screen__role-id">{{ value }}</span>
                 </template>
-                <template #cell-name="{ row: group }">
-                  <div class="users-screen__group-name">
-                    <a class="users-screen__group-link" :href="`/admin/groups/${group.id}/edit`">{{ group.name }}</a>
-                    <span v-if="!group.is_active" class="users-screen__group-inactive">Inactive</span>
+                <template #cell-name="{ row: role }">
+                  <div class="users-screen__role-name">
+                    <a class="users-screen__role-link" :href="`/admin/roles/${role.id}/edit`">{{ role.name }}</a>
+                    <span v-if="!role.is_active" class="users-screen__role-inactive">Inactive</span>
                   </div>
                 </template>
-                <template #cell-period="{ row: group }">
-                  <div class="users-screen__group-period">
-                    <VfField :error="firstError(`groups.${group.id}.active_from`)">
+                <template #cell-period="{ row: role }">
+                  <div class="users-screen__role-period">
+                    <VfField :error="firstError(`roles.${role.id}.active_from`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker :id="controlId" v-model="group.active_from" :max="membershipStartMax(group)" placeholder="From" aria-label="Membership starts at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !group.selected" />
+                        <VfDatePicker :id="controlId" v-model="role.active_from" :max="membershipStartMax(role)" placeholder="From" aria-label="Membership starts at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
                     </VfField>
-                    <span class="users-screen__group-period-separator" aria-hidden="true">—</span>
-                    <VfField :error="firstError(`groups.${group.id}.active_until`)">
+                    <span class="users-screen__role-period-separator" aria-hidden="true">—</span>
+                    <VfField :error="firstError(`roles.${role.id}.active_until`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker :id="controlId" v-model="group.active_until" :min="membershipEndMin(group)" placeholder="Until" aria-label="Membership ends at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !group.selected" />
+                        <VfDatePicker :id="controlId" v-model="role.active_until" :min="membershipEndMin(role)" placeholder="Until" aria-label="Membership ends at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
                     </VfField>
                   </div>
@@ -412,15 +416,15 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
 .users-screen__user-link:hover { text-decoration: underline; }
 .users-screen__fields { display: grid; gap: var(--vf-section-gap); width: 100%; }
 .users-screen__fields :deep(.vf-field) { width: 100%; }
-.users-screen__groups { display: grid; gap: var(--vf-section-gap); width: 100%; }
-.users-screen__group-id { color: var(--vf-color-muted); font-variant-numeric: tabular-nums; }
-.users-screen__group-name { display: grid; gap: 0.125rem; }
-.users-screen__group-link { color: var(--vf-color-text-link); text-decoration: none; }
-.users-screen__group-link:hover { text-decoration: underline; }
-.users-screen__group-inactive { color: var(--vf-color-muted); font-size: 0.875rem; }
-.users-screen__group-period { display: grid; gap: var(--vf-section-gap); }
-.users-screen__group-period :deep(.vf-field) { width: 100%; }
-.users-screen__group-period-separator { display: none; color: var(--vf-color-muted); }
+.users-screen__roles { display: grid; gap: var(--vf-section-gap); width: 100%; }
+.users-screen__role-id { color: var(--vf-color-muted); font-variant-numeric: tabular-nums; }
+.users-screen__role-name { display: grid; gap: 0.125rem; }
+.users-screen__role-link { color: var(--vf-color-text-link); text-decoration: none; }
+.users-screen__role-link:hover { text-decoration: underline; }
+.users-screen__role-inactive { color: var(--vf-color-muted); font-size: 0.875rem; }
+.users-screen__role-period { display: grid; gap: var(--vf-section-gap); }
+.users-screen__role-period :deep(.vf-field) { width: 100%; }
+.users-screen__role-period-separator { display: none; color: var(--vf-color-muted); }
 
 @media (min-width: 1200px) {
   .users-screen__fields :deep(.vf-field) { grid-template-columns: minmax(14rem, 25%) minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; }
@@ -431,7 +435,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadGroupOptions(
   .users-screen__fields :deep(.vf-field__control) { grid-row: 1; }
   .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
   .users-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; }
-  .users-screen__group-period { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
-  .users-screen__group-period-separator { display: block; }
+  .users-screen__role-period { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
+  .users-screen__role-period-separator { display: block; }
 }
 </style>

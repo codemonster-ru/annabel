@@ -4,7 +4,8 @@ namespace Codemonster\Cms\Modules\AdminUsers\Controllers;
 
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
-use Codemonster\Cms\Modules\Auth\Models\Group;
+use Codemonster\Cms\Modules\Auth\Models\Role;
+use Codemonster\Cms\Modules\Auth\Services\PermissionRegistry;
 use Codemonster\DateTime\DateTime;
 use Codemonster\DateTime\InvalidDateTimeException;
 use Codemonster\Http\Request;
@@ -12,9 +13,9 @@ use Codemonster\Http\Response;
 use Codemonster\Validation\Validator;
 use Psr\Clock\ClockInterface;
 
-class GroupListController
+class RoleListController
 {
-    private const TABLE_KEY = 'groups';
+    private const TABLE_KEY = 'roles';
 
     /** @var list<string> */
     private const ALL_COLUMNS = ['actions', 'id', 'name', 'code', 'is_active', 'sort_order', 'created_at', 'updated_at'];
@@ -30,6 +31,7 @@ class GroupListController
     public function __construct(
         private AdminScreenRendererInterface $admin,
         private UserSessionInterface $users,
+        private PermissionRegistry $permissions,
         private Validator $validator,
         private ClockInterface $clock,
     ) {
@@ -37,26 +39,26 @@ class GroupListController
 
     public function index(): Response
     {
-        return $this->admin->renderAuthenticated('admin.groups.list', 'admin.users.groups', 'Groups');
+        return $this->admin->renderAuthenticated('admin.roles.list', 'admin.users.roles', 'Roles');
     }
 
     public function create(): Response
     {
-        return $this->admin->renderAuthenticated('admin.groups.list', 'admin.users.groups', 'New group');
+        return $this->admin->renderAuthenticated('admin.roles.list', 'admin.users.roles', 'New role');
     }
 
     public function edit(string $id): Response
     {
-        if (!Group::find($id) instanceof Group) {
+        if (!Role::find($id) instanceof Role) {
             abort(404);
         }
 
-        return $this->admin->renderAuthenticated('admin.groups.list', 'admin.users.groups', 'Edit group');
+        return $this->admin->renderAuthenticated('admin.roles.list', 'admin.users.roles', 'Edit role');
     }
 
     public function data(Request $request): Response
     {
-        $query = Group::query();
+        $query = Role::query();
         $query->getBuilder()->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
         $page = $this->positiveInteger($request->query('page'), 1);
         $perPage = $this->positiveInteger($request->query('per_page'), self::DEFAULT_PER_PAGE);
@@ -66,14 +68,14 @@ class GroupListController
         }
 
         $pagination = $query->paginate($perPage, $page);
-        $groups = [];
+        $roles = [];
 
-        foreach ($pagination['data'] as $group) {
-            $groups[] = $this->payload($group);
+        foreach ($pagination['data'] as $role) {
+            $roles[] = $this->payload($role);
         }
 
         return Response::json([
-            'data' => $groups,
+            'data' => $roles,
             'total' => $pagination['total'],
             'current_page' => $pagination['current_page'],
             'per_page' => $pagination['per_page'],
@@ -129,48 +131,60 @@ class GroupListController
 
     public function showData(string $id): Response
     {
-        $group = Group::find($id);
-        if (!$group instanceof Group) {
-            return Response::json(['message' => 'Group not found.'], 404);
+        $role = Role::find($id);
+        if (!$role instanceof Role) {
+            return Response::json(['message' => 'Role not found.'], 404);
         }
 
-        return Response::json(['group' => $this->payload($group), 'csrf_token' => csrf_token()]);
+        return Response::json([
+            'role' => $this->payload($role),
+            'permissions' => $this->permissionOptionPayload($role),
+            'csrf_token' => csrf_token(),
+        ]);
+    }
+
+    public function permissionOptions(): Response
+    {
+        return Response::json([
+            'permissions' => $this->permissionOptionPayload(),
+            'csrf_token' => csrf_token(),
+        ]);
     }
 
     public function store(Request $request): Response
     {
-        return $this->save($request, new Group());
+        return $this->save($request, new Role());
     }
 
     public function update(Request $request, string $id): Response
     {
-        $group = Group::find($id);
-        if (!$group instanceof Group) {
-            return Response::json(['message' => 'Group not found.'], 404);
+        $role = Role::find($id);
+        if (!$role instanceof Role) {
+            return Response::json(['message' => 'Role not found.'], 404);
         }
 
-        return $this->save($request, $group);
+        return $this->save($request, $role);
     }
 
     public function destroy(string $id): Response
     {
-        $group = Group::find($id);
-        if (!$group instanceof Group) {
-            return Response::json(['message' => 'Group not found.'], 404);
+        $role = Role::find($id);
+        if (!$role instanceof Role) {
+            return Response::json(['message' => 'Role not found.'], 404);
         }
-        if ((string) $group->code === 'admin') {
-            return Response::json(['message' => 'The admin group cannot be deleted.'], 422);
+        if ((string) $role->code === 'admin') {
+            return Response::json(['message' => 'The admin role cannot be deleted.'], 422);
         }
-        if (db()->table('group_user')->where('group_id', $group->id)->exists()) {
-            return Response::json(['message' => 'Group cannot be deleted while assigned to users.'], 422);
+        if (db()->table('role_user')->where('role_id', $role->id)->exists()) {
+            return Response::json(['message' => 'Role cannot be deleted while assigned to users.'], 422);
         }
 
-        $group->delete();
+        $role->delete();
 
-        return Response::json(['message' => 'Group deleted successfully.']);
+        return Response::json(['message' => 'Role deleted successfully.']);
     }
 
-    private function save(Request $request, Group $group): Response
+    private function save(Request $request, Role $role): Response
     {
         $validated = $this->validator->validateOrFail([
             'name' => trim((string) $request->input('name')),
@@ -195,56 +209,156 @@ class GroupListController
             return $this->invalid('active_until', 'The activity end must be after the activity start.');
         }
 
+        $permissionCodes = $this->validatedPermissionCodes($request);
+
+        if ($permissionCodes instanceof Response) {
+            return $permissionCodes;
+        }
+
         if (preg_match('/\A[A-Za-z0-9][A-Za-z0-9 _-]{1,59}\z/', $validated['name']) !== 1) {
-            return $this->invalid('name', 'Group name may contain only letters, numbers, spaces, underscores, or hyphens and must start with a letter or number.');
+            return $this->invalid('name', 'Role name may contain only letters, numbers, spaces, underscores, or hyphens and must start with a letter or number.');
         }
         if (preg_match('/\A[a-z0-9][a-z0-9_-]{1,59}\z/', $validated['code']) !== 1) {
             return $this->invalid('code', 'Code may contain only lowercase letters, numbers, underscores, or hyphens and must start with a letter or number.');
         }
-        if ((string) $group->code === 'admin' && $validated['name'] !== 'Admin') {
-            return $this->invalid('name', 'The admin group cannot be renamed.');
+        if ((string) $role->code === 'admin' && $validated['name'] !== 'Admin') {
+            return $this->invalid('name', 'The admin role cannot be renamed.');
         }
-        if ((string) $group->code === 'admin' && $validated['code'] !== 'admin') {
-            return $this->invalid('code', 'The admin group code cannot be changed.');
-        }
-
-        $duplicate = Group::query()->where('name', $validated['name'])->where('id', '!=', $group->id ?? 0)->first();
-        if ($duplicate instanceof Group) {
-            return $this->invalid('name', 'This group name is already in use.');
-        }
-        $duplicateCode = Group::query()->where('code', $validated['code'])->where('id', '!=', $group->id ?? 0)->first();
-        if ($duplicateCode instanceof Group) {
-            return $this->invalid('code', 'This group code is already in use.');
+        if ((string) $role->code === 'admin' && $validated['code'] !== 'admin') {
+            return $this->invalid('code', 'The admin role code cannot be changed.');
         }
 
-        $group->fill([
-            'name' => $validated['name'],
-            'code' => $validated['code'],
-            'description' => $validated['description'] !== '' ? $validated['description'] : null,
-            'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
-            'active_from' => $activeFrom,
-            'active_until' => $activeUntil,
-            'sort_order' => (int) ($validated['sort_order'] ?? 0),
+        $duplicate = Role::query()->where('name', $validated['name'])->where('id', '!=', $role->id ?? 0)->first();
+        if ($duplicate instanceof Role) {
+            return $this->invalid('name', 'This role name is already in use.');
+        }
+        $duplicateCode = Role::query()->where('code', $validated['code'])->where('id', '!=', $role->id ?? 0)->first();
+        if ($duplicateCode instanceof Role) {
+            return $this->invalid('code', 'This role code is already in use.');
+        }
+
+        transaction(function () use ($request, $validated, $activeFrom, $activeUntil, $permissionCodes, $role): void {
+            $role->fill([
+                'name' => $validated['name'],
+                'code' => $validated['code'],
+                'description' => $validated['description'] !== '' ? $validated['description'] : null,
+                'is_active' => in_array((string) $request->input('is_active'), ['1', 'true', 'on'], true),
+                'active_from' => $activeFrom,
+                'active_until' => $activeUntil,
+                'sort_order' => (int) ($validated['sort_order'] ?? 0),
+            ]);
+            $role->save();
+            $this->syncPermissions($role, $permissionCodes);
+        });
+
+        return Response::json([
+            'message' => 'Role saved successfully.',
+            'role' => $this->payload($role),
+            'permissions' => $this->permissionOptionPayload($role),
         ]);
-        $group->save();
+    }
 
-        return Response::json(['message' => 'Group saved successfully.', 'group' => $this->payload($group)]);
+    /** @return list<string>|Response */
+    private function validatedPermissionCodes(Request $request): array|Response
+    {
+        $value = $request->input('permissions');
+
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        if (!is_array($value)) {
+            return $this->invalid('permissions', 'The selected permissions must be a valid list.');
+        }
+
+        $codes = array_values(array_unique(array_filter(
+            $value,
+            static fn (mixed $code): bool => is_string($code) && $code !== '',
+        )));
+
+        if (count($codes) !== count($value)) {
+            return $this->invalid('permissions', 'A selected permission is invalid.');
+        }
+
+        if ($codes === []) {
+            return [];
+        }
+
+        foreach ($codes as $code) {
+            if (!$this->permissions->has($code)) {
+                return $this->invalid('permissions', 'A selected permission does not exist.');
+            }
+        }
+
+        return $codes;
+    }
+
+    /** @param list<string> $codes */
+    private function syncPermissions(Role $role, array $codes): void
+    {
+        $knownCodes = array_column($this->permissions->all(), 'code');
+
+        if ($knownCodes !== []) {
+            db()->table('role_permission')
+                ->where('role_id', $role->id)
+                ->whereIn('permission', $knownCodes)
+                ->delete();
+        }
+
+        if ((string) $role->code === 'admin' || $codes === []) {
+            return;
+        }
+
+        foreach ($codes as $code) {
+            db()->table('role_permission')->insert([
+                'role_id' => $role->id,
+                'permission' => $code,
+            ]);
+        }
+    }
+
+    /** @return list<array{id: string, code: string, name: string, category: string, selected: bool, locked: bool}> */
+    private function permissionOptionPayload(?Role $role = null): array
+    {
+        $selected = [];
+        $locked = $role !== null && (string) $role->code === 'admin';
+
+        if ($role !== null && !$locked) {
+            foreach (db()->table('role_permission')->where('role_id', $role->id)->get() as $assignment) {
+                $selected[(string) $assignment['permission']] = true;
+            }
+        }
+
+        $payload = [];
+
+        foreach ($this->permissions->all() as $permission) {
+            $payload[] = [
+                'id' => $permission['code'],
+                'code' => $permission['code'],
+                'name' => $permission['name'],
+                'category' => $permission['category'],
+                'selected' => $locked || isset($selected[$permission['code']]),
+                'locked' => $locked,
+            ];
+        }
+
+        return $payload;
     }
 
     /** @return array<string, mixed> */
-    private function payload(Group $group): array
+    private function payload(Role $role): array
     {
         return [
-            'id' => $group->id,
-            'name' => (string) $group->name,
-            'code' => (string) $group->code,
-            'description' => $group->description !== null ? (string) $group->description : null,
-            'is_active' => (bool) $group->is_active,
-            'active_from' => $this->toIso8601($group->active_from),
-            'active_until' => $this->toIso8601($group->active_until),
-            'sort_order' => (int) $group->sort_order,
-            'created_at' => $group->created_at?->format(DATE_ATOM),
-            'updated_at' => $group->updated_at?->format(DATE_ATOM),
+            'id' => $role->id,
+            'name' => (string) $role->name,
+            'code' => (string) $role->code,
+            'description' => $role->description !== null ? (string) $role->description : null,
+            'is_active' => (bool) $role->is_active,
+            'active_from' => $this->toIso8601($role->active_from),
+            'active_until' => $this->toIso8601($role->active_until),
+            'sort_order' => (int) $role->sort_order,
+            'created_at' => $role->created_at?->format(DATE_ATOM),
+            'updated_at' => $role->updated_at?->format(DATE_ATOM),
         ];
     }
 

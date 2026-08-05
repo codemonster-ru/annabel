@@ -6,6 +6,9 @@ use Codemonster\Database\ORM\Model;
 
 /**
  * @property int|string $id
+ * @property int|string|null $created_by
+ * @property int|string|null $owner_id
+ * @property int|string|null $updated_by
  * @property string $slug
  * @property string $title
  * @property int $sort_order
@@ -26,6 +29,9 @@ class Page extends Model
     /** @var list<string> */
     protected array $fillable = [
         'id',
+        'created_by',
+        'owner_id',
+        'updated_by',
         'slug',
         'title',
         'sort_order',
@@ -40,6 +46,9 @@ class Page extends Model
 
     /** @var array<string, string> */
     protected array $casts = [
+        'created_by' => 'integer',
+        'owner_id' => 'integer',
+        'updated_by' => 'integer',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
         'created_at' => 'datetime',
@@ -78,5 +87,11 @@ class Page extends Model
         $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?? '';
 
         return trim($slug, '-');
+    }
+
+    public function isOwnedBy(int|string $userId): bool
+    {
+        return $this->owner_id !== null
+            && (string) $this->owner_id === (string) $userId;
     }
 }

@@ -92,31 +92,31 @@ class User extends Model
     }
 
     /**
-     * @return BelongsToMany<Group, $this>
+     * @return BelongsToMany<Role, $this>
      */
-    public function groups(): BelongsToMany
+    public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id');
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
 
     /**
      * @return array<int, string>
      */
-    public function groupCodes(): array
+    public function roleCodes(): array
     {
-        $query = Group::activeQueryAt();
+        $query = Role::activeQueryAt();
         $query->getBuilder()
-            ->join('group_user', 'groups.id', '=', 'group_user.group_id')
-            ->select('groups.*');
+            ->join('role_user', 'roles.id', '=', 'role_user.role_id')
+            ->select('roles.*');
         $this->applyActiveMembershipWindow($query);
-        $groups = $query
-            ->where('group_user.user_id', $this->id)
+        $roles = $query
+            ->where('role_user.user_id', $this->id)
             ->get();
 
         $codes = [];
 
-        foreach ($groups as $group) {
-            $code = $group->code;
+        foreach ($roles as $role) {
+            $code = $role->code;
 
             if (is_string($code) && $code !== '') {
                 $codes[] = $code;
@@ -126,55 +126,90 @@ class User extends Model
         return $codes;
     }
 
-    public function hasGroup(string $code): bool
+    public function hasRole(string $code): bool
     {
         if ($code === '') {
             return false;
         }
 
-        $query = Group::activeQueryAt();
-        $query->getBuilder()->join('group_user', 'groups.id', '=', 'group_user.group_id');
+        $query = Role::activeQueryAt();
+        $query->getBuilder()->join('role_user', 'roles.id', '=', 'role_user.role_id');
         $this->applyActiveMembershipWindow($query);
 
         return $query
-            ->where('group_user.user_id', $this->id)
-            ->where('groups.code', $code)
+            ->where('role_user.user_id', $this->id)
+            ->where('roles.code', $code)
             ->exists();
     }
 
-    public function assignGroup(string $code): void
+    /** @return array<int, string> */
+    public function permissionCodes(): array
+    {
+        $query = Role::query();
+        $query->getBuilder()
+            ->join('role_permission', 'roles.id', '=', 'role_permission.role_id')
+            ->join('role_user', 'roles.id', '=', 'role_user.role_id')
+            ->select('role_permission.permission');
+        $this->applyActiveRoleWindow($query);
+        $this->applyActiveMembershipWindow($query);
+
+        $assignments = $query
+            ->where('role_user.user_id', $this->id)
+            ->get();
+        $codes = [];
+
+        foreach ($assignments as $assignment) {
+            $code = $assignment->getAttribute('permission');
+
+            if (is_string($code) && $code !== '') {
+                $codes[$code] = true;
+            }
+        }
+
+        return array_keys($codes);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return $permission !== '' && in_array($permission, $this->permissionCodes(), true);
+    }
+
+    public function assignRole(string $code): void
     {
         if ($code === '') {
             return;
         }
 
-        $group = Group::findByCode($code);
+        $role = Role::findByCode($code);
 
-        if (!$group instanceof Group) {
-            throw new \RuntimeException('Group not found.');
+        if (!$role instanceof Role) {
+            throw new \RuntimeException('Role not found.');
         }
 
-        $groupId = $group->id ?? null;
+        $roleId = $role->id ?? null;
 
-        if (!$groupId) {
-            throw new \RuntimeException('Group not found or missing id.');
+        if (!$roleId) {
+            throw new \RuntimeException('Role not found or missing id.');
         }
 
         $exists = db()
-            ->table('group_user')
+            ->table('role_user')
             ->where('user_id', $this->id)
-            ->where('group_id', $groupId)
+            ->where('role_id', $roleId)
             ->exists();
 
         if (!$exists) {
-            db()->table('group_user')->insert([
+            db()->table('role_user')->insert([
                 'user_id' => $this->id,
-                'group_id' => $groupId,
+                'role_id' => $roleId,
             ]);
         }
     }
 
-    /** @param \Codemonster\Database\ORM\ModelQuery<Group> $query */
+    /**
+     * @template TModel of \Codemonster\Database\ORM\Model
+     * @param \Codemonster\Database\ORM\ModelQuery<TModel> $query
+     */
     private function applyActiveMembershipWindow(\Codemonster\Database\ORM\ModelQuery $query, ?\DateTimeInterface $at = null): void
     {
         $date = \DateTimeImmutable::createFromInterface(
@@ -185,12 +220,33 @@ class User extends Model
 
         $query
             ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
-                $builder->whereNull('group_user.active_from')
-                    ->orWhere('group_user.active_from', '<=', $date);
+                $builder->whereNull('role_user.active_from')
+                    ->orWhere('role_user.active_from', '<=', $date);
             })
             ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
-                $builder->whereNull('group_user.active_until')
-                    ->orWhere('group_user.active_until', '>=', $date);
+                $builder->whereNull('role_user.active_until')
+                    ->orWhere('role_user.active_until', '>=', $date);
+            });
+    }
+
+    /** @param \Codemonster\Database\ORM\ModelQuery<Role> $query */
+    private function applyActiveRoleWindow(\Codemonster\Database\ORM\ModelQuery $query, ?\DateTimeInterface $at = null): void
+    {
+        $date = \DateTimeImmutable::createFromInterface(
+            $at ?? new \DateTimeImmutable('now', new \DateTimeZone('UTC')),
+        )
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+
+        $query
+            ->where('roles.is_active', 1)
+            ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
+                $builder->whereNull('roles.active_from')
+                    ->orWhere('roles.active_from', '<=', $date);
+            })
+            ->where(static function (\Codemonster\Database\Query\QueryBuilder $builder) use ($date): void {
+                $builder->whereNull('roles.active_until')
+                    ->orWhere('roles.active_until', '>=', $date);
             });
     }
 }

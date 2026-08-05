@@ -5,6 +5,7 @@ namespace Codemonster\Cms\Modules\Admin\Controllers;
 use Codemonster\Cms\Modules\Admin\Services\AdminShellRenderer;
 use Codemonster\Cms\Modules\Admin\Services\RememberCookieResponseFactory;
 use Codemonster\Cms\Modules\Auth\Contracts\AuthenticatorInterface;
+use Codemonster\Cms\Modules\Auth\Contracts\AuthorizationInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Http\Request;
 use Codemonster\Http\Response;
@@ -15,6 +16,7 @@ class AdminAuthController
     public function __construct(
         private AuthenticatorInterface $auth,
         private UserSessionInterface $users,
+        private AuthorizationInterface $authorization,
         private AdminShellRenderer $renderer,
         private RememberCookieResponseFactory $rememberCookies,
         private Validator $validator,
@@ -29,7 +31,7 @@ class AdminAuthController
             return $this->renderer->render(false, 'login');
         }
 
-        if (!$user->hasGroup('admin')) {
+        if ($this->authorization->denies($user, 'admin.access')) {
             abort(403);
         }
 
@@ -54,7 +56,7 @@ class AdminAuthController
             ], 401);
         }
 
-        if (!$user->hasGroup('admin')) {
+        if ($this->authorization->denies($user, 'admin.access')) {
             return $this->json([
                 'message' => 'This account does not have admin access',
             ], 403);

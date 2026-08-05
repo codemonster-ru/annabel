@@ -48,7 +48,7 @@ class AdminShellRenderer implements AdminScreenRendererInterface
      *     authenticated: bool,
      *     screen: string,
      *     csrfToken: string,
-     *     user: array{id: int|string, username: string, email: string, groups: array<int, string>}|null,
+     *     user: array{id: int|string, username: string, email: string, roles: array<int, string>, permissions: array<int, string>}|null,
      *     navigation: array<int, array{value: string, label: string, leadingIcon?: string, href?: string, children?: array<mixed>}>,
      *     navigationValue: string,
      *     pageTitle: string|null,
@@ -60,14 +60,15 @@ class AdminShellRenderer implements AdminScreenRendererInterface
      */
     public function payload(bool $isAuthenticated, string $screen = 'login', array $extra = []): array
     {
-        $navigation = $isAuthenticated ? $this->navigation->navigation() : [];
+        $user = $isAuthenticated ? $this->users->current() : null;
+        $navigation = $user !== null ? $this->navigation->navigationFor($user) : [];
         $settings = $this->settings->current();
 
         return array_merge([
             'authenticated' => $isAuthenticated,
             'screen' => $screen,
             'csrfToken' => csrf_token(),
-            'user' => $isAuthenticated ? $this->users->current()?->toArray() : null,
+            'user' => $user?->toArray(),
             'navigation' => $navigation,
             'navigationValue' => $isAuthenticated ? $screen : '',
             'pageTitle' => $isAuthenticated ? $this->navigation->label($screen) : null,

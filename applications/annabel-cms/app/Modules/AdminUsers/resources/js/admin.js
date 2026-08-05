@@ -1,4 +1,4 @@
 export const adminScreens = {
   'admin.users.list': () => import('./screens/UserListScreen.vue'),
-  'admin.groups.list': () => import('./screens/GroupListScreen.vue'),
+  'admin.roles.list': () => import('./screens/RoleListScreen.vue'),
 };

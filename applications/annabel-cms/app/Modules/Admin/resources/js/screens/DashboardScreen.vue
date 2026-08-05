@@ -1,5 +1,7 @@
 <script setup>
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
+
+defineProps({ user: { type: Object, default: null } });
 </script>
 
 <template>

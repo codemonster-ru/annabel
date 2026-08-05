@@ -14,25 +14,25 @@ return new class () extends Seeder {
         }
 
         $now = DateTime::now($clock, 'UTC')->format(DateTime::DATABASE_FORMAT);
-        $groups = [
+        $roles = [
             ['name' => 'Admin', 'code' => 'admin', 'sort_order' => 1],
             ['name' => 'User', 'code' => 'user', 'sort_order' => 2],
         ];
 
-        foreach ($groups as $group) {
+        foreach ($roles as $role) {
             $exists = db()
-                ->table('groups')
-                ->where('code', $group['code'])
+                ->table('roles')
+                ->where('code', $role['code'])
                 ->exists();
 
             if ($exists) {
                 continue;
             }
 
-            db()->table('groups')->insert([
-                'name' => $group['name'],
-                'code' => $group['code'],
-                'sort_order' => $group['sort_order'],
+            db()->table('roles')->insert([
+                'name' => $role['name'],
+                'code' => $role['code'],
+                'sort_order' => $role['sort_order'],
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

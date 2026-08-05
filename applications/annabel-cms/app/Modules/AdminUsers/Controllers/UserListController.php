@@ -4,7 +4,7 @@ namespace Codemonster\Cms\Modules\AdminUsers\Controllers;
 
 use Codemonster\Cms\Modules\Admin\Contracts\AdminScreenRendererInterface;
 use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
-use Codemonster\Cms\Modules\Auth\Models\Group;
+use Codemonster\Cms\Modules\Auth\Models\Role;
 use Codemonster\Cms\Modules\Auth\Models\User;
 use Codemonster\DateTime\DateTime;
 use Codemonster\DateTime\InvalidDateTimeException;
@@ -139,15 +139,15 @@ class UserListController
 
         return Response::json([
             'user' => $this->payload($user),
-            'groups' => $this->groupOptionPayload($user),
+            'roles' => $this->roleOptionPayload($user),
             'csrf_token' => csrf_token(),
         ]);
     }
 
-    public function groupOptions(): Response
+    public function roleOptions(): Response
     {
         return Response::json([
-            'groups' => $this->groupOptionPayload(),
+            'roles' => $this->roleOptionPayload(),
             'csrf_token' => csrf_token(),
         ]);
     }
@@ -220,9 +220,9 @@ class UserListController
             return $this->invalid('active_until', 'The activity end must be after the activity start.');
         }
 
-        $groupAssignments = $this->validatedGroupAssignments($request);
-        if ($groupAssignments instanceof Response) {
-            return $groupAssignments;
+        $roleAssignments = $this->validatedRoleAssignments($request);
+        if ($roleAssignments instanceof Response) {
+            return $roleAssignments;
         }
 
         if (!User::validUsername($validated['username'])) {
@@ -245,7 +245,7 @@ class UserListController
             return $this->invalid('email', 'This email is already in use.');
         }
 
-        transaction(function () use ($request, $validated, $activeFrom, $activeUntil, $password, $user, $groupAssignments): void {
+        transaction(function () use ($request, $validated, $activeFrom, $activeUntil, $password, $user, $roleAssignments): void {
             $user->fill([
                 'username' => $validated['username'],
                 'email' => $validated['email'],
@@ -259,47 +259,47 @@ class UserListController
             }
 
             $user->save();
-            $this->syncGroupAssignments($user, $groupAssignments);
+            $this->syncRoleAssignments($user, $roleAssignments);
         });
 
         return Response::json([
             'message' => 'User saved successfully.',
             'user' => $this->payload($user),
-            'groups' => $this->groupOptionPayload($user),
+            'roles' => $this->roleOptionPayload($user),
         ]);
     }
 
     /**
-     * @return list<array{group_id: int, active_from: string|null, active_until: string|null}>|Response
+     * @return list<array{role_id: int, active_from: string|null, active_until: string|null}>|Response
      */
-    private function validatedGroupAssignments(Request $request): array|Response
+    private function validatedRoleAssignments(Request $request): array|Response
     {
-        $value = $request->input('groups');
+        $value = $request->input('roles');
 
         if (is_string($value)) {
             $value = json_decode($value, true);
         }
 
         if (!is_array($value)) {
-            return $this->invalid('groups', 'The selected groups must be a valid list.');
+            return $this->invalid('roles', 'The selected roles must be a valid list.');
         }
 
         $assignments = [];
-        $groupIds = [];
+        $roleIds = [];
 
         foreach ($value as $membership) {
             if (!is_array($membership)) {
-                return $this->invalid('groups', 'The selected groups must be a valid list.');
+                return $this->invalid('roles', 'The selected roles must be a valid list.');
             }
 
             $id = $membership['id'] ?? null;
             if ((!is_int($id) && !is_string($id)) || preg_match('/\A[1-9]\d*\z/', (string) $id) !== 1) {
-                return $this->invalid('groups', 'A selected group is invalid.');
+                return $this->invalid('roles', 'A selected role is invalid.');
             }
 
-            $groupId = (int) $id;
-            if (isset($groupIds[$groupId])) {
-                return $this->invalid('groups', 'A group may only be selected once.');
+            $roleId = (int) $id;
+            if (isset($roleIds[$roleId])) {
+                return $this->invalid('roles', 'A role may only be selected once.');
             }
 
             $activeFromValue = trim(is_string($membership['active_from'] ?? null) ? $membership['active_from'] : '');
@@ -308,92 +308,92 @@ class UserListController
             $membershipActiveUntil = $this->toUtc($activeUntilValue);
 
             if ($activeFromValue !== '' && $membershipActiveFrom === null) {
-                return $this->invalid("groups.{$groupId}.active_from", 'The membership start must be a valid date and time.');
+                return $this->invalid("roles.{$roleId}.active_from", 'The membership start must be a valid date and time.');
             }
             if ($activeUntilValue !== '' && $membershipActiveUntil === null) {
-                return $this->invalid("groups.{$groupId}.active_until", 'The membership end must be a valid date and time.');
+                return $this->invalid("roles.{$roleId}.active_until", 'The membership end must be a valid date and time.');
             }
             if ($membershipActiveFrom !== null && $membershipActiveUntil !== null && $membershipActiveUntil <= $membershipActiveFrom) {
-                return $this->invalid("groups.{$groupId}.active_until", 'The membership end must be after the membership start.');
+                return $this->invalid("roles.{$roleId}.active_until", 'The membership end must be after the membership start.');
             }
 
-            $groupIds[$groupId] = true;
+            $roleIds[$roleId] = true;
             $assignments[] = [
-                'group_id' => $groupId,
+                'role_id' => $roleId,
                 'active_from' => $membershipActiveFrom,
                 'active_until' => $membershipActiveUntil,
             ];
         }
 
-        if ($groupIds !== []) {
+        if ($roleIds !== []) {
             $knownIds = [];
-            foreach (Group::query()->whereIn('id', array_keys($groupIds))->get() as $group) {
-                $knownIds[(int) $group->id] = true;
+            foreach (Role::query()->whereIn('id', array_keys($roleIds))->get() as $role) {
+                $knownIds[(int) $role->id] = true;
             }
 
-            if (count($knownIds) !== count($groupIds)) {
-                return $this->invalid('groups', 'A selected group does not exist.');
+            if (count($knownIds) !== count($roleIds)) {
+                return $this->invalid('roles', 'A selected role does not exist.');
             }
         }
 
         return $assignments;
     }
 
-    /** @param list<array{group_id: int, active_from: string|null, active_until: string|null}> $assignments */
-    private function syncGroupAssignments(User $user, array $assignments): void
+    /** @param list<array{role_id: int, active_from: string|null, active_until: string|null}> $assignments */
+    private function syncRoleAssignments(User $user, array $assignments): void
     {
         $desired = [];
         foreach ($assignments as $assignment) {
-            $desired[$assignment['group_id']] = $assignment;
+            $desired[$assignment['role_id']] = $assignment;
         }
 
-        foreach (db()->table('group_user')->where('user_id', $user->id)->get() as $membership) {
-            $groupId = (int) $membership['group_id'];
+        foreach (db()->table('role_user')->where('user_id', $user->id)->get() as $membership) {
+            $roleId = (int) $membership['role_id'];
 
-            if (!isset($desired[$groupId])) {
-                db()->table('group_user')
+            if (!isset($desired[$roleId])) {
+                db()->table('role_user')
                     ->where('user_id', $user->id)
-                    ->where('group_id', $groupId)
+                    ->where('role_id', $roleId)
                     ->delete();
                 continue;
             }
 
-            db()->table('group_user')
+            db()->table('role_user')
                 ->where('user_id', $user->id)
-                ->where('group_id', $groupId)
+                ->where('role_id', $roleId)
                 ->update([
-                    'active_from' => $desired[$groupId]['active_from'],
-                    'active_until' => $desired[$groupId]['active_until'],
+                    'active_from' => $desired[$roleId]['active_from'],
+                    'active_until' => $desired[$roleId]['active_until'],
                 ]);
-            unset($desired[$groupId]);
+            unset($desired[$roleId]);
         }
 
         foreach ($desired as $assignment) {
-            db()->table('group_user')->insert(['user_id' => $user->id] + $assignment);
+            db()->table('role_user')->insert(['user_id' => $user->id] + $assignment);
         }
     }
 
     /** @return list<array<string, mixed>> */
-    private function groupOptionPayload(?User $user = null): array
+    private function roleOptionPayload(?User $user = null): array
     {
         $memberships = [];
         if ($user !== null) {
-            foreach (db()->table('group_user')->where('user_id', $user->id)->get() as $membership) {
-                $memberships[(int) $membership['group_id']] = $membership;
+            foreach (db()->table('role_user')->where('user_id', $user->id)->get() as $membership) {
+                $memberships[(int) $membership['role_id']] = $membership;
             }
         }
 
-        $groups = Group::query();
-        $groups->getBuilder()->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
+        $roles = Role::query();
+        $roles->getBuilder()->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
         $payload = [];
 
-        foreach ($groups->get() as $group) {
-            $membership = $memberships[(int) $group->id] ?? null;
+        foreach ($roles->get() as $role) {
+            $membership = $memberships[(int) $role->id] ?? null;
             $payload[] = [
-                'id' => $group->id,
-                'name' => (string) $group->name,
-                'code' => (string) $group->code,
-                'is_active' => (bool) $group->is_active,
+                'id' => $role->id,
+                'name' => (string) $role->name,
+                'code' => (string) $role->code,
+                'is_active' => (bool) $role->is_active,
                 'selected' => $membership !== null,
                 'active_from' => $this->toIso8601($membership['active_from'] ?? null),
                 'active_until' => $this->toIso8601($membership['active_until'] ?? null),

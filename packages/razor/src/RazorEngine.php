@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codemonster\Razor;
 
+use Codemonster\Razor\Exceptions\RazorException;
+use Codemonster\Razor\Internal\RenderContext;
 use Codemonster\View\Contracts\SupportsInspectionInterface;
 use Codemonster\View\EngineInterface;
 use Codemonster\View\Locator\LocatorInterface;
+use Throwable;
 
 class RazorEngine implements EngineInterface, SupportsInspectionInterface
 {
     protected LocatorInterface $locator;
     protected Compiler $compiler;
+
     /** @var list<string> */
     protected array $extensions;
 
@@ -19,7 +25,7 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
     public function __construct(LocatorInterface $locator, array|string $extensions = 'razor.php', ?string $cachePath = null)
     {
         $this->locator = $locator;
-        $this->extensions = (array) $extensions;
+        $this->extensions = array_values((array) $extensions);
         $this->compiler = new Compiler($cachePath ?? sys_get_temp_dir() . '/razor_cache');
     }
 
@@ -28,22 +34,11 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
      */
     public function render(string $view, array $data = []): string
     {
-        $path = $this->locator->resolve($view, $this->extensions);
-        $compiled = $this->compiler->compile($path);
+        $context = new RenderContext(
+            fn (string $name, array $scope, RenderContext $runtime): string => $this->evaluate($name, $scope, $runtime),
+        );
 
-        extract($data, EXTR_SKIP);
-
-        ob_start();
-
-        include $compiled;
-
-        $content = ob_get_clean();
-
-        if ($content === false) {
-            throw new \RuntimeException('Unable to read rendered Razor output.');
-        }
-
-        return $content;
+        return $context->render($view, $data);
     }
 
     public function getLocator(): LocatorInterface
@@ -51,11 +46,51 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
         return $this->locator;
     }
 
-    /**
-     * @return list<string>
-     */
+    /** @return list<string> */
     public function getExtensions(): array
     {
-        return (array) $this->extensions;
+        return $this->extensions;
+    }
+
+    /** @param array<string, mixed> $data */
+    private function evaluate(string $view, array $data, RenderContext $__razor): string
+    {
+        try {
+            $path = $this->locator->resolve($view, $this->extensions);
+            $compiled = $this->compiler->compile($path);
+        } catch (Throwable $exception) {
+            if ($exception instanceof RazorException) {
+                throw $exception;
+            }
+
+            throw new RazorException('Unable to resolve Razor view [' . $view . '].', 0, $exception);
+        }
+
+        $__razorData = $data;
+        extract($data, EXTR_SKIP);
+        $bufferLevel = ob_get_level();
+        ob_start();
+
+        try {
+            include $compiled;
+
+            $content = ob_get_clean();
+
+            if ($content === false) {
+                throw new RazorException('Unable to read rendered Razor output for [' . $view . '].');
+            }
+
+            return $content;
+        } catch (Throwable $exception) {
+            while (ob_get_level() > $bufferLevel) {
+                ob_end_clean();
+            }
+
+            if ($exception instanceof RazorException) {
+                throw $exception;
+            }
+
+            throw new RazorException('Unable to render Razor view [' . $view . '].', 0, $exception);
+        }
     }
 }

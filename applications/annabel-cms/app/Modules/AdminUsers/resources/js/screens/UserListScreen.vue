@@ -4,10 +4,13 @@ import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
 import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
+import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
@@ -22,7 +25,7 @@ import {
 const props = defineProps({ user: { type: Object, default: null } });
 
 const columns = [
-  { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
+  { key: 'actions', header: 'Actions', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'username', header: 'Username', verticalAlign: 'middle' },
   { key: 'email', header: 'Email', verticalAlign: 'middle' },
@@ -36,15 +39,6 @@ const roleColumns = [
   { key: 'name', header: 'Role', width: '25%', verticalAlign: 'middle' },
   { key: 'period', header: 'Active period', verticalAlign: 'top' },
 ];
-const columnLabels = {
-  actions: 'Actions',
-  id: 'ID',
-  username: 'Username',
-  email: 'Email',
-  is_active: 'Active',
-  created_at: 'Created',
-  updated_at: 'Updated',
-};
 const userFormTabs = [
   { value: 'general', label: 'General' },
   { value: 'roles', label: 'Roles' },
@@ -72,6 +66,7 @@ const csrfToken = ref('');
 const loading = ref(true);
 const saving = ref(false);
 const deleting = ref(false);
+const deleteCandidate = ref(null);
 const preferencesSaving = ref(false);
 const error = ref('');
 const success = ref('');
@@ -186,16 +181,6 @@ async function saveColumnPreferences(next) {
   }
 }
 
-function toggleColumn(key, value) {
-  if (key === 'actions') return;
-  const next = value ? [...visibleColumns.value, key] : visibleColumns.value.filter((column) => column !== key);
-  saveColumnPreferences(next);
-}
-
-function toggleAllColumns(value) {
-  saveColumnPreferences(value ? columns.map((column) => column.key) : ['actions']);
-}
-
 function editUser(value) {
   window.location.assign(`/admin/users/${value.id}/edit`);
 }
@@ -252,7 +237,7 @@ async function saveUser() {
 }
 
 async function deleteUser(value) {
-  if (!value?.id || deleting.value || !window.confirm('Delete this user?')) return;
+  if (!value?.id || deleting.value) return;
   deleting.value = true;
   const body = new FormData();
   body.append('_token', csrfToken.value);
@@ -274,6 +259,18 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 
 <template>
   <div class="users-screen">
+    <VfConfirmDialog
+      :open="Boolean(deleteCandidate)"
+      title="Delete user?"
+      :description="deleteCandidate ? `The user “${deleteCandidate.username}” will be deleted.` : ''"
+      confirm-label="Delete"
+      confirm-variant="danger"
+      :loading="deleting"
+      :disabled="deleting"
+      :close-on-confirm="false"
+      @update:open="deleteCandidate = $event ? deleteCandidate : null"
+      @confirm="deleteUser(deleteCandidate)"
+    />
     <Teleport v-if="formMode" to="#admin-page-actions">
       <VfButton type="submit" form="users-user-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save user' }}</VfButton>
       <VfButton variant="secondary" :disabled="saving || deleting" @click="backToUsers">Back</VfButton>
@@ -308,15 +305,13 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         @update:page-size="pageSize = $event"
       >
         <template #header-actions>
-          <VfDropdown placement="bottom-start" :close-on-select="false">
-            <template #trigger>
-              <VfIconButton :icon="icons.gear" variant="ghost" size="sm" aria-label="Configure columns" title="Configure columns" :disabled="preferencesSaving" />
-            </template>
-            <div class="users-screen__column-select-all">
-              <VfCheckbox label="All columns" :model-value="visibleColumns.length === columns.length" :disabled="preferencesSaving" @update:model-value="toggleAllColumns" />
-            </div>
-            <VfCheckbox v-for="column in columns" :key="column.key" :model-value="visibleColumns.includes(column.key)" :label="columnLabels[column.key]" :disabled="column.key === 'actions' || preferencesSaving" @update:model-value="toggleColumn(column.key, $event)" />
-          </VfDropdown>
+          <VfDataTableColumnChooser
+            :columns="columns"
+            :model-value="visibleColumns"
+            :required-column-keys="['actions']"
+            :disabled="preferencesSaving"
+            @update:model-value="saveColumnPreferences"
+          />
         </template>
         <template #cell-actions="{ row }">
           <VfDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
@@ -325,7 +320,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
             </template>
             <VfMenu>
               <VfMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
-              <VfMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteUser(row)" />
+              <VfMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
             </VfMenu>
           </VfDropdown>
         </template>
@@ -345,7 +340,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
       <VfCard>
         <VfTabs v-model="activeTab" :items="userFormTabs">
           <template #panel="{ activeValue }">
-            <div v-if="activeValue === 'general'" class="users-screen__fields">
+            <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
           <VfField class="users-screen__active-field" label="Active">
             <template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
           </VfField>
@@ -367,7 +362,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
           <VfField label="Confirm new password" :error="firstError('password_confirmation')" :required="!editing">
             <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
           </VfField>
-            </div>
+            </VfFormLayout>
             <div v-else-if="activeValue === 'roles'" class="users-screen__roles">
               <VfAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</VfAlert>
               <VfDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
@@ -409,13 +404,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 
 <style scoped>
 .users-screen { display: grid; gap: var(--vf-section-gap); }
-.users-screen__column-select-all { display: flex; padding: 0.25rem 0 0.5rem; border-block-end: 1px solid var(--vf-color-border); }
 .users-screen__status { color: var(--vf-color-muted); }
 .users-screen__status--active { color: var(--vf-color-success); }
 .users-screen__user-link { color: var(--vf-color-text-link); text-decoration: none; }
 .users-screen__user-link:hover { text-decoration: underline; }
-.users-screen__fields { display: grid; gap: var(--vf-section-gap); width: 100%; }
-.users-screen__fields :deep(.vf-field) { width: 100%; }
 .users-screen__roles { display: grid; gap: var(--vf-section-gap); width: 100%; }
 .users-screen__role-id { color: var(--vf-color-muted); font-variant-numeric: tabular-nums; }
 .users-screen__role-name { display: grid; gap: 0.125rem; }
@@ -426,15 +418,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 .users-screen__role-period :deep(.vf-field) { width: 100%; }
 .users-screen__role-period-separator { display: none; color: var(--vf-color-muted); }
 
-@media (min-width: 1200px) {
-  .users-screen__fields :deep(.vf-field) { grid-template-columns: minmax(14rem, 25%) minmax(0, 1fr); column-gap: var(--vf-section-gap); align-items: start; }
-  .users-screen__fields :deep(.vf-field__label) { align-self: start; justify-self: end; padding-block-start: 0.65rem; overflow-wrap: anywhere; text-align: end; }
-  .users-screen__fields :deep(.vf-field__control),
-  .users-screen__fields :deep(.vf-field__description),
-  .users-screen__fields :deep(.vf-field__error) { grid-column: 2; }
-  .users-screen__fields :deep(.vf-field__control) { grid-row: 1; }
+@media (min-width: 768px) {
   .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
-  .users-screen__fields > :deep(.vf-field) { grid-column: 1 / -1; }
+}
+
+@media (min-width: 1200px) {
   .users-screen__role-period { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
   .users-screen__role-period-separator { display: block; }
 }

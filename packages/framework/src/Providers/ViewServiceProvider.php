@@ -44,15 +44,11 @@ class ViewServiceProvider implements ServiceProviderInterface
             $phpEngine = new PhpEngine($locator, ['php', 'blade.php']);
             $engines = ['php' => $phpEngine];
 
-            if (class_exists(RazorEngine::class)) {
-                try {
-                    $engines['razor'] = new RazorEngine($locator, ['razor.php']);
-                } catch (\Throwable $e) {
-                    if (ini_get('display_errors')) {
-                        trigger_error("Failed to initialize RazorEngine: {$e->getMessage()}", E_USER_WARNING);
-                    }
-                }
-            }
+            $engines['razor'] = new RazorEngine(
+                $locator,
+                ['razor.php'],
+                $basePath . '/storage/cache/views',
+            );
 
             return new View($engines, 'php');
         });

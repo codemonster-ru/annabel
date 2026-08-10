@@ -38,12 +38,6 @@ export default defineConfig({
     outDir: assetsRoot,
     emptyOutDir: true,
     manifest: true,
-    watch: {
-      exclude: [
-        '**/node_modules/**',
-        `${assetsRoot}/**`,
-      ],
-    },
     rollupOptions: {
       input: `${moduleRoot}/resources/js/main.js`,
       output: {

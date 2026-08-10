@@ -4,10 +4,13 @@ import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
 import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
+import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
@@ -23,7 +26,7 @@ import {
 const props = defineProps({ user: { type: Object, default: null } });
 
 const columns = [
-  { key: 'actions', header: '', width: '1%', align: 'center', verticalAlign: 'middle' },
+  { key: 'actions', header: 'Actions', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'id', header: 'ID', width: '1%', align: 'center', verticalAlign: 'middle' },
   { key: 'title', header: 'Title', verticalAlign: 'middle' },
   { key: 'slug', header: 'Slug', verticalAlign: 'middle' },
@@ -32,16 +35,6 @@ const columns = [
   { key: 'created_at', header: 'Created', verticalAlign: 'middle' },
   { key: 'updated_at', header: 'Updated', verticalAlign: 'middle' },
 ];
-const columnLabels = {
-  actions: 'Actions',
-  id: 'ID',
-  title: 'Title',
-  slug: 'Slug',
-  is_active: 'Published',
-  sort_order: 'Sort order',
-  created_at: 'Created',
-  updated_at: 'Updated',
-};
 const formTabs = [
   { value: 'general', label: 'General' },
   { value: 'seo', label: 'SEO' },
@@ -78,6 +71,7 @@ const totalRows = ref(0);
 const loading = ref(true);
 const saving = ref(false);
 const deleting = ref(false);
+const deleteCandidate = ref(null);
 const error = ref('');
 const success = ref('');
 const errors = ref({});
@@ -164,29 +158,6 @@ async function saveColumnPreferences(next) {
   } finally {
     preferencesSaving.value = false;
   }
-}
-
-function toggleColumn(columnKey, value) {
-  if (columnKey === 'actions') return;
-
-  const next = value
-    ? [...visibleColumns.value, columnKey]
-    : visibleColumns.value.filter((key) => key !== columnKey);
-
-  saveColumnPreferences(next);
-}
-
-function showAllColumns() {
-  saveColumnPreferences(columns.map((column) => column.key));
-}
-
-function hideOptionalColumns() {
-  saveColumnPreferences(['actions']);
-}
-
-function toggleAllColumns(value) {
-  if (value) showAllColumns();
-  else hideOptionalColumns();
 }
 
 async function loadPage() {
@@ -286,7 +257,7 @@ async function savePage() {
 }
 
 async function deletePage(value = page.value) {
-  if (!value?.id || !canDeletePage(value) || deleting.value || !window.confirm('Delete this page?')) return;
+  if (!value?.id || !canDeletePage(value) || deleting.value) return;
 
   deleting.value = true;
   error.value = '';
@@ -319,6 +290,18 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
 <template>
   <div class="pages-screen">
+    <VfConfirmDialog
+      :open="Boolean(deleteCandidate)"
+      title="Delete page?"
+      :description="deleteCandidate ? `The page “${deleteCandidate.title}” will be deleted.` : ''"
+      confirm-label="Delete"
+      confirm-variant="danger"
+      :loading="deleting"
+      :disabled="deleting"
+      :close-on-confirm="false"
+      @update:open="deleteCandidate = $event ? deleteCandidate : null"
+      @confirm="deletePage(deleteCandidate)"
+    />
     <Teleport v-if="formMode" to="#admin-page-actions">
       <VfButton type="submit" form="pages-page-form" :loading="saving" :disabled="loading || deleting">
         {{ saving ? 'Saving...' : 'Save page' }}
@@ -357,34 +340,13 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         @update:page-size="pageSize = $event"
       >
         <template #header-actions>
-          <VfDropdown placement="bottom-start" :close-on-select="false">
-            <template #trigger>
-              <VfIconButton
-                :icon="icons.gear"
-                variant="ghost"
-                size="sm"
-                aria-label="Configure columns"
-                title="Configure columns"
-                :disabled="preferencesSaving"
-              />
-            </template>
-            <div class="pages-screen__column-select-all">
-              <VfCheckbox
-                label="All columns"
-                :model-value="visibleColumns.length === columns.length"
-                :disabled="preferencesSaving"
-                @update:model-value="toggleAllColumns"
-              />
-            </div>
-            <VfCheckbox
-              v-for="column in columns"
-              :key="column.key"
-              :model-value="visibleColumns.includes(column.key)"
-              :label="columnLabels[column.key]"
-              :disabled="column.key === 'actions' || preferencesSaving"
-              @update:model-value="toggleColumn(column.key, $event)"
-            />
-          </VfDropdown>
+          <VfDataTableColumnChooser
+            :columns="columns"
+            :model-value="visibleColumns"
+            :required-column-keys="['actions']"
+            :disabled="preferencesSaving"
+            @update:model-value="saveColumnPreferences"
+          />
         </template>
         <template #cell-actions="{ row }">
           <VfDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
@@ -407,7 +369,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 target="_blank"
                 rel="noopener noreferrer"
               />
-              <VfMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deletePage(row)" />
+              <VfMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
             </VfMenu>
           </VfDropdown>
         </template>
@@ -437,10 +399,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
     <form id="pages-page-form" v-else class="pages-screen__form" novalidate @submit.prevent="savePage">
       <VfCard>
-        <div class="pages-screen__fields">
           <VfTabs v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
-              <div v-if="activeValue === 'general'" class="pages-screen__tab-fields">
+              <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
                 <VfField class="pages-screen__active-field" label="Published">
                   <template #default="{ controlId }">
                     <VfCheckbox :id="controlId" v-model="page.is_active" :disabled="saving || !canPublishPage(page)" />
@@ -524,9 +485,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </VfField>
 
-              </div>
+              </VfFormLayout>
 
-              <div v-else-if="activeValue === 'seo'" class="pages-screen__tab-fields">
+              <VfFormLayout v-else-if="activeValue === 'seo'" mode="responsive" label-width="minmax(14rem, 25%)">
                 <VfField label="Meta title" :error="firstError('meta_title')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <VfInput
@@ -551,11 +512,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                     />
                   </template>
                 </VfField>
-              </div>
+              </VfFormLayout>
             </template>
           </VfTabs>
-
-        </div>
       </VfCard>
     </form>
   </div>
@@ -565,17 +524,6 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 .pages-screen {
   display: grid;
   gap: var(--vf-section-gap);
-}
-
-.pages-screen__column-select-all {
-  display: flex;
-  padding: 0.25rem 0 0.5rem;
-  border-block-end: 1px solid var(--vf-color-border);
-}
-
-.pages-screen__fields {
-  display: grid;
-  gap: var(--vf-surface-gap-compact);
 }
 
 .pages-screen__owner-select {
@@ -588,47 +536,12 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
   border-radius: var(--vf-radius-control-tight);
 }
 
-.pages-screen__tab-fields {
-  display: grid;
-  gap: var(--vf-section-gap);
-  width: 100%;
-}
-
-@media (min-width: 1200px) {
-  .pages-screen__tab-fields > :deep(.vf-field) {
-    grid-column: 1 / -1;
-  }
-
-  .pages-screen__tab-fields :deep(.vf-field) {
-    grid-template-columns: minmax(14rem, 25%) minmax(0, 1fr);
-    column-gap: var(--vf-section-gap);
-    align-items: start;
-  }
-
-  .pages-screen__tab-fields :deep(.vf-field__label) {
-    align-self: start;
-    justify-self: end;
-    padding-block-start: 0.65rem;
-    overflow-wrap: anywhere;
-    text-align: end;
-  }
-
-  .pages-screen__tab-fields :deep(.vf-field__control),
-  .pages-screen__tab-fields :deep(.vf-field__description),
-  .pages-screen__tab-fields :deep(.vf-field__error) {
-    grid-column: 2;
-  }
-
-  .pages-screen__tab-fields :deep(.vf-field__control) {
-    grid-row: 1;
-  }
-
+@media (min-width: 768px) {
   .pages-screen__active-field :deep(.vf-field__label) {
     align-self: center;
     justify-self: end;
     padding-block-start: 0;
   }
-
 }
 .pages-screen__status {
   color: var(--vf-color-muted);

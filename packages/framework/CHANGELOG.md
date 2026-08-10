@@ -4,6 +4,13 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- Raised the Razor dependency to `^2.0` and made initialization failures explicit.
+- Store compiled Razor templates in the application `storage/cache/views` directory.
+
 ## [1.17.0] - 2026-07-05
 
 ### Added

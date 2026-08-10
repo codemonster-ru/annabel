@@ -81,6 +81,7 @@ function annabelApiContracts(): array
             ],
             'internal' => [
                 '#^src/Compiler\.php$#',
+                '#^src/Internal/.+\.php$#',
             ],
         ],
         'codemonster-ru/router' => annabelApiAll(),

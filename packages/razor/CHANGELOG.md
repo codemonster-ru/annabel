@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-08-10
+
+### Added
+
+- Added explicit raw output with `{!! ... !!}` while keeping `{{ ... }}` escaped.
+- Added `@elseif`, `@else`, `@for`, `@while`, `@switch`, `@break`, and `@continue` directives.
+- Added nested layouts and sections through `@extends`, `@section`, `@endsection`, and `@yield`.
+- Added explicit include data that overrides inherited template data.
+- Added Razor comments, escaped at signs, and literal client-side double braces.
+- Added template-aware syntax errors and strict handling of unsupported output values.
+
+### Changed
+
+- Replaced regular-expression directive compilation with a balanced expression parser.
+- Made compiled-template publication atomic and cache invalidation content-based.
+- Restored output buffers reliably when rendering fails.
+
+### Removed
+
+- Removed implicit exposure of all runtime variables to included templates.
+
 ## [1.1.0] - 2025-10-14
 
 ### Added

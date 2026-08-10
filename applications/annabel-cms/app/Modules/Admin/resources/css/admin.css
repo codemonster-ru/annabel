@@ -247,18 +247,6 @@ body {
   color: var(--vf-dropdown-item-color);
 }
 
-.admin-layout__page-heading {
-  margin-bottom: 1.75rem;
-}
-
-.admin-layout__page-heading-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.25rem;
-}
-
 .admin-layout__page-actions {
   display: flex;
   flex-wrap: wrap;
@@ -266,13 +254,9 @@ body {
   justify-content: flex-end;
 }
 
-h1 {
-  margin: 0;
-  font-family: var(--vf-font-family-heading);
-  font-size: var(--vf-heading-h-2-font-size);
-  font-weight: var(--vf-heading-font-weight);
-  line-height: var(--vf-heading-h-2-line-height);
-  letter-spacing: 0;
+.admin-layout__content {
+  display: grid;
+  gap: calc(var(--vf-section-gap) + var(--vf-surface-gap-compact));
 }
 
 .hint {

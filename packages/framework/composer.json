@@ -55,7 +55,7 @@
         "codemonster-ru/logging": "^1.0",
         "codemonster-ru/mail": "^1.0",
         "codemonster-ru/queue": "^1.0",
-        "codemonster-ru/razor": "^1.1",
+        "codemonster-ru/razor": "^2.0",
         "codemonster-ru/router": "^2.6",
         "codemonster-ru/scheduler": "^1.0",
         "codemonster-ru/security": "^1.1",

@@ -1602,8 +1602,7 @@
             ],
             "constants": [],
             "properties": {
-                "$app": "protected",
-                "$this": "public"
+                "$app": "protected"
             },
             "methods": {
                 "__construct": {
@@ -1613,6 +1612,14 @@
                     "abstract": false,
                     "parameters": "Application$param",
                     "return": ""
+                },
+                "boot": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "void"
                 },
                 "register": {
                     "visibility": "public",

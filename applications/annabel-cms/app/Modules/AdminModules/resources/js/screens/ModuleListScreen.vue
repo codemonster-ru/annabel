@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
+import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
 import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
 import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
@@ -33,6 +34,7 @@ const pageSize = ref(10);
 const totalRows = ref(0);
 const loading = ref(true);
 const changingModule = ref('');
+const uninstallCandidate = ref(null);
 const csrfToken = ref('');
 const error = ref('');
 const success = ref('');
@@ -76,8 +78,6 @@ async function runAction(module, action) {
   };
 
   if (!canManage.value || !allowed[action] || changingModule.value) return;
-  if (action === 'uninstall' && !window.confirm(`Uninstall module ${module.name}? Its data will be preserved.`)) return;
-
   changingModule.value = module.name;
   error.value = '';
   success.value = '';
@@ -98,6 +98,7 @@ async function runAction(module, action) {
     }
 
     success.value = payload.message || 'Module state updated successfully.';
+    if (action === 'uninstall') uninstallCandidate.value = null;
     await loadModules();
   } catch (exception) {
     error.value = exception instanceof Error ? exception.message : 'Unable to change module state.';
@@ -112,6 +113,18 @@ watch([page, pageSize], loadModules);
 
 <template>
   <div class="modules-screen">
+    <VfConfirmDialog
+      :open="Boolean(uninstallCandidate)"
+      title="Uninstall module?"
+      :description="uninstallCandidate ? `The module “${uninstallCandidate.name}” will be uninstalled. Its data will be preserved.` : ''"
+      confirm-label="Uninstall"
+      confirm-variant="danger"
+      :loading="Boolean(changingModule)"
+      :disabled="Boolean(changingModule)"
+      :close-on-confirm="false"
+      @update:open="uninstallCandidate = $event ? uninstallCandidate : null"
+      @confirm="runAction(uninstallCandidate, 'uninstall')"
+    />
     <VfAlert v-if="error" tone="danger" title="Modules">{{ error }}</VfAlert>
     <VfAlert v-if="success" tone="success" title="Modules">{{ success }}</VfAlert>
     <VfDataTable
@@ -172,7 +185,7 @@ watch([page, pageSize], loadModules);
               label="Uninstall"
               :icon="icons.trash"
               tone="danger"
-              @select="runAction(row, 'uninstall')"
+              @select="uninstallCandidate = row"
             />
           </VfMenu>
         </VfDropdown>

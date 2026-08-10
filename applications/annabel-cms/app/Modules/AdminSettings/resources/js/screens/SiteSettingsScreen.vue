@@ -4,6 +4,7 @@ import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
 import { VfButton } from '@codemonster-ru/vueforge-core/button';
 import { VfCard } from '@codemonster-ru/vueforge-core/card';
 import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
 import { VfInput } from '@codemonster-ru/vueforge-core/input';
 
 const props = defineProps({ user: { type: Object, default: null } });
@@ -110,7 +111,7 @@ onMounted(loadSettings);
 
   <form id="site-settings-form" class="site-settings-form" novalidate @submit.prevent="saveSettings">
     <VfCard>
-      <div class="site-settings-form__fields">
+      <VfFormLayout mode="responsive" label-width="minmax(14rem, 25%)">
         <VfAlert v-if="error" tone="danger" title="Site settings">
           {{ error }}
         </VfAlert>
@@ -143,14 +144,7 @@ onMounted(loadSettings);
             />
           </template>
         </VfField>
-      </div>
+      </VfFormLayout>
     </VfCard>
   </form>
 </template>
-
-<style scoped>
-.site-settings-form__fields {
-  display: grid;
-  gap: var(--vf-section-gap);
-}
-</style>

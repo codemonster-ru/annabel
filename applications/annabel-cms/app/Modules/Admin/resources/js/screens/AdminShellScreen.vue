@@ -8,6 +8,7 @@ import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
+import { VfPageHeader } from '@codemonster-ru/vueforge-core/page-header';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
@@ -224,13 +225,14 @@ async function logout() {
     </template>
 
     <div class="admin-layout__content">
-      <div class="admin-layout__page-heading">
-        <div class="admin-layout__page-heading-top">
-          <h1>{{ pageHeading }}</h1>
+      <VfPageHeader :title="pageHeading">
+        <template #actions>
           <div id="admin-page-actions" class="admin-layout__page-actions"></div>
-        </div>
-        <p v-if="error" class="field__error">{{ error }}</p>
-      </div>
+        </template>
+        <template v-if="error" #description>
+          <p class="field__error">{{ error }}</p>
+        </template>
+      </VfPageHeader>
       <component :is="screenComponent" v-if="screenComponent" :user="user" />
       <MissingAdminScreen v-else-if="screenError" :screen="screenError" />
     </div>

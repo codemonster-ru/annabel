@@ -13,6 +13,7 @@ use Codemonster\Razor\Exceptions\RazorException;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\View\Locator\DefaultLocator;
 use PHPUnit\Framework\TestCase;
+use Stringable;
 
 final class RazorEngineTest extends TestCase
 {
@@ -283,6 +284,28 @@ RAZOR);
 
         self::assertSame(
             '<article><header>&lt;Actions&gt;</header><button disabled>Save</button></article>',
+            $html,
+        );
+    }
+
+    public function testComposesOnlyExplicitlyTrustedHtmlWithoutEscaping(): void
+    {
+        $this->template('trusted', '{{ $trusted }}|{{ $ordinary }}|{{ $stringable }}');
+        $stringable = new class implements Stringable {
+            public function __toString(): string
+            {
+                return '<i>Stringable</i>';
+            }
+        };
+
+        $html = $this->engine()->render('trusted', [
+            'trusted' => RenderedHtml::fromTrustedString('<strong>Trusted</strong>'),
+            'ordinary' => '<em>Ordinary</em>',
+            'stringable' => $stringable,
+        ]);
+
+        self::assertSame(
+            '<strong>Trusted</strong>|&lt;em&gt;Ordinary&lt;/em&gt;|&lt;i&gt;Stringable&lt;/i&gt;',
             $html,
         );
     }

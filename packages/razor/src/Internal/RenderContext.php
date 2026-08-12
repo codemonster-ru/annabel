@@ -140,6 +140,10 @@ final class RenderContext
 
     public function escape(mixed $value): string
     {
+        if ($value instanceof RenderedHtml) {
+            return $value->value();
+        }
+
         return htmlspecialchars(
             $this->stringify($value),
             ENT_QUOTES | ENT_SUBSTITUTE,

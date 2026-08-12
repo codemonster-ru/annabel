@@ -310,6 +310,37 @@ RAZOR);
         );
     }
 
+    public function testReportsUnknownComponentsWithTemplateAndLine(): void
+    {
+        $registry = new ComponentRegistry();
+        $registry->registerPrefix('cm', []);
+        $path = $this->template('unknown-component', "First\n<cm-missing />");
+
+        $this->expectException(RazorException::class);
+        $this->expectExceptionMessage("Unknown Razor component [cm-missing]. in {$path}:2");
+
+        $this->engine($registry)->render('unknown-component');
+    }
+
+    public function testReportsMalformedComponentPropsWithTemplateAndLine(): void
+    {
+        $registry = new ComponentRegistry();
+        $registry->registerPrefix('cm', [
+            'button' => new class implements ComponentInterface {
+                public function render(ComponentRenderContext $context): RenderedHtml
+                {
+                    return RenderedHtml::empty();
+                }
+            },
+        ]);
+        $path = $this->template('malformed-component', "First\n<cm-button variant=primary />");
+
+        $this->expectException(RazorException::class);
+        $this->expectExceptionMessage("requires a quoted value. in {$path}:2");
+
+        $this->engine($registry)->render('malformed-component');
+    }
+
     private function engine(?ComponentResolverInterface $components = null): RazorEngine
     {
         return new RazorEngine(new DefaultLocator($this->views), 'razor.php', $this->cache, $components);

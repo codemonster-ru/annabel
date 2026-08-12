@@ -13,6 +13,9 @@
 
 Razor-like template engine for PHP applications.
 
+Razor 2.1 adds registered server-rendered components with typed provider contracts, props, lazy
+default and named slots, nested composition, and an explicit trusted-HTML boundary.
+
 ## Documentation
 
 Standalone package documentation:

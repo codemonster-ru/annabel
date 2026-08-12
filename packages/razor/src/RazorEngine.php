@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Codemonster\Razor;
 
+use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Razor\Components\Contracts\ComponentResolverInterface;
 use Codemonster\Razor\Exceptions\RazorException;
 use Codemonster\Razor\Internal\RenderContext;
 use Codemonster\View\Contracts\SupportsInspectionInterface;
@@ -15,6 +17,7 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
 {
     protected LocatorInterface $locator;
     protected Compiler $compiler;
+    protected ComponentResolverInterface $components;
 
     /** @var list<string> */
     protected array $extensions;
@@ -22,11 +25,17 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
     /**
      * @param string|list<string> $extensions
      */
-    public function __construct(LocatorInterface $locator, array|string $extensions = 'razor.php', ?string $cachePath = null)
+    public function __construct(
+        LocatorInterface $locator,
+        array|string $extensions = 'razor.php',
+        ?string $cachePath = null,
+        ?ComponentResolverInterface $components = null,
+    )
     {
         $this->locator = $locator;
         $this->extensions = array_values((array) $extensions);
-        $this->compiler = new Compiler($cachePath ?? sys_get_temp_dir() . '/razor_cache');
+        $this->components = $components ?? new ComponentRegistry();
+        $this->compiler = new Compiler($cachePath ?? sys_get_temp_dir() . '/razor_cache', $this->components);
     }
 
     /**
@@ -36,6 +45,7 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
     {
         $context = new RenderContext(
             fn (string $name, array $scope, RenderContext $runtime): string => $this->evaluate($name, $scope, $runtime),
+            $this->components,
         );
 
         return $context->render($view, $data);

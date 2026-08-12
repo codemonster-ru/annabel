@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-08-12
+
+### Added
+
+- Added registered, prefix-owned self-closing and paired components.
+- Added static, expression, and boolean component props.
+- Added lazy default and named slots with nested component support.
+- Added component providers, resolver contracts, and registration-aware template caching.
+- Added the explicit `RenderedHtml` trust boundary for component and slot composition.
+- Added template-aware diagnostics for unknown and malformed components.
+
+### Security
+
+- Kept ordinary props and interpolated slot values escaped while allowing only explicit
+  `RenderedHtml` values to compose without double escaping.
+
 ## [2.0.0] - 2026-08-10
 
 ### Added

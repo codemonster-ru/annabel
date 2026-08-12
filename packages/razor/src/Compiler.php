@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace Codemonster\Razor;
 
+use Codemonster\Razor\Components\Compilation\ComponentInvocationCompiler;
+use Codemonster\Razor\Components\Compilation\ComponentPropCompiler;
+use Codemonster\Razor\Components\Compilation\ComponentTemplateCompiler;
+use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Razor\Components\Contracts\ComponentResolverInterface;
+use Codemonster\Razor\Components\Parsing\ComponentParser;
+use Codemonster\Razor\Components\Parsing\ComponentSlotParser;
 use Codemonster\Razor\Exceptions\RazorException;
 
 final class Compiler
 {
-    private const CACHE_VERSION = '2';
+    private const CACHE_VERSION = '3';
 
     private readonly string $cachePath;
+    private readonly ComponentResolverInterface $components;
+    private readonly ComponentTemplateCompiler $componentCompiler;
 
-    public function __construct(string $cachePath)
+    public function __construct(string $cachePath, ?ComponentResolverInterface $components = null)
     {
         $this->cachePath = rtrim($cachePath, DIRECTORY_SEPARATOR);
 
@@ -27,6 +36,16 @@ final class Compiler
         if (!is_writable($this->cachePath)) {
             throw new RazorException("Razor cache directory is not writable: {$this->cachePath}");
         }
+
+        $this->components = $components ?? new ComponentRegistry();
+        $parser = new ComponentParser($this->components);
+        $this->componentCompiler = new ComponentTemplateCompiler(
+            $parser,
+            new ComponentInvocationCompiler(
+                new ComponentPropCompiler(),
+                new ComponentSlotParser($parser),
+            ),
+        );
     }
 
     public function compile(string $file): string
@@ -43,7 +62,10 @@ final class Compiler
             throw new RazorException("Unable to read Razor template: {$realFile}");
         }
 
-        $signature = hash('sha256', self::CACHE_VERSION . "\0" . $realFile . "\0" . $source);
+        $signature = hash(
+            'sha256',
+            self::CACHE_VERSION . "\0" . $this->components->cacheSignature() . "\0" . $realFile . "\0" . $source,
+        );
         $cacheFile = $this->cachePath . DIRECTORY_SEPARATOR . hash('sha256', $realFile) . '.php';
         $marker = "<?php /* razor-cache:{$signature} */ ?>";
 
@@ -93,6 +115,14 @@ final class Compiler
     }
 
     private function compileSource(string $source, string $file): string
+    {
+        return $this->componentCompiler->compile(
+            $source,
+            fn (string $segment): string => $this->compileRazorSource($segment, $file),
+        );
+    }
+
+    private function compileRazorSource(string $source, string $file): string
     {
         $compiled = '';
         $length = strlen($source);

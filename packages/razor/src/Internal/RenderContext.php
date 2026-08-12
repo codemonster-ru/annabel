@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Codemonster\Razor\Internal;
 
 use Closure;
+use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\Contracts\ComponentResolverInterface;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\Exceptions\RazorException;
 use Stringable;
 
@@ -27,8 +30,10 @@ final class RenderContext
     private int $includeDepth = 0;
 
     /** @param Closure(string, array<string, mixed>, self): string $renderer */
-    public function __construct(private readonly Closure $renderer)
-    {
+    public function __construct(
+        private readonly Closure $renderer,
+        private readonly ComponentResolverInterface $components,
+    ) {
     }
 
     /** @param array<string, mixed> $data */
@@ -145,6 +150,51 @@ final class RenderContext
     public function raw(mixed $value): string
     {
         return $this->stringify($value);
+    }
+
+    /**
+     * @param array<string, mixed> $scope
+     * @param Closure(array<string, mixed>): void $renderer
+     * @return Closure(): RenderedHtml
+     */
+    public function componentSlot(array $scope, Closure $renderer): Closure
+    {
+        return static function () use ($scope, $renderer): RenderedHtml {
+            $bufferLevel = ob_get_level();
+            ob_start();
+
+            try {
+                $renderer($scope);
+                $content = ob_get_clean();
+
+                if ($content === false) {
+                    throw new RazorException('Unable to read rendered Razor component slot.');
+                }
+
+                return RenderedHtml::fromTrustedString($content);
+            } catch (\Throwable $exception) {
+                while (ob_get_level() > $bufferLevel) {
+                    ob_end_clean();
+                }
+
+                throw $exception;
+            }
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $props
+     * @param array<string, Closure(): RenderedHtml> $slots
+     */
+    public function renderComponent(string $tag, array $props, array $slots): RenderedHtml
+    {
+        $component = $this->components->resolve($tag);
+
+        if ($component === null) {
+            throw new RazorException("Unknown Razor component [{$tag}].");
+        }
+
+        return $component->render(new ComponentRenderContext($props, $slots));
     }
 
     private function stringify(mixed $value): string

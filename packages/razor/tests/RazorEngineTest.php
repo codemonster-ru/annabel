@@ -341,6 +341,33 @@ RAZOR);
         $this->engine($registry)->render('malformed-component');
     }
 
+    public function testInvalidatesCompiledTemplatesWhenComponentRegistrationsChange(): void
+    {
+        $this->template('registration-cache', '<cm-button>Save</cm-button>');
+
+        self::assertSame(
+            '<cm-button>Save</cm-button>',
+            $this->engine()->render('registration-cache'),
+        );
+
+        $registry = new ComponentRegistry();
+        $registry->registerPrefix('cm', [
+            'button' => new class implements ComponentInterface {
+                public function render(ComponentRenderContext $context): RenderedHtml
+                {
+                    return RenderedHtml::fromTrustedString(
+                        '<button>' . $context->slot('default')->value() . '</button>',
+                    );
+                }
+            },
+        ]);
+
+        self::assertSame(
+            '<button>Save</button>',
+            $this->engine($registry)->render('registration-cache'),
+        );
+    }
+
     private function engine(?ComponentResolverInterface $components = null): RazorEngine
     {
         return new RazorEngine(new DefaultLocator($this->views), 'razor.php', $this->cache, $components);

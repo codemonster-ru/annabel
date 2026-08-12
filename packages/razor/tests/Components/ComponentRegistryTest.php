@@ -10,6 +10,7 @@ use Codemonster\Razor\Components\Contracts\ComponentInterface;
 use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
 use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\Exceptions\RazorException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ComponentRegistryTest extends TestCase
@@ -55,10 +56,8 @@ final class ComponentRegistryTest extends TestCase
         self::assertNull($registry->resolve('cm-future'));
     }
 
-    /**
-     * @param array<mixed> $components
-     * @dataProvider invalidRegistrationProvider
-     */
+    /** @param array<mixed> $components */
+    #[DataProvider('invalidRegistrationProvider')]
     public function testRejectsInvalidOrDuplicateRegistrations(string $prefix, array $components): void
     {
         $registry = new ComponentRegistry();

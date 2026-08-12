@@ -28,8 +28,13 @@ final class ComponentContractsTest extends TestCase
         $component = new class implements ComponentInterface {
             public function render(ComponentRenderContext $context): RenderedHtml
             {
+                $tone = $context->prop('tone');
+                if (!is_string($tone)) {
+                    throw new \UnexpectedValueException('The tone prop must be a string.');
+                }
+
                 return RenderedHtml::fromTrustedString(
-                    $context->prop('tone') . ':' . $context->slot('default')->value() . $context->slot('default')->value(),
+                    $tone . ':' . $context->slot('default')->value() . $context->slot('default')->value(),
                 );
             }
         };

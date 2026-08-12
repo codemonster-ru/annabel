@@ -25,28 +25,49 @@ final readonly class ComponentParser
         }
 
         $attributesStart = $offset + strlen($match[0]);
-        $end = $this->findSelfClosingEnd($source, $attributesStart);
+        $opening = $this->findOpeningEnd($source, $attributesStart);
 
-        if ($end === null) {
+        if ($opening === null) {
             return null;
+        }
+
+        [$openingEnd, $selfClosing] = $opening;
+
+        if (!$selfClosing) {
+            $closing = $this->findClosingTag($source, $openingEnd + 1, $tag);
+
+            if ($closing === null) {
+                return null;
+            }
+
+            [$closingStart, $endOffset] = $closing;
+
+            return new ComponentInvocation(
+                $tag,
+                trim(substr($source, $attributesStart, $openingEnd - $attributesStart)),
+                substr($source, $openingEnd + 1, $closingStart - $openingEnd - 1),
+                $offset,
+                $endOffset,
+            );
         }
 
         return new ComponentInvocation(
             $tag,
-            trim(substr($source, $attributesStart, $end - $attributesStart)),
+            trim(substr($source, $attributesStart, $openingEnd - $attributesStart - 1)),
             null,
             $offset,
-            $end + 2,
+            $openingEnd + 1,
         );
     }
 
-    private function findSelfClosingEnd(string $source, int $offset): ?int
+    /** @return array{int, bool}|null */
+    private function findOpeningEnd(string $source, int $offset): ?array
     {
         $quote = null;
         $escaped = false;
         $length = strlen($source);
 
-        for ($index = $offset; $index < $length - 1; $index++) {
+        for ($index = $offset; $index < $length; $index++) {
             $character = $source[$index];
 
             if ($quote !== null) {
@@ -66,13 +87,38 @@ final readonly class ComponentParser
                 continue;
             }
 
-            if ($character === '>' && ($source[$index - 1] ?? '') !== '/') {
+            if ($character === '>') {
+                return [$index, ($source[$index - 1] ?? '') === '/'];
+            }
+        }
+
+        return null;
+    }
+
+    /** @return array{int, int}|null */
+    private function findClosingTag(string $source, int $offset, string $tag): ?array
+    {
+        $length = strlen($source);
+
+        for ($cursor = $offset; $cursor < $length;) {
+            $nextTag = strpos($source, '<', $cursor);
+
+            if ($nextTag === false) {
                 return null;
             }
 
-            if ($character === '/' && $source[$index + 1] === '>') {
-                return $index;
+            if (preg_match('/\G<\/' . preg_quote($tag, '/') . '\s*>/', $source, $match, 0, $nextTag) === 1) {
+                return [$nextTag, $nextTag + strlen($match[0])];
             }
+
+            $nested = $this->parseAt($source, $nextTag);
+
+            if ($nested !== null) {
+                $cursor = $nested->endOffset;
+                continue;
+            }
+
+            $cursor = $nextTag + 1;
         }
 
         return null;

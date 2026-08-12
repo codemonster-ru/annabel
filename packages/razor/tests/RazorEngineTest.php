@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Codemonster\Razor\Tests;
 
+use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\Contracts\ComponentInterface;
+use Codemonster\Razor\Components\Contracts\ComponentResolverInterface;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\Exceptions\RazorException;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\View\Locator\DefaultLocator;
@@ -241,9 +246,50 @@ RAZOR);
         self::assertSame(['razor.php'], $engine->getExtensions());
     }
 
-    private function engine(): RazorEngine
+    public function testRendersRegisteredComponentsWithPropsSlotsAndNesting(): void
     {
-        return new RazorEngine(new DefaultLocator($this->views), 'razor.php', $this->cache);
+        $registry = new ComponentRegistry();
+        $registry->registerPrefix('cm', [
+            'button' => new class implements ComponentInterface {
+                public function render(ComponentRenderContext $context): RenderedHtml
+                {
+                    $disabled = $context->prop('disabled') === true ? ' disabled' : '';
+
+                    return RenderedHtml::fromTrustedString(
+                        '<button' . $disabled . '>' . $context->slot('default')->value() . '</button>',
+                    );
+                }
+            },
+            'card' => new class implements ComponentInterface {
+                public function render(ComponentRenderContext $context): RenderedHtml
+                {
+                    return RenderedHtml::fromTrustedString(
+                        '<article><header>' . $context->slot('header')->value() . '</header>'
+                        . $context->slot('default')->value() . '</article>',
+                    );
+                }
+            },
+        ]);
+        $this->template(
+            'components',
+            '<cm-card><razor-slot name="header">{{ $title }}</razor-slot>'
+            . '<cm-button :disabled="$saving">Save</cm-button></cm-card>',
+        );
+
+        $html = $this->engine($registry)->render('components', [
+            'title' => '<Actions>',
+            'saving' => true,
+        ]);
+
+        self::assertSame(
+            '<article><header>&lt;Actions&gt;</header><button disabled>Save</button></article>',
+            $html,
+        );
+    }
+
+    private function engine(?ComponentResolverInterface $components = null): RazorEngine
+    {
+        return new RazorEngine(new DefaultLocator($this->views), 'razor.php', $this->cache, $components);
     }
 
     private function template(string $name, string $contents): string

@@ -6,10 +6,14 @@ namespace Codemonster\Razor\Components\Compilation;
 
 use Closure;
 use Codemonster\Razor\Components\Parsing\ComponentInvocation;
+use Codemonster\Razor\Components\Parsing\ComponentSlotParser;
 
 final readonly class ComponentInvocationCompiler
 {
-    public function __construct(private ComponentPropCompiler $props)
+    public function __construct(
+        private ComponentPropCompiler $props,
+        private ComponentSlotParser $slots,
+    )
     {
     }
 
@@ -19,7 +23,12 @@ final readonly class ComponentInvocationCompiler
         $slots = [];
 
         if ($invocation->content !== null) {
-            $slots[] = var_export('default', true) . ' => ' . $this->compileSlot($invocation->content, $compileContent);
+            $parsed = $this->slots->parse($invocation->content);
+            $slots[] = var_export('default', true) . ' => ' . $this->compileSlot($parsed->default, $compileContent);
+
+            foreach ($parsed->named as $name => $content) {
+                $slots[] = var_export($name, true) . ' => ' . $this->compileSlot($content, $compileContent);
+            }
         }
 
         return '<?= $__razor->renderComponent('

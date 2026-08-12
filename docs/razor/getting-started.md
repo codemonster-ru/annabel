@@ -125,6 +125,11 @@ when the child does not define that section:
 Layouts may extend other layouts. Content outside a named section is exposed as
 the implicit `content` section when the template extends a layout.
 
+## Components
+
+Registered components provide props, default and named slots, nested rendering, and an explicit
+trusted-HTML boundary. See [Components](./components) for syntax, registration, and security rules.
+
 ## Comments
 
 Razor comments are omitted from rendered output:

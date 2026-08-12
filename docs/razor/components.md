@@ -88,6 +88,63 @@ removing, or replacing a registered prefix or component invalidates affected com
 Component rendering uses the current render context, so includes, layouts, escaping, and nested
 components share one request-local execution state.
 
+## Registering custom components
+
+Implement one provider for an application-owned prefix. Component instances should be stateless;
+the registry may reuse them across multiple renders.
+
+```php
+use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\Contracts\ComponentInterface;
+use Codemonster\Razor\Components\Contracts\ComponentProviderInterface;
+use Codemonster\Razor\Components\RenderedHtml;
+
+final class AlertComponent implements ComponentInterface
+{
+    public function render(ComponentRenderContext $context): RenderedHtml
+    {
+        $tone = htmlspecialchars((string) $context->prop('tone', 'info'), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        return RenderedHtml::fromTrustedString(
+            '<aside data-tone="' . $tone . '">' . $context->slot('default')->value() . '</aside>',
+        );
+    }
+}
+
+final class AppComponentProvider implements ComponentProviderInterface
+{
+    public function prefix(): string
+    {
+        return 'app';
+    }
+
+    public function components(): array
+    {
+        return ['alert' => new AlertComponent()];
+    }
+}
+```
+
+Register the provider and pass the registry to the engine:
+
+```php
+use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Razor\RazorEngine;
+use Codemonster\View\Locator\DefaultLocator;
+
+$components = new ComponentRegistry();
+$components->register(new AppComponentProvider());
+
+$engine = new RazorEngine(
+    new DefaultLocator(__DIR__ . '/views'),
+    cachePath: __DIR__ . '/storage/cache/views',
+    components: $components,
+);
+```
+
+The registered component is then available as `<app-alert>`. Prefix registration belongs in
+application bootstrap, before any template using the prefix is compiled.
+
 ## Diagnostics
 
 Malformed recognized component syntax raises `RazorException` with the template path and source
@@ -107,3 +164,13 @@ HTML outside registered prefixes retains existing Razor behavior.
   composed without escaping.
 - registration is application configuration; template data cannot select providers, component
   classes, slot names, or arbitrary templates dynamically.
+
+`RenderedHtml::fromTrustedString()` does not sanitize its argument. A component must contextually
+escape every ordinary prop before placing it into text, an HTML attribute, a URL, CSS, or script.
+Use a vetted URL policy in addition to escaping for navigable URLs. Slot values may be concatenated
+as markup because the compiler has already escaped their ordinary interpolations and wrapped their
+rendered result in `RenderedHtml`.
+
+Do not convert an ordinary prop to `RenderedHtml`, use it as a template name, or invoke a callable
+supplied through template data. `{!! ... !!}` remains an explicit application-level escape hatch
+and is not required for normal component composition.

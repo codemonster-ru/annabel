@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codemonster\Razor\Components\Parsing;
 
 use Codemonster\Razor\Components\Contracts\ComponentResolverInterface;
+use Codemonster\Razor\Exceptions\RazorException;
 
 final readonly class ComponentParser
 {
@@ -28,7 +29,7 @@ final readonly class ComponentParser
         $opening = $this->findOpeningEnd($source, $attributesStart);
 
         if ($opening === null) {
-            return null;
+            throw new RazorException("Unclosed Razor component opening tag [{$tag}].");
         }
 
         [$openingEnd, $selfClosing] = $opening;
@@ -37,7 +38,7 @@ final readonly class ComponentParser
             $closing = $this->findClosingTag($source, $openingEnd + 1, $tag);
 
             if ($closing === null) {
-                return null;
+                throw new RazorException("Missing closing tag [</{$tag}>] for Razor component [{$tag}].");
             }
 
             [$closingStart, $endOffset] = $closing;

@@ -6,6 +6,7 @@ namespace Codemonster\Razor\Tests\Components\Compilation;
 
 use Codemonster\Razor\Components\Compilation\ComponentPropCompiler;
 use Codemonster\Razor\Exceptions\RazorException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ComponentPropCompilerTest extends TestCase
@@ -41,7 +42,7 @@ final class ComponentPropCompilerTest extends TestCase
         self::assertSame('Ada & Bob "team"', $props['title']);
     }
 
-    /** @dataProvider invalidPropsProvider */
+    #[DataProvider('invalidPropsProvider')]
     public function testRejectsMalformedProps(string $attributes, string $message): void
     {
         $this->expectException(RazorException::class);

@@ -57,8 +57,25 @@ final class ComponentParserTest extends TestCase
         self::assertNull($this->parser->parseAt('<other-card/>', 0));
     }
 
-    public function testDoesNotYetConsumePairedComponents(): void
+    public function testParsesPairedComponentContent(): void
     {
-        self::assertNull($this->parser->parseAt('<cm-button>Save</cm-button>', 0));
+        $source = '<cm-button variant="primary">Save {{ $label }}</cm-button> after';
+        $invocation = $this->parser->parseAt($source, 0);
+
+        self::assertNotNull($invocation);
+        self::assertFalse($invocation->isSelfClosing());
+        self::assertSame('variant="primary"', $invocation->attributes);
+        self::assertSame('Save {{ $label }}', $invocation->content);
+        self::assertSame(' after', substr($source, $invocation->endOffset));
+    }
+
+    public function testParsesNestedPairedComponentsIncludingTheSameTag(): void
+    {
+        $source = '<cm-card>Outer <cm-card>Inner</cm-card><cm-button /></cm-card>';
+        $invocation = $this->parser->parseAt($source, 0);
+
+        self::assertNotNull($invocation);
+        self::assertSame('Outer <cm-card>Inner</cm-card><cm-button />', $invocation->content);
+        self::assertSame(strlen($source), $invocation->endOffset);
     }
 }

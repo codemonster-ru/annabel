@@ -8,6 +8,9 @@ use Codemonster\Razor\Components\Compilation\ComponentInvocationCompiler;
 use Codemonster\Razor\Components\Compilation\ComponentPropCompiler;
 use Codemonster\Razor\Components\Compilation\ComponentTemplateCompiler;
 use Codemonster\Razor\Components\ComponentRegistry;
+use Codemonster\Razor\Components\ComponentRenderContext;
+use Codemonster\Razor\Components\Contracts\ComponentInterface;
+use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\Components\Parsing\ComponentParser;
 use Codemonster\Razor\Components\Parsing\ComponentSlotParser;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +20,13 @@ final class ComponentTemplateCompilerTest extends TestCase
     public function testRecursivelyCompilesNestedComponentsAndOrdinaryRazor(): void
     {
         $registry = new ComponentRegistry();
-        $registry->registerPrefix('cm', []);
+        $component = new class implements ComponentInterface {
+            public function render(ComponentRenderContext $context): RenderedHtml
+            {
+                return RenderedHtml::empty();
+            }
+        };
+        $registry->registerPrefix('cm', ['button' => $component, 'card' => $component]);
         $parser = new ComponentParser($registry);
         $compiler = new ComponentTemplateCompiler(
             $parser,
@@ -25,6 +34,7 @@ final class ComponentTemplateCompilerTest extends TestCase
                 new ComponentPropCompiler(),
                 new ComponentSlotParser($parser),
             ),
+            $registry,
         );
 
         $compiled = $compiler->compile(
@@ -47,11 +57,12 @@ final class ComponentTemplateCompilerTest extends TestCase
         $compiler = new ComponentTemplateCompiler(
             $parser,
             new ComponentInvocationCompiler(new ComponentPropCompiler(), new ComponentSlotParser($parser)),
+            $registry,
         );
 
         self::assertSame(
-            '<other-card>Native custom element</other-card>',
-            $compiler->compile('<other-card>Native custom element</other-card>', static fn (string $source): string => $source),
+            '<native-card>Native custom element</native-card>',
+            $compiler->compile('<native-card>Native custom element</native-card>', static fn (string $source): string => $source),
         );
     }
 }

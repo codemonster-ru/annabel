@@ -45,6 +45,7 @@ final class Compiler
                 new ComponentPropCompiler(),
                 new ComponentSlotParser($parser),
             ),
+            $this->components,
         );
     }
 
@@ -119,6 +120,7 @@ final class Compiler
         return $this->componentCompiler->compile(
             $source,
             fn (string $segment): string => $this->compileRazorSource($segment, $file),
+            $file,
         );
     }
 

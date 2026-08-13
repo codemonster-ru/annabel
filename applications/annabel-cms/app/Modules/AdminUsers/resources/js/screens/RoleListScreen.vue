@@ -4,7 +4,7 @@ import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
-import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
+import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
@@ -138,7 +138,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
 
 <template>
   <div class="roles-screen">
-    <VfConfirmDialog :open="Boolean(deleteCandidate)" title="Delete role?" :description="deleteCandidate ? `The role “${deleteCandidate.name}” will be deleted.` : ''" confirm-label="Delete" confirm-variant="danger" :loading="deleting" :disabled="deleting" :close-on-confirm="false" @update:open="deleteCandidate = $event ? deleteCandidate : null" @confirm="deleteRole(deleteCandidate)" />
+    <AppConfirmDialog :open="Boolean(deleteCandidate)" title="Delete role?" :description="deleteCandidate ? `The role “${deleteCandidate.name}” will be deleted.` : ''" confirm-label="Delete" confirm-variant="danger" :loading="deleting" :disabled="deleting" :close-on-confirm="false" @update:open="deleteCandidate = $event ? deleteCandidate : null" @confirm="deleteRole(deleteCandidate)" />
     <Teleport v-if="formMode" to="#admin-page-actions"><CmButton type="submit" form="roles-role-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save role' }}</CmButton><CmButton variant="secondary" :disabled="saving || deleting" @click="backToRoles">Back</CmButton></Teleport>
     <Teleport v-else-if="can('roles.create')" to="#admin-page-actions"><CmButton variant="primary" :disabled="loading || saving" @click="newRole">New role</CmButton></Teleport>
     <CmAlert v-if="error" tone="danger" title="Roles">{{ error }}</CmAlert><CmAlert v-if="success" tone="success" title="Roles">{{ success }}</CmAlert>

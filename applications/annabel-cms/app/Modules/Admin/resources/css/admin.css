@@ -124,6 +124,12 @@ body {
   cursor: not-allowed;
 }
 
+.app-column-chooser {
+  display: grid;
+  gap: var(--cm-space-3);
+  min-inline-size: 13rem;
+}
+
 .app-form-layout {
   container-type: inline-size;
   display: grid;

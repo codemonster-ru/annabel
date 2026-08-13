@@ -6,7 +6,7 @@ import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
-import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
+import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
@@ -306,7 +306,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         @update:page-size="pageSize = $event"
       >
         <template #header-actions>
-          <VfDataTableColumnChooser
+          <AppDataTableColumnChooser
             :columns="columns"
             :model-value="visibleColumns"
             :required-column-keys="['actions']"

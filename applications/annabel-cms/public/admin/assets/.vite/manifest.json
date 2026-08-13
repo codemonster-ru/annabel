@@ -1,20 +1,20 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-C7J0dYkY.js",
+    "file": "ModuleListScreen-CQswH90O.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppConfirmDialog-Dwx2rFqN.js"
+      "_AppConfirmDialog-DNJ32CBB.js"
     ],
     "css": [
       "ModuleListScreen-SMwuxJ6o.css"
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-5zNlorig.js",
+    "file": "SystemUpdateScreen-DR5cNnGF.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
@@ -28,16 +28,16 @@
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-DtFji4t7.js",
+    "file": "PagesScreen-D5GpByIk.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppConfirmDialog-Dwx2rFqN.js",
-      "_AppDataTableColumnChooser-ZXEmgT4P.js",
-      "_AppFormLayout-B3ZI9Ibw.js",
+      "_AppConfirmDialog-DNJ32CBB.js",
+      "_AppDataTableColumnChooser-VMpccU0s.js",
+      "_AppFormLayout-C2qhjKBt.js",
       "_dateTime-DxxE3QK2.js"
     ],
     "css": [
@@ -45,26 +45,26 @@
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-DHRww9Kx.js",
+    "file": "SiteSettingsScreen-BPgzh3_p.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/main.js",
-      "_AppFormLayout-B3ZI9Ibw.js"
+      "_AppFormLayout-C2qhjKBt.js"
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-D-_-OekH.js",
+    "file": "RoleListScreen-SU7EDFzP.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppConfirmDialog-Dwx2rFqN.js",
-      "_AppDataTableColumnChooser-ZXEmgT4P.js",
-      "_AppFormLayout-B3ZI9Ibw.js",
+      "_AppConfirmDialog-DNJ32CBB.js",
+      "_AppDataTableColumnChooser-VMpccU0s.js",
+      "_AppFormLayout-C2qhjKBt.js",
       "_dateTime-DxxE3QK2.js"
     ],
     "css": [
@@ -72,38 +72,38 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-Cd32eLEz.js",
+    "file": "UserListScreen-BjwMGGsc.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppConfirmDialog-Dwx2rFqN.js",
-      "_AppDataTableColumnChooser-ZXEmgT4P.js",
-      "_AppFormLayout-B3ZI9Ibw.js",
+      "_AppConfirmDialog-DNJ32CBB.js",
+      "_AppDataTableColumnChooser-VMpccU0s.js",
+      "_AppFormLayout-C2qhjKBt.js",
       "_dateTime-DxxE3QK2.js"
     ],
     "css": [
       "UserListScreen-D8PpTdmM.css"
     ]
   },
-  "_AppConfirmDialog-Dwx2rFqN.js": {
-    "file": "AppConfirmDialog-Dwx2rFqN.js",
+  "_AppConfirmDialog-DNJ32CBB.js": {
+    "file": "AppConfirmDialog-DNJ32CBB.js",
     "name": "AppConfirmDialog",
     "imports": [
       "resources/js/main.js"
     ]
   },
-  "_AppDataTableColumnChooser-ZXEmgT4P.js": {
-    "file": "AppDataTableColumnChooser-ZXEmgT4P.js",
+  "_AppDataTableColumnChooser-VMpccU0s.js": {
+    "file": "AppDataTableColumnChooser-VMpccU0s.js",
     "name": "AppDataTableColumnChooser",
     "imports": [
       "resources/js/main.js"
     ]
   },
-  "_AppFormLayout-B3ZI9Ibw.js": {
-    "file": "AppFormLayout-B3ZI9Ibw.js",
+  "_AppFormLayout-C2qhjKBt.js": {
+    "file": "AppFormLayout-C2qhjKBt.js",
     "name": "AppFormLayout",
     "imports": [
       "resources/js/main.js"
@@ -122,7 +122,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-wI4HaMz4.js",
+    "file": "admin-BVqmg4r7.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -136,14 +136,14 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-3jfxJkAR.css"
+      "main-CasCOkeI.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-CQWRrJHe.js",
+    "file": "DashboardScreen-BP3Nt-BG.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,

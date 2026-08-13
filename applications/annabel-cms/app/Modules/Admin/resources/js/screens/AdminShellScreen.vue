@@ -8,9 +8,9 @@ import AppDropdown from '../components/AppDropdown.vue';
 import AppIconButton from '../components/AppIconButton.vue';
 import AppMenuItem from '../components/AppMenuItem.vue';
 import AppMenu from '../components/AppMenu.vue';
-import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
+import AppNavMenu from '../../../../../resources/js/components/AppNavMenu.vue';
 import AppPageHeader from '../components/AppPageHeader.vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
@@ -163,7 +163,7 @@ async function logout() {
     </template>
 
     <template #aside="{ isSidebarCompact }">
-      <VfNavMenu
+      <AppNavMenu
         :items="navigation"
         :model-value="navigationValue"
         :compact="isSidebarCompact"

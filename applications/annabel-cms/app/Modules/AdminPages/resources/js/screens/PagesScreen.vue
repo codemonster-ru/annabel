@@ -7,7 +7,7 @@ import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
-import { CmDatePicker } from '@codemonster-ru/ui-vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
@@ -410,11 +410,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
                 <CmField class="pages-screen__activity-field" label="Publish from" :error="firstError('active_from')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <CmDatePicker
+                    <AppInput
                       :id="controlId"
                       v-model="page.active_from"
-                      show-time
-                      clearable
+                      type="datetime-local"
                       :aria-describedby="describedBy"
                       :invalid="invalid"
                       :disabled="saving || !canPublishPage(page)"
@@ -424,11 +423,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
                 <CmField class="pages-screen__activity-field" label="Publish until" :error="firstError('active_until')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <CmDatePicker
+                    <AppInput
                       :id="controlId"
                       v-model="page.active_until"
-                      show-time
-                      clearable
+                      type="datetime-local"
                       :aria-describedby="describedBy"
                       :invalid="invalid"
                       :disabled="saving || !canPublishPage(page)"
@@ -467,7 +465,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
                 <CmField label="Sort order" :error="firstError('sort_order')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <CmInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
+                    <AppInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
                   </template>
                 </CmField>
 

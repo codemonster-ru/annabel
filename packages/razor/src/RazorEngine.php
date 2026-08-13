@@ -30,8 +30,7 @@ class RazorEngine implements EngineInterface, SupportsInspectionInterface
         array|string $extensions = 'razor.php',
         ?string $cachePath = null,
         ?ComponentResolverInterface $components = null,
-    )
-    {
+    ) {
         $this->locator = $locator;
         $this->extensions = array_values((array) $extensions);
         $this->components = $components ?? new ComponentRegistry();

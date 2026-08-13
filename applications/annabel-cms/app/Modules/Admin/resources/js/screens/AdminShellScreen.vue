@@ -8,8 +8,8 @@ import AppIconButton from '../components/AppIconButton.vue';
 import AppMenuItem from '../components/AppMenuItem.vue';
 import AppMenu from '../components/AppMenu.vue';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
-import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
 import AppNavMenu from '../../../../../resources/js/components/AppNavMenu.vue';
+import AppAdminLayout from '../components/AppAdminLayout.vue';
 import AppPageHeader from '../components/AppPageHeader.vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
@@ -129,7 +129,7 @@ async function logout() {
 </script>
 
 <template>
-  <VfAdminLayout
+  <AppAdminLayout
     class="admin-layout"
     :sidebar-collapsed="sidebarCollapsed"
     fill-viewport
@@ -241,5 +241,5 @@ async function logout() {
     <template #footer>
       <AuthFooter />
     </template>
-  </VfAdminLayout>
+  </AppAdminLayout>
 </template>

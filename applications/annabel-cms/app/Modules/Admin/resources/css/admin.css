@@ -302,8 +302,8 @@ body {
   justify-content: flex-start;
 }
 
-.admin-layout.vf-admin-layout--fill-viewport .vf-admin-layout__main {
-  min-block-size: var(--vf-layout-viewport-height);
+.admin-layout.app-admin-layout--fill-viewport .app-admin-layout__main {
+  min-block-size: 100vh;
 }
 
 .admin-layout__brand-row {
@@ -319,9 +319,9 @@ body {
   --admin-layout-brand-logo-size: 1.5rem;
   --admin-layout-brand-logo-offset: calc(
     (
-        var(--vf-layout-admin-layout-sidebar-collapsed-width) -
-          var(--vf-layout-header-padding-inline) -
-          var(--vf-layout-header-padding-inline) -
+        var(--app-admin-sidebar-collapsed-width) -
+          var(--cm-space-4) -
+          var(--cm-space-4) -
           var(--admin-layout-brand-logo-size)
       ) /
       2
@@ -350,10 +350,8 @@ body {
   opacity: 1;
   white-space: nowrap;
   transition:
-    max-width var(--vf-layout-admin-layout-sidebar-transition-duration)
-      var(--vf-layout-admin-layout-sidebar-transition-easing),
-    opacity var(--vf-layout-admin-layout-sidebar-transition-duration)
-      var(--vf-layout-admin-layout-sidebar-transition-easing);
+    max-width var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
 .admin-layout__brand-logo-column {
@@ -398,10 +396,8 @@ body {
   opacity: 1;
   white-space: nowrap;
   transition:
-    max-width var(--vf-layout-admin-layout-sidebar-transition-duration)
-      var(--vf-layout-admin-layout-sidebar-transition-easing),
-    opacity var(--vf-layout-admin-layout-sidebar-transition-duration)
-      var(--vf-layout-admin-layout-sidebar-transition-easing);
+    max-width var(--cm-motion-duration-normal) var(--cm-motion-ease-standard),
+    opacity var(--cm-motion-duration-normal) var(--cm-motion-ease-standard);
 }
 
 .admin-layout__brand-row--compact .admin-layout__brand-site-action {
@@ -410,7 +406,7 @@ body {
   pointer-events: none;
 }
 
-.admin-layout .vf-admin-layout__header-content {
+.admin-layout .app-admin-layout__header-content {
   display: flex;
   align-items: center;
   gap: var(--vf-layout-space-layout-base);

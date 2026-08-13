@@ -77,10 +77,13 @@ function annabelApiContracts(): array
         'codemonster-ru/razor' => [
             'api' => [
                 '#^src/RazorEngine\.php$#',
+                '#^src/Components/(ComponentRegistry|ComponentRenderContext|RenderedHtml)\.php$#',
+                '#^src/Components/Contracts/.+\.php$#',
                 '#^src/Exceptions/.+\.php$#',
             ],
             'internal' => [
                 '#^src/Compiler\.php$#',
+                '#^src/Components/(Compilation|Parsing)/.+\.php$#',
                 '#^src/Internal/.+\.php$#',
             ],
         ],

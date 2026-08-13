@@ -11,7 +11,7 @@ import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
-import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
@@ -317,7 +317,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         <template #cell-actions="{ row }">
           <CmDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
             <template #trigger>
-              <VfIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
+              <AppIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
             <CmMenu>
               <VfMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />

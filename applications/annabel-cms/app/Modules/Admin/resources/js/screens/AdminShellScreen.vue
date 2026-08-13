@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useBreakpoint } from '@codemonster-ru/vueforge-core/foundation';
 import { CmAvatar } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmDivider } from '@codemonster-ru/ui-vue';
@@ -16,6 +15,7 @@ import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
 import AuthFooter from '../components/AuthFooter.vue';
 import MissingAdminScreen from './MissingAdminScreen.vue';
+import { useMediaQuery } from '../support/useMediaQuery.js';
 
 const props = defineProps({
   csrfToken: {
@@ -52,7 +52,7 @@ const error = ref('');
 const loading = ref(false);
 const sidebarStorageKey = 'annabel-admin-sidebar-collapsed';
 const sidebarCollapsed = ref(readSidebarCollapsed());
-const isDesktopViewport = useBreakpoint('lg');
+const isDesktopViewport = useMediaQuery('(min-width: 1024px)');
 const avatarLabel = computed(() => props.user?.email?.trim().slice(0, 2).toUpperCase() || '?');
 const activeNavigationPath = computed(() => findNavigationPath(props.navigation, props.navigationValue));
 const pageHeading = computed(() => props.pageTitle || activeNavigationPath.value[activeNavigationPath.value.length - 1]?.label || 'Dashboard');

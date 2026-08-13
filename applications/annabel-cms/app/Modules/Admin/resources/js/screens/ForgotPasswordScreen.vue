@@ -4,7 +4,7 @@ import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { CmLink } from '@codemonster-ru/ui-vue';
-import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
+import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import { VfAuthLayout } from '@codemonster-ru/vueforge-layouts/auth-layout';
 import AuthFooter from '../components/AuthFooter.vue';
 import { firstError } from '../support/errors';
@@ -92,7 +92,7 @@ function submitOnEnter(event) {
     title="Reset your password"
     description="Enter your admin account email"
   >
-    <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
+    <AppThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
     <form class="auth-form" method="post" action="/admin/forgot-password" novalidate @submit.prevent="requestPasswordReset" @keydown.enter="submitOnEnter">
       <CmAlert v-if="error" tone="danger" title="Password recovery">

@@ -5,7 +5,7 @@ import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
-import { CmDataTable } from '@codemonster-ru/ui-vue';
+import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
@@ -323,7 +323,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
     </CmAlert>
 
     <div v-if="!formMode" class="pages-screen__list">
-      <CmDataTable
+      <AppDataTable
         :columns="columns"
         :visible-column-keys="visibleColumns"
         :rows="pages"
@@ -332,7 +332,6 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         column-dividers
         :loading="loading"
         pagination
-        pagination-mode="manual"
         :page="tablePage"
         :page-size="pageSize"
         :total-rows="totalRows"
@@ -395,7 +394,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
       <template #cell-created_at="{ value }">
         {{ formatDateTime(value) }}
       </template>
-    </CmDataTable>
+    </AppDataTable>
     </div>
 
     <form id="pages-page-form" v-else class="pages-screen__form" novalidate @submit.prevent="savePage">

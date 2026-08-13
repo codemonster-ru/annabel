@@ -1,5 +1,4 @@
 import { createApp } from 'vue';
-import VueForgeLayouts from '@codemonster-ru/vueforge-layouts';
 import '@codemonster-ru/ui-tokens/tokens.css';
 import '@codemonster-ru/ui-css/styles.css';
 import AdminApp from './AdminApp.vue';
@@ -12,11 +11,6 @@ const boot = window.__ANNABEL_CMS_ADMIN__ || {};
 
 const app = createApp(AdminApp, {
   boot,
-});
-
-app.use(VueForgeLayouts, {
-  defaultTheme: 'system',
-  themeStorageKey: 'annabel-admin-theme',
 });
 
 app.mount('#admin-app');

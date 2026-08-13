@@ -11,17 +11,6 @@
             "options": {
                 "symlink": true
             }
-        },
-        {
-            "type": "path",
-            "url": "../../../../JS/vueforge/packages/razor",
-            "canonical": true,
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "codemonster-ru/ui": "1.0.0-rc.1"
-                }
-            }
         }
     ],
     "require": {

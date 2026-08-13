@@ -153,11 +153,11 @@ watch([page, pageSize], loadSystem);
 <style scoped>
 .system-update-screen {
   display: grid;
-  gap: var(--vf-section-gap);
+  gap: var(--cm-space-6);
 }
 
 .system-update-screen__panel {
-  padding-block-start: var(--vf-section-gap);
+  padding-block-start: var(--cm-space-6);
 }
 
 .system-update-screen__details {
@@ -167,14 +167,14 @@ watch([page, pageSize], loadSystem);
 
 .system-update-screen__details th,
 .system-update-screen__details td {
-  padding: var(--vf-surface-gap-compact) 0;
+  padding: var(--cm-space-2) 0;
   text-align: start;
 }
 
 .system-update-screen__details th {
   width: 14rem;
-  padding-inline-end: var(--vf-section-gap);
-  color: var(--vf-color-muted);
+  padding-inline-end: var(--cm-space-6);
+  color: var(--cm-color-text-muted);
   font-weight: inherit;
 }
 

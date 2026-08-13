@@ -229,23 +229,23 @@ watch([page, pageSize], loadModules);
 <style scoped>
 .modules-screen {
   display: grid;
-  gap: var(--vf-section-gap);
+  gap: var(--cm-space-6);
 }
 
 .modules-screen__empty {
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .modules-screen__status {
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .modules-screen__status--installed {
-  color: var(--vf-color-success);
+  color: var(--cm-color-status-success-subtle-foreground);
 }
 
 .modules-screen__version {
   display: block;
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 </style>

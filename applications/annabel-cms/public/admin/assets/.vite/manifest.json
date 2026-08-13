@@ -1,111 +1,110 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-DN4zflEX.js",
+    "file": "ModuleListScreen-Dz7DkSLz.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_dist-CW0XnsqJ.js"
+      "_AppConfirmDialog-CmxfhUC7.js"
     ],
     "css": [
-      "ModuleListScreen-xYGXoQCS.css",
-      "confirm-dialog-Dsgq5B-p.css"
+      "ModuleListScreen-DnAwQ7j-.css"
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-D_5TGVTM.js",
+    "file": "SystemUpdateScreen-n4LQd9Nm.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
-      "_dateTime-DxxE3QK2.js",
-      "_dist-CW0XnsqJ.js"
+      "resources/js/main.js",
+      "_dateTime-DxxE3QK2.js"
     ],
     "css": [
       "SystemUpdateScreen-DDeZwZQL.css"
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-iHDgkeRT.js",
+    "file": "PagesScreen-Dym4d8KF.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppFormLayout-DpxYDwGc.js",
-      "_dateTime-DxxE3QK2.js",
-      "_dist-CW0XnsqJ.js"
+      "_AppConfirmDialog-CmxfhUC7.js",
+      "_AppFormLayout-D4zZ4M3U.js",
+      "_dateTime-DxxE3QK2.js"
     ],
     "css": [
-      "PagesScreen-Bhcgd3QV.css",
-      "confirm-dialog-Dsgq5B-p.css",
+      "PagesScreen-B_xNulol.css",
       "data-table-column-chooser-CIxgvrbb.css"
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-CakTbHtK.js",
+    "file": "SiteSettingsScreen-DlxlEkgs.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_AppFormLayout-DpxYDwGc.js",
-      "_dist-CW0XnsqJ.js"
+      "resources/js/main.js",
+      "_AppFormLayout-D4zZ4M3U.js"
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-cRtaj4yY.js",
+    "file": "RoleListScreen-DHtrTQ0s.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppFormLayout-DpxYDwGc.js",
-      "_dateTime-DxxE3QK2.js",
-      "_dist-CW0XnsqJ.js"
+      "_AppConfirmDialog-CmxfhUC7.js",
+      "_AppFormLayout-D4zZ4M3U.js",
+      "_dateTime-DxxE3QK2.js"
     ],
     "css": [
-      "RoleListScreen-Sd3VF77T.css",
-      "confirm-dialog-Dsgq5B-p.css",
+      "RoleListScreen-CMWr3EFW.css",
       "data-table-column-chooser-CIxgvrbb.css"
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-jCnJL-mi.js",
+    "file": "UserListScreen-Bl6WZoPw.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_AppFormLayout-DpxYDwGc.js",
-      "_dateTime-DxxE3QK2.js",
-      "_dist-CW0XnsqJ.js"
+      "_AppConfirmDialog-CmxfhUC7.js",
+      "_AppFormLayout-D4zZ4M3U.js",
+      "_dateTime-DxxE3QK2.js"
     ],
     "css": [
-      "UserListScreen-RvY6259D.css",
-      "confirm-dialog-Dsgq5B-p.css",
+      "UserListScreen-C2ChzfCh.css",
       "data-table-column-chooser-CIxgvrbb.css"
     ]
   },
-  "_AppFormLayout-DpxYDwGc.js": {
-    "file": "AppFormLayout-DpxYDwGc.js",
+  "_AppConfirmDialog-CmxfhUC7.js": {
+    "file": "AppConfirmDialog-CmxfhUC7.js",
+    "name": "AppConfirmDialog",
+    "imports": [
+      "resources/js/main.js"
+    ]
+  },
+  "_AppFormLayout-D4zZ4M3U.js": {
+    "file": "AppFormLayout-D4zZ4M3U.js",
     "name": "AppFormLayout",
     "imports": [
-      "_dist-CW0XnsqJ.js"
+      "resources/js/main.js"
     ]
   },
   "__plugin-vue_export-helper-BDNMzG2s.js": {
     "file": "_plugin-vue_export-helper-BDNMzG2s.js",
     "name": "_plugin-vue_export-helper"
-  },
-  "_confirm-dialog-Dsgq5B-p.css": {
-    "file": "confirm-dialog-Dsgq5B-p.css",
-    "src": "_confirm-dialog-Dsgq5B-p.css"
   },
   "_data-table-column-chooser-CIxgvrbb.css": {
     "file": "data-table-column-chooser-CIxgvrbb.css",
@@ -115,22 +114,15 @@
     "file": "dateTime-DxxE3QK2.js",
     "name": "dateTime"
   },
-  "_dist-CW0XnsqJ.js": {
-    "file": "dist-CW0XnsqJ.js",
-    "name": "dist"
-  },
   "resources/images/codemonster-icon.svg": {
     "file": "codemonster-icon-CdswbS-j.svg",
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-oKcBzY6t.js",
+    "file": "admin-kz42IKUf.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
-    "imports": [
-      "_dist-CW0XnsqJ.js"
-    ],
     "dynamicImports": [
       "resources/js/screens/DashboardScreen.vue",
       "../AdminModules/resources/js/screens/ModuleListScreen.vue",
@@ -141,20 +133,20 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-BGbEP2Cp.css"
+      "main-SIDu5Ud-.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-D1k5UlG5.js",
+    "file": "DashboardScreen-CGBQGcue.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
-      "_dist-CW0XnsqJ.js"
+      "resources/js/main.js"
     ],
     "css": [
       "DashboardScreen-PV0kVQ33.css"

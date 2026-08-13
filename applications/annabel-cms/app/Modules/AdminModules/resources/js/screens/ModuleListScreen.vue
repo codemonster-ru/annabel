@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
-import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
+import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
@@ -114,7 +114,7 @@ watch([page, pageSize], loadModules);
 
 <template>
   <div class="modules-screen">
-    <VfConfirmDialog
+    <AppConfirmDialog
       :open="Boolean(uninstallCandidate)"
       title="Uninstall module?"
       :description="uninstallCandidate ? `The module “${uninstallCandidate.name}” will be uninstalled. Its data will be preserved.` : ''"

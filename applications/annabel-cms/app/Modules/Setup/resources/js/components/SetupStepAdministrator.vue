@@ -1,5 +1,5 @@
 <script setup>
-import { CmField } from '@codemonster-ru/ui-vue';
+import CmField from '../../../../../resources/js/components/AppField.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import AppInput from '../../../../../resources/js/components/AppInput.vue';
 

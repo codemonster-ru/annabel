@@ -16,7 +16,7 @@ import AppIconButton from '../../../../Admin/resources/js/components/AppIconButt
 import { CmInput } from '@codemonster-ru/ui-vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
-import { CmTabs } from '@codemonster-ru/ui-vue';
+import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
 import { CmTextarea } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {

@@ -251,7 +251,7 @@ RAZOR);
     {
         $registry = new ComponentRegistry();
         $registry->registerPrefix('cm', [
-            'button' => new class implements ComponentInterface {
+            'button' => new class () implements ComponentInterface {
                 public function render(ComponentRenderContext $context): RenderedHtml
                 {
                     $disabled = $context->prop('disabled') === true ? ' disabled' : '';
@@ -261,7 +261,7 @@ RAZOR);
                     );
                 }
             },
-            'card' => new class implements ComponentInterface {
+            'card' => new class () implements ComponentInterface {
                 public function render(ComponentRenderContext $context): RenderedHtml
                 {
                     return RenderedHtml::fromTrustedString(
@@ -291,7 +291,7 @@ RAZOR);
     public function testComposesOnlyExplicitlyTrustedHtmlWithoutEscaping(): void
     {
         $this->template('trusted', '{{ $trusted }}|{{ $ordinary }}|{{ $stringable }}');
-        $stringable = new class implements Stringable {
+        $stringable = new class () implements Stringable {
             public function __toString(): string
             {
                 return '<i>Stringable</i>';
@@ -326,7 +326,7 @@ RAZOR);
     {
         $registry = new ComponentRegistry();
         $registry->registerPrefix('cm', [
-            'button' => new class implements ComponentInterface {
+            'button' => new class () implements ComponentInterface {
                 public function render(ComponentRenderContext $context): RenderedHtml
                 {
                     return RenderedHtml::empty();
@@ -352,7 +352,7 @@ RAZOR);
 
         $registry = new ComponentRegistry();
         $registry->registerPrefix('cm', [
-            'button' => new class implements ComponentInterface {
+            'button' => new class () implements ComponentInterface {
                 public function render(ComponentRenderContext $context): RenderedHtml
                 {
                     return RenderedHtml::fromTrustedString(

@@ -10,9 +10,9 @@ use Codemonster\Razor\Components\Compilation\ComponentTemplateCompiler;
 use Codemonster\Razor\Components\ComponentRegistry;
 use Codemonster\Razor\Components\ComponentRenderContext;
 use Codemonster\Razor\Components\Contracts\ComponentInterface;
-use Codemonster\Razor\Components\RenderedHtml;
 use Codemonster\Razor\Components\Parsing\ComponentParser;
 use Codemonster\Razor\Components\Parsing\ComponentSlotParser;
+use Codemonster\Razor\Components\RenderedHtml;
 use PHPUnit\Framework\TestCase;
 
 final class ComponentTemplateCompilerTest extends TestCase
@@ -20,7 +20,7 @@ final class ComponentTemplateCompilerTest extends TestCase
     public function testRecursivelyCompilesNestedComponentsAndOrdinaryRazor(): void
     {
         $registry = new ComponentRegistry();
-        $component = new class implements ComponentInterface {
+        $component = new class () implements ComponentInterface {
             public function render(ComponentRenderContext $context): RenderedHtml
             {
                 return RenderedHtml::empty();

@@ -24,8 +24,7 @@ final readonly class ComponentTemplateCompiler
         Closure $compileRazor,
         string $file = 'Razor template',
         int $lineOffset = 0,
-    ): string
-    {
+    ): string {
         $compiled = '';
         $cursor = 0;
         $plainStart = 0;
@@ -105,8 +104,7 @@ final readonly class ComponentTemplateCompiler
         string $source,
         int $offset,
         int $lineOffset,
-    ): RazorException
-    {
+    ): RazorException {
         if (preg_match('/ in ' . preg_quote($file, '/') . ':\d+$/', $exception->getMessage()) === 1) {
             return $exception;
         }

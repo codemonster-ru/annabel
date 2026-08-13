@@ -25,7 +25,7 @@ final class ComponentContractsTest extends TestCase
                 },
             ],
         );
-        $component = new class implements ComponentInterface {
+        $component = new class () implements ComponentInterface {
             public function render(ComponentRenderContext $context): RenderedHtml
             {
                 $tone = $context->prop('tone');
@@ -50,7 +50,7 @@ final class ComponentContractsTest extends TestCase
 
     public function testResolverContractSeparatesPrefixOwnershipFromResolution(): void
     {
-        $component = new class implements ComponentInterface {
+        $component = new class () implements ComponentInterface {
             public function render(ComponentRenderContext $context): RenderedHtml
             {
                 return RenderedHtml::empty();

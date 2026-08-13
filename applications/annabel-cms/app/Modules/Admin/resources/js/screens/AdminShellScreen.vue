@@ -4,10 +4,10 @@ import { useBreakpoint } from '@codemonster-ru/vueforge-core/foundation';
 import { CmAvatar } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmDivider } from '@codemonster-ru/ui-vue';
-import { CmDropdown } from '@codemonster-ru/ui-vue';
+import AppDropdown from '../components/AppDropdown.vue';
 import AppIconButton from '../components/AppIconButton.vue';
-import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { CmMenu } from '@codemonster-ru/ui-vue';
+import AppMenuItem from '../components/AppMenuItem.vue';
+import AppMenu from '../components/AppMenu.vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
@@ -193,7 +193,7 @@ async function logout() {
       <div class="admin-layout__actions">
         <AppThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />
         <CmDivider v-if="isDesktopViewport" orientation="vertical" />
-        <CmDropdown placement="bottom-end">
+        <AppDropdown placement="bottom-end">
           <template #trigger>
             <CmAvatar
               :label="avatarLabel"
@@ -218,10 +218,10 @@ async function logout() {
             <AppThemeSwitch variant="switch" />
           </div>
           <CmDivider />
-          <CmMenu>
-            <VfMenuItem label="Logout" :icon="icons.logOut" :disabled="loading" @select="logout" />
-          </CmMenu>
-        </CmDropdown>
+          <AppMenu>
+            <AppMenuItem label="Logout" :icon="icons.logOut" :disabled="loading" @select="logout" />
+          </AppMenu>
+        </AppDropdown>
       </div>
     </template>
 

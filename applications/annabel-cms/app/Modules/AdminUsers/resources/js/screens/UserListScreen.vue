@@ -8,13 +8,13 @@ import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfi
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
-import { CmDropdown } from '@codemonster-ru/ui-vue';
+import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
-import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { CmMenu } from '@codemonster-ru/ui-vue';
+import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
+import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { CmTabs } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {
@@ -315,15 +315,15 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
           />
         </template>
         <template #cell-actions="{ row }">
-          <CmDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
+          <AppDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
             <template #trigger>
               <AppIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
-            <CmMenu>
-              <VfMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
-              <VfMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
-            </CmMenu>
-          </CmDropdown>
+            <AppMenu>
+              <AppMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
+              <AppMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
+            </AppMenu>
+          </AppDropdown>
         </template>
         <template #cell-username="{ row }">
           <a v-if="can('users.update')" class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`">{{ row.username }}</a>

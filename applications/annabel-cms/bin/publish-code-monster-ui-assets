@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Codemonster\Ui\Assets\AssetManifest;
+use Codemonster\Ui\Assets\AssetPublisher;
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+$target = dirname(__DIR__) . '/public/vendor/codemonster-ui';
+$published = (new AssetPublisher(AssetManifest::packaged()))->publish($target);
+
+fwrite(STDOUT, sprintf("Published %d CodeMonster UI assets to %s.\n", count($published), $target));

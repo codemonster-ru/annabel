@@ -12,13 +12,14 @@
     ],
     "require": {
         "php": ">=8.2",
-        "codemonster-ru/annabel": "^1.17",
+        "codemonster-ru/annabel": "^1.17.1",
         "codemonster-ru/database": "^2.1.1",
         "codemonster-ru/datetime": "^1.0",
         "codemonster-ru/env": "^2.4",
         "codemonster-ru/http": "^2.1",
         "codemonster-ru/security": "^1.1",
         "codemonster-ru/session": "^2.0",
+        "codemonster-ru/ui": "^1.0.0-rc.1",
         "codemonster-ru/view": "^2.3",
         "psr/clock": "^1.0"
     },
@@ -43,6 +44,11 @@
         "branch-alias": {
             "dev-main": "1.1.x-dev"
         }
+    },
+    "scripts": {
+        "assets:ui": "@php bin/publish-code-monster-ui-assets",
+        "post-install-cmd": "@assets:ui",
+        "post-update-cmd": "@assets:ui"
     },
     "archive": {
         "exclude": [

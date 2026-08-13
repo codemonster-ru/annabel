@@ -1,8 +1,8 @@
 <script setup>
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
-import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfSetupLayout } from '@codemonster-ru/vueforge-layouts/setup-layout';
+import AppNavMenu from '../../../../resources/js/components/AppNavMenu.vue';
 import licenseAgreement from '../content/license-agreement.txt?raw';
 import SetupStepAdministrator from './components/SetupStepAdministrator.vue';
 import SetupStepDatabase from './components/SetupStepDatabase.vue';
@@ -78,7 +78,7 @@ const {
       </template>
 
       <template #aside>
-        <VfNavMenu
+        <AppNavMenu
           class="setup-nav"
           :items="stepItems"
           :model-value="currentStep"

@@ -4,7 +4,7 @@ import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
-import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
+import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 
 const props = defineProps({ user: { type: Object, default: null } });
@@ -111,7 +111,7 @@ onMounted(loadSettings);
 
   <form id="site-settings-form" class="site-settings-form" novalidate @submit.prevent="saveSettings">
     <CmCard>
-      <VfFormLayout mode="responsive" label-width="minmax(14rem, 25%)">
+      <AppFormLayout mode="responsive" label-width="minmax(14rem, 25%)">
         <CmAlert v-if="error" tone="danger" title="Site settings">
           {{ error }}
         </CmAlert>
@@ -144,7 +144,7 @@ onMounted(loadSettings);
             />
           </template>
         </CmField>
-      </VfFormLayout>
+      </AppFormLayout>
     </CmCard>
   </form>
 </template>

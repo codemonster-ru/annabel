@@ -5,7 +5,7 @@ import { CmAvatar } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmDivider } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
-import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import AppIconButton from '../components/AppIconButton.vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
@@ -181,7 +181,7 @@ async function logout() {
     </template>
 
     <template #header="{ toggleSidebarCollapsed }">
-      <VfIconButton
+      <AppIconButton
         v-if="isDesktopViewport"
         class="admin-layout__sidebar-toggle"
         :icon="icons.bars"

@@ -30,6 +30,11 @@ body {
   display: none;
 }
 
+.app-icon-button {
+  aspect-ratio: 1;
+  padding-inline: 0;
+}
+
 .app-form-layout {
   container-type: inline-size;
   display: grid;

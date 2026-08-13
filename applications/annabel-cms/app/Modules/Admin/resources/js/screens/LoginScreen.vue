@@ -143,7 +143,7 @@ function submitOnEnter(event) {
         </CmLink>
       </div>
 
-      <CmButton type="submit" :loading="loading" block>
+      <CmButton class="auth-form__submit" type="submit" :loading="loading">
         {{ loading ? 'Signing in...' : 'Sign in' }}
       </CmButton>
     </form>

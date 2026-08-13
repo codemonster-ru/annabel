@@ -1,0 +1,1 @@
+import{A as e,B as t,E as n,M as r,S as i}from"./admin-zWdVUjHN.js";var a={__name:`AppFormLayout`,props:{labelWidth:{type:String,default:`minmax(10rem, 25%)`}},setup(a){let o=a,s=i(()=>({"--app-form-layout-label-width":o.labelWidth}));return(i,a)=>(e(),n(`div`,{class:`app-form-layout`,style:t(s.value)},[r(i.$slots,`default`)],4))}};export{a as t};

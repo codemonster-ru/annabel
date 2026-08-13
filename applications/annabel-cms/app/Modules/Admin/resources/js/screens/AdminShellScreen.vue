@@ -9,9 +9,9 @@ import AppIconButton from '../components/AppIconButton.vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
-import { VfPageHeader } from '@codemonster-ru/vueforge-core/page-header';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
+import AppPageHeader from '../components/AppPageHeader.vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
 import AuthFooter from '../components/AuthFooter.vue';
@@ -226,14 +226,14 @@ async function logout() {
     </template>
 
     <div class="admin-layout__content">
-      <VfPageHeader :title="pageHeading">
+      <AppPageHeader :title="pageHeading">
         <template #actions>
           <div id="admin-page-actions" class="admin-layout__page-actions"></div>
         </template>
         <template v-if="error" #description>
           <p class="field__error">{{ error }}</p>
         </template>
-      </VfPageHeader>
+      </AppPageHeader>
       <component :is="screenComponent" v-if="screenComponent" :user="user" />
       <MissingAdminScreen v-else-if="screenError" :screen="screenError" />
     </div>

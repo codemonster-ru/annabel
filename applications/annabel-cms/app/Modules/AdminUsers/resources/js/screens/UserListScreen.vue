@@ -1,20 +1,21 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfCard } from '@codemonster-ru/vueforge-core/card';
-import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmCard } from '@codemonster-ru/ui-vue';
+import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
-import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
-import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
-import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
-import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { CmDatePicker } from '@codemonster-ru/ui-vue';
+import { CmDropdown } from '@codemonster-ru/ui-vue';
+import { CmField } from '@codemonster-ru/ui-vue';
 import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
+import { CmInput } from '@codemonster-ru/ui-vue';
+import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { CmMenu } from '@codemonster-ru/ui-vue';
+import { CmTabs } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {
   formatDateTime,
@@ -272,22 +273,22 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
       @confirm="deleteUser(deleteCandidate)"
     />
     <Teleport v-if="formMode" to="#admin-page-actions">
-      <VfButton type="submit" form="users-user-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save user' }}</VfButton>
-      <VfButton variant="secondary" :disabled="saving || deleting" @click="backToUsers">Back</VfButton>
+      <CmButton type="submit" form="users-user-form" :loading="saving" :disabled="loading || deleting">{{ saving ? 'Saving...' : 'Save user' }}</CmButton>
+      <CmButton variant="secondary" :disabled="saving || deleting" @click="backToUsers">Back</CmButton>
     </Teleport>
     <Teleport v-else-if="can('users.create')" to="#admin-page-actions">
-      <VfButton variant="primary" :disabled="loading || saving" @click="newUser">New user</VfButton>
+      <CmButton variant="primary" :disabled="loading || saving" @click="newUser">New user</CmButton>
     </Teleport>
 
-    <VfAlert v-if="error" tone="danger" title="Users">
+    <CmAlert v-if="error" tone="danger" title="Users">
       {{ error }}
-    </VfAlert>
-    <VfAlert v-if="success" tone="success" title="Users">
+    </CmAlert>
+    <CmAlert v-if="success" tone="success" title="Users">
       {{ success }}
-    </VfAlert>
+    </CmAlert>
 
     <div v-if="!formMode" class="users-screen__list">
-      <VfDataTable
+      <CmDataTable
         :columns="columns"
         :visible-column-keys="visibleColumns"
         :rows="rows"
@@ -314,15 +315,15 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
           />
         </template>
         <template #cell-actions="{ row }">
-          <VfDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
+          <CmDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
             <template #trigger>
               <VfIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
-            <VfMenu>
+            <CmMenu>
               <VfMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
               <VfMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
-            </VfMenu>
-          </VfDropdown>
+            </CmMenu>
+          </CmDropdown>
         </template>
         <template #cell-username="{ row }">
           <a v-if="can('users.update')" class="users-screen__user-link" :href="`/admin/users/${row.id}/edit`">{{ row.username }}</a>
@@ -333,41 +334,41 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         </template>
         <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template>
         <template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
-      </VfDataTable>
+      </CmDataTable>
     </div>
 
     <form id="users-user-form" v-else class="users-screen__form" novalidate @submit.prevent="saveUser">
-      <VfCard>
-        <VfTabs v-model="activeTab" :items="userFormTabs">
+      <CmCard>
+        <CmTabs v-model="activeTab" :items="userFormTabs">
           <template #panel="{ activeValue }">
             <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
-          <VfField class="users-screen__active-field" label="Active">
-            <template #default="{ controlId }"><VfCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
-          </VfField>
-          <VfField class="users-screen__activity-field" label="Active from" :error="firstError('active_from')">
-            <template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="user.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
-          </VfField>
-          <VfField class="users-screen__activity-field" label="Active until" :error="firstError('active_until')">
-            <template #default="{ controlId, describedBy, invalid }"><VfDatePicker :id="controlId" v-model="user.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
-          </VfField>
-          <VfField label="Username" :error="firstError('username')" required>
-            <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.username" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
-          </VfField>
-          <VfField label="Email" :error="firstError('email')" required>
-            <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.email" type="email" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
-          </VfField>
-          <VfField label="New password" :error="firstError('password')" :required="!editing">
-            <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
-          </VfField>
-          <VfField label="Confirm new password" :error="firstError('password_confirmation')" :required="!editing">
-            <template #default="{ controlId, describedBy, invalid }"><VfInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
-          </VfField>
+          <CmField class="users-screen__active-field" label="Active">
+            <template #default="{ controlId }"><CmCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
+          </CmField>
+          <CmField class="users-screen__activity-field" label="Active from" :error="firstError('active_from')">
+            <template #default="{ controlId, describedBy, invalid }"><CmDatePicker :id="controlId" v-model="user.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+          </CmField>
+          <CmField class="users-screen__activity-field" label="Active until" :error="firstError('active_until')">
+            <template #default="{ controlId, describedBy, invalid }"><CmDatePicker :id="controlId" v-model="user.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+          </CmField>
+          <CmField label="Username" :error="firstError('username')" required>
+            <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.username" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
+          </CmField>
+          <CmField label="Email" :error="firstError('email')" required>
+            <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.email" type="email" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
+          </CmField>
+          <CmField label="New password" :error="firstError('password')" :required="!editing">
+            <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.password" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
+          </CmField>
+          <CmField label="Confirm new password" :error="firstError('password_confirmation')" :required="!editing">
+            <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
+          </CmField>
             </VfFormLayout>
             <div v-else-if="activeValue === 'roles'" class="users-screen__roles">
-              <VfAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</VfAlert>
-              <VfDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
+              <CmAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</CmAlert>
+              <CmDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
                 <template #cell-selected="{ row: role }">
-                  <VfCheckbox v-model="role.selected" :aria-label="`Select role ${role.name}`" :disabled="saving" />
+                  <CmCheckbox v-model="role.selected" :aria-label="`Select role ${role.name}`" :disabled="saving" />
                 </template>
                 <template #cell-id="{ value }">
                   <span class="users-screen__role-id">{{ value }}</span>
@@ -380,24 +381,24 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
                 </template>
                 <template #cell-period="{ row: role }">
                   <div class="users-screen__role-period">
-                    <VfField :error="firstError(`roles.${role.id}.active_from`)">
+                    <CmField :error="firstError(`roles.${role.id}.active_from`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker :id="controlId" v-model="role.active_from" :max="membershipStartMax(role)" placeholder="From" aria-label="Membership starts at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
+                        <CmDatePicker :id="controlId" v-model="role.active_from" :max="membershipStartMax(role)" placeholder="From" aria-label="Membership starts at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
-                    </VfField>
+                    </CmField>
                     <span class="users-screen__role-period-separator" aria-hidden="true">—</span>
-                    <VfField :error="firstError(`roles.${role.id}.active_until`)">
+                    <CmField :error="firstError(`roles.${role.id}.active_until`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <VfDatePicker :id="controlId" v-model="role.active_until" :min="membershipEndMin(role)" placeholder="Until" aria-label="Membership ends at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
+                        <CmDatePicker :id="controlId" v-model="role.active_until" :min="membershipEndMin(role)" placeholder="Until" aria-label="Membership ends at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
-                    </VfField>
+                    </CmField>
                   </div>
                 </template>
-              </VfDataTable>
+              </CmDataTable>
             </div>
           </template>
-        </VfTabs>
-      </VfCard>
+        </CmTabs>
+      </CmCard>
     </form>
   </div>
 </template>

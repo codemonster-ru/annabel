@@ -1,16 +1,16 @@
 <script setup>
-import { VfCard } from '@codemonster-ru/vueforge-core/card';
+import { CmCard } from '@codemonster-ru/ui-vue';
 
 defineProps({ user: { type: Object, default: null } });
 </script>
 
 <template>
-  <VfCard>
+  <CmCard>
     <div class="dashboard-welcome">
       <h2>Welcome to Annabel</h2>
       <p>Choose a section from the navigation to manage your site.</p>
     </div>
-  </VfCard>
+  </CmCard>
 </template>
 
 <style scoped>

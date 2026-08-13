@@ -9,7 +9,7 @@ import AppDataTable from '../../../../../resources/js/components/AppDataTable.vu
 import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
 import AppInput from '../../../../../resources/js/components/AppInput.vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
-import { CmField } from '@codemonster-ru/ui-vue';
+import CmField from '../../../../../resources/js/components/AppField.vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import AppGroupBox from '../../../../Admin/resources/js/components/AppGroupBox.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';

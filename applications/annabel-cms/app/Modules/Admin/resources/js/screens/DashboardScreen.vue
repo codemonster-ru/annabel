@@ -16,7 +16,7 @@ defineProps({ user: { type: Object, default: null } });
 <style scoped>
 .dashboard-welcome {
   display: grid;
-  gap: var(--vf-surface-gap-compact);
+  gap: var(--cm-space-3);
 }
 
 .dashboard-welcome h2,
@@ -25,6 +25,6 @@ defineProps({ user: { type: Object, default: null } });
 }
 
 .dashboard-welcome p {
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 </style>

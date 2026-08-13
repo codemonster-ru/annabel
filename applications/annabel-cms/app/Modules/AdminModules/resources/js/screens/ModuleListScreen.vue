@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
-import { CmDataTable } from '@codemonster-ru/ui-vue';
+import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
@@ -128,7 +128,7 @@ watch([page, pageSize], loadModules);
     />
     <CmAlert v-if="error" tone="danger" title="Modules">{{ error }}</CmAlert>
     <CmAlert v-if="success" tone="success" title="Modules">{{ success }}</CmAlert>
-    <CmDataTable
+    <AppDataTable
       :columns="columns"
       :rows="rows"
       row-key="name"
@@ -136,7 +136,6 @@ watch([page, pageSize], loadModules);
       column-dividers
       :loading="loading"
       pagination
-      pagination-mode="manual"
       :page="page"
       :page-size="pageSize"
       :total-rows="totalRows"
@@ -222,7 +221,7 @@ watch([page, pageSize], loadModules);
           {{ value.length > 0 ? value.join(', ') : 'None' }}
         </span>
       </template>
-    </CmDataTable>
+    </AppDataTable>
   </div>
 </template>
 

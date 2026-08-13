@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
-import { CmDataTable } from '@codemonster-ru/ui-vue';
+import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import { CmTabs } from '@codemonster-ru/ui-vue';
 import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
@@ -123,7 +123,7 @@ watch([page, pageSize], loadSystem);
             </table>
           </CmCard>
 
-          <CmDataTable
+          <AppDataTable
             v-else-if="activeValue === 'components'"
             :columns="columns"
             :rows="components"
@@ -132,7 +132,6 @@ watch([page, pageSize], loadSystem);
             column-dividers
             :loading="loading"
             pagination
-            pagination-mode="manual"
             :page="page"
             :page-size="pageSize"
             :total-rows="totalComponents"
@@ -143,7 +142,7 @@ watch([page, pageSize], loadSystem);
             <template #cell-name="{ value }"><strong>{{ value }}</strong></template>
             <template #cell-installed_version="{ value }">{{ value || '—' }}</template>
             <template #cell-available_version="{ value }">{{ value || '—' }}</template>
-          </CmDataTable>
+          </AppDataTable>
         </div>
       </template>
     </CmTabs>

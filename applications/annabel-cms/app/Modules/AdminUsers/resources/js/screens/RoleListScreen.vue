@@ -158,16 +158,16 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
 </template>
 
 <style scoped>
-.roles-screen { display: grid; gap: var(--vf-section-gap); }
-.roles-screen__role-link { color: var(--vf-color-text-link); text-decoration: none; }
+.roles-screen { display: grid; gap: var(--cm-space-6); }
+.roles-screen__role-link { color: var(--cm-color-text-link); text-decoration: none; }
 .roles-screen__role-link:hover { text-decoration: underline; }
-.roles-screen__permissions { display: grid; gap: var(--vf-section-gap); width: 100%; }
-.roles-screen__permission-grid { display: grid; gap: var(--vf-section-gap); }
-.roles-screen__permission-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem var(--vf-section-gap); }
-.roles-screen__permission-list :deep(.vf-checkbox) { min-width: 0; }
-.roles-screen__permissions-error { margin: 0; color: var(--vf-color-danger); }
-.roles-screen__status { color: var(--vf-color-muted); }
-.roles-screen__status--active { color: var(--vf-color-success); }
-@media (min-width: 900px) { .roles-screen__permission-grid { display: block; columns: 2; column-gap: var(--vf-section-gap); } .roles-screen__permission-group { width: 100%; margin-block-end: var(--vf-section-gap); break-inside: avoid; } }
-@media (min-width: 768px) { .roles-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; } }
+.roles-screen__permissions { display: grid; gap: var(--cm-space-6); width: 100%; }
+.roles-screen__permission-grid { display: grid; gap: var(--cm-space-6); }
+.roles-screen__permission-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem var(--cm-space-6); }
+.roles-screen__permission-list :deep(.cm-checkbox) { min-width: 0; }
+.roles-screen__permissions-error { margin: 0; color: var(--cm-color-status-danger-subtle-foreground); }
+.roles-screen__status { color: var(--cm-color-text-muted); }
+.roles-screen__status--active { color: var(--cm-color-status-success-subtle-foreground); }
+@media (min-width: 900px) { .roles-screen__permission-grid { display: block; columns: 2; column-gap: var(--cm-space-6); } .roles-screen__permission-group { width: 100%; margin-block-end: var(--cm-space-6); break-inside: avoid; } }
+@media (min-width: 768px) { .roles-screen__active-field :deep(.cm-field__label) { align-self: center; padding-block-start: 0; } }
 </style>

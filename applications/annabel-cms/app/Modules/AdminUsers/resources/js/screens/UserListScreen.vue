@@ -404,23 +404,23 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 </template>
 
 <style scoped>
-.users-screen { display: grid; gap: var(--vf-section-gap); }
-.users-screen__status { color: var(--vf-color-muted); }
-.users-screen__status--active { color: var(--vf-color-success); }
-.users-screen__user-link { color: var(--vf-color-text-link); text-decoration: none; }
+.users-screen { display: grid; gap: var(--cm-space-6); }
+.users-screen__status { color: var(--cm-color-text-muted); }
+.users-screen__status--active { color: var(--cm-color-status-success-subtle-foreground); }
+.users-screen__user-link { color: var(--cm-color-text-link); text-decoration: none; }
 .users-screen__user-link:hover { text-decoration: underline; }
-.users-screen__roles { display: grid; gap: var(--vf-section-gap); width: 100%; }
-.users-screen__role-id { color: var(--vf-color-muted); font-variant-numeric: tabular-nums; }
+.users-screen__roles { display: grid; gap: var(--cm-space-6); width: 100%; }
+.users-screen__role-id { color: var(--cm-color-text-muted); font-variant-numeric: tabular-nums; }
 .users-screen__role-name { display: grid; gap: 0.125rem; }
-.users-screen__role-link { color: var(--vf-color-text-link); text-decoration: none; }
+.users-screen__role-link { color: var(--cm-color-text-link); text-decoration: none; }
 .users-screen__role-link:hover { text-decoration: underline; }
-.users-screen__role-inactive { color: var(--vf-color-muted); font-size: 0.875rem; }
-.users-screen__role-period { display: grid; gap: var(--vf-section-gap); }
-.users-screen__role-period :deep(.vf-field) { width: 100%; }
-.users-screen__role-period-separator { display: none; color: var(--vf-color-muted); }
+.users-screen__role-inactive { color: var(--cm-color-text-muted); font-size: 0.875rem; }
+.users-screen__role-period { display: grid; gap: var(--cm-space-6); }
+.users-screen__role-period :deep(.cm-field) { width: 100%; }
+.users-screen__role-period-separator { display: none; color: var(--cm-color-text-muted); }
 
 @media (min-width: 768px) {
-  .users-screen__active-field :deep(.vf-field__label) { align-self: center; padding-block-start: 0; }
+  .users-screen__active-field :deep(.cm-field__label) { align-self: center; padding-block-start: 0; }
 }
 
 @media (min-width: 1200px) {

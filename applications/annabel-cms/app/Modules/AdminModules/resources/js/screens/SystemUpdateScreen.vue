@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
-import { CmTabs } from '@codemonster-ru/ui-vue';
+import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
 import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
 defineProps({ user: { type: Object, default: null } });
@@ -89,7 +89,7 @@ watch([page, pageSize], loadSystem);
 <template>
   <div class="system-update-screen">
     <CmAlert v-if="error" tone="danger" title="System updates">{{ error }}</CmAlert>
-    <CmTabs v-model="activeTab" :items="tabs">
+    <CmTabs id="system-update-tabs" v-model="activeTab" :items="tabs">
       <template #panel="{ activeValue }">
         <div class="system-update-screen__panel">
           <CmCard v-if="activeValue === 'updates'">

@@ -16,7 +16,7 @@ import { CmInput } from '@codemonster-ru/ui-vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { CmTextarea } from '@codemonster-ru/ui-vue';
-import { CmTabs } from '@codemonster-ru/ui-vue';
+import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {
   formatDateTime,
@@ -399,7 +399,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 
     <form id="pages-page-form" v-else class="pages-screen__form" novalidate @submit.prevent="savePage">
       <CmCard>
-          <CmTabs v-model="activeTab" :items="formTabs">
+          <CmTabs id="page-form-tabs" v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
               <AppFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
                 <CmField class="pages-screen__active-field" label="Published">

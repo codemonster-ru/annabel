@@ -10,20 +10,20 @@ body,
 }
 
 :root {
-  background-color: var(--vf-layout-app-background);
+  background-color: var(--cm-color-background-surface-subtle);
 }
 
 body {
   margin: 0;
   min-block-size: 100vh;
-  background: var(--vf-layout-app-background);
-  color: var(--vf-color-text);
-  font-family: var(--vf-font-family-base);
+  background: var(--cm-color-background-surface-subtle);
+  color: var(--cm-color-text-primary);
+  font-family: var(--cm-font-family-base);
 }
 
 #setup-app {
   min-block-size: 100vh;
-  background: var(--vf-layout-app-background);
+  background: var(--cm-color-background-surface-subtle);
 }
 
 [v-cloak] {
@@ -33,34 +33,34 @@ body {
 .setup-brand {
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--vf-layout-space-layout-base) * 0.75);
+  gap: var(--cm-space-3);
   min-width: 0;
-  padding-inline-start: var(--vf-field-padding-inline-md);
+  padding-inline-start: var(--cm-space-3);
 }
 
 .setup-brand__name {
   min-width: 0;
-  color: var(--vf-color-text);
-  font-size: var(--vf-heading-h-4-font-size);
-  font-weight: var(--vf-heading-font-weight);
-  line-height: var(--vf-heading-h-4-line-height);
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-xl);
+  font-weight: var(--cm-font-weight-semibold);
+  line-height: var(--cm-line-height-tight);
 }
 
 code {
-  font-family: var(--vf-font-family-mono);
+  font-family: var(--cm-font-family-mono);
   overflow-wrap: anywhere;
 }
 
 .setup-form,
 .setup-step {
   display: grid;
-  gap: calc(var(--vf-layout-space-layout-roomy) * 0.85);
+  gap: var(--cm-space-5);
 }
 
 .setup-fields {
   display: grid;
   align-items: start;
-  gap: calc(var(--vf-layout-space-layout-base) * 0.8);
+  gap: var(--cm-space-3);
 }
 
 .setup-fields--connection {
@@ -72,15 +72,15 @@ code {
 }
 
 .setup-step-alert {
-  margin-block-start: calc(var(--vf-layout-space-layout-roomy) * 0.85);
+  margin-block-start: var(--cm-space-5);
 }
 
 .setup-muted {
   margin: 0;
-  color: var(--vf-color-muted);
-  font-size: var(--vf-text-body-font-size);
-  font-weight: var(--vf-text-body-font-weight);
-  line-height: var(--vf-text-body-line-height);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-md);
+  font-weight: var(--cm-font-weight-regular);
+  line-height: var(--cm-line-height-normal);
 }
 
 .setup-inline-link {
@@ -99,9 +99,9 @@ code {
   max-block-size: min(20rem, 44vh);
   margin: 0;
   overflow: auto;
-  color: var(--vf-color-text);
-  font-family: var(--vf-font-family-mono);
-  font-size: var(--vf-text-caption-font-size);
+  color: var(--cm-color-text-primary);
+  font-family: var(--cm-font-family-mono);
+  font-size: var(--cm-font-size-sm);
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -127,7 +127,7 @@ code {
 }
 
 .setup-license-confirm {
-  color: var(--vf-color-text);
+  color: var(--cm-color-text-primary);
 }
 
 .setup-action-back {
@@ -136,20 +136,20 @@ code {
 
 .setup-requirements {
   display: grid;
-  gap: var(--vf-layout-space-layout-base);
+  gap: var(--cm-space-4);
 }
 
 .setup-requirements-group {
   display: grid;
-  gap: var(--vf-surface-gap-compact);
+  gap: var(--cm-space-2);
 }
 
 .setup-requirements-group__title {
   margin: 0;
-  color: var(--vf-color-muted);
-  font-size: var(--vf-text-caption-font-size);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
   font-weight: 700;
-  line-height: var(--vf-text-caption-line-height);
+  line-height: var(--cm-line-height-normal);
   text-transform: uppercase;
 }
 
@@ -170,20 +170,20 @@ code {
 }
 
 .setup-requirement-path {
-  color: var(--vf-color-muted);
-  font-size: var(--vf-text-caption-font-size);
+  color: var(--cm-color-text-muted);
+  font-size: var(--cm-font-size-sm);
 }
 
 .setup-requirement-current--failed {
-  color: var(--vf-color-danger);
+  color: var(--cm-color-status-danger-subtle-foreground);
 }
 
 .setup-requirement-current--passed {
-  color: var(--vf-color-success);
+  color: var(--cm-color-status-success-subtle-foreground);
 }
 
 .setup-requirement-current--warning {
-  color: var(--vf-color-warn);
+  color: var(--cm-color-status-warning-subtle-foreground);
 }
 
 @media (max-width: 640px) {

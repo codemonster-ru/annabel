@@ -10,9 +10,9 @@ import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfPageHeader } from '@codemonster-ru/vueforge-core/page-header';
-import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { VfAdminLayout } from '@codemonster-ru/vueforge-layouts/admin-layout';
+import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import brandLogoUrl from '../../images/codemonster-icon.svg';
 import AuthFooter from '../components/AuthFooter.vue';
 import MissingAdminScreen from './MissingAdminScreen.vue';
@@ -191,7 +191,7 @@ async function logout() {
         @click="toggleSidebarCollapsed"
       />
       <div class="admin-layout__actions">
-        <VfThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />
+        <AppThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />
         <CmDivider v-if="isDesktopViewport" orientation="vertical" />
         <CmDropdown placement="bottom-end">
           <template #trigger>
@@ -215,7 +215,7 @@ async function logout() {
             @click.stop
           >
             <span class="admin-user-menu__theme-label">Theme</span>
-            <VfThemeSwitch variant="switch" />
+            <AppThemeSwitch variant="switch" />
           </div>
           <CmDivider />
           <CmMenu>

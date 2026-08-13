@@ -524,17 +524,17 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 <style scoped>
 .pages-screen {
   display: grid;
-  gap: var(--vf-section-gap);
+  gap: var(--cm-space-6);
 }
 
 .pages-screen__owner-select {
   width: 100%;
-  min-height: var(--vf-control-height-md);
-  padding-inline: var(--vf-field-padding-md);
-  color: var(--vf-color-text-primary);
-  background: var(--vf-field-background);
-  border: var(--vf-border-width) solid var(--vf-input-border-color);
-  border-radius: var(--vf-radius-control-tight);
+  min-height: var(--cm-control-height-md);
+  padding-inline: var(--cm-space-3);
+  color: var(--cm-color-text-primary);
+  background: var(--cm-color-background-surface);
+  border: var(--cm-border-width) solid var(--cm-color-border-default);
+  border-radius: var(--cm-radius-control-tight);
 }
 
 @media (min-width: 768px) {
@@ -545,19 +545,19 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
   }
 }
 .pages-screen__status {
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .pages-screen__status--active {
-  color: var(--vf-color-success);
+  color: var(--cm-color-status-success-subtle-foreground);
 }
 
 .pages-screen__empty {
-  color: var(--vf-color-muted);
+  color: var(--cm-color-text-muted);
 }
 
 .pages-screen__title-link {
-  color: var(--vf-color-text-link);
+  color: var(--cm-color-text-link);
   text-decoration: none;
 }
 

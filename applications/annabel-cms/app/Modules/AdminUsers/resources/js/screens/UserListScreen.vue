@@ -10,7 +10,7 @@ import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-tab
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
-import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
+import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
@@ -341,7 +341,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
       <CmCard>
         <CmTabs v-model="activeTab" :items="userFormTabs">
           <template #panel="{ activeValue }">
-            <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
+            <AppFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
           <CmField class="users-screen__active-field" label="Active">
             <template #default="{ controlId }"><CmCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
           </CmField>
@@ -363,7 +363,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
           <CmField label="Confirm new password" :error="firstError('password_confirmation')" :required="!editing">
             <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.password_confirmation" type="password" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" :required="!editing" /></template>
           </CmField>
-            </VfFormLayout>
+            </AppFormLayout>
             <div v-else-if="activeValue === 'roles'" class="users-screen__roles">
               <CmAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</CmAlert>
               <CmDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">

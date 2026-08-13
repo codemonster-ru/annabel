@@ -12155,6 +12155,234 @@
                 }
             }
         },
+        "Codemonster\\Razor\\Components\\ComponentRegistry": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/ComponentRegistry.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [
+                "ComponentResolverInterface"
+            ],
+            "constants": [],
+            "properties": {
+                "$this": "public"
+            },
+            "methods": {
+                "register": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "ComponentProviderInterface$param",
+                    "return": "void"
+                },
+                "registerPrefix": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,array$param",
+                    "return": "void"
+                }
+            }
+        },
+        "Codemonster\\Razor\\Components\\ComponentRenderContext": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/ComponentRenderContext.php",
+            "kind": "class",
+            "abstract": false,
+            "final": true,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__construct": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "privatereadonlyarray$param,privatereadonlyarray$param,",
+                    "return": ""
+                },
+                "hasProp": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "bool"
+                },
+                "hasSlot": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "bool"
+                },
+                "prop": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param,mixed$param=null",
+                    "return": "mixed"
+                },
+                "props": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "array"
+                },
+                "slot": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "RenderedHtml"
+                }
+            }
+        },
+        "Codemonster\\Razor\\Components\\Contracts\\ComponentInterface": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/Contracts/ComponentInterface.php",
+            "kind": "interface",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "render": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "ComponentRenderContext$param",
+                    "return": "RenderedHtml"
+                }
+            }
+        },
+        "Codemonster\\Razor\\Components\\Contracts\\ComponentProviderInterface": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/Contracts/ComponentProviderInterface.php",
+            "kind": "interface",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "components": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "array"
+                },
+                "prefix": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                }
+            }
+        },
+        "Codemonster\\Razor\\Components\\Contracts\\ComponentResolverInterface": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/Contracts/ComponentResolverInterface.php",
+            "kind": "interface",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "cacheSignature": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                },
+                "handles": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "bool"
+                },
+                "resolve": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "?ComponentInterface"
+                }
+            }
+        },
+        "Codemonster\\Razor\\Components\\RenderedHtml": {
+            "package": "codemonster-ru/razor",
+            "file": "src/Components/RenderedHtml.php",
+            "kind": "class",
+            "abstract": false,
+            "final": false,
+            "extends": [],
+            "implements": [
+                "Stringable"
+            ],
+            "constants": [],
+            "properties": [],
+            "methods": {
+                "__toString": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                },
+                "fromTrustedString": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "string$param",
+                    "return": "self"
+                },
+                "self": {
+                    "visibility": "public",
+                    "static": true,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "''",
+                    "return": ""
+                },
+                "value": {
+                    "visibility": "public",
+                    "static": false,
+                    "final": false,
+                    "abstract": false,
+                    "parameters": "",
+                    "return": "string"
+                }
+            }
+        },
         "Codemonster\\Razor\\Exceptions\\RazorException": {
             "package": "codemonster-ru/razor",
             "file": "src/Exceptions/RazorException.php",
@@ -12183,6 +12411,7 @@
             "constants": [],
             "properties": {
                 "$compiler": "protected",
+                "$components": "protected",
                 "$extensions": "protected",
                 "$locator": "protected"
             },
@@ -12192,7 +12421,7 @@
                     "static": false,
                     "final": false,
                     "abstract": false,
-                    "parameters": "LocatorInterface$param,array|string$param='razor.php',?string$param=null",
+                    "parameters": "LocatorInterface$param,array|string$param='razor.php',?string$param=null,?ComponentResolverInterface$param=null,",
                     "return": ""
                 },
                 "getExtensions": {

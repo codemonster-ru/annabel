@@ -6,6 +6,11 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 
 ## [Unreleased]
 
+### Added
+
+- Exposed the application `ComponentRegistry` singleton to the framework Razor engine so service
+  providers can register component libraries.
+
 ### Changed
 
 - Raised the Razor dependency to `^2.0` and made initialization failures explicit.

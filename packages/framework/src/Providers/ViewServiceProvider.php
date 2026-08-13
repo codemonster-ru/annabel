@@ -5,6 +5,7 @@ namespace Codemonster\Annabel\Providers;
 use Codemonster\Annabel\Application;
 use Codemonster\Annabel\Container;
 use Codemonster\Annabel\Contracts\ServiceProviderInterface;
+use Codemonster\Razor\Components\ComponentRegistry;
 use Codemonster\Razor\RazorEngine;
 use Codemonster\View\Engines\PhpEngine;
 use Codemonster\View\Locator\DefaultLocator;
@@ -21,7 +22,9 @@ class ViewServiceProvider implements ServiceProviderInterface
 
     public function register(): void
     {
-        $this->app->singleton(View::class, function (): View {
+        $this->app->singleton(ComponentRegistry::class, ComponentRegistry::class);
+
+        $this->app->singleton(View::class, function (Container $container): View {
             $basePath = $this->app->getBasePath();
             $appViews = $basePath . '/resources/views';
             $frameworkViews = realpath(__DIR__ . '/../../resources/views');
@@ -48,6 +51,7 @@ class ViewServiceProvider implements ServiceProviderInterface
                 $locator,
                 ['razor.php'],
                 $basePath . '/storage/cache/views',
+                $container->make(ComponentRegistry::class),
             );
 
             return new View($engines, 'php');

@@ -538,7 +538,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
 }
 
 @media (min-width: 768px) {
-  .pages-screen__active-field :deep(.vf-field__label) {
+  .pages-screen__active-field :deep(.cm-field__label) {
     align-self: center;
     justify-self: end;
     padding-block-start: 0;

@@ -10,6 +10,7 @@ use Codemonster\Cms\Modules\Auth\Contracts\UserSessionInterface;
 use Codemonster\Cms\Modules\Auth\Services\PermissionRegistry;
 use Codemonster\Cms\Modules\Core\ModuleManager;
 use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
+use Codemonster\Razor\Components\ComponentRegistry;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -121,6 +122,29 @@ class ApplicationBootTest extends TestCase
         self::assertContains('roles.update', array_column($permissions, 'code'));
         self::assertInstanceOf(AdminScreenRendererInterface::class, $app->make(AdminScreenRendererInterface::class));
         self::assertInstanceOf(SiteSettings::class, $app->make(SiteSettings::class));
+    }
+
+    public function testCodeMonsterUiRendersThePublicRazorPage(): void
+    {
+        $app = $this->app();
+        $components = $app->make(ComponentRegistry::class);
+
+        self::assertTrue($components->handles('cm-card'));
+
+        $html = $app->getView()->render('pages::show', [
+            'title' => '<Welcome>',
+            'meta_title' => 'Home',
+            'meta_description' => 'CMS page',
+            'content' => "Safe <content>\nSecond line",
+            'site' => (object) ['locale' => 'en', 'site_name' => 'Annabel'],
+        ]);
+
+        self::assertStringContainsString('class="cm-container cm-container--md cms-page"', $html);
+        self::assertStringContainsString('class="cm-card"', $html);
+        self::assertStringContainsString('&lt;Welcome&gt;', $html);
+        self::assertStringContainsString("Safe &lt;content&gt;\nSecond line", $html);
+        self::assertStringNotContainsString('<Welcome>', $html);
+        self::assertStringNotContainsString('<content>', $html);
     }
 
     private function app(): Application

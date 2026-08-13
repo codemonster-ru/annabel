@@ -10,7 +10,7 @@ import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-tab
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
-import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
+import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
@@ -402,7 +402,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
       <CmCard>
           <CmTabs v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
-              <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
+              <AppFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
                 <CmField class="pages-screen__active-field" label="Published">
                   <template #default="{ controlId }">
                     <CmCheckbox :id="controlId" v-model="page.is_active" :disabled="saving || !canPublishPage(page)" />
@@ -486,9 +486,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                   </template>
                 </CmField>
 
-              </VfFormLayout>
+              </AppFormLayout>
 
-              <VfFormLayout v-else-if="activeValue === 'seo'" mode="responsive" label-width="minmax(14rem, 25%)">
+              <AppFormLayout v-else-if="activeValue === 'seo'" mode="responsive" label-width="minmax(14rem, 25%)">
                 <CmField label="Meta title" :error="firstError('meta_title')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <CmInput
@@ -513,7 +513,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                     />
                   </template>
                 </CmField>
-              </VfFormLayout>
+              </AppFormLayout>
             </template>
           </CmTabs>
       </CmCard>

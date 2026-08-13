@@ -30,6 +30,42 @@ body {
   display: none;
 }
 
+.app-form-layout {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--cm-space-6);
+  min-width: 0;
+  width: 100%;
+}
+
+.app-form-layout > .cm-field {
+  width: 100%;
+  min-width: 0;
+}
+
+@container (min-width: 48rem) {
+  .app-form-layout > .cm-field {
+    grid-template-columns: var(--app-form-layout-label-width) minmax(0, 1fr);
+    column-gap: var(--cm-space-6);
+    align-items: start;
+  }
+
+  .app-form-layout > .cm-field > .cm-field__label {
+    place-self: start end;
+    padding-block-start: var(--cm-space-2);
+    overflow-wrap: anywhere;
+    text-align: end;
+  }
+
+  .app-form-layout > .cm-field > :is(.cm-field__control, .cm-field__description, .cm-field__error) {
+    grid-column: 2;
+  }
+
+  .app-form-layout > .cm-field > .cm-field__control {
+    grid-row: 1;
+  }
+}
+
 .auth-form {
   display: grid;
   gap: 1rem;

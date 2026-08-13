@@ -3,10 +3,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
-import { CmDropdown } from '@codemonster-ru/ui-vue';
+import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
-import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { CmMenu } from '@codemonster-ru/ui-vue';
+import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
+import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
 const props = defineProps({ user: { type: Object, default: null } });
@@ -145,7 +145,7 @@ watch([page, pageSize], loadModules);
       @update:page-size="pageSize = $event"
     >
       <template #cell-actions="{ row }">
-        <CmDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
+        <AppDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
           <template #trigger>
             <AppIconButton
               :icon="icons.bars"
@@ -156,40 +156,40 @@ watch([page, pageSize], loadModules);
               :disabled="Boolean(changingModule)"
             />
           </template>
-          <CmMenu>
-            <VfMenuItem
+          <AppMenu>
+            <AppMenuItem
               v-if="row.can_disable"
               label="Deactivate"
               :icon="icons.ban"
               @select="runAction(row, 'disable')"
             />
-            <VfMenuItem
+            <AppMenuItem
               v-if="row.can_enable"
               label="Activate"
               :icon="icons.checkCircle"
               @select="runAction(row, 'enable')"
             />
-            <VfMenuItem
+            <AppMenuItem
               v-if="row.can_install"
               label="Install"
               :icon="icons.download"
               @select="runAction(row, 'install')"
             />
-            <VfMenuItem
+            <AppMenuItem
               v-if="row.can_update"
               label="Update"
               :icon="icons.refresh"
               @select="runAction(row, 'update')"
             />
-            <VfMenuItem
+            <AppMenuItem
               v-if="row.can_uninstall"
               label="Uninstall"
               :icon="icons.trash"
               tone="danger"
               @select="uninstallCandidate = row"
             />
-          </CmMenu>
-        </CmDropdown>
+          </AppMenu>
+        </AppDropdown>
       </template>
       <template #cell-name="{ value }"><strong>{{ value }}</strong></template>
       <template #cell-version="{ value, row }">

@@ -8,14 +8,14 @@ import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfi
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
-import { CmDropdown } from '@codemonster-ru/ui-vue';
+import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import AppGroupBox from '../../../../Admin/resources/js/components/AppGroupBox.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
-import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { CmMenu } from '@codemonster-ru/ui-vue';
+import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
+import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { CmTabs } from '@codemonster-ru/ui-vue';
 import { CmTextarea } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
@@ -145,7 +145,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
     <div v-if="!formMode" class="roles-screen__list">
       <CmDataTable :columns="columns" :visible-column-keys="visibleColumns" :rows="rows" row-key="id" striped column-dividers :loading="loading" pagination pagination-mode="manual" :page="page" :page-size="pageSize" :total-rows="totalRows" empty-text="No roles found" @update:page="page = $event" @update:page-size="pageSize = $event">
         <template #header-actions><VfDataTableColumnChooser :columns="columns" :model-value="visibleColumns" :required-column-keys="['actions']" :disabled="preferencesSaving" @update:model-value="saveColumnPreferences" /></template>
-        <template #cell-actions="{ row }"><CmDropdown v-if="can('roles.update') || can('roles.delete')" placement="bottom-start"><template #trigger><AppIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><CmMenu><VfMenuItem v-if="can('roles.update')" label="Edit" :icon="icons.pencil" @select="editRole(row)" /><VfMenuItem v-if="can('roles.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" /></CmMenu></CmDropdown></template>
+        <template #cell-actions="{ row }"><AppDropdown v-if="can('roles.update') || can('roles.delete')" placement="bottom-start"><template #trigger><AppIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><AppMenu><AppMenuItem v-if="can('roles.update')" label="Edit" :icon="icons.pencil" @select="editRole(row)" /><AppMenuItem v-if="can('roles.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" /></AppMenu></AppDropdown></template>
         <template #cell-name="{ value, row }"><a v-if="can('roles.update')" class="roles-screen__role-link" :href="`/admin/roles/${row.id}/edit`">{{ value }}</a><span v-else>{{ value }}</span></template>
         <template #cell-code="{ value }">{{ value }}</template>
         <template #cell-is_active="{ value }"><span :class="['roles-screen__status', { 'roles-screen__status--active': value }]">{{ value ? 'Yes' : 'No' }}</span></template>

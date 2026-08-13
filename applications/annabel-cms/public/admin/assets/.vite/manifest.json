@@ -1,13 +1,13 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-C2dwnfn8.js",
+    "file": "ModuleListScreen-BdXMPT6O.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "ModuleListScreen-DAIc7BKG.css",
@@ -15,21 +15,21 @@
     ]
   },
   "../AdminModules/resources/js/screens/SystemUpdateScreen.vue": {
-    "file": "SystemUpdateScreen-CAPlt7t6.js",
+    "file": "SystemUpdateScreen-D_5TGVTM.js",
     "name": "SystemUpdateScreen",
     "src": "../AdminModules/resources/js/screens/SystemUpdateScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "_dateTime-DxxE3QK2.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "SystemUpdateScreen-DDeZwZQL.css"
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-Dv6qnFBY.js",
+    "file": "PagesScreen-Chh253jO.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -37,7 +37,7 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-DxxE3QK2.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "PagesScreen-C5V0JJrf.css",
@@ -47,20 +47,20 @@
     ]
   },
   "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue": {
-    "file": "SiteSettingsScreen-ChP9pzcF.js",
+    "file": "SiteSettingsScreen-hVILlG8W.js",
     "name": "SiteSettingsScreen",
     "src": "../AdminSettings/resources/js/screens/SiteSettingsScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/main.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "form-layout-tj-3VAJv.css"
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-BRptZszW.js",
+    "file": "RoleListScreen-DXg3w8Ug.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
@@ -68,7 +68,7 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-DxxE3QK2.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "RoleListScreen-q7ZGB2ir.css",
@@ -78,7 +78,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-BB5pUzrZ.js",
+    "file": "UserListScreen-BurYUnXX.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -86,7 +86,7 @@
       "__plugin-vue_export-helper-BDNMzG2s.js",
       "resources/js/main.js",
       "_dateTime-DxxE3QK2.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "UserListScreen-hV3duT0S.css",
@@ -111,8 +111,8 @@
     "file": "dateTime-DxxE3QK2.js",
     "name": "dateTime"
   },
-  "_dist-CHtxpo03.js": {
-    "file": "dist-CHtxpo03.js",
+  "_dist-CW0XnsqJ.js": {
+    "file": "dist-CW0XnsqJ.js",
     "name": "dist"
   },
   "_form-layout-tj-3VAJv.css": {
@@ -124,12 +124,12 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-TgafuHJl.js",
+    "file": "admin-CxHbeWZF.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
     "imports": [
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "dynamicImports": [
       "resources/js/screens/DashboardScreen.vue",
@@ -141,20 +141,20 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-FQ_XiL6C.css"
+      "main-DHo_fJfq.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"
     ]
   },
   "resources/js/screens/DashboardScreen.vue": {
-    "file": "DashboardScreen-DtuXd5Vu.js",
+    "file": "DashboardScreen-D1k5UlG5.js",
     "name": "DashboardScreen",
     "src": "resources/js/screens/DashboardScreen.vue",
     "isDynamicEntry": true,
     "imports": [
       "__plugin-vue_export-helper-BDNMzG2s.js",
-      "_dist-CHtxpo03.js"
+      "_dist-CW0XnsqJ.js"
     ],
     "css": [
       "DashboardScreen-PV0kVQ33.css"

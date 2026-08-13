@@ -1,5 +1,5 @@
 <script setup>
-import { VfProgressBar } from '@codemonster-ru/vueforge-core/progress-bar';
+import AppProgressBar from './AppProgressBar.vue';
 
 defineProps({
   installing: {
@@ -19,7 +19,7 @@ defineProps({
       <p class="setup-muted">
         Installing Annabel...
       </p>
-      <VfProgressBar indeterminate label="Installation progress" />
+      <AppProgressBar indeterminate label="Installation progress" />
     </template>
 
     <template v-else-if="installed">
@@ -27,7 +27,7 @@ defineProps({
         Annabel has been installed successfully.
       </p>
 
-      <VfProgressBar :value="100" label="Installation complete" />
+      <AppProgressBar :value="100" label="Installation complete" />
     </template>
 
     <p v-else class="setup-muted">

@@ -4,7 +4,7 @@ import { CmAlert } from '@codemonster-ru/ui-vue';
 import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
-import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
@@ -147,7 +147,7 @@ watch([page, pageSize], loadModules);
       <template #cell-actions="{ row }">
         <CmDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
           <template #trigger>
-            <VfIconButton
+            <AppIconButton
               :icon="icons.bars"
               variant="ghost"
               size="sm"

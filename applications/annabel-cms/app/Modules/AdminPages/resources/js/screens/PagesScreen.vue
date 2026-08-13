@@ -11,7 +11,7 @@ import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
-import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
+import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
 import { CmMenu } from '@codemonster-ru/ui-vue';
@@ -352,7 +352,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
         <template #cell-actions="{ row }">
           <CmDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
             <template #trigger>
-              <VfIconButton
+              <AppIconButton
                 :icon="icons.bars"
                 variant="ghost"
                 size="sm"

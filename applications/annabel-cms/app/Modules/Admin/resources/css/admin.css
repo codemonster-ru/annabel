@@ -210,6 +210,10 @@ body {
   color: var(--cm-color-text-muted);
 }
 
+.auth-form__submit {
+  width: 100%;
+}
+
 .app-auth-layout {
   display: flex;
   min-block-size: 100vh;

@@ -56,13 +56,11 @@ COMPOSER=composer.dev.json composer test
 COMPOSER=composer.dev.json composer analyse
 ```
 
-The development manifest symlinks Annabel packages from `../../packages/*` and CodeMonster UI from
-the sibling `JS/vueforge` checkout. Run `COMPOSER=composer.dev.json composer assets:ui` to republish
-the integrity-checked token and component styles without Node.js; install and update commands run
-the same publication step automatically. Docker Compose mounts that checkout read-only; set
-`CODEMONSTER_UI_PATH` when it lives somewhere other than `../../JS/vueforge` relative to this repo.
-The npm manifest installs the exact local CodeMonster UI prerelease archives under
-`packages/codemonster-ui` until those packages are available from the registry.
+The development manifest symlinks Annabel packages from `../../packages/*` and installs CodeMonster
+UI from Packagist. Run `COMPOSER=composer.dev.json composer assets:ui` to republish the
+integrity-checked token and component styles without Node.js; install and update commands run the
+same publication step automatically. The npm manifest installs exact CodeMonster UI prereleases
+from the npm registry.
 The public `composer.json` contains stable Packagist constraints and is used by
 the split repository. Rebuild and commit `public/admin/assets` and
 `public/setup/assets` whenever the CMS frontend changes.

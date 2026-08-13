@@ -41,6 +41,28 @@ body {
   gap: var(--cm-space-3);
 }
 
+.app-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--cm-space-6);
+}
+
+.app-page-header__title {
+  margin: 0;
+  color: var(--cm-color-text-primary);
+  font-size: var(--cm-font-size-2xl);
+  line-height: var(--cm-line-height-tight);
+}
+
+.app-page-header__description {
+  margin-block-start: var(--cm-space-2);
+}
+
+.app-page-header__actions {
+  flex: 0 0 auto;
+}
+
 .app-form-layout {
   container-type: inline-size;
   display: grid;

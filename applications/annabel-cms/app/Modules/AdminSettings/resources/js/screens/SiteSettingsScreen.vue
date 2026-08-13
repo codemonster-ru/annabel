@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
-import { CmField } from '@codemonster-ru/ui-vue';
+import CmField from '../../../../../resources/js/components/AppField.vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 

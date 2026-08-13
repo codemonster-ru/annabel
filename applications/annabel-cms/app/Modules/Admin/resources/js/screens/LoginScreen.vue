@@ -6,8 +6,8 @@ import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
 import { CmLink } from '@codemonster-ru/ui-vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
-import { VfAuthLayout } from '@codemonster-ru/vueforge-layouts/auth-layout';
 import AuthFooter from '../components/AuthFooter.vue';
+import AppAuthLayout from '../components/AppAuthLayout.vue';
 import { firstError } from '../support/errors';
 
 const props = defineProps({
@@ -94,7 +94,7 @@ function submitOnEnter(event) {
 </script>
 
 <template>
-  <VfAuthLayout
+  <AppAuthLayout
     class="admin-auth-layout"
     title="Annabel"
     description="Sign in to your admin panel"
@@ -150,5 +150,5 @@ function submitOnEnter(event) {
     <template #footer>
       <AuthFooter />
     </template>
-  </VfAuthLayout>
+  </AppAuthLayout>
 </template>

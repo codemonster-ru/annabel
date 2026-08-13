@@ -6,7 +6,7 @@ import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
-import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
+import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
@@ -144,7 +144,7 @@ watch([page, pageSize], loadRoles); onMounted(() => (formMode.value ? (editId.va
     <CmAlert v-if="error" tone="danger" title="Roles">{{ error }}</CmAlert><CmAlert v-if="success" tone="success" title="Roles">{{ success }}</CmAlert>
     <div v-if="!formMode" class="roles-screen__list">
       <CmDataTable :columns="columns" :visible-column-keys="visibleColumns" :rows="rows" row-key="id" striped column-dividers :loading="loading" pagination pagination-mode="manual" :page="page" :page-size="pageSize" :total-rows="totalRows" empty-text="No roles found" @update:page="page = $event" @update:page-size="pageSize = $event">
-        <template #header-actions><VfDataTableColumnChooser :columns="columns" :model-value="visibleColumns" :required-column-keys="['actions']" :disabled="preferencesSaving" @update:model-value="saveColumnPreferences" /></template>
+        <template #header-actions><AppDataTableColumnChooser :columns="columns" :model-value="visibleColumns" :required-column-keys="['actions']" :disabled="preferencesSaving" @update:model-value="saveColumnPreferences" /></template>
         <template #cell-actions="{ row }"><AppDropdown v-if="can('roles.update') || can('roles.delete')" placement="bottom-start"><template #trigger><AppIconButton :icon="icons.bars" variant="ghost" size="sm" aria-label="Actions" title="Actions" :disabled="deleting" /></template><AppMenu><AppMenuItem v-if="can('roles.update')" label="Edit" :icon="icons.pencil" @select="editRole(row)" /><AppMenuItem v-if="can('roles.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" /></AppMenu></AppDropdown></template>
         <template #cell-name="{ value, row }"><a v-if="can('roles.update')" class="roles-screen__role-link" :href="`/admin/roles/${row.id}/edit`">{{ value }}</a><span v-else>{{ value }}</span></template>
         <template #cell-code="{ value }">{{ value }}</template>

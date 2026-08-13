@@ -1,6 +1,6 @@
 {
   "../AdminModules/resources/js/screens/ModuleListScreen.vue": {
-    "file": "ModuleListScreen-DtVkTNCr.js",
+    "file": "ModuleListScreen-CIUtUPmK.js",
     "name": "ModuleListScreen",
     "src": "../AdminModules/resources/js/screens/ModuleListScreen.vue",
     "isDynamicEntry": true,
@@ -29,7 +29,7 @@
     ]
   },
   "../AdminPages/resources/js/screens/PagesScreen.vue": {
-    "file": "PagesScreen-BeWdV-CF.js",
+    "file": "PagesScreen-Drc00go2.js",
     "name": "PagesScreen",
     "src": "../AdminPages/resources/js/screens/PagesScreen.vue",
     "isDynamicEntry": true,
@@ -57,7 +57,7 @@
     ]
   },
   "../AdminUsers/resources/js/screens/RoleListScreen.vue": {
-    "file": "RoleListScreen-C-q3Vmss.js",
+    "file": "RoleListScreen-BRoio1RK.js",
     "name": "RoleListScreen",
     "src": "../AdminUsers/resources/js/screens/RoleListScreen.vue",
     "isDynamicEntry": true,
@@ -69,13 +69,13 @@
       "_dist-CW0XnsqJ.js"
     ],
     "css": [
-      "RoleListScreen-U5WxBNzV.css",
+      "RoleListScreen-BR9FZeNS.css",
       "confirm-dialog-Dsgq5B-p.css",
       "data-table-column-chooser-CIxgvrbb.css"
     ]
   },
   "../AdminUsers/resources/js/screens/UserListScreen.vue": {
-    "file": "UserListScreen-SXwdVOql.js",
+    "file": "UserListScreen-ByUPFdkR.js",
     "name": "UserListScreen",
     "src": "../AdminUsers/resources/js/screens/UserListScreen.vue",
     "isDynamicEntry": true,
@@ -124,7 +124,7 @@
     "src": "resources/images/codemonster-icon.svg"
   },
   "resources/js/main.js": {
-    "file": "admin-B-rEu0vR.js",
+    "file": "admin-DpvC8iSj.js",
     "name": "main",
     "src": "resources/js/main.js",
     "isEntry": true,
@@ -141,7 +141,7 @@
       "../AdminUsers/resources/js/screens/RoleListScreen.vue"
     ],
     "css": [
-      "main-DwW1m70m.css"
+      "main-BZVpc89s.css"
     ],
     "assets": [
       "codemonster-icon-CdswbS-j.svg"

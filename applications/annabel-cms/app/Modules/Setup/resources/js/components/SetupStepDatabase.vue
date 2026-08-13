@@ -2,6 +2,7 @@
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 
 const props = defineProps({
   dbHost: {
@@ -134,7 +135,7 @@ function update(field, value) {
         </CmField>
 
         <CmField label="Password" v-slot="{ controlId, describedBy, invalid }">
-          <CmInput
+          <AppInput
             :id="controlId"
             :model-value="dbPassword"
             type="password"

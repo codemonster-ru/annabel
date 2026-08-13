@@ -7,7 +7,7 @@ import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
-import { CmDatePicker } from '@codemonster-ru/ui-vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
@@ -345,10 +345,10 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
             <template #default="{ controlId }"><CmCheckbox :id="controlId" v-model="user.is_active" :disabled="saving" /></template>
           </CmField>
           <CmField class="users-screen__activity-field" label="Active from" :error="firstError('active_from')">
-            <template #default="{ controlId, describedBy, invalid }"><CmDatePicker :id="controlId" v-model="user.active_from" :max="activeFromMax" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+            <template #default="{ controlId, describedBy, invalid }"><AppInput :id="controlId" v-model="user.active_from" type="datetime-local" :max="activeFromMax" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
           </CmField>
           <CmField class="users-screen__activity-field" label="Active until" :error="firstError('active_until')">
-            <template #default="{ controlId, describedBy, invalid }"><CmDatePicker :id="controlId" v-model="user.active_until" :min="activeUntilMin" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
+            <template #default="{ controlId, describedBy, invalid }"><AppInput :id="controlId" v-model="user.active_until" type="datetime-local" :min="activeUntilMin" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" /></template>
           </CmField>
           <CmField label="Username" :error="firstError('username')" required>
             <template #default="{ controlId, describedBy, invalid }"><CmInput :id="controlId" v-model="user.username" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required /></template>
@@ -382,13 +382,13 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
                   <div class="users-screen__role-period">
                     <CmField :error="firstError(`roles.${role.id}.active_from`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <CmDatePicker :id="controlId" v-model="role.active_from" :max="membershipStartMax(role)" placeholder="From" aria-label="Membership starts at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
+                        <AppInput :id="controlId" v-model="role.active_from" type="datetime-local" :max="membershipStartMax(role)" aria-label="Membership starts at" size="sm" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
                     </CmField>
                     <span class="users-screen__role-period-separator" aria-hidden="true">—</span>
                     <CmField :error="firstError(`roles.${role.id}.active_until`)">
                       <template #default="{ controlId, describedBy, invalid }">
-                        <CmDatePicker :id="controlId" v-model="role.active_until" :min="membershipEndMin(role)" placeholder="Until" aria-label="Membership ends at" size="sm" show-time clearable :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
+                        <AppInput :id="controlId" v-model="role.active_until" type="datetime-local" :min="membershipEndMin(role)" aria-label="Membership ends at" size="sm" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving || !role.selected" />
                       </template>
                     </CmField>
                   </div>

@@ -43,6 +43,20 @@ body {
   min-width: 0;
 }
 
+.app-group-box {
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--cm-space-4);
+  border: var(--cm-border-width) solid var(--cm-color-border-subtle);
+  border-radius: var(--cm-radius-surface);
+}
+
+.app-group-box__title {
+  padding-inline: var(--cm-space-2);
+  color: var(--cm-color-text-primary);
+  font-weight: var(--cm-font-weight-semibold);
+}
+
 @container (min-width: 48rem) {
   .app-form-layout > .cm-field {
     grid-template-columns: var(--app-form-layout-label-width) minmax(0, 1fr);

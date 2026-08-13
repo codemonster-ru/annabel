@@ -1,7 +1,7 @@
 <script setup>
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
-import { VfFieldset } from '@codemonster-ru/vueforge-core/fieldset';
-import { VfPanel } from '@codemonster-ru/vueforge-core/panel';
+import AppFieldset from './AppFieldset.vue';
+import AppPanel from './AppPanel.vue';
 
 const props = defineProps({
   agreement: {
@@ -35,11 +35,11 @@ function updateAccepted(event) {
       Please review the license terms before continuing.
     </p>
 
-    <VfPanel>
+    <AppPanel>
       <pre class="setup-license">{{ agreement }}</pre>
-    </VfPanel>
+    </AppPanel>
 
-    <VfFieldset :error="error" v-slot="{ describedBy, invalid }">
+    <AppFieldset :error="error" v-slot="{ describedBy, invalid }">
       <CmCheckbox
         class="setup-license-confirm"
         :model-value="accepted"
@@ -48,6 +48,6 @@ function updateAccepted(event) {
         label="I have read and accept the license terms."
         @update:model-value="updateAccepted"
       />
-    </VfFieldset>
+    </AppFieldset>
   </div>
 </template>

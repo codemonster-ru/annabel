@@ -13,8 +13,7 @@ final readonly class ComponentInvocationCompiler
     public function __construct(
         private ComponentPropCompiler $props,
         private ComponentSlotParser $slots,
-    )
-    {
+    ) {
     }
 
     /** @param Closure(string): string $compileContent */

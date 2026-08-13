@@ -8,13 +8,13 @@ import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfi
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
-import { CmDropdown } from '@codemonster-ru/ui-vue';
+import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
 import { CmField } from '@codemonster-ru/ui-vue';
 import AppFormLayout from '../../../../Admin/resources/js/components/AppFormLayout.vue';
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
-import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { CmMenu } from '@codemonster-ru/ui-vue';
+import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
+import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { CmTextarea } from '@codemonster-ru/ui-vue';
 import { CmTabs } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
@@ -350,7 +350,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           />
         </template>
         <template #cell-actions="{ row }">
-          <CmDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
+          <AppDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
             <template #trigger>
               <AppIconButton
                 :icon="icons.bars"
@@ -360,9 +360,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 :title="`Actions for ${row.title}`"
               />
             </template>
-            <CmMenu>
-              <VfMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="icons.pencil" @select="editPage(row)" />
-              <VfMenuItem
+            <AppMenu>
+              <AppMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="icons.pencil" @select="editPage(row)" />
+              <AppMenuItem
                 v-if="row.is_active"
                 label="View page"
                 :icon="icons.externalLink"
@@ -370,9 +370,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 target="_blank"
                 rel="noopener noreferrer"
               />
-              <VfMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
-            </CmMenu>
-          </CmDropdown>
+              <AppMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
+            </AppMenu>
+          </AppDropdown>
         </template>
         <template #cell-title="{ row }">
           <a v-if="canUpdatePage(row)" class="pages-screen__title-link" :href="`/admin/pages/${row.id}/edit`">

@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmInput } from '@codemonster-ru/ui-vue';
+import { CmLink } from '@codemonster-ru/ui-vue';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { VfAuthLayout } from '@codemonster-ru/vueforge-layouts/auth-layout';
 import AuthFooter from '../components/AuthFooter.vue';
@@ -96,13 +96,13 @@ function submitOnEnter(event) {
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
     <form class="auth-form" method="post" action="/admin/reset-password" novalidate @submit.prevent="submitResetPassword" @keydown.enter="submitOnEnter">
-      <VfAlert v-if="error" tone="danger" title="Reset password failed">
+      <CmAlert v-if="error" tone="danger" title="Reset password failed">
         {{ error }}
-      </VfAlert>
+      </CmAlert>
 
       <div class="field">
         <label for="new-password">New password</label>
-        <VfInput
+        <CmInput
           id="new-password"
           v-model="password"
           type="password"
@@ -117,7 +117,7 @@ function submitOnEnter(event) {
 
       <div class="field">
         <label for="new-password-confirmation">Confirm new password</label>
-        <VfInput
+        <CmInput
           id="new-password-confirmation"
           v-model="passwordConfirmation"
           type="password"
@@ -132,14 +132,14 @@ function submitOnEnter(event) {
 
       <div class="auth-form__back">
         <span class="auth-form__back-label">Back to</span>
-        <VfLink href="/admin/login" underline="none">
+        <CmLink href="/admin/login" underline="none">
           sign in
-        </VfLink>
+        </CmLink>
       </div>
 
-      <VfButton type="submit" :loading="loading" block>
+      <CmButton type="submit" :loading="loading" block>
         {{ loading ? 'Updating...' : 'Update password' }}
-      </VfButton>
+      </CmButton>
     </form>
 
     <template #footer>

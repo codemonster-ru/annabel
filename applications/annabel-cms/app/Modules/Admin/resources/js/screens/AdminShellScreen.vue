@@ -1,12 +1,13 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useBreakpoint } from '@codemonster-ru/vueforge-core/foundation';
-import { VfAvatar } from '@codemonster-ru/vueforge-core/avatar';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfDivider } from '@codemonster-ru/vueforge-core/divider';
-import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
+import { CmAvatar } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmDivider } from '@codemonster-ru/ui-vue';
+import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
-import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { CmMenu } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfPageHeader } from '@codemonster-ru/vueforge-core/page-header';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
@@ -149,14 +150,14 @@ async function logout() {
           class="admin-layout__brand-site-action"
           :aria-hidden="isSidebarCompact"
         >
-          <VfButton
+          <CmButton
             variant="ghost"
             :tabindex="isSidebarCompact ? -1 : undefined"
             @click="openSite"
           >
             <VueIconify :icon="icons.externalLink" aria-hidden="true" />
             <span>View site</span>
-          </VfButton>
+          </CmButton>
         </span>
       </div>
     </template>
@@ -191,10 +192,10 @@ async function logout() {
       />
       <div class="admin-layout__actions">
         <VfThemeSwitch v-if="isDesktopViewport" variant="button" button-variant="ghost" />
-        <VfDivider v-if="isDesktopViewport" orientation="vertical" />
-        <VfDropdown placement="bottom-end">
+        <CmDivider v-if="isDesktopViewport" orientation="vertical" />
+        <CmDropdown placement="bottom-end">
           <template #trigger>
-            <VfAvatar
+            <CmAvatar
               :label="avatarLabel"
               shape="circle"
               :aria-label="user?.email || 'Current user'"
@@ -206,7 +207,7 @@ async function logout() {
             <span class="admin-user-menu__username">{{ user?.username || 'Current user' }}</span>
             <span class="admin-user-menu__email">{{ user?.email || '' }}</span>
           </div>
-          <VfDivider v-if="!isDesktopViewport" />
+          <CmDivider v-if="!isDesktopViewport" />
           <div
             v-if="!isDesktopViewport"
             class="admin-user-menu__theme"
@@ -216,11 +217,11 @@ async function logout() {
             <span class="admin-user-menu__theme-label">Theme</span>
             <VfThemeSwitch variant="switch" />
           </div>
-          <VfDivider />
-          <VfMenu>
+          <CmDivider />
+          <CmMenu>
             <VfMenuItem label="Logout" :icon="icons.logOut" :disabled="loading" @select="logout" />
-          </VfMenu>
-        </VfDropdown>
+          </CmMenu>
+        </CmDropdown>
       </div>
     </template>
 

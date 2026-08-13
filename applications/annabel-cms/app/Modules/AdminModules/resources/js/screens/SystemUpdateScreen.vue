@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfCard } from '@codemonster-ru/vueforge-core/card';
-import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
-import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmCard } from '@codemonster-ru/ui-vue';
+import { CmDataTable } from '@codemonster-ru/ui-vue';
+import { CmTabs } from '@codemonster-ru/ui-vue';
 import { formatDateTime } from '../../../../Admin/resources/js/support/dateTime';
 
 defineProps({ user: { type: Object, default: null } });
@@ -88,11 +88,11 @@ watch([page, pageSize], loadSystem);
 
 <template>
   <div class="system-update-screen">
-    <VfAlert v-if="error" tone="danger" title="System updates">{{ error }}</VfAlert>
-    <VfTabs v-model="activeTab" :items="tabs">
+    <CmAlert v-if="error" tone="danger" title="System updates">{{ error }}</CmAlert>
+    <CmTabs v-model="activeTab" :items="tabs">
       <template #panel="{ activeValue }">
         <div class="system-update-screen__panel">
-          <VfCard v-if="activeValue === 'updates'">
+          <CmCard v-if="activeValue === 'updates'">
             <table class="system-update-screen__details">
               <tbody>
                 <tr>
@@ -121,9 +121,9 @@ watch([page, pageSize], loadSystem);
                 </tr>
               </tbody>
             </table>
-          </VfCard>
+          </CmCard>
 
-          <VfDataTable
+          <CmDataTable
             v-else-if="activeValue === 'components'"
             :columns="columns"
             :rows="components"
@@ -143,10 +143,10 @@ watch([page, pageSize], loadSystem);
             <template #cell-name="{ value }"><strong>{{ value }}</strong></template>
             <template #cell-installed_version="{ value }">{{ value || '—' }}</template>
             <template #cell-available_version="{ value }">{{ value || '—' }}</template>
-          </VfDataTable>
+          </CmDataTable>
         </div>
       </template>
-    </VfTabs>
+    </CmTabs>
   </div>
 </template>
 

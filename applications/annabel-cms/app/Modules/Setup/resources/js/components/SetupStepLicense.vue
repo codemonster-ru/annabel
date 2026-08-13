@@ -1,5 +1,5 @@
 <script setup>
-import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
+import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import { VfFieldset } from '@codemonster-ru/vueforge-core/fieldset';
 import { VfPanel } from '@codemonster-ru/vueforge-core/panel';
 
@@ -40,7 +40,7 @@ function updateAccepted(event) {
     </VfPanel>
 
     <VfFieldset :error="error" v-slot="{ describedBy, invalid }">
-      <VfCheckbox
+      <CmCheckbox
         class="setup-license-confirm"
         :model-value="accepted"
         :aria-describedby="describedBy"

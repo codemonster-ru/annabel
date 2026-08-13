@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmCheckbox } from '@codemonster-ru/ui-vue';
+import { CmInput } from '@codemonster-ru/ui-vue';
+import { CmLink } from '@codemonster-ru/ui-vue';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { VfAuthLayout } from '@codemonster-ru/vueforge-layouts/auth-layout';
 import AuthFooter from '../components/AuthFooter.vue';
@@ -102,13 +102,13 @@ function submitOnEnter(event) {
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
     <form class="auth-form" method="post" action="/admin/login" novalidate @submit.prevent="login" @keydown.enter="submitOnEnter">
-      <VfAlert v-if="error" tone="danger" title="Sign in failed">
+      <CmAlert v-if="error" tone="danger" title="Sign in failed">
         {{ error }}
-      </VfAlert>
+      </CmAlert>
 
       <div class="field">
         <label for="login">Username or email</label>
-        <VfInput
+        <CmInput
           id="login"
           v-model="loginValue"
           type="text"
@@ -122,7 +122,7 @@ function submitOnEnter(event) {
 
       <div class="field">
         <label for="password">Password</label>
-        <VfInput
+        <CmInput
           id="password"
           v-model="password"
           type="password"
@@ -136,15 +136,15 @@ function submitOnEnter(event) {
       </div>
 
       <div class="auth-form__actions">
-        <VfCheckbox class="auth-form__remember" v-model="remember" label="Remember me?" />
-        <VfLink href="/admin/forgot-password" underline="none">
+        <CmCheckbox class="auth-form__remember" v-model="remember" label="Remember me?" />
+        <CmLink href="/admin/forgot-password" underline="none">
           Forgot password?
-        </VfLink>
+        </CmLink>
       </div>
 
-      <VfButton type="submit" :loading="loading" block>
+      <CmButton type="submit" :loading="loading" block>
         {{ loading ? 'Signing in...' : 'Sign in' }}
-      </VfButton>
+      </CmButton>
     </form>
 
     <template #footer>

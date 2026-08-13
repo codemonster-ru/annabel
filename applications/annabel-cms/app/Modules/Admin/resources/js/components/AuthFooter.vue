@@ -1,5 +1,5 @@
 <script setup>
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmLink } from '@codemonster-ru/ui-vue';
 
 const currentYear = new Date().getFullYear();
 const copyrightYears = currentYear > 2026 ? `2026-${currentYear}` : '2026';
@@ -9,9 +9,9 @@ const copyrightYears = currentYear > 2026 ? `2026-${currentYear}` : '2026';
   <div class="auth-footer">
     <span>
       &copy; {{ copyrightYears }}
-      <VfLink href="https://codemonster.net" target="_blank" rel="noopener noreferrer" underline="none">
+      <CmLink href="https://codemonster.net" target="_blank" rel="noopener noreferrer" underline="none">
         Codemonster
-      </VfLink>.
+      </CmLink>.
       All rights reserved.
     </span>
   </div>

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
 import { CmAlert } from '@codemonster-ru/ui-vue';
-import { CmDataTable } from '@codemonster-ru/ui-vue';
+import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import { CmLink } from '@codemonster-ru/ui-vue';
 
 const filesGroupName = 'Files and folders';
@@ -102,7 +102,7 @@ function currentValueClass(row) {
       <section v-for="group in groupedChecks" :key="group.name" class="setup-requirements-group">
         <h3 class="setup-requirements-group__title">{{ group.name }}</h3>
 
-        <CmDataTable
+        <AppDataTable
           class="setup-requirements-table"
           :columns="columnsForGroup(group)"
           :rows="group.checks"
@@ -143,7 +143,7 @@ function currentValueClass(row) {
               {{ value }}
             </span>
           </template>
-        </CmDataTable>
+        </AppDataTable>
       </section>
 
       <p v-if="loading && checks.length === 0" class="setup-muted">

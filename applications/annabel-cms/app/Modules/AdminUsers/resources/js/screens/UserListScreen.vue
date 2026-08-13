@@ -5,7 +5,7 @@ import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
-import { CmDataTable } from '@codemonster-ru/ui-vue';
+import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import AppDataTableColumnChooser from '../../../../Admin/resources/js/components/AppDataTableColumnChooser.vue';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
 import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.vue';
@@ -288,7 +288,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
     </CmAlert>
 
     <div v-if="!formMode" class="users-screen__list">
-      <CmDataTable
+      <AppDataTable
         :columns="columns"
         :visible-column-keys="visibleColumns"
         :rows="rows"
@@ -297,7 +297,6 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         column-dividers
         :loading="loading"
         pagination
-        pagination-mode="manual"
         :page="page"
         :page-size="pageSize"
         :total-rows="totalRows"
@@ -334,7 +333,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         </template>
         <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template>
         <template #cell-updated_at="{ value }">{{ formatDateTime(value) }}</template>
-      </CmDataTable>
+      </AppDataTable>
     </div>
 
     <form id="users-user-form" v-else class="users-screen__form" novalidate @submit.prevent="saveUser">
@@ -366,7 +365,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
             </AppFormLayout>
             <div v-else-if="activeValue === 'roles'" class="users-screen__roles">
               <CmAlert v-if="firstError('roles')" tone="danger" title="Roles">{{ firstError('roles') }}</CmAlert>
-              <CmDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
+              <AppDataTable :columns="roleColumns" :rows="roles" row-key="id" striped column-dividers empty-text="No roles available">
                 <template #cell-selected="{ row: role }">
                   <CmCheckbox v-model="role.selected" :aria-label="`Select role ${role.name}`" :disabled="saving" />
                 </template>
@@ -394,7 +393,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
                     </CmField>
                   </div>
                 </template>
-              </CmDataTable>
+              </AppDataTable>
             </div>
           </template>
         </CmTabs>

@@ -94,7 +94,7 @@ final class ComponentRegistryTest extends TestCase
 
     private static function componentStatic(): ComponentInterface
     {
-        return new class implements ComponentInterface {
+        return new class () implements ComponentInterface {
             public function render(ComponentRenderContext $context): RenderedHtml
             {
                 return RenderedHtml::empty();

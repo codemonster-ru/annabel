@@ -10,9 +10,9 @@
     "dev:setup": "vite --config app/Modules/Setup/vite.config.js --host 0.0.0.0"
   },
   "dependencies": {
-    "@codemonster-ru/ui-css": "file:packages/codemonster-ui/codemonster-ru-ui-css-1.0.0-rc.1.tgz",
-    "@codemonster-ru/ui-tokens": "file:packages/codemonster-ui/codemonster-ru-ui-tokens-1.0.0-rc.1.tgz",
-    "@codemonster-ru/ui-vue": "file:packages/codemonster-ui/codemonster-ru-ui-vue-1.0.0-rc.1-f20d518.tgz",
+    "@codemonster-ru/ui-css": "1.0.0-rc.1",
+    "@codemonster-ru/ui-tokens": "1.0.0-rc.1",
+    "@codemonster-ru/ui-vue": "1.0.0-rc.1",
     "@codemonster-ru/vueforge-icons": "^3.2.0",
     "@vitejs/plugin-vue": "6.0.7",
     "vite": "8.0.16",

@@ -1,7 +1,7 @@
 <script setup>
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfField } from '@codemonster-ru/vueforge-core/field';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmField } from '@codemonster-ru/ui-vue';
+import { CmInput } from '@codemonster-ru/ui-vue';
 
 const props = defineProps({
   dbHost: {
@@ -65,15 +65,15 @@ function update(field, value) {
       Enter the connection details for an existing database.
     </p>
 
-    <VfAlert tone="info" title="Database permissions">
+    <CmAlert tone="info" title="Database permissions">
       The database user must be able to create, modify, and remove tables.
-    </VfAlert>
+    </CmAlert>
 
     <div class="setup-fields">
       <div class="setup-fields setup-fields--connection">
-        <VfField label="Host" :error="firstError('db_host')" required>
+        <CmField label="Host" :error="firstError('db_host')" required>
           <template #default="{ controlId, describedBy, invalid }">
-            <VfInput
+            <CmInput
               :id="controlId"
               :model-value="dbHost"
               type="text"
@@ -84,11 +84,11 @@ function update(field, value) {
               @update:model-value="update('dbHost', $event)"
             />
           </template>
-        </VfField>
+        </CmField>
 
-        <VfField label="Port" :error="firstError('db_port')" required>
+        <CmField label="Port" :error="firstError('db_port')" required>
           <template #default="{ controlId, describedBy, invalid }">
-            <VfInput
+            <CmInput
               :id="controlId"
               :model-value="dbPort"
               type="text"
@@ -99,12 +99,12 @@ function update(field, value) {
               @update:model-value="update('dbPort', $event)"
             />
           </template>
-        </VfField>
+        </CmField>
       </div>
 
-      <VfField label="Database" :error="firstError('db_database')" required>
+      <CmField label="Database" :error="firstError('db_database')" required>
         <template #default="{ controlId, describedBy, invalid }">
-          <VfInput
+          <CmInput
               :id="controlId"
               :model-value="dbDatabase"
               type="text"
@@ -115,12 +115,12 @@ function update(field, value) {
             @update:model-value="update('dbDatabase', $event)"
           />
         </template>
-      </VfField>
+      </CmField>
 
       <div class="setup-fields setup-fields--credentials">
-        <VfField label="Username" :error="firstError('db_username')" required>
+        <CmField label="Username" :error="firstError('db_username')" required>
           <template #default="{ controlId, describedBy, invalid }">
-            <VfInput
+            <CmInput
               :id="controlId"
               :model-value="dbUsername"
               type="text"
@@ -131,10 +131,10 @@ function update(field, value) {
               @update:model-value="update('dbUsername', $event)"
             />
           </template>
-        </VfField>
+        </CmField>
 
-        <VfField label="Password" v-slot="{ controlId, describedBy, invalid }">
-          <VfInput
+        <CmField label="Password" v-slot="{ controlId, describedBy, invalid }">
+          <CmInput
             :id="controlId"
             :model-value="dbPassword"
             type="password"
@@ -143,7 +143,7 @@ function update(field, value) {
             password-reveal
             @update:model-value="update('dbPassword', $event)"
           />
-        </VfField>
+        </CmField>
       </div>
     </div>
   </div>

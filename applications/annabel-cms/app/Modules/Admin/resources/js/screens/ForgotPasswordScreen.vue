@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmInput } from '@codemonster-ru/ui-vue';
+import { CmLink } from '@codemonster-ru/ui-vue';
 import { VfThemeSwitch } from '@codemonster-ru/vueforge-core/theme-switch';
 import { VfAuthLayout } from '@codemonster-ru/vueforge-layouts/auth-layout';
 import AuthFooter from '../components/AuthFooter.vue';
@@ -95,17 +95,17 @@ function submitOnEnter(event) {
     <VfThemeSwitch class="auth-panel__theme" variant="switch" size="sm" />
 
     <form class="auth-form" method="post" action="/admin/forgot-password" novalidate @submit.prevent="requestPasswordReset" @keydown.enter="submitOnEnter">
-      <VfAlert v-if="error" tone="danger" title="Password recovery">
+      <CmAlert v-if="error" tone="danger" title="Password recovery">
         {{ error }}
-      </VfAlert>
+      </CmAlert>
 
-      <VfAlert v-if="notice" tone="info" title="Password recovery">
+      <CmAlert v-if="notice" tone="info" title="Password recovery">
         {{ notice }}
-      </VfAlert>
+      </CmAlert>
 
       <div class="field">
         <label for="reset-email">Email</label>
-        <VfInput
+        <CmInput
           id="reset-email"
           v-model="email"
           type="email"
@@ -119,14 +119,14 @@ function submitOnEnter(event) {
 
       <div class="auth-form__back">
         <span class="auth-form__back-label">Back to</span>
-        <VfLink href="/admin/login" underline="none">
+        <CmLink href="/admin/login" underline="none">
           sign in
-        </VfLink>
+        </CmLink>
       </div>
 
-      <VfButton type="submit" :loading="loading" block>
+      <CmButton type="submit" :loading="loading" block>
         {{ loading ? 'Sending...' : 'Send reset link' }}
-      </VfButton>
+      </CmButton>
     </form>
 
     <template #footer>

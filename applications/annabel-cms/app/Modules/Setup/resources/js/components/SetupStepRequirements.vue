@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from 'vue';
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmDataTable } from '@codemonster-ru/ui-vue';
+import { CmLink } from '@codemonster-ru/ui-vue';
 
 const filesGroupName = 'Files and folders';
 const phpConfigurationGroupName = 'PHP configuration';
@@ -102,7 +102,7 @@ function currentValueClass(row) {
       <section v-for="group in groupedChecks" :key="group.name" class="setup-requirements-group">
         <h3 class="setup-requirements-group__title">{{ group.name }}</h3>
 
-        <VfDataTable
+        <CmDataTable
           class="setup-requirements-table"
           :columns="columnsForGroup(group)"
           :rows="group.checks"
@@ -113,7 +113,7 @@ function currentValueClass(row) {
         >
           <template #cell-label="{ row, value }">
             <span class="setup-requirement-parameter">
-              <VfLink
+              <CmLink
                 v-if="row.documentationUrl"
                 class="setup-requirement-doc-link"
                 :href="row.documentationUrl"
@@ -126,7 +126,7 @@ function currentValueClass(row) {
                   :icon="icons.externalLink"
                   aria-hidden="true"
                 />
-              </VfLink>
+              </CmLink>
               <span v-else>{{ value }}</span>
               <template v-if="row.path">
                 <span>: </span>
@@ -143,7 +143,7 @@ function currentValueClass(row) {
               {{ value }}
             </span>
           </template>
-        </VfDataTable>
+        </CmDataTable>
       </section>
 
       <p v-if="loading && checks.length === 0" class="setup-muted">
@@ -151,20 +151,20 @@ function currentValueClass(row) {
       </p>
     </div>
 
-    <VfAlert v-if="error" tone="danger" title="Unable to check requirements">
+    <CmAlert v-if="error" tone="danger" title="Unable to check requirements">
       {{ error }}
-    </VfAlert>
+    </CmAlert>
 
-    <VfAlert v-else-if="!passed && checks.length > 0" tone="danger" title="Environment is not ready">
+    <CmAlert v-else-if="!passed && checks.length > 0" tone="danger" title="Environment is not ready">
       Resolve the failed checks before continuing.
-    </VfAlert>
+    </CmAlert>
 
-    <VfAlert
+    <CmAlert
       v-else-if="hasRecommendedWarnings"
       tone="warn"
       title="Recommended settings need attention"
     >
       You can continue, but review the highlighted settings before production use.
-    </VfAlert>
+    </CmAlert>
   </div>
 </template>

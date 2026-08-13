@@ -1,11 +1,12 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
+import { CmAlert } from '@codemonster-ru/ui-vue';
 import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
-import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
-import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
+import { CmDataTable } from '@codemonster-ru/ui-vue';
+import { CmDropdown } from '@codemonster-ru/ui-vue';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
-import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { CmMenu } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 
 const props = defineProps({ user: { type: Object, default: null } });
@@ -125,9 +126,9 @@ watch([page, pageSize], loadModules);
       @update:open="uninstallCandidate = $event ? uninstallCandidate : null"
       @confirm="runAction(uninstallCandidate, 'uninstall')"
     />
-    <VfAlert v-if="error" tone="danger" title="Modules">{{ error }}</VfAlert>
-    <VfAlert v-if="success" tone="success" title="Modules">{{ success }}</VfAlert>
-    <VfDataTable
+    <CmAlert v-if="error" tone="danger" title="Modules">{{ error }}</CmAlert>
+    <CmAlert v-if="success" tone="success" title="Modules">{{ success }}</CmAlert>
+    <CmDataTable
       :columns="columns"
       :rows="rows"
       row-key="name"
@@ -144,7 +145,7 @@ watch([page, pageSize], loadModules);
       @update:page-size="pageSize = $event"
     >
       <template #cell-actions="{ row }">
-        <VfDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
+        <CmDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
           <template #trigger>
             <VfIconButton
               :icon="icons.bars"
@@ -155,7 +156,7 @@ watch([page, pageSize], loadModules);
               :disabled="Boolean(changingModule)"
             />
           </template>
-          <VfMenu>
+          <CmMenu>
             <VfMenuItem
               v-if="row.can_disable"
               label="Deactivate"
@@ -187,8 +188,8 @@ watch([page, pageSize], loadModules);
               tone="danger"
               @select="uninstallCandidate = row"
             />
-          </VfMenu>
-        </VfDropdown>
+          </CmMenu>
+        </CmDropdown>
       </template>
       <template #cell-name="{ value }"><strong>{{ value }}</strong></template>
       <template #cell-version="{ value, row }">
@@ -221,7 +222,7 @@ watch([page, pageSize], loadModules);
           {{ value.length > 0 ? value.join(', ') : 'None' }}
         </span>
       </template>
-    </VfDataTable>
+    </CmDataTable>
   </div>
 </template>
 

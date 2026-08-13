@@ -1,7 +1,7 @@
 <script setup>
 import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
 import { VfSetupLayout } from '@codemonster-ru/vueforge-layouts/setup-layout';
 import licenseAgreement from '../content/license-agreement.txt?raw';
@@ -140,22 +140,22 @@ const {
         />
       </div>
 
-      <VfAlert v-if="currentStepError" class="setup-step-alert" tone="danger" :title="setupErrorTitle">
+      <CmAlert v-if="currentStepError" class="setup-step-alert" tone="danger" :title="setupErrorTitle">
         {{ currentStepError }}
-      </VfAlert>
+      </CmAlert>
 
       <template #actions>
         <template v-if="installationComplete">
-          <VfButton type="button" variant="secondary" @click="visit(siteUrl)">
+          <CmButton type="button" variant="secondary" @click="visit(siteUrl)">
             Open site
-          </VfButton>
+          </CmButton>
 
-          <VfButton type="button" @click="visit(adminUrl)">
+          <CmButton type="button" @click="visit(adminUrl)">
             Open admin panel
-          </VfButton>
+          </CmButton>
         </template>
 
-        <VfButton
+        <CmButton
           v-if="!installationComplete && canGoBack"
           class="setup-action-back"
           type="button"
@@ -164,9 +164,9 @@ const {
           @click="goToPreviousStep"
         >
           Back
-        </VfButton>
+        </CmButton>
 
-        <VfButton
+        <CmButton
           v-if="!installationComplete && currentStep === 'requirements'"
           type="button"
           variant="secondary"
@@ -175,9 +175,9 @@ const {
           @click="loadRequirements"
         >
           <span>Recheck</span>
-        </VfButton>
+        </CmButton>
 
-        <VfButton
+        <CmButton
           v-if="!installationComplete && canGoNext"
           type="button"
           :disabled="busy"
@@ -185,11 +185,11 @@ const {
           @click="goToNextStep"
         >
           <span>Next</span>
-        </VfButton>
+        </CmButton>
 
-        <VfButton v-else-if="!installationComplete" type="submit" :disabled="busy" :loading="loading">
+        <CmButton v-else-if="!installationComplete" type="submit" :disabled="busy" :loading="loading">
           {{ loading ? 'Installing...' : 'Install' }}
-        </VfButton>
+        </CmButton>
       </template>
     </VfSetupLayout>
   </VfThemeProvider>

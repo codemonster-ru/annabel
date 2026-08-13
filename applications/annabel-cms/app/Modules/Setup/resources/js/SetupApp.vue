@@ -1,8 +1,8 @@
 <script setup>
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
-import { VfSetupLayout } from '@codemonster-ru/vueforge-layouts/setup-layout';
 import AppNavMenu from '../../../../resources/js/components/AppNavMenu.vue';
+import AppSetupLayout from './components/AppSetupLayout.vue';
 import licenseAgreement from '../content/license-agreement.txt?raw';
 import SetupStepAdministrator from './components/SetupStepAdministrator.vue';
 import SetupStepDatabase from './components/SetupStepDatabase.vue';
@@ -62,7 +62,7 @@ const {
 </script>
 
 <template>
-  <VfSetupLayout
+  <AppSetupLayout
       as="form"
       :title="currentStepTitle"
       method="post"
@@ -189,5 +189,5 @@ const {
           {{ loading ? 'Installing...' : 'Install' }}
         </CmButton>
       </template>
-  </VfSetupLayout>
+  </AppSetupLayout>
 </template>

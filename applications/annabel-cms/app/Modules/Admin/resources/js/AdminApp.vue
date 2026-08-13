@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
+import AppThemeProvider from './components/AppThemeProvider.vue';
 import LoginScreen from './screens/LoginScreen.vue';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen.vue';
 import ResetPasswordScreen from './screens/ResetPasswordScreen.vue';
@@ -31,7 +31,7 @@ const screenError = computed(() => (
 </script>
 
 <template>
-  <VfThemeProvider>
+  <AppThemeProvider storage-key="annabel-admin-theme">
     <LoginScreen
       v-if="!authenticated && screen === 'login'"
       :csrf-token="csrfToken"
@@ -55,5 +55,5 @@ const screenError = computed(() => (
       :screen-error="screenError"
       :user="user"
     />
-  </VfThemeProvider>
+  </AppThemeProvider>
 </template>

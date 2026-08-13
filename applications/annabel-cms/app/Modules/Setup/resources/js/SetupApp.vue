@@ -1,5 +1,4 @@
 <script setup>
-import { VfThemeProvider } from '@codemonster-ru/vueforge-core';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { VfNavMenu } from '@codemonster-ru/vueforge-core/nav-menu';
@@ -63,8 +62,7 @@ const {
 </script>
 
 <template>
-  <VfThemeProvider>
-    <VfSetupLayout
+  <VfSetupLayout
       as="form"
       :title="currentStepTitle"
       method="post"
@@ -191,6 +189,5 @@ const {
           {{ loading ? 'Installing...' : 'Install' }}
         </CmButton>
       </template>
-    </VfSetupLayout>
-  </VfThemeProvider>
+  </VfSetupLayout>
 </template>

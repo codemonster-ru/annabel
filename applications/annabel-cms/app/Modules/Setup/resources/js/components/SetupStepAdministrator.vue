@@ -1,6 +1,7 @@
 <script setup>
 import { CmField } from '@codemonster-ru/ui-vue';
 import { CmInput } from '@codemonster-ru/ui-vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 
 const props = defineProps({
   adminUsername: {
@@ -95,7 +96,7 @@ function update(field, value) {
     <div class="setup-fields setup-fields--credentials">
       <CmField label="Password" :error="firstError('admin_password')" required>
         <template #default="{ controlId, describedBy, invalid }">
-          <CmInput
+          <AppInput
             :id="controlId"
             :model-value="adminPassword"
             type="password"
@@ -116,7 +117,7 @@ function update(field, value) {
         required
       >
         <template #default="{ controlId, describedBy, invalid }">
-          <CmInput
+          <AppInput
             :id="controlId"
             :model-value="adminPasswordConfirmation"
             type="password"

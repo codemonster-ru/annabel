@@ -2,11 +2,11 @@
 import { ref } from 'vue';
 import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
-import { CmInput } from '@codemonster-ru/ui-vue';
 import { CmLink } from '@codemonster-ru/ui-vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import AuthFooter from '../components/AuthFooter.vue';
 import AppAuthLayout from '../components/AppAuthLayout.vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 import { firstError } from '../support/errors';
 
 const props = defineProps({
@@ -102,7 +102,7 @@ function submitOnEnter(event) {
 
       <div class="field">
         <label for="new-password">New password</label>
-        <CmInput
+        <AppInput
           id="new-password"
           v-model="password"
           type="password"
@@ -117,7 +117,7 @@ function submitOnEnter(event) {
 
       <div class="field">
         <label for="new-password-confirmation">Confirm new password</label>
-        <CmInput
+        <AppInput
           id="new-password-confirmation"
           v-model="passwordConfirmation"
           type="password"

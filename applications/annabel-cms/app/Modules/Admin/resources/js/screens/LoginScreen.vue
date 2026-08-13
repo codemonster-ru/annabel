@@ -8,6 +8,7 @@ import { CmLink } from '@codemonster-ru/ui-vue';
 import AppThemeSwitch from '../components/AppThemeSwitch.vue';
 import AuthFooter from '../components/AuthFooter.vue';
 import AppAuthLayout from '../components/AppAuthLayout.vue';
+import AppInput from '../../../../../resources/js/components/AppInput.vue';
 import { firstError } from '../support/errors';
 
 const props = defineProps({
@@ -122,7 +123,7 @@ function submitOnEnter(event) {
 
       <div class="field">
         <label for="password">Password</label>
-        <CmInput
+        <AppInput
           id="password"
           v-model="password"
           type="password"

@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfCard } from '@codemonster-ru/vueforge-core/card';
-import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmCard } from '@codemonster-ru/ui-vue';
+import { CmField } from '@codemonster-ru/ui-vue';
 import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
+import { CmInput } from '@codemonster-ru/ui-vue';
 
 const props = defineProps({ user: { type: Object, default: null } });
 const canUpdate = () => props.user?.roles?.includes('admin') || props.user?.permissions?.includes('settings.update');
@@ -99,29 +99,29 @@ onMounted(loadSettings);
 
 <template>
   <Teleport v-if="canUpdate()" to="#admin-page-actions">
-    <VfButton
+    <CmButton
       type="submit"
       form="site-settings-form"
       :loading="saving"
       :disabled="loading"
     >
       {{ saving ? 'Saving...' : 'Save settings' }}
-    </VfButton>
+    </CmButton>
   </Teleport>
 
   <form id="site-settings-form" class="site-settings-form" novalidate @submit.prevent="saveSettings">
-    <VfCard>
+    <CmCard>
       <VfFormLayout mode="responsive" label-width="minmax(14rem, 25%)">
-        <VfAlert v-if="error" tone="danger" title="Site settings">
+        <CmAlert v-if="error" tone="danger" title="Site settings">
           {{ error }}
-        </VfAlert>
-        <VfAlert v-if="success" tone="success" title="Site settings">
+        </CmAlert>
+        <CmAlert v-if="success" tone="success" title="Site settings">
           {{ success }}
-        </VfAlert>
+        </CmAlert>
 
-        <VfField label="Site name" :error="firstError('site_name')" required>
+        <CmField label="Site name" :error="firstError('site_name')" required>
           <template #default="{ controlId, describedBy, invalid }">
-            <VfInput
+            <CmInput
               :id="controlId"
               v-model="settings.site_name"
               :aria-describedby="describedBy"
@@ -130,11 +130,11 @@ onMounted(loadSettings);
               required
             />
           </template>
-        </VfField>
+        </CmField>
 
-        <VfField label="Locale" description="A language tag such as en or en-US." :error="firstError('locale')" required>
+        <CmField label="Locale" description="A language tag such as en or en-US." :error="firstError('locale')" required>
           <template #default="{ controlId, describedBy, invalid }">
-            <VfInput
+            <CmInput
               :id="controlId"
               v-model="settings.locale"
               :aria-describedby="describedBy"
@@ -143,8 +143,8 @@ onMounted(loadSettings);
               required
             />
           </template>
-        </VfField>
+        </CmField>
       </VfFormLayout>
-    </VfCard>
+    </CmCard>
   </form>
 </template>

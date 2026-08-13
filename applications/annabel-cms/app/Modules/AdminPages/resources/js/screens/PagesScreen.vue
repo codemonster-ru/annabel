@@ -1,21 +1,22 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import { VfAlert } from '@codemonster-ru/vueforge-core/alert';
-import { VfButton } from '@codemonster-ru/vueforge-core/button';
-import { VfCard } from '@codemonster-ru/vueforge-core/card';
-import { VfCheckbox } from '@codemonster-ru/vueforge-core/checkbox';
+import { CmAlert } from '@codemonster-ru/ui-vue';
+import { CmButton } from '@codemonster-ru/ui-vue';
+import { CmCard } from '@codemonster-ru/ui-vue';
+import { CmCheckbox } from '@codemonster-ru/ui-vue';
 import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
-import { VfDataTable } from '@codemonster-ru/vueforge-core/data-table';
+import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
-import { VfDatePicker } from '@codemonster-ru/vueforge-core/date-picker';
-import { VfDropdown } from '@codemonster-ru/vueforge-core/dropdown';
-import { VfField } from '@codemonster-ru/vueforge-core/field';
+import { CmDatePicker } from '@codemonster-ru/ui-vue';
+import { CmDropdown } from '@codemonster-ru/ui-vue';
+import { CmField } from '@codemonster-ru/ui-vue';
 import { VfFormLayout } from '@codemonster-ru/vueforge-core/form-layout';
 import { VfIconButton } from '@codemonster-ru/vueforge-core/icon-button';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
-import { VfMenu, VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
-import { VfTextarea } from '@codemonster-ru/vueforge-core/textarea';
-import { VfTabs } from '@codemonster-ru/vueforge-core/tabs';
+import { CmInput } from '@codemonster-ru/ui-vue';
+import { VfMenuItem } from '@codemonster-ru/vueforge-core/menu';
+import { CmMenu } from '@codemonster-ru/ui-vue';
+import { CmTextarea } from '@codemonster-ru/ui-vue';
+import { CmTabs } from '@codemonster-ru/ui-vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {
   formatDateTime,
@@ -303,26 +304,26 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
       @confirm="deletePage(deleteCandidate)"
     />
     <Teleport v-if="formMode" to="#admin-page-actions">
-      <VfButton type="submit" form="pages-page-form" :loading="saving" :disabled="loading || deleting">
+      <CmButton type="submit" form="pages-page-form" :loading="saving" :disabled="loading || deleting">
         {{ saving ? 'Saving...' : 'Save page' }}
-      </VfButton>
-      <VfButton variant="secondary" :disabled="saving || deleting" @click="backToPages">
+      </CmButton>
+      <CmButton variant="secondary" :disabled="saving || deleting" @click="backToPages">
         Back
-      </VfButton>
+      </CmButton>
     </Teleport>
     <Teleport v-else-if="can('pages.create')" to="#admin-page-actions">
-      <VfButton variant="primary" :disabled="loading || saving" @click="newPage">New page</VfButton>
+      <CmButton variant="primary" :disabled="loading || saving" @click="newPage">New page</CmButton>
     </Teleport>
 
-    <VfAlert v-if="error" tone="danger" title="Pages">
+    <CmAlert v-if="error" tone="danger" title="Pages">
       {{ error }}
-    </VfAlert>
-    <VfAlert v-if="success" tone="success" title="Pages">
+    </CmAlert>
+    <CmAlert v-if="success" tone="success" title="Pages">
       {{ success }}
-    </VfAlert>
+    </CmAlert>
 
     <div v-if="!formMode" class="pages-screen__list">
-      <VfDataTable
+      <CmDataTable
         :columns="columns"
         :visible-column-keys="visibleColumns"
         :rows="pages"
@@ -349,7 +350,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           />
         </template>
         <template #cell-actions="{ row }">
-          <VfDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
+          <CmDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
             <template #trigger>
               <VfIconButton
                 :icon="icons.bars"
@@ -359,7 +360,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 :title="`Actions for ${row.title}`"
               />
             </template>
-            <VfMenu>
+            <CmMenu>
               <VfMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="icons.pencil" @select="editPage(row)" />
               <VfMenuItem
                 v-if="row.is_active"
@@ -370,8 +371,8 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                 rel="noopener noreferrer"
               />
               <VfMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
-            </VfMenu>
-          </VfDropdown>
+            </CmMenu>
+          </CmDropdown>
         </template>
         <template #cell-title="{ row }">
           <a v-if="canUpdatePage(row)" class="pages-screen__title-link" :href="`/admin/pages/${row.id}/edit`">
@@ -394,23 +395,23 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
       <template #cell-created_at="{ value }">
         {{ formatDateTime(value) }}
       </template>
-    </VfDataTable>
+    </CmDataTable>
     </div>
 
     <form id="pages-page-form" v-else class="pages-screen__form" novalidate @submit.prevent="savePage">
-      <VfCard>
-          <VfTabs v-model="activeTab" :items="formTabs">
+      <CmCard>
+          <CmTabs v-model="activeTab" :items="formTabs">
             <template #panel="{ activeValue }">
               <VfFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
-                <VfField class="pages-screen__active-field" label="Published">
+                <CmField class="pages-screen__active-field" label="Published">
                   <template #default="{ controlId }">
-                    <VfCheckbox :id="controlId" v-model="page.is_active" :disabled="saving || !canPublishPage(page)" />
+                    <CmCheckbox :id="controlId" v-model="page.is_active" :disabled="saving || !canPublishPage(page)" />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField class="pages-screen__activity-field" label="Publish from" :error="firstError('active_from')">
+                <CmField class="pages-screen__activity-field" label="Publish from" :error="firstError('active_from')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfDatePicker
+                    <CmDatePicker
                       :id="controlId"
                       v-model="page.active_from"
                       show-time
@@ -420,11 +421,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       :disabled="saving || !canPublishPage(page)"
                     />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField class="pages-screen__activity-field" label="Publish until" :error="firstError('active_until')">
+                <CmField class="pages-screen__activity-field" label="Publish until" :error="firstError('active_until')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfDatePicker
+                    <CmDatePicker
                       :id="controlId"
                       v-model="page.active_until"
                       show-time
@@ -434,9 +435,9 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       :disabled="saving || !canPublishPage(page)"
                     />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField v-if="canAssignOwner" label="Owner" :error="firstError('owner_id')">
+                <CmField v-if="canAssignOwner" label="Owner" :error="firstError('owner_id')">
                   <template #default="{ controlId, describedBy, invalid }">
                     <select
                       :id="controlId"
@@ -451,29 +452,29 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       </option>
                     </select>
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Title" :error="firstError('title')" required>
+                <CmField label="Title" :error="firstError('title')" required>
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput :id="controlId" v-model="page.title" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
+                    <CmInput :id="controlId" v-model="page.title" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Slug" :error="firstError('slug')" required>
+                <CmField label="Slug" :error="firstError('slug')" required>
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput :id="controlId" v-model="page.slug" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
+                    <CmInput :id="controlId" v-model="page.slug" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" required />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Sort order" :error="firstError('sort_order')">
+                <CmField label="Sort order" :error="firstError('sort_order')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
+                    <CmInput :id="controlId" v-model="page.sort_order" type="number" min="1" max="1000000" :aria-describedby="describedBy" :invalid="invalid" :disabled="saving" />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Content" :error="firstError('content')" required>
+                <CmField label="Content" :error="firstError('content')" required>
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfTextarea
+                    <CmTextarea
                       :id="controlId"
                       v-model="page.content"
                       :aria-describedby="describedBy"
@@ -483,14 +484,14 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       required
                     />
                   </template>
-                </VfField>
+                </CmField>
 
               </VfFormLayout>
 
               <VfFormLayout v-else-if="activeValue === 'seo'" mode="responsive" label-width="minmax(14rem, 25%)">
-                <VfField label="Meta title" :error="firstError('meta_title')">
+                <CmField label="Meta title" :error="firstError('meta_title')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfInput
+                    <CmInput
                       :id="controlId"
                       v-model="page.meta_title"
                       :aria-describedby="describedBy"
@@ -498,11 +499,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       :disabled="saving"
                     />
                   </template>
-                </VfField>
+                </CmField>
 
-                <VfField label="Meta description" :error="firstError('meta_description')">
+                <CmField label="Meta description" :error="firstError('meta_description')">
                   <template #default="{ controlId, describedBy, invalid }">
-                    <VfTextarea
+                    <CmTextarea
                       :id="controlId"
                       v-model="page.meta_description"
                       :aria-describedby="describedBy"
@@ -511,11 +512,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
                       rows="5"
                     />
                   </template>
-                </VfField>
+                </CmField>
               </VfFormLayout>
             </template>
-          </VfTabs>
-      </VfCard>
+          </CmTabs>
+      </CmCard>
     </form>
   </div>
 </template>

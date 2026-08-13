@@ -1,6 +1,6 @@
 <script setup>
-import { VfField } from '@codemonster-ru/vueforge-core/field';
-import { VfInput } from '@codemonster-ru/vueforge-core/input';
+import { CmField } from '@codemonster-ru/ui-vue';
+import { CmInput } from '@codemonster-ru/ui-vue';
 
 const props = defineProps({
   adminUsername: {
@@ -59,9 +59,9 @@ function update(field, value) {
     </p>
 
     <div class="setup-fields setup-fields--credentials">
-      <VfField label="Username" :error="firstError('admin_username')" required>
+      <CmField label="Username" :error="firstError('admin_username')" required>
         <template #default="{ controlId, describedBy, invalid }">
-          <VfInput
+          <CmInput
             :id="controlId"
             :model-value="adminUsername"
             type="text"
@@ -73,11 +73,11 @@ function update(field, value) {
             @update:model-value="update('adminUsername', $event)"
           />
         </template>
-      </VfField>
+      </CmField>
 
-      <VfField label="Email" :error="firstError('admin_email')" required>
+      <CmField label="Email" :error="firstError('admin_email')" required>
         <template #default="{ controlId, describedBy, invalid }">
-          <VfInput
+          <CmInput
             :id="controlId"
             :model-value="adminEmail"
             type="email"
@@ -89,13 +89,13 @@ function update(field, value) {
             @update:model-value="update('adminEmail', $event)"
           />
         </template>
-      </VfField>
+      </CmField>
     </div>
 
     <div class="setup-fields setup-fields--credentials">
-      <VfField label="Password" :error="firstError('admin_password')" required>
+      <CmField label="Password" :error="firstError('admin_password')" required>
         <template #default="{ controlId, describedBy, invalid }">
-          <VfInput
+          <CmInput
             :id="controlId"
             :model-value="adminPassword"
             type="password"
@@ -108,15 +108,15 @@ function update(field, value) {
             @update:model-value="update('adminPassword', $event)"
           />
         </template>
-      </VfField>
+      </CmField>
 
-      <VfField
+      <CmField
         label="Confirm password"
         :error="firstError('admin_password_confirmation')"
         required
       >
         <template #default="{ controlId, describedBy, invalid }">
-          <VfInput
+          <CmInput
             :id="controlId"
             :model-value="adminPasswordConfirmation"
             type="password"
@@ -129,7 +129,7 @@ function update(field, value) {
             @update:model-value="update('adminPasswordConfirmation', $event)"
           />
         </template>
-      </VfField>
+      </CmField>
     </div>
   </div>
 </template>

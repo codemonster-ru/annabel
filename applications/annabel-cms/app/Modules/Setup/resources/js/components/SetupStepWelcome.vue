@@ -1,6 +1,6 @@
 <script setup>
 import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
-import { VfLink } from '@codemonster-ru/vueforge-core/link';
+import { CmLink } from '@codemonster-ru/ui-vue';
 </script>
 
 <template>
@@ -21,7 +21,7 @@ import { VfLink } from '@codemonster-ru/vueforge-core/link';
 
     <p class="setup-muted">
       Project information is available in the
-      <VfLink
+      <CmLink
         class="setup-inline-link"
         href="https://github.com/codemonster-ru/annabel"
         target="_blank"
@@ -29,7 +29,7 @@ import { VfLink } from '@codemonster-ru/vueforge-core/link';
       >
         <span>Annabel repository</span>
         <VueIconify class="setup-inline-link__icon" :icon="icons.externalLink" aria-hidden="true" />
-      </VfLink>.
+      </CmLink>.
     </p>
   </div>
 </template>

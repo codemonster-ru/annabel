@@ -11,6 +11,17 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "../../../../JS/vueforge/packages/razor",
+            "canonical": true,
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "codemonster-ru/ui": "1.0.0-rc.1"
+                }
+            }
         }
     ],
     "require": {
@@ -22,6 +33,7 @@
         "codemonster-ru/http": "dev-main as 2.1.99",
         "codemonster-ru/security": "dev-main as 1.1.99",
         "codemonster-ru/session": "dev-main as 2.0.99",
+        "codemonster-ru/ui": "^1.0.0-rc.1",
         "codemonster-ru/view": "dev-main as 2.3.99",
         "psr/clock": "^1.0"
     },
@@ -40,7 +52,14 @@
         "phpunit/phpunit": "^11.0"
     },
     "scripts": {
-        "test": "npm run build:admin && phpunit",
+        "assets:ui": "@php bin/publish-code-monster-ui-assets",
+        "post-install-cmd": "@assets:ui",
+        "post-update-cmd": "@assets:ui",
+        "test": [
+            "@assets:ui",
+            "npm run build:admin",
+            "phpunit"
+        ],
         "test:unit": "phpunit --testsuite unit",
         "test:integration": "phpunit --testsuite integration",
         "analyse": "@php -d memory_limit=512M vendor/bin/phpstan analyse --debug --no-progress"

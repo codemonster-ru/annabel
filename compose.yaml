@@ -12,6 +12,7 @@ services:
     working_dir: /workspace
     volumes:
       - .:/workspace
+      - ${CODEMONSTER_UI_PATH:-../../JS/vueforge}:/JS/vueforge:ro
       - ${HOME}/.codex-annabel:/root/.codex
       - composer-cache:/tmp/composer-cache
       - skeleton-node-modules:/workspace/skeleton/annabel-skeleton/node_modules
@@ -114,6 +115,7 @@ services:
         condition: service_started
     volumes:
       - .:/workspace
+      - ${CODEMONSTER_UI_PATH:-../../JS/vueforge}:/JS/vueforge:ro
       - cms-vendor:/workspace/applications/annabel-cms/vendor
       - cms-node-modules:/workspace/applications/annabel-cms/node_modules
       - composer-cache:/tmp/composer-cache

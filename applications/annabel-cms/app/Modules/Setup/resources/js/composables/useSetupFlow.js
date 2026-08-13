@@ -398,7 +398,7 @@ export function useSetupFlow(boot = {}) {
 
     if (
       target instanceof HTMLElement
-      && target.closest('.vf-setup-layout')
+      && target.closest('.app-setup-layout')
       && target !== document.body
       && target !== document.documentElement
     ) {

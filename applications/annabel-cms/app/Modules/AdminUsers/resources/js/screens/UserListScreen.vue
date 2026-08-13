@@ -15,7 +15,7 @@ import AppIconButton from '../../../../Admin/resources/js/components/AppIconButt
 import { CmInput } from '@codemonster-ru/ui-vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
-import { CmTabs } from '@codemonster-ru/ui-vue';
+import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
 import { icons } from '@codemonster-ru/vueforge-icons';
 import {
   formatDateTime,
@@ -338,7 +338,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 
     <form id="users-user-form" v-else class="users-screen__form" novalidate @submit.prevent="saveUser">
       <CmCard>
-        <CmTabs v-model="activeTab" :items="userFormTabs">
+        <CmTabs id="user-form-tabs" v-model="activeTab" :items="userFormTabs">
           <template #panel="{ activeValue }">
             <AppFormLayout v-if="activeValue === 'general'" mode="responsive" label-width="minmax(14rem, 25%)">
           <CmField class="users-screen__active-field" label="Active">

@@ -4,7 +4,7 @@ import { CmAlert } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmCard } from '@codemonster-ru/ui-vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
-import { VfConfirmDialog } from '@codemonster-ru/vueforge-core/confirm-dialog';
+import AppConfirmDialog from '../../../../Admin/resources/js/components/AppConfirmDialog.vue';
 import { CmDataTable } from '@codemonster-ru/ui-vue';
 import { VfDataTableColumnChooser } from '@codemonster-ru/vueforge-core/data-table-column-chooser';
 import { CmDatePicker } from '@codemonster-ru/ui-vue';
@@ -260,7 +260,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
 
 <template>
   <div class="users-screen">
-    <VfConfirmDialog
+    <AppConfirmDialog
       :open="Boolean(deleteCandidate)"
       title="Delete user?"
       :description="deleteCandidate ? `The user “${deleteCandidate.username}” will be deleted.` : ''"

@@ -5,5 +5,5 @@ parameters:
         - src
         - tests
     excludePaths:
-        - tests/cache
+        - tests/cache (?)
     tmpDir: ../../var/phpstan/razor

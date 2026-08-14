@@ -22,7 +22,7 @@
         "codemonster-ru/http": "dev-main as 2.1.99",
         "codemonster-ru/security": "dev-main as 1.1.99",
         "codemonster-ru/session": "dev-main as 2.0.99",
-        "codemonster-ru/ui": "^1.0.0",
+        "codemonster-ru/ui-razor": "^1.0.1",
         "codemonster-ru/view": "dev-main as 2.3.99",
         "psr/clock": "^1.0"
     },

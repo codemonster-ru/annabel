@@ -19,7 +19,7 @@
         "codemonster-ru/http": "^2.1",
         "codemonster-ru/security": "^1.1",
         "codemonster-ru/session": "^2.0",
-        "codemonster-ru/ui-razor": "^1.0.1",
+        "codemonster-ru/ui-razor": "^1.1.0",
         "codemonster-ru/view": "^2.3",
         "psr/clock": "^1.0"
     },

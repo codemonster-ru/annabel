@@ -10,9 +10,11 @@ use Codemonster\Cms\Modules\Core\Services\ModuleActivationManager;
 use Codemonster\Cms\Modules\Core\Services\ModuleInstallationRegistry;
 use Codemonster\Cms\Modules\Core\Services\ModuleInstaller;
 use Codemonster\Cms\Modules\Core\Services\ModuleUpdater;
+use Codemonster\Cms\Modules\Pages\Models\Page;
 use Codemonster\Cms\Modules\Settings\Models\SiteSetting;
 use Codemonster\Cms\Modules\Settings\Services\SiteSettings;
 use Codemonster\Cms\Support\Installation\InstallationState;
+use Codemonster\Database\Connection;
 use Codemonster\Http\Request;
 use Codemonster\Security\Csrf\CsrfTokenManager;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
@@ -169,6 +171,13 @@ class AdminHttpTest extends TestCase
     public function testOwnPagePermissionReachesObjectPolicy(): void
     {
         $app = $this->app();
+        $connection = new Connection([
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+        ]);
+        $connection->statement('CREATE TABLE pages (id INTEGER PRIMARY KEY, owner_id INTEGER NULL)');
+        $connection->table('pages')->insert(['id' => 999999, 'owner_id' => 2]);
+        Page::setConnectionResolver(static fn () => $connection);
         $session = new InMemoryUserSession();
         $session->login(new AuthenticatedUser(
             2,
@@ -181,7 +190,7 @@ class AdminHttpTest extends TestCase
 
         $response = $app->handle(new Request('GET', '/admin/pages/999999/edit'));
 
-        self::assertSame(404, $response->getStatusCode());
+        self::assertSame(200, $response->getStatusCode());
     }
 
     public function testGuestCannotCallAdminLogout(): void

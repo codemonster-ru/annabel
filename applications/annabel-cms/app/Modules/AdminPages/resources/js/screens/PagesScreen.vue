@@ -17,7 +17,7 @@ import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.v
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import { CmTextarea } from '@codemonster-ru/ui-vue';
 import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
-import { icons } from '@codemonster-ru/vueforge-icons';
+import { bars, externalLink, pencil, trash } from '@codemonster-ru/ui-icons';
 import {
   formatDateTime,
   localDateTimeValueToIso,
@@ -352,7 +352,7 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
           <AppDropdown v-if="canUpdatePage(row) || canDeletePage(row) || row.is_active" placement="bottom-start">
             <template #trigger>
               <AppIconButton
-                :icon="icons.bars"
+                :icon="bars"
                 variant="ghost"
                 size="sm"
                 :aria-label="`Actions for ${row.title}`"
@@ -360,16 +360,16 @@ onMounted(() => (formMode.value ? (editId.value ? loadPage() : loadPages()) : lo
               />
             </template>
             <AppMenu>
-              <AppMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="icons.pencil" @select="editPage(row)" />
+              <AppMenuItem v-if="canUpdatePage(row)" label="Edit" :icon="pencil" @select="editPage(row)" />
               <AppMenuItem
                 v-if="row.is_active"
                 label="View page"
-                :icon="icons.externalLink"
+                :icon="externalLink"
                 :href="publicPageUrl(row)"
                 target="_blank"
                 rel="noopener noreferrer"
               />
-              <AppMenuItem v-if="canDeletePage(row)" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
+              <AppMenuItem v-if="canDeletePage(row)" label="Delete" :icon="trash" tone="danger" @select="deleteCandidate = row" />
             </AppMenu>
           </AppDropdown>
         </template>

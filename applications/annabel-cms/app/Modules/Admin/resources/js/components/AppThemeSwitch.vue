@@ -1,7 +1,7 @@
 <script setup>
 import { computed, inject } from 'vue';
-import { CmButton, CmSwitch } from '@codemonster-ru/ui-vue';
-import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
+import { CmButton, CmIcon, CmSwitch } from '@codemonster-ru/ui-vue';
+import { moon, sun } from '@codemonster-ru/ui-icons';
 import { appThemeKey } from './appTheme';
 
 const props = defineProps({
@@ -24,7 +24,7 @@ const theme = inject(appThemeKey);
 if (!theme) throw new Error('AppThemeSwitch must be used inside AppThemeProvider.');
 
 const checked = computed(() => theme.resolvedTheme.value === 'dark');
-const icon = computed(() => (checked.value ? icons.moon : icons.sun));
+const icon = computed(() => (checked.value ? moon : sun));
 const label = computed(() => (checked.value ? 'Switch to light theme' : 'Switch to dark theme'));
 
 function updateTheme(value) {
@@ -41,7 +41,7 @@ function updateTheme(value) {
     :aria-label="label"
     @click="updateTheme(!checked)"
   >
-    <VueIconify :icon="icon" aria-hidden="true" />
+    <CmIcon :icon="icon" aria-hidden="true" />
   </CmButton>
   <CmSwitch
     v-else

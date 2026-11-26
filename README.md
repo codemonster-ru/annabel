@@ -1,6 +1,31 @@
 # Annabel
 
-Annabel is the official monorepo for the Codemonster PHP framework ecosystem.
+[![Tests status on main](https://github.com/codemonster-ru/annabel/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/codemonster-ru/annabel/actions/workflows/tests.yml?query=branch%3Amain)
+
+Annabel is a lightweight PHP framework for building web applications. It provides
+routing, middleware, service providers, and views, with packages for database access,
+queues, and scheduled tasks.
+
+[Get started](#get-started) · [Documentation](https://docs.codemonster.net/annabel/getting-started) · [Packages](#packages)
+
+## Get started
+
+Use PHP 8.2 or later and Composer 2. Create an application from the official starter.
+
+```bash
+composer create-project codemonster-ru/annabel-skeleton my-app
+```
+
+Follow the [first application guide](https://docs.codemonster.net/annabel/getting-started)
+to configure `.env` and start the local server. For a custom application structure,
+see [direct framework installation](https://docs.codemonster.net/annabel/installation#direct-framework-install).
+
+## Packages
+
+| Package | Packagist | Use |
+| --- | --- | --- |
+| [`codemonster-ru/annabel`](packages/framework/README.md) | [![Annabel version](https://img.shields.io/packagist/v/codemonster-ru/annabel)](https://packagist.org/packages/codemonster-ru/annabel) | Framework for PHP applications |
+| [`codemonster-ru/annabel-skeleton`](skeleton/annabel-skeleton/README.md) | [![Annabel Skeleton version](https://img.shields.io/packagist/v/codemonster-ru/annabel-skeleton)](https://packagist.org/packages/codemonster-ru/annabel-skeleton) | Starter for a new Annabel application |
 
 ## Structure
 
@@ -21,6 +46,7 @@ packages/
   env/         codemonster-ru/env
   events/      codemonster-ru/events
   database/    codemonster-ru/database
+  datetime/    codemonster-ru/datetime
   session/     codemonster-ru/session
   auth/        codemonster-ru/auth
   filesystem/  codemonster-ru/filesystem
@@ -173,3 +199,10 @@ Stop the development services:
 ```bash
 docker compose down
 ```
+
+## Support and contributing
+
+Report bugs or propose changes in [GitHub Issues](https://github.com/codemonster-ru/annabel/issues).
+See [Development](#development) for monorepo checks.
+
+Part of [CodeMonster](https://github.com/codemonster-ru). Licensed under the [MIT License](./LICENSE).

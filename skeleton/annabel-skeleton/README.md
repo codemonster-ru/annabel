@@ -15,4 +15,5 @@ Official starter project for Annabel applications.
 
 ## Documentation
 
-For full framework documentation, visit [docs.codemonster.net/annabel](https://docs.codemonster.net/annabel/).
+See the [Annabel documentation](https://docs.codemonster.net/annabel/getting-started)
+to configure and run your first application.

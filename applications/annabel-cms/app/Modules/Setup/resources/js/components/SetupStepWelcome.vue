@@ -1,6 +1,6 @@
 <script setup>
-import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
-import { CmLink } from '@codemonster-ru/ui-vue';
+import { externalLink } from '@codemonster-ru/ui-icons';
+import { CmIcon, CmLink } from '@codemonster-ru/ui-vue';
 </script>
 
 <template>
@@ -28,7 +28,7 @@ import { CmLink } from '@codemonster-ru/ui-vue';
         underline="hover"
       >
         <span>Annabel repository</span>
-        <VueIconify class="setup-inline-link__icon" :icon="icons.externalLink" aria-hidden="true" />
+        <CmIcon class="setup-inline-link__icon" :icon="externalLink" aria-hidden="true" />
       </CmLink>.
     </p>
   </div>

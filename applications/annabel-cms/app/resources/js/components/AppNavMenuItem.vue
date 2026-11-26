@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
+import { chevronDown, externalLink } from '@codemonster-ru/ui-icons';
+import { CmIcon } from '@codemonster-ru/ui-vue';
+import { VueIconify } from '@codemonster-ru/ui-vue/historical';
 
 defineOptions({ name: 'AppNavMenuItem' });
 
@@ -90,10 +92,10 @@ function toggle() {
         />
         <span class="app-nav-menu__label">{{ item.label }}</span>
       </span>
-      <VueIconify
+      <CmIcon
         class="app-nav-menu__chevron"
         :class="{ 'app-nav-menu__chevron--open': isExpanded }"
-        :icon="icons.chevronDown"
+        :icon="chevronDown"
         aria-hidden="true"
       />
     </button>
@@ -120,10 +122,10 @@ function toggle() {
         />
         <span class="app-nav-menu__label">{{ item.label }}</span>
       </span>
-      <VueIconify
+      <CmIcon
         v-if="item.target === '_blank'"
         class="app-nav-menu__external-icon"
-        :icon="icons.externalLink"
+        :icon="externalLink"
         aria-hidden="true"
       />
     </a>

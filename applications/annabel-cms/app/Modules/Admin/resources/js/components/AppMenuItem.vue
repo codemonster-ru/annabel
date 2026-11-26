@@ -1,5 +1,5 @@
 <script setup>
-import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import { CmIcon } from '@codemonster-ru/ui-vue';
 
 const props = defineProps({
   label: {
@@ -7,8 +7,8 @@ const props = defineProps({
     required: true,
   },
   icon: {
-    type: String,
-    default: '',
+    type: Object,
+    default: null,
   },
   href: {
     type: String,
@@ -45,7 +45,7 @@ function select(event) {
     data-app-menu-item
     @click="select"
   >
-    <VueIconify v-if="icon" :icon="icon" aria-hidden="true" />
+    <CmIcon v-if="icon" :icon="icon" aria-hidden="true" />
     <span>{{ label }}</span>
   </component>
 </template>

@@ -4,7 +4,23 @@ namespace Codemonster\Cms\Support\Assets;
 
 final class ViteAssetManifest
 {
-    private const UNRESOLVED_IMPORT_NEEDLE = '@codemonster-ru/';
+    private const PACKAGE_SCOPE = '@codemonster-ru/';
+
+    // Vite checks the full chunk graph. Recognize literal ESM specifiers here without treating
+    // quoted text and comments in a deployed bundle as imports.
+    private const UNRESOLVED_IMPORT_PATTERN = <<<'REGEX'
+        ~
+        (?<![\w$.])
+        (?: (?:import|from) (?&trivia) ['"] | import (?&trivia) \( (?&trivia) ['"`] )
+        @codemonster-ru/
+        | /\* [\s\S]*? \*/ (*SKIP)(*FAIL)
+        | // [^\r\n]* (*SKIP)(*FAIL)
+        | " (?: \\[\s\S] | [^"\\]++ )* " (*SKIP)(*FAIL)
+        | ' (?: \\[\s\S] | [^'\\]++ )* ' (*SKIP)(*FAIL)
+        | ` (?: \\[\s\S] | [^`\\]++ )* ` (*SKIP)(*FAIL)
+        (?(DEFINE) (?<trivia> (?: \s++ | /\* [\s\S]*? \*/ | // [^\r\n]* )*+ ))
+        ~x
+        REGEX;
 
     public function __construct(
         private string $publicPath,
@@ -146,6 +162,7 @@ final class ViteAssetManifest
         $contents = file_get_contents($bundlePath);
 
         return is_string($contents)
-            && !str_contains($contents, self::UNRESOLVED_IMPORT_NEEDLE);
+            && (!str_contains($contents, self::PACKAGE_SCOPE)
+                || preg_match(self::UNRESOLVED_IMPORT_PATTERN, $contents) === 0);
     }
 }

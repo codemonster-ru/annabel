@@ -1,4 +1,4 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -14,7 +14,7 @@ export function verifyViteBundlePlugin({ name, assetsRoot, entrypoint }) {
   return {
     name: `verify-${name}-bundle`,
     apply: 'build',
-    async writeBundle() {
+    async writeBundle(_options, bundle) {
       const manifestPath = path.join(assetsRoot, '.vite/manifest.json');
       const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
       const entry = manifest[entrypoint];
@@ -23,37 +23,19 @@ export function verifyViteBundlePlugin({ name, assetsRoot, entrypoint }) {
         throw new Error(`${name} Vite manifest is missing ${entrypoint}.`);
       }
 
-      for (const bundlePath of await listJavaScriptBundles(assetsRoot)) {
-        const bundleContents = await readFile(bundlePath, 'utf8');
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type !== 'chunk') {
+          continue;
+        }
 
-        if (bundleContents.includes('@codemonster-ru/')) {
-          throw new Error(
-            `${name} bundle contains unresolved bare imports: ${path.relative(assetsRoot, bundlePath)}`,
-          );
+        const bareImport = [...chunk.imports, ...chunk.dynamicImports]
+          .find((specifier) => specifier.startsWith('@codemonster-ru/'));
+        if (bareImport) {
+          throw new Error(`${name} bundle contains unresolved bare import ${bareImport} in ${chunk.fileName}.`);
         }
       }
 
       console.log(`Verified ${name} bundle: ${entry.file}`);
     },
   };
-}
-
-async function listJavaScriptBundles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const bundles = [];
-
-  for (const entry of entries) {
-    const resolvedPath = path.join(directory, entry.name);
-
-    if (entry.isDirectory()) {
-      bundles.push(...await listJavaScriptBundles(resolvedPath));
-      continue;
-    }
-
-    if (entry.isFile() && entry.name.endsWith('.js')) {
-      bundles.push(resolvedPath);
-    }
-  }
-
-  return bundles;
 }

@@ -1,13 +1,13 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { CmAvatar } from '@codemonster-ru/ui-vue';
+import { CmAvatar, CmIcon } from '@codemonster-ru/ui-vue';
 import { CmButton } from '@codemonster-ru/ui-vue';
 import { CmDivider } from '@codemonster-ru/ui-vue';
 import AppDropdown from '../components/AppDropdown.vue';
 import AppIconButton from '../components/AppIconButton.vue';
 import AppMenuItem from '../components/AppMenuItem.vue';
 import AppMenu from '../components/AppMenu.vue';
-import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
+import { bars, externalLink, logOut } from '@codemonster-ru/ui-icons';
 import AppNavMenu from '../../../../../resources/js/components/AppNavMenu.vue';
 import AppAdminLayout from '../components/AppAdminLayout.vue';
 import AppPageHeader from '../components/AppPageHeader.vue';
@@ -155,7 +155,7 @@ async function logout() {
             :tabindex="isSidebarCompact ? -1 : undefined"
             @click="openSite"
           >
-            <VueIconify :icon="icons.externalLink" aria-hidden="true" />
+            <CmIcon :icon="externalLink" aria-hidden="true" />
             <span>View site</span>
           </CmButton>
         </span>
@@ -184,7 +184,7 @@ async function logout() {
       <AppIconButton
         v-if="isDesktopViewport"
         class="admin-layout__sidebar-toggle"
-        :icon="icons.bars"
+        :icon="bars"
         :aria-label="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
         :title="sidebarCollapsed ? 'Развернуть боковую панель' : 'Свернуть боковую панель'"
         :aria-pressed="sidebarCollapsed"
@@ -219,7 +219,7 @@ async function logout() {
           </div>
           <CmDivider />
           <AppMenu>
-            <AppMenuItem label="Logout" :icon="icons.logOut" :disabled="loading" @select="logout" />
+            <AppMenuItem label="Logout" :icon="logOut" :disabled="loading" @select="logout" />
           </AppMenu>
         </AppDropdown>
       </div>

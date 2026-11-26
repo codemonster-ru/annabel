@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { CmCheckbox } from '@codemonster-ru/ui-vue';
-import { icons } from '@codemonster-ru/vueforge-icons';
+import { gear } from '@codemonster-ru/ui-icons';
 import AppDropdown from './AppDropdown.vue';
 import AppIconButton from './AppIconButton.vue';
 
@@ -53,7 +53,7 @@ function toggleColumn(key, checked) {
   <AppDropdown placement="bottom-start">
     <template #trigger>
       <AppIconButton
-        :icon="icons.gear"
+        :icon="gear"
         variant="ghost"
         size="sm"
         aria-label="Configure columns"

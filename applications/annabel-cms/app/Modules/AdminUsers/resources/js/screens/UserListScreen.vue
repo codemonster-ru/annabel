@@ -16,7 +16,7 @@ import { CmInput } from '@codemonster-ru/ui-vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
 import CmTabs from '../../../../../resources/js/components/AppTabs.vue';
-import { icons } from '@codemonster-ru/vueforge-icons';
+import { bars, pencil, trash } from '@codemonster-ru/ui-icons';
 import {
   formatDateTime,
   localDateTimeValueToIso,
@@ -316,11 +316,11 @@ onMounted(() => (formMode.value ? (editId.value ? loadUser() : loadRoleOptions()
         <template #cell-actions="{ row }">
           <AppDropdown v-if="can('users.update') || can('users.delete')" placement="bottom-start">
             <template #trigger>
-              <AppIconButton :icon="icons.bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
+              <AppIconButton :icon="bars" variant="ghost" size="sm" :aria-label="`Actions for ${row.username}`" :title="`Actions for ${row.username}`" />
             </template>
             <AppMenu>
-              <AppMenuItem v-if="can('users.update')" label="Edit" :icon="icons.pencil" @select="editUser(row)" />
-              <AppMenuItem v-if="can('users.delete')" label="Delete" :icon="icons.trash" tone="danger" @select="deleteCandidate = row" />
+              <AppMenuItem v-if="can('users.update')" label="Edit" :icon="pencil" @select="editUser(row)" />
+              <AppMenuItem v-if="can('users.delete')" label="Delete" :icon="trash" tone="danger" @select="deleteCandidate = row" />
             </AppMenu>
           </AppDropdown>
         </template>

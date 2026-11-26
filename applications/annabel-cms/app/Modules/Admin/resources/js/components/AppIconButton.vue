@@ -1,10 +1,9 @@
 <script setup>
-import { CmButton } from '@codemonster-ru/ui-vue';
-import { VueIconify } from '@codemonster-ru/vueforge-icons';
+import { CmButton, CmIcon } from '@codemonster-ru/ui-vue';
 
 defineProps({
   icon: {
-    type: String,
+    type: Object,
     required: true,
   },
   variant: {
@@ -20,6 +19,6 @@ defineProps({
 
 <template>
   <CmButton class="app-icon-button" :variant="variant" :size="size">
-    <VueIconify :icon="icon" aria-hidden="true" />
+    <CmIcon :icon="icon" aria-hidden="true" />
   </CmButton>
 </template>

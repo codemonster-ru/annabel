@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { icons, VueIconify } from '@codemonster-ru/vueforge-icons';
-import { CmAlert } from '@codemonster-ru/ui-vue';
+import { externalLink } from '@codemonster-ru/ui-icons';
+import { CmAlert, CmIcon } from '@codemonster-ru/ui-vue';
 import AppDataTable from '../../../../../resources/js/components/AppDataTable.vue';
 import { CmLink } from '@codemonster-ru/ui-vue';
 
@@ -121,9 +121,9 @@ function currentValueClass(row) {
                 underline="hover"
               >
                 <span>{{ value }}</span>
-                <VueIconify
+                <CmIcon
                   class="setup-requirement-doc-link__icon"
-                  :icon="icons.externalLink"
+                  :icon="externalLink"
                   aria-hidden="true"
                 />
               </CmLink>

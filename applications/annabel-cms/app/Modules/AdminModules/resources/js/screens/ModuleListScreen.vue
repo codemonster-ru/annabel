@@ -7,7 +7,7 @@ import AppDropdown from '../../../../Admin/resources/js/components/AppDropdown.v
 import AppIconButton from '../../../../Admin/resources/js/components/AppIconButton.vue';
 import AppMenuItem from '../../../../Admin/resources/js/components/AppMenuItem.vue';
 import AppMenu from '../../../../Admin/resources/js/components/AppMenu.vue';
-import { icons } from '@codemonster-ru/vueforge-icons';
+import { ban, bars, checkCircle, download, refresh, trash } from '@codemonster-ru/ui-icons';
 
 const props = defineProps({ user: { type: Object, default: null } });
 const canManage = computed(() => props.user?.roles?.includes('admin') || props.user?.permissions?.includes('modules.manage'));
@@ -147,7 +147,7 @@ watch([page, pageSize], loadModules);
         <AppDropdown v-if="canManage && (row.can_enable || row.can_disable || row.can_install || row.can_uninstall || row.can_update)" placement="bottom-start">
           <template #trigger>
             <AppIconButton
-              :icon="icons.bars"
+              :icon="bars"
               variant="ghost"
               size="sm"
               :aria-label="`Actions for ${row.name}`"
@@ -159,31 +159,31 @@ watch([page, pageSize], loadModules);
             <AppMenuItem
               v-if="row.can_disable"
               label="Deactivate"
-              :icon="icons.ban"
+              :icon="ban"
               @select="runAction(row, 'disable')"
             />
             <AppMenuItem
               v-if="row.can_enable"
               label="Activate"
-              :icon="icons.checkCircle"
+              :icon="checkCircle"
               @select="runAction(row, 'enable')"
             />
             <AppMenuItem
               v-if="row.can_install"
               label="Install"
-              :icon="icons.download"
+              :icon="download"
               @select="runAction(row, 'install')"
             />
             <AppMenuItem
               v-if="row.can_update"
               label="Update"
-              :icon="icons.refresh"
+              :icon="refresh"
               @select="runAction(row, 'update')"
             />
             <AppMenuItem
               v-if="row.can_uninstall"
               label="Uninstall"
-              :icon="icons.trash"
+              :icon="trash"
               tone="danger"
               @select="uninstallCandidate = row"
             />

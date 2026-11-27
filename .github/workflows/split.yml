@@ -94,7 +94,7 @@ jobs:
                       repository: codemonster-ru/cache
                     - id: config
                       path: packages/config
-                      repository: codemonster-ru/config-php
+                      repository: codemonster-ru/config
                     - id: env
                       path: packages/env
                       repository: codemonster-ru/env

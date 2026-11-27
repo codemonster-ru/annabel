@@ -6,20 +6,14 @@
 > Development happens in the [Annabel monorepo](https://github.com/codemonster-ru/annabel)
 > under `applications/annabel-cms`. Issues and pull requests should be opened there.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/codemonster-ru/annabel-cms.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel-cms)
-[![License](https://img.shields.io/packagist/l/codemonster-ru/annabel-cms.svg?style=flat-square)](https://packagist.org/packages/codemonster-ru/annabel-cms)
-
 Annabel CMS is the official modular content management system built on the
 [Annabel framework](https://github.com/codemonster-ru/annabel).
 
-## Installation
+## Get started
 
-```bash
-composer create-project codemonster-ru/annabel-cms
-```
-
-The release contains the compiled CMS assets, so Node.js is not required to
-install or run the CMS.
+See [GitHub Releases](https://github.com/codemonster-ru/annabel-cms/releases) for published source archives.
+For a local development setup, use the [Annabel CMS workspace](https://github.com/codemonster-ru/annabel/tree/main/applications/annabel-cms)
+and the commands in Development.
 
 ## Features
 
@@ -82,6 +76,10 @@ maintenance tasks.
 
 Use `SESSION_DRIVER=redis` for horizontally scaled deployments. The default
 file driver is appropriate for single-node development.
+
+## Support and contributing
+
+Read the [contribution guide](https://github.com/codemonster-ru/annabel/blob/main/CONTRIBUTING.md) before proposing a change. Report vulnerabilities through the [security policy](https://github.com/codemonster-ru/annabel/blob/main/SECURITY.md).
 
 ## License
 

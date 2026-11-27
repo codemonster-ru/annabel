@@ -202,6 +202,8 @@ docker compose down
 
 ## Support and contributing
 
+Follow the [contribution guide](./CONTRIBUTING.md) to propose changes. Report vulnerabilities through the [security policy](./SECURITY.md).
+
 Report bugs or propose changes in [GitHub Issues](https://github.com/codemonster-ru/annabel/issues).
 See [Development](#development) for monorepo checks.
 

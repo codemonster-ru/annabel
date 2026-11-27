@@ -13,7 +13,21 @@
 
 Official starter project for Annabel applications.
 
+## Get started
+
+Use PHP 8.2 or later and Composer 2.
+
+```bash
+composer create-project codemonster-ru/annabel-skeleton my-app
+```
+
 ## Documentation
 
 See the [Annabel documentation](https://docs.codemonster.net/annabel/getting-started)
 to configure and run your first application.
+
+## Support and contributing
+
+Read the [contribution guide](https://github.com/codemonster-ru/annabel/blob/main/CONTRIBUTING.md) before proposing a change. Report vulnerabilities through the [security policy](https://github.com/codemonster-ru/annabel/blob/main/SECURITY.md).
+
+Licensed under the [MIT License](./LICENSE).

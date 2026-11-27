@@ -1,0 +1,112 @@
+name: Commit subjects
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+  push:
+    branches: ['**']
+
+permissions: {}
+
+jobs:
+  format:
+    name: Check new commit subjects
+    if: ${{ !github.event.repository.private && !github.event.deleted }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GIT_TERMINAL_PROMPT: '0'
+    steps:
+      - name: Check subjects from the event
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import tempfile
+
+          ZERO_SHA = "0" * 40
+          SHA = re.compile(r"[0-9a-f]{40}")
+          CONVENTIONAL_PREFIX = re.compile(
+              r"^(build|chore|ci|docs|feat|feature|fix|perf|refactor|release|revert|style|test)"
+              r"(?:\([^()]+\))?!?:",
+              re.IGNORECASE,
+          )
+          AUTOSQUASH_PREFIX = re.compile(r"^(fixup|squash|amend)!(?:\s|$)", re.IGNORECASE)
+
+          def git(*args):
+              return subprocess.check_output(
+                  ["git", *args], cwd=work, encoding="utf-8", errors="replace"
+              )
+
+          def sha(value):
+              if not SHA.fullmatch(value) or value == ZERO_SHA:
+                  raise SystemExit("Cannot determine the commit indicated by the event.")
+              return value
+
+          def fetch(*refspecs):
+              git("fetch", "--quiet", "--no-tags", "--no-write-fetch-head",
+                  "--filter=tree:0", "origin", *refspecs)
+
+          def check(label, subject):
+              title = re.sub(r" \(#[0-9]+\)$", "", subject)
+              if CONVENTIONAL_PREFIX.match(title):
+                  reason = "omit the Conventional Commits prefix"
+              elif AUTOSQUASH_PREFIX.match(title):
+                  reason = "complete the autosquash before publishing"
+              elif not re.match(r"^[A-Z]", title):
+                  reason = "start with an uppercase English letter"
+              elif title.rstrip().endswith("."):
+                  reason = "omit the final period"
+              else:
+                  return True
+              print(f"{label}: {reason}: {json.dumps(subject)}")
+              return False
+
+          event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
+          kind = os.environ["GITHUB_EVENT_NAME"]
+          valid = True
+          with tempfile.TemporaryDirectory(prefix="commit-subjects-") as work:
+              git("init", "--quiet")
+              server = os.environ["GITHUB_SERVER_URL"]
+              repository = os.environ["GITHUB_REPOSITORY"]
+              git("remote", "add", "origin", f"{server}/{repository}.git")
+
+              if kind == "pull_request":
+                  pr = event["pull_request"]
+                  before = sha(pr["base"]["sha"])
+                  after = sha(pr["head"]["sha"])
+                  fetch(before, after)
+                  revision = [f"{before}..{after}"]
+                  valid = check("Pull request title", pr["title"])
+              elif kind == "push":
+                  branch = event["ref"]
+                  if not branch.startswith("refs/heads/") or event["deleted"]:
+                      raise SystemExit(0)
+                  after = sha(event["after"])
+                  if event["before"] == ZERO_SHA:
+                      git("check-ref-format", branch)
+                      fetch(after)
+                      fetch("+refs/heads/*:refs/published/heads/*",
+                            "+refs/tags/*:refs/published/tags/*", f"^{branch}")
+                      revision = [after, "--not", "--all"]
+                  else:
+                      before = sha(event["before"])
+                      fetch(before, after)
+                      revision = [f"{before}..{after}"]
+              else:
+                  raise SystemExit(f"Unsupported event: {kind}")
+
+              subjects = git("log", "-z", "--format=%H%x09%s", *revision, "--")
+              entries = subjects.split("\0")[:-1]
+              for entry in entries:
+                  commit, subject = entry.split("\t", 1)
+                  if not check(commit[:12], subject):
+                      valid = False
+              print(f"Checked {len(entries)} commit subject(s).")
+
+          raise SystemExit(0 if valid else 1)
+          PY

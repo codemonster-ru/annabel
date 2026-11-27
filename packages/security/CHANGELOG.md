@@ -2,17 +2,13 @@
 
 All notable changes to this package will be documented in this file.
 
-## [Unreleased]
+## [1.2.0] - 2026-11-27
 
 ### Changed
 
 - Documented Annabel security config publishing and route-level throttle presets.
 - Moved Annabel integration provider to `codemonster-ru/annabel` as `Codemonster\Annabel\Providers\SecurityServiceProvider`.
 - Added PSR-20 clock injection for deterministic rate-limit expiration and headers.
-
-### Removed
-
-- Removed `Codemonster\Security\Providers\SecurityServiceProvider` to keep this package framework-agnostic.
 
 ## [1.1.1] - 2026-06-10
 

@@ -2,11 +2,15 @@
 
 All significant changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.1.0] - 2026-11-27
 
 ### Changed
 
 - Added PSR-20 clock injection for deterministic TTL, cookie, and file-GC expiration.
+
+### Fixed
+
+- Isolated Redis test doubles from native extension classes so Psalm can analyse them without suppressions.
 
 ## [2.0.1] - 2026-06-10
 

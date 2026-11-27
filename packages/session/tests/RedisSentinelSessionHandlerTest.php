@@ -13,67 +13,76 @@ if (!class_exists('RedisSentinel')) {
     }
 }
 
-if (!class_exists('Redis')) {
-    /** @psalm-suppress UndefinedThisPropertyFetch, UndefinedVariable */
-    class Redis
+class RedisSentinelSessionTestClient
+{
+    /** @var array<string, mixed> */
+    public array $store = [];
+    /** @var array<int, array<int, mixed>> */
+    public array $calls = [];
+
+    public function connect(string $host, int $port): bool
     {
-        /** @var array<string, mixed> */
-        public array $store = [];
-        /** @var array<int, array<int, mixed>> */
-        public array $calls = [];
+        $this->calls[] = ['connect', $host, $port];
 
-        public function connect(string $host, int $port): bool
-        {
-            $this->calls[] = ['connect', $host, $port];
-
-            return true;
-        }
-
-        public function auth(string $password): bool
-        {
-            $this->calls[] = ['auth', $password];
-
-            return true;
-        }
-
-        public function select(int $db): bool
-        {
-            $this->calls[] = ['select', $db];
-
-            return true;
-        }
-
-        public function get(string $key): mixed
-        {
-            $this->calls[] = ['get', $key];
-
-            return $this->store[$key] ?? null;
-        }
-
-        public function set(string $key, mixed $value, mixed $options = null): \Redis|string|bool
-        {
-            $this->calls[] = ['set', $key, $value];
-            $this->store[$key] = $value;
-
-            return true;
-        }
-
-        public function setex(string $key, int $seconds, string $value): \Redis|string|bool
-        {
-            $this->calls[] = ['setex', $key, $seconds, $value];
-            $this->store[$key] = $value;
-
-            return true;
-        }
-
-        public function del(string $key): int
-        {
-            $this->calls[] = ['del', $key];
-            unset($this->store[$key]);
-
-            return 1;
-        }
+        return true;
     }
+
+    public function auth(string $password): bool
+    {
+        $this->calls[] = ['auth', $password];
+
+        return true;
+    }
+
+    public function select(int $db): bool
+    {
+        $this->calls[] = ['select', $db];
+
+        return true;
+    }
+
+    public function get(string $key): mixed
+    {
+        $this->calls[] = ['get', $key];
+
+        return $this->store[$key] ?? null;
+    }
+
+    public function set(string $key, mixed $value, mixed $options = null): \Redis|string|bool
+    {
+        $this->calls[] = ['set', $key, $value];
+        $this->store[$key] = $value;
+
+        return true;
+    }
+
+    public function setex(string $key, int $seconds, string $value): \Redis|string|bool
+    {
+        $this->calls[] = ['setex', $key, $seconds, $value];
+        $this->store[$key] = $value;
+
+        return true;
+    }
+
+    public function del(string $key): int
+    {
+        $this->calls[] = ['del', $key];
+        unset($this->store[$key]);
+
+        return 1;
+    }
+}
+
+if (!class_exists('Redis')) {
+    class_alias(RedisSentinelSessionTestClient::class, 'Redis');
+}
+
+class RedisSessionTestException extends RuntimeException
+{
+}
+
+if (!class_exists('RedisException')) {
+    class_alias(RedisSessionTestException::class, 'RedisException');
 }
 
 function createSentinel(string $host, int $port): RedisSentinel
@@ -156,7 +165,6 @@ final class RedisSentinelSessionHandlerTest extends TestCase
         $handler->write('abc', 'value');
 
         $redis = (new \ReflectionClass($handler))->getProperty('redis');
-        $redis->setAccessible(true);
         $client = $redis->getValue($handler);
 
         $this->assertIsObject($client);
@@ -203,6 +211,7 @@ final class RedisSentinelSessionHandlerTest extends TestCase
                 parent::__construct($sentinel, $service, $prefix, $ttl, $password, $database, $retries, $retryDelayMs);
                 $redis = new class () extends \Redis {
                     private int $tries = 0;
+                    /** @param array<array-key, mixed>|int|null $options */
                     public function set(string $key, mixed $value, mixed $options = null): \Redis|string|bool
                     {
                         $this->tries++;
@@ -214,7 +223,6 @@ final class RedisSentinelSessionHandlerTest extends TestCase
                     }
                 };
                 $ref = new \ReflectionProperty(RedisSentinelSessionHandler::class, 'redis');
-                $ref->setAccessible(true);
                 $ref->setValue($this, $redis);
             }
         };

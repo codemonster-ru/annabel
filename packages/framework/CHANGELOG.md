@@ -4,7 +4,7 @@
 
 All notable changes to **codemonster-ru/annabel** will be documented in this file.
 
-## [Unreleased]
+## [1.17.1] - 2026-11-27
 
 ### Added
 
@@ -15,6 +15,12 @@ All notable changes to **codemonster-ru/annabel** will be documented in this fil
 
 - Raised the Razor dependency to `^2.0` and made initialization failures explicit.
 - Store compiled Razor templates in the application `storage/cache/views` directory.
+- Integrated PSR-20 clocks with the database, cache, logging, queue, scheduler, security, and session providers.
+- Required the first stable versions of those packages that support the clock integration.
+
+### Upgrade notes
+
+- Applications that constrain Razor to 1.x must update that constraint to allow Razor 2.x.
 
 ## [1.17.0] - 2026-07-05
 

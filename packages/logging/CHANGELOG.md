@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] - 2026-11-27
 
 - Added optional PSR-20 clock injection for deterministic log timestamps.
 

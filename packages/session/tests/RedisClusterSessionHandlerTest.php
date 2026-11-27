@@ -3,52 +3,53 @@
 use Codemonster\Session\Handlers\RedisClusterSessionHandler;
 use PHPUnit\Framework\TestCase;
 
-if (!class_exists('RedisCluster')) {
-    /** @psalm-suppress UndefinedThisPropertyFetch */
-    class RedisCluster
+class RedisClusterSessionTestClient
+{
+    /** @var array<string, mixed> */
+    public array $store = [];
+    /** @var array<int, array<int, mixed>> */
+    public array $calls = [];
+
+    public function __construct(mixed ...$arguments)
     {
-        /** @var array<string, mixed> */
-        public array $store = [];
-        /** @var array<int, array<int, mixed>> */
-        public array $calls = [];
-
-        public function __construct(mixed ...$arguments)
-        {
-            unset($arguments);
-        }
-
-        public function get(string $key): ?string
-        {
-            $this->calls[] = ['get', $key];
-            $value = $this->store[$key] ?? null;
-
-            return is_string($value) ? $value : null;
-        }
-
-        public function set(string $key, mixed $value, mixed $options = null): RedisCluster|string|bool
-        {
-            $this->calls[] = ['set', $key, $value];
-            $this->store[$key] = $value;
-
-            return true;
-        }
-
-        public function setex(string $key, int $seconds, string $value): true
-        {
-            $this->calls[] = ['setex', $key, $seconds, $value];
-            $this->store[$key] = $value;
-
-            return true;
-        }
-
-        public function del(string $key): int
-        {
-            $this->calls[] = ['del', $key];
-            unset($this->store[$key]);
-
-            return 1;
-        }
+        unset($arguments);
     }
+
+    public function get(string $key): ?string
+    {
+        $this->calls[] = ['get', $key];
+        $value = $this->store[$key] ?? null;
+
+        return is_string($value) ? $value : null;
+    }
+
+    public function set(string $key, mixed $value, mixed $options = null): RedisCluster|string|bool
+    {
+        $this->calls[] = ['set', $key, $value];
+        $this->store[$key] = $value;
+
+        return true;
+    }
+
+    public function setex(string $key, int $seconds, string $value): true
+    {
+        $this->calls[] = ['setex', $key, $seconds, $value];
+        $this->store[$key] = $value;
+
+        return true;
+    }
+
+    public function del(string $key): int
+    {
+        $this->calls[] = ['del', $key];
+        unset($this->store[$key]);
+
+        return 1;
+    }
+}
+
+if (!class_exists('RedisCluster')) {
+    class_alias(RedisClusterSessionTestClient::class, 'RedisCluster');
 }
 
 final class RedisClusterSessionHandlerTest extends TestCase
@@ -140,7 +141,7 @@ final class RedisClusterSessionHandlerTest extends TestCase
             {
                 $this->tries++;
                 if ($this->tries === 1) {
-                    throw new \RedisException('fail');
+                    throw new \RuntimeException('fail');
                 }
                 if (!is_string($value) || (!is_array($options) && !is_int($options) && $options !== null)) {
                     return false;
@@ -152,6 +153,7 @@ final class RedisClusterSessionHandlerTest extends TestCase
             }
         };
 
+        assert($cluster instanceof RedisCluster);
         $handler = new RedisClusterSessionHandler($cluster, 'sess_', 0, 1, 0);
         $this->assertTrue($handler->write('abc', 'value'));
     }

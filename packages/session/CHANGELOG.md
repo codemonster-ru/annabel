@@ -10,7 +10,7 @@ All significant changes to this project will be documented in this file.
 
 ### Fixed
 
-- Removed obsolete Psalm suppressions for Redis tests.
+- Isolated Redis test doubles from native extension classes so Psalm can analyse them without suppressions.
 
 ## [2.0.1] - 2026-06-10
 

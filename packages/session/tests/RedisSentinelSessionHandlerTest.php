@@ -211,6 +211,7 @@ final class RedisSentinelSessionHandlerTest extends TestCase
                 parent::__construct($sentinel, $service, $prefix, $ttl, $password, $database, $retries, $retryDelayMs);
                 $redis = new class () extends \Redis {
                     private int $tries = 0;
+                    /** @param array<array-key, mixed>|int|null $options */
                     public function set(string $key, mixed $value, mixed $options = null): \Redis|string|bool
                     {
                         $this->tries++;

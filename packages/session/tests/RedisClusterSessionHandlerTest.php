@@ -137,6 +137,7 @@ final class RedisClusterSessionHandlerTest extends TestCase
 
         $cluster = new class (null, $seedList) extends RedisCluster {
             private int $tries = 0;
+            /** @param array<array-key, mixed>|int|null $options */
             public function set(string $key, mixed $value, mixed $options = null): RedisCluster|string|bool
             {
                 $this->tries++;

@@ -10,7 +10,7 @@ permissions: {}
 
 jobs:
   format:
-    name: Check new commit subjects
+    name: ${{ github.event_name == 'push' && 'Check pushed commit subjects' || 'Check pull request commit subjects' }}
     if: ${{ !github.event.repository.private && !github.event.deleted }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -30,6 +30,9 @@ jobs:
 
           ZERO_SHA = "0" * 40
           SHA = re.compile(r"[0-9a-f]{40}")
+          MAX_SUBJECT_LENGTH = 100
+          MERGE_TITLE = re.compile(r"^Merge\b", re.IGNORECASE)
+          MERGE_SHA = re.compile(r"\b[0-9a-f]{7,40}\b", re.IGNORECASE)
           CONVENTIONAL_PREFIX = re.compile(
               r"^(build|chore|ci|docs|feat|feature|fix|perf|refactor|release|revert|style|test)"
               r"(?:\([^()]+\))?!?:",
@@ -51,20 +54,24 @@ jobs:
               git("fetch", "--quiet", "--no-tags", "--no-write-fetch-head",
                   "--filter=tree:0", "origin", *refspecs)
 
-          def check(label, subject):
+          def check(label, subject, *, is_merge=False):
               title = re.sub(r" \(#[0-9]+\)$", "", subject)
+              reasons = []
               if CONVENTIONAL_PREFIX.match(title):
-                  reason = "omit the Conventional Commits prefix"
+                  reasons.append("omit the Conventional Commits prefix")
               elif AUTOSQUASH_PREFIX.match(title):
-                  reason = "complete the autosquash before publishing"
+                  reasons.append("complete the autosquash before publishing")
               elif not re.match(r"^[A-Z]", title):
-                  reason = "start with an uppercase English letter"
+                  reasons.append("start with an uppercase English letter")
               elif title.rstrip().endswith("."):
-                  reason = "omit the final period"
-              else:
-                  return True
-              print(f"{label}: {reason}: {json.dumps(subject)}")
-              return False
+                  reasons.append("omit the final period")
+              if len(subject) > MAX_SUBJECT_LENGTH:
+                  reasons.append(f"limit the subject to {MAX_SUBJECT_LENGTH} characters")
+              if (is_merge or MERGE_TITLE.match(title)) and MERGE_SHA.search(title):
+                  reasons.append("omit commit SHAs from merge subjects")
+              for reason in reasons:
+                  print(f"{label}: {reason}: {json.dumps(subject)}")
+              return not reasons
 
           event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
           kind = os.environ["GITHUB_EVENT_NAME"]
@@ -100,11 +107,11 @@ jobs:
               else:
                   raise SystemExit(f"Unsupported event: {kind}")
 
-              subjects = git("log", "-z", "--format=%H%x09%s", *revision, "--")
+              subjects = git("log", "-z", "--format=%H%x09%P%x09%s", *revision, "--")
               entries = subjects.split("\0")[:-1]
               for entry in entries:
-                  commit, subject = entry.split("\t", 1)
-                  if not check(commit[:12], subject):
+                  commit, parents, subject = entry.split("\t", 2)
+                  if not check(commit[:12], subject, is_merge=len(parents.split()) > 1):
                       valid = False
               print(f"Checked {len(entries)} commit subject(s).")
 
